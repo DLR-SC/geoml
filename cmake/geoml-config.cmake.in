@@ -1,0 +1,8 @@
+# - Config file for the geoml package
+# It defines the following variables
+include(CMakeFindDependencyMacro)
+
+# Our library dependencies (contains definitions for IMPORTED targets)
+if(NOT TARGET geoml)
+  include("${CMAKE_CURRENT_LIST_DIR}/geoml-targets.cmake")
+endif()

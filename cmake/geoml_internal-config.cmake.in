@@ -1,0 +1,19 @@
+# - Config file for the geoml_internal package
+include(CMakeFindDependencyMacro)
+
+if (NOT TARGET geoml)
+    find_package(geoml
+        REQUIRED
+        PATHS "${CMAKE_CURRENT_LIST_DIR}/.." NO_DEFAULT_PATH
+    )
+endif()
+
+set (OCC_LIBS_REQUIRED "@OCC_LIBS@")
+
+find_dependency(OpenCASCADE @OpenCASCADE_VERSION@ EXACT REQUIRED)
+
+# Our library dependencies (contains definitions for IMPORTED targets)
+if(NOT TARGET geoml_internal)
+  include("${CMAKE_CURRENT_LIST_DIR}/geoml_internal-targets.cmake")
+endif()
+

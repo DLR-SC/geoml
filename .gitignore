@@ -1,0 +1,7 @@
+/bin
+/build*
+*.pyc
+.vscode
+*.patch
+/.vs
+*CrashInfo*
