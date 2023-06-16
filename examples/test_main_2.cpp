@@ -1,4 +1,6 @@
 
+#include <geoml/curves/modeling.h>
+
 #include <iostream>
 
 #include <cmath>
@@ -20,16 +22,18 @@
 
 #include <gp_Pnt.hxx>
 #include <TColgp_HArray1OfPnt.hxx>
+#include <Geom_BSplineCurve.hxx>
+#include "Geom_Curve.hxx"
 
 /*
 #include "BRepPrimAPI_MakeBox.hxx"
 #include "BRepGProp.hxx"
 #include "GProp_GProps.hxx"
 #include <GeomAPI_Interpolate.hxx>
-#include "Geom_Curve.hxx"
+
 #include "Geom_Surface.hxx"
-#include <Geom_BSplineSurface.hxx>
-#include <Geom_BSplineCurve.hxx>
+
+
 #include <GeomFill_BSplineCurves.hxx>
 #include <GeomFill_Coons.hxx>
 #include <BRepTools.hxx>
@@ -37,7 +41,7 @@
 #include <TopoDS_Shape.hxx> 
 #include <TopoDS.hxx> 
 #include <TopoDS_Solid.hxx> 
-
+#include <Geom_BSplineSurface.hxx>
 #include <Geom_TrimmedCurve.hxx>
 
 #include <gp_GTrsf.hxx>
@@ -49,6 +53,23 @@
 
 using namespace geo;
 */
+
+
+#include "BRepBuilderAPI_MakeEdge.hxx"
+#include <TopoDS_Shape.hxx>
+#include "STEPControl_Writer.hxx"
+
+void writeToStp(Handle_Geom_Curve cur, std::string const& name_file)
+{
+BRepBuilderAPI_MakeEdge edgeMaker;
+edgeMaker.Init(cur);
+TopoDS_Shape edge = edgeMaker.Shape();
+
+STEPControl_Writer aStepWriter;
+aStepWriter.Transfer(edge,STEPControl_AsIs);
+aStepWriter.Write(name_file.c_str());
+}
+
 int main(){
 
     std::cout << "Try if this works..." << std::endl;
@@ -65,18 +86,19 @@ std::vector<double> pz {0.001257, 0.006231, 0.019752, 0.03826, 0.057302, 0.07238
 // create a curve in y=0 plane:
 Handle(TColgp_HArray1OfPnt) points_NACA = new TColgp_HArray1OfPnt(1,21);
 
-
 for(int i = 1; i<=px.size() ;++i)
 {
 	points_NACA->SetValue(i,gp_Pnt(px.at(i-1), pz.at(i-1) , 0.0));
 }
 
+// interpolate the points with a B-spline curve
+Handle(Geom_BSplineCurve) mySplineNACA_Geom_Curve
+        = geoml::interpolate_points_to_b_spline_curve(points_NACA);
+
+// write curve to .stp file
+writeToStp(mySplineNACA_Geom_Curve, "new_test_interpolation_curve.stp");
+
 /*
-
-// use TiGL's class to create interpolation curve: 
-PointsToBSplineInterpolation interpolatorNACA (points_NACA,3,false);
-
-Handle_Geom_Curve mySplineNACA_Geom_Curve_interpolator =interpolatorNACA.Curve();
 
 // define transformations of profiles: 
 gp_Trsf first_traf;
