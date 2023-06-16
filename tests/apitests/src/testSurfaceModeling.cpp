@@ -16,6 +16,8 @@
 
 #include <filesystem>
 
+#include <iostream>
+
 namespace apitests
 {
 
@@ -129,6 +131,7 @@ TEST_P(interpolate_curves, testFromBRep)
 
     Handle(Geom_BSplineSurface) surface = geoml::interpolate_curves(curves);
     BRepTools::Write(BRepBuilderAPI_MakeFace(surface, Precision::Confusion()), path_output.c_str());
+
 }
 
 // @TODO: not all are working
@@ -146,3 +149,9 @@ INSTANTIATE_TEST_SUITE_P(SurfaceModeling, interpolate_curves, ::testing::Values(
   "fuselage2",
   "ffd"
 ));
+
+TEST(simple_test, testSimple)
+{
+//std::cout << " Write this line TEST" << std::endl;
+    //EXPECT_EQ(4,4);
+}

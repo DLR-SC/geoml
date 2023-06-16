@@ -68,6 +68,12 @@ endif(GEOML_BUILD_TESTS)
 
 add_subdirectory(docs)
 
+option(GEOML_EXAMPLES "Build geoml examples" OFF)
+
+if (GEOML_EXAMPLES)
+    add_subdirectory(examples)
+endif()
+
 set(CPACK_DEBIAN_PACKAGE_MAINTAINER "Martin Siggel") #required for debian/ubuntu
 set(CPACK_PACKAGE_VENDOR "www.dlr.de/sc")
 set(CPACK_RESOURCE_FILE_LICENSE ${PROJECT_SOURCE_DIR}/LICENSE.txt)
