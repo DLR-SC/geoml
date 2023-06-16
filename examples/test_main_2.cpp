@@ -1,8 +1,9 @@
 
 #include <iostream>
-/*
+
 #include <cmath>
 #include <vector>
+/*
 #include <initializer_list>
 
 #include "geolib/BSplineCurve.hpp"
@@ -15,9 +16,12 @@
 #include "Transformation.hpp"
 
 #include "filletEdge.hpp"
+*/
 
 #include <gp_Pnt.hxx>
 #include <TColgp_HArray1OfPnt.hxx>
+
+/*
 #include "BRepPrimAPI_MakeBox.hxx"
 #include "BRepGProp.hxx"
 #include "GProp_GProps.hxx"
@@ -49,7 +53,7 @@ int main(){
 
     std::cout << "Try if this works..." << std::endl;
 
-/*
+
 ////
 //// interplate NACA points to a B-spline curve:
 ////
@@ -61,10 +65,13 @@ std::vector<double> pz {0.001257, 0.006231, 0.019752, 0.03826, 0.057302, 0.07238
 // create a curve in y=0 plane:
 Handle(TColgp_HArray1OfPnt) points_NACA = new TColgp_HArray1OfPnt(1,21);
 
+
 for(int i = 1; i<=px.size() ;++i)
 {
 	points_NACA->SetValue(i,gp_Pnt(px.at(i-1), pz.at(i-1) , 0.0));
 }
+
+/*
 
 // use TiGL's class to create interpolation curve: 
 PointsToBSplineInterpolation interpolatorNACA (points_NACA,3,false);
