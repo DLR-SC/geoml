@@ -1,4 +1,4 @@
-#include "surface/modeling.h"
+#include "surfaces/modeling.h"
 
 #include "geometry/curve-networks/InterpolateCurveNetwork.h"
 #include "geometry/CurvesToSurface.h"

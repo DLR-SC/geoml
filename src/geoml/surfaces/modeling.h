@@ -1,7 +1,7 @@
 #pragma once
 
 /**
- * @brief geoml/surface/modeling.h includes functions to create (B-spline) surfaces
+ * @brief geoml/surfaces/modeling.h includes functions to create (B-spline) surfaces
  * by interpolating or approximating points and curves
  */
 

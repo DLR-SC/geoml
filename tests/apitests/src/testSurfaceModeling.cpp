@@ -1,4 +1,4 @@
-#include <geoml/surface/modeling.h>
+#include <geoml/surfaces/modeling.h>
 
 #include <gtest/gtest.h>
 
