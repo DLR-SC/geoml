@@ -1,5 +1,6 @@
 
 #include <iostream>
+/*
 #include <cmath>
 #include <vector>
 #include <initializer_list>
@@ -43,9 +44,12 @@
 
 
 using namespace geo;
-
+*/
 int main(){
 
+    std::cout << "Try if this works..." << std::endl;
+
+/*
 ////
 //// interplate NACA points to a B-spline curve:
 ////
@@ -116,6 +120,7 @@ writeGeomEntityToStepFile(result_surf_wing, "surface_wing.stp");
 //// 
 ////
 
+*/
 return 0;
 }
 
