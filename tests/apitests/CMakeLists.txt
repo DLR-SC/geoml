@@ -1,6 +1,7 @@
 
 add_executable(geoml-apitest
     src/testSurfaceModeling.cpp
+    src/testCurveModeling.cpp
     src/main.cpp
 )
 target_link_libraries(geoml-apitest PUBLIC gtest geoml)
