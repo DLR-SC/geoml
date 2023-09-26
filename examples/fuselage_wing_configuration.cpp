@@ -17,6 +17,13 @@
 //#include <NCollection_Array1.hxx> // for using TColgp_Array1OfPnt
 #include <TColgp_Array1OfPnt.hxx>
 
+#include <BRepPrimAPI_MakeRevol.hxx>
+#include <GC_MakeSegment.hxx>
+
+#include "BRepGProp.hxx"
+#include "GProp_GProps.hxx"
+
+
 
 // define a function that writes curves to step files:
 void writeToStp(Handle_Geom_Curve cur, std::string const& name_file)
@@ -28,6 +35,27 @@ TopoDS_Shape edge = edgeMaker.Shape();
 STEPControl_Writer aStepWriter;
 aStepWriter.Transfer(edge,STEPControl_AsIs);
 aStepWriter.Write(name_file.c_str());
+}
+
+/*
+void writeGeomEntityToStepFile(Handle_Geom_Surface surface, std::string fileName)
+{
+	BRepBuilderAPI_MakeFace faceMaker;
+	faceMaker.Init(surface,true,1E-6);	
+	TopoDS_Shape face = faceMaker.Shape();
+
+	STEPControl_Writer writer;
+	writer.Transfer(face,STEPControl_AsIs);
+	writer.Write(fileName.c_str());
+	return;
+}
+*/
+
+void writeGeomEntityToStepFile(const TopoDS_Shape& my_shape, std::string fileName)
+{
+STEPControl_Writer writer;
+writer.Transfer(my_shape,STEPControl_AsIs);
+writer.Write(fileName.c_str());
 }
 
 int main(){
@@ -71,32 +99,11 @@ writeToStp(mySplineNACA_Geom_Curve, "new_test_interpolation_curve.stp");
 
 // profile curves: //////////////////
 
-// define points of the section in the frontal part: // as I realized looking at the knots, 
-gp_Pnt point1(7, 2.100102, 0.682364);                // this won't work! 
-gp_Pnt point2(7, 1.297934, 1.786453);
-gp_Pnt point3(7, 0, 2.208177);
-gp_Pnt point4(7, -1.297934, 1.786453);
-gp_Pnt point5(7, -2.100102, 0.682364);
-gp_Pnt point6(7, -2.100102, -0.682364);
-gp_Pnt point7(7, -1.297934, -1.786453);
-gp_Pnt point8(7, 0, -2.208177);
-gp_Pnt point9(7, 1.297934, -1.786453);
-gp_Pnt point10(7, 2.100102, -0.682364);
-gp_Pnt point11(7, 2.100102, 0.682364);
 
-TColgp_Array1OfPnt points_fuselage_section_front(1,11);
+///////////////////////////////////// break /////////////////////////////////////
+///////////////////////////////////// break /////////////////////////////////////
+///////////////////////////////////// break /////////////////////////////////////
 
-points_fuselage_section_front.SetValue(1,point1);
-points_fuselage_section_front.SetValue(2,point2);
-points_fuselage_section_front.SetValue(3,point3);
-points_fuselage_section_front.SetValue(4,point4);
-points_fuselage_section_front.SetValue(5,point5);
-points_fuselage_section_front.SetValue(6,point6);
-points_fuselage_section_front.SetValue(7,point7);
-points_fuselage_section_front.SetValue(8,point8);
-points_fuselage_section_front.SetValue(9,point9);
-points_fuselage_section_front.SetValue(10,point10);
-points_fuselage_section_front.SetValue(11,point11);
 
 /////////////////////////////////////
 // look at a simple example first: //
@@ -115,12 +122,6 @@ control_points_1.SetValue(2,p_12);
 control_points_1.SetValue(3,p_13);
 control_points_1.SetValue(4,p_14);
 control_points_1.SetValue(5,p_15);
-
-// interpolate the points with a B-spline curve // works well
-/*
-Handle(Geom_BSplineCurve) my_Geom_Curve_1
-        = geoml::interpolate_points_to_b_spline_curve(points_1);
-*/
 
 /////////////////////////////////////
 // another test: ////////////////////
@@ -147,46 +148,12 @@ weights_1.SetValue(3, 1.0);
 weights_1.SetValue(4, 1.0);
 weights_1.SetValue(5, 1.0);
 
-/*
-// knots: #knots = #control_points + degree -1
-TColStd_Array1OfReal knots_1(1,control_points_1.Length() + degree_1 + 1); // 7 in this case
-knots_1.SetValue(1,0.0);        // open uniform knot vector
-knots_1.SetValue(2,0.0);
-knots_1.SetValue(3,0.0);
-knots_1.SetValue(4,1.0);
-knots_1.SetValue(5,2.0);
-knots_1.SetValue(6,2.0);
-knots_1.SetValue(7,2.0);
-
-// multiplicities: 
-TColStd_Array1OfInteger mults_1(1, knots_1.Length()); // 7 in this case
-mults_1.SetValue(1,3);
-mults_1.SetValue(2,3);
-mults_1.SetValue(3,3);
-mults_1.SetValue(4,1);
-mults_1.SetValue(5,3);
-mults_1.SetValue(6,3);
-mults_1.SetValue(7,3);
-*/
-
-
 //knots:
 TColStd_Array1OfReal knots_1(1,4); 
 knots_1.SetValue(1,0.0);           
 knots_1.SetValue(2,1.0);
 knots_1.SetValue(3,2.0);
 knots_1.SetValue(4,3.0);
-
-/*
-TColStd_Array1OfReal knots_1(1,7); 
-knots_1.SetValue(1,-2.0);
-knots_1.SetValue(2,-1.0);
-knots_1.SetValue(3,0.0);           
-knots_1.SetValue(4,1.0);
-knots_1.SetValue(5,2.0);
-knots_1.SetValue(6,3.0);
-knots_1.SetValue(7,4.0);
-*/
 
 // multiplicities: 
 TColStd_Array1OfInteger mults_1(1,4); 
@@ -195,49 +162,69 @@ mults_1.SetValue(2,1);
 mults_1.SetValue(3,1);
 mults_1.SetValue(4,3);
 
-/*
-TColStd_Array1OfInteger mults_1(1,7); 
-mults_1.SetValue(1,1);
-mults_1.SetValue(2,1);
-mults_1.SetValue(3,1);
-mults_1.SetValue(4,1);
-mults_1.SetValue(5,1);
-mults_1.SetValue(6,1);
-mults_1.SetValue(7,1);
-*/
-
-std::cout << "This is 111" << std::endl;
-
 Handle(Geom_BSplineCurve) my_Geom_Curve_1 
         = new Geom_BSplineCurve(control_points_1, weights_1, knots_1, mults_1, degree_1);
 
-std::cout << "This is what we got" << std::endl;
-// define the B-spline curve:
-//      * want that the given points to be the control points of the B-spline curve
-//        (i.e. no interpolation)
-
-//int degree(3);
-/*
-Handle(Geom_BSplineCurve) bSpline_curve 
-        = new Geom_BSplineCurve(points_fuselage_section_front, degree);
-*/
-
-/*
-Handle(Geom_BSplineCurve) fuselage_section_front
-        = geoml::interpolate_points_to_b_spline_curve(points_fuselage_section_front);
-*/
-
-/*
-GeomAPI_PointsToBSpline pointToBSpline(points_fuselage_section_front);
-Handle(Geom_BSplineCurve) fuselage_section_front = pointToBSpline.Curve();
-*/
-
-/*
-Handle(Geom_BSplineCurve) fuselage_section_front = new Geom_BSplineCurve(points_fuselage_section_front, degree);
-*/
-
-// write curve to .stp file
 writeToStp(my_Geom_Curve_1, "test_curve_1.stp");
+
+
+// now create a cylindrical surface:
+
+// create a profile curve for the cylinder
+gp_Pnt start_point(1, 0, 0);
+gp_Pnt end_point(1, 0, 2); // The height of the cylinder
+
+TColgp_Array1OfPnt profile_points(1,2);
+profile_points.SetValue(1,start_point);
+profile_points.SetValue(2,end_point);
+
+// degree:
+Standard_Integer degree = 1;
+
+// weights:
+TColStd_Array1OfReal weights(1, 2);
+weights.SetValue(1, 1.0);  
+weights.SetValue(2, 1.0);  
+
+// knots:
+TColStd_Array1OfReal knots(1,2); 
+knots.SetValue(1,0.0);           
+knots.SetValue(2,1.0);
+
+// multiplicities: 
+TColStd_Array1OfInteger mults(1,2); 
+mults.SetValue(1,2);                
+mults.SetValue(2,2);
+
+// create the profile curve:
+Handle(Geom_BSplineCurve) profile_curve 
+        = new Geom_BSplineCurve(profile_points, weights, knots, mults, degree);
+
+// convert the Geom_BSplineCurve in a TopoDS_Shape:
+BRepBuilderAPI_MakeEdge edgeMaker;
+edgeMaker.Init(profile_curve);
+TopoDS_Shape profile_curve_shape = edgeMaker.Shape();
+
+// create the cylinder by revolving the profile curve
+BRepPrimAPI_MakeRevol revol_maker(profile_curve_shape, gp_Ax1(gp_Pnt(0, 0, 0), gp_Dir(0, 0, 1)), 3.1415); 
+
+TopoDS_Shape cylinder = revol_maker.Shape();
+
+std::cout << "hello world again" << std::endl;
+
+writeGeomEntityToStepFile(cylinder, "my_cylinder_test.stp");
+
+std::cout << "hello hello from the other side" << std::endl;
+
+ // calculate the area of the surface
+ //TopoDS_Face face = BRepBuilderAPI_MakeFace(result_surf, 1e-5);
+ GProp_GProps properties;
+ BRepGProp::SurfaceProperties(cylinder, properties);
+
+ double area = properties.Mass();
+
+std::cout << " the surface area is: " << area << std::endl;
+
 
 return 0;
 }
