@@ -38,7 +38,7 @@ interpolate_points_to_b_spline_curve(const Handle(TColgp_HArray1OfPnt) & points)
  * @param periodic ### to do: understand this better! Test it ###
  * @param check ### to do: test this ####
  */
-GEOML_API_EXPORT Geom_BSplineCurve
+GEOML_API_EXPORT Handle(Geom_BSplineCurve)
 b_spline_curve(
     const TColgp_Array1OfPnt & control_points, 
     const TColStd_Array1OfReal & weights,
@@ -47,8 +47,6 @@ b_spline_curve(
     const int degree, 
     const bool periodic = false, 
     const bool checkRational = false);
-
-
 
 
 } // namespace geoml
