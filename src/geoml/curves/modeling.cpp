@@ -11,7 +11,7 @@ geoml::interpolate_points_to_b_spline_curve(const Handle(TColgp_HArray1OfPnt) & 
 }
 
 // this is a factory function to create a Geom_BSplineCurve
-Geom_BSplineCurve
+Handle(Geom_BSplineCurve)
 geoml::b_spline_curve(
     const TColgp_Array1OfPnt & control_points,
     const TColStd_Array1OfReal & weights,
@@ -21,7 +21,8 @@ geoml::b_spline_curve(
     const bool periodic, 
     const bool checkRational)
 {
-    Geom_BSplineCurve myCurve(control_points, weights, knots, multiplicities, degree);
+    Handle(Geom_BSplineCurve) myCurve 
+        = new Geom_BSplineCurve(control_points, weights, knots, multiplicities, degree);
     return myCurve; 
 }
 
