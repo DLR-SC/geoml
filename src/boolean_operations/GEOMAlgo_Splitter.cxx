@@ -340,7 +340,7 @@ void GEOMAlgo_Splitter::PostTreat()
     myShape=aLS.First();
   }
   //
-  BOPAlgo_Builder::PostTreat();
+  BOPAlgo_Builder::PostTreat(Message_ProgressRange());
 }
 //=======================================================================
 //function : TreatCompound

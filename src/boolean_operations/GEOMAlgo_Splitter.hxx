@@ -99,7 +99,7 @@ public:
     void BuildResult(const TopAbs_ShapeEnum theType) override;
 
   GEOML_EXPORT
-    void PostTreat() override;
+    void PostTreat();
   
  protected:
 #if OCC_VERSION_HEX >= VERSION_HEX_CODE(7,3,0)
