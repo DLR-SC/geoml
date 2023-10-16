@@ -78,6 +78,10 @@ install(DIRECTORY geoml/
     PATTERN "*.h"
 )
 
+install(FILES
+ ${CMAKE_CURRENT_BINARY_DIR}/geoml/exports.h DESTINATION include/geoml
+)
+
 add_library(geoml_internal INTERFACE)
 
 foreach(directory ${GEOML_INCLUDES})
