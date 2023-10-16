@@ -35,6 +35,7 @@ class geomlConan(ConanFile):
 
     def generate(self):
         tc = CMakeToolchain(self)
+        tc.cache_variables["GEOML_INSTALL_INTERNAL_API"] = True
         tc.generate()
         cmake = CMakeDeps(self)
         cmake.generate()
