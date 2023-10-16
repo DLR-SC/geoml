@@ -19,6 +19,7 @@
 #ifndef STRINGTOOLS_H
 #define STRINGTOOLS_H
 
+#include "typename.h"
 #include "geoml/error.h"
 
 #include <vector>
@@ -59,7 +60,8 @@ inline std::vector<std::string> split_string(const std::string& mystring, char d
 template <class to_value>
 inline void from_string(const std::string& s, to_value& t)
 {
-    static_assert(false, "no template specialization for type");
+    using namespace std::string_literals;
+    throw geoml::Error("no template specialization for type"s + typeName<to_value>());
 }
 
 template <>
