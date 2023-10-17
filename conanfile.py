@@ -1,6 +1,7 @@
 from conan import ConanFile
 from conan.tools.cmake import CMake, cmake_layout, CMakeDeps, CMakeToolchain
 from conan.tools.files import load
+import os
 import re
 
 def get_version(conanfile = None):
@@ -52,5 +53,19 @@ class geomlConan(ConanFile):
 
     def package_info(self):
         self.cpp_info.libs = ["geoml"]
+        # this can't be the correct way to set the include dirs of geoml_internal...
+        self.cpp_info.includedirs.append(os.path.join("include", "geoml"))
+        self.cpp_info.includedirs.append(os.path.join("include", "geoml", "internal"))
+        self.cpp_info.includedirs.append(os.path.join("include", "geoml", "internal", "boolean_operations"))
+        self.cpp_info.includedirs.append(os.path.join("include", "geoml", "internal", "common"))
+        self.cpp_info.includedirs.append(os.path.join("include", "geoml", "internal", "contrib"))
+        self.cpp_info.includedirs.append(os.path.join("include", "geoml", "internal", "exports"))
+        self.cpp_info.includedirs.append(os.path.join("include", "geoml", "internal", "geometry"))
+        self.cpp_info.includedirs.append(os.path.join("include", "geoml", "internal", "imports"))
+        self.cpp_info.includedirs.append(os.path.join("include", "geoml", "internal", "logging"))
+        self.cpp_info.includedirs.append(os.path.join("include", "geoml", "internal", "math"))
+        self.cpp_info.includedirs.append(os.path.join("include", "geoml", "internal", "system"))
+        self.cpp_info.includedirs.append(os.path.join("include", "geoml", "internal", "topology"))
+        self.cpp_info.includedirs.append(os.path.join("include", "geoml", "surface"))
 
 
