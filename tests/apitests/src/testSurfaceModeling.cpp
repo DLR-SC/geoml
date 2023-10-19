@@ -228,14 +228,10 @@ TEST(SurfaceModeling, revolution_surface)
     EXPECT_TRUE(cylinder->IsUPeriodic());
     EXPECT_FALSE(cylinder->IsVPeriodic());
 
-    //writeGeomEntityToStepFile(cylinder, "cylinder_periodic.stp");
-
     cylinder->SetUNotPeriodic();
     EXPECT_FALSE(cylinder->IsUPeriodic());
     EXPECT_EQ(cylinder->NbUPoles(),7); // this is important to note: it changed from 6 to 7
     EXPECT_EQ(cylinder->NbUKnots(),6); // changed from 4 to 6 (why?)
-
-    //writeGeomEntityToStepFile(cylinder, "cylinder_non_periodic.stp");
         
 }
 
