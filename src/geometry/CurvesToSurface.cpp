@@ -113,7 +113,7 @@ GEOML_EXPORT void CurvesToSurface::CalculateParameters(std::vector<Handle(Geom_B
 }
 
 GEOML_EXPORT void CurvesToSurface::Perform()
-{
+{   
     // check amount of given parameters
     if (_parameters.size() != _inputCurves.size()) {
         throw Error("The amount of given parameters has to be equal to the amount of given B-splines!", geoml::MATH_ERROR);

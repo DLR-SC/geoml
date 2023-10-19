@@ -6,6 +6,7 @@
  */
 
 #include <TColgp_HArray1OfPnt.hxx>
+#include <TColgp_Array1OfPnt.hxx>
 #include <Geom_BSplineCurve.hxx>
 #include <Geom_Curve.hxx>
 #include <geoml/geoml.h>
