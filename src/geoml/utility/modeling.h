@@ -97,7 +97,7 @@ make_fillet (const TopoDS_Shape &solid_shape , int edge_index, double radius);
  * @param radius The radius of the fillet    
  */
 GEOML_API_EXPORT TopoDS_Shape
-make_fillet (const TopoDS_Shape &solid_shape , const std::initializer_list<int> &edge_indices, double radius);
+make_fillet (const TopoDS_Shape &solid_shape , const std::vector<int> &edge_indices, double radius);
 
 /**
  * @brief Scale a vector 

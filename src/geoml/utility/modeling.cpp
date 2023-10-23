@@ -153,7 +153,7 @@ geoml::make_fillet (const TopoDS_Shape &solid_shape , int edge_index, double rad
 }
 
 TopoDS_Shape
-geoml::make_fillet (const TopoDS_Shape &solid_shape , const std::initializer_list<int> &edge_indices, double radius)
+geoml::make_fillet (const TopoDS_Shape &solid_shape , const std::vector<int> &edge_indices, double radius)
 {
     BRepFilletAPI_MakeFillet MF (solid_shape);
 
