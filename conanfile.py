@@ -68,6 +68,9 @@ class geomlConan(ConanFile):
         self.cpp_info.includedirs.append(os.path.join("include", "geoml", "internal", "math"))
         self.cpp_info.includedirs.append(os.path.join("include", "geoml", "internal", "system"))
         self.cpp_info.includedirs.append(os.path.join("include", "geoml", "internal", "topology"))
-        self.cpp_info.includedirs.append(os.path.join("include", "geoml", "surface"))
+        self.cpp_info.includedirs.append(os.path.join("include", "geoml", "curves"))
+        self.cpp_info.includedirs.append(os.path.join("include", "geoml", "surfaces"))
+        self.cpp_info.includedirs.append(os.path.join("include", "geoml", "utility"))
+
 
 
