@@ -46,7 +46,6 @@ set(LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR})
 
 include(UseOpenCASCADE)
 
-
 # enable parallel builds in Visual Studio
 if (MSVC)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP")

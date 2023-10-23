@@ -53,6 +53,8 @@ class geomlConan(ConanFile):
 
     def package_info(self):
         self.cpp_info.libs = ["geoml"]
+        if self.options.shared:
+            self.cpp_info.requires = ["opencascade::opencascade"]
         # this can't be the correct way to set the include dirs of geoml_internal...
         self.cpp_info.includedirs.append(os.path.join("include", "geoml"))
         self.cpp_info.includedirs.append(os.path.join("include", "geoml", "internal"))
