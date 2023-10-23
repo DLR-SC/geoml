@@ -90,6 +90,16 @@ b_spline_surface(const TColgp_Array2OfPnt &control_points,
                  const Standard_Integer V_degree, 
                  const Standard_Boolean U_periodic=Standard_False, 
                  const Standard_Boolean V_periodic=Standard_False); 
+
+/**
+ * @brief Create a surface from 4 points
+ *
+ * //@param points The corner points of the surface
+ */
+
+GEOML_API_EXPORT Handle(Geom_BSplineSurface)
+surface_from_4_points (const std::vector<gp_Pnt> & points); 
+
                                      
 
 } // namespace geoml

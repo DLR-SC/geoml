@@ -118,3 +118,59 @@ geoml::b_spline_surface(const TColgp_Array2OfPnt &control_points,
     return srf_handle;                                        
 }                 
 
+Handle(Geom_BSplineSurface)
+geoml::surface_from_4_points (const std::vector<gp_Pnt> & points)
+{
+    // set the control points
+    TColgp_Array2OfPnt cp_net(1, 2, 1, 2);
+    cp_net.SetValue(1, 1, points.at(0));
+    cp_net.SetValue(2, 1, points.at(1));
+    cp_net.SetValue(1, 2, points.at(3));
+    cp_net.SetValue(2, 2, points.at(2));
+
+    // set the degree in U and Vdirection
+    // degree:
+    Standard_Integer degree_U = 1;
+    Standard_Integer degree_V = 1;
+
+    // define the weight net:
+    TColStd_Array2OfReal weight_net(1, 2, 1, 2); 
+    weight_net.SetValue(1, 1, 1);
+    weight_net.SetValue(2, 1, 1);
+    weight_net.SetValue(1, 2, 1);
+    weight_net.SetValue(2, 2, 1);    
+
+    // set the U-knots:
+    TColStd_Array1OfReal knots_U(1,2); 
+
+    knots_U.SetValue(1, 0.0);           
+    knots_U.SetValue(2, 1.0);
+
+    // set the V-knots:
+    TColStd_Array1OfReal knots_V(1,2); 
+
+    knots_V.SetValue(1, 0.0);           
+    knots_V.SetValue(2, 1.0);
+
+    // multiplicities U-direction: 
+    TColStd_Array1OfInteger mults_U(1,2); 
+    mults_U.SetValue(1,2);                
+    mults_U.SetValue(2,2);
+
+    // multiplicities V-direction: 
+    TColStd_Array1OfInteger mults_V(1,2); 
+    mults_V.SetValue(1,2);                
+    mults_V.SetValue(2,2);
+
+    Handle(Geom_BSplineSurface) srf_handle = new Geom_BSplineSurface( cp_net,
+                                                                      weight_net,
+                                                                      knots_U,
+                                                                      knots_V,
+                                                                      mults_U,
+                                                                      mults_V,
+                                                                      degree_U,
+                                                                      degree_V );
+                                                                        
+    return srf_handle;
+
+}                                                                        
