@@ -1,4 +1,6 @@
 #include "utility/modeling.h"
+#include "geometry/Transformation.h"
+#include <BRep_Builder.hxx>
 #include <BRepFilletAPI_MakeFillet.hxx> 
 #include <TopTools_IndexedMapOfShape.hxx>
 #include <TopExp.hxx>
@@ -6,9 +8,10 @@
 
 #include <iostream>
 
+namespace geoml {
 
 TColgp_Array2OfPnt
-geoml::extract_control_points_surface(
+extract_control_points_surface(
     const Handle(Geom_BSplineSurface)& b_spline_surface)
 {
     TColgp_Array2OfPnt control_points = b_spline_surface->Poles();
@@ -18,7 +21,7 @@ geoml::extract_control_points_surface(
  
 
 TColgp_Array1OfPnt 
-geoml::extract_control_point_column_row (const Handle(Geom_BSplineSurface)& b_spline_surface, 
+extract_control_point_column_row (const Handle(Geom_BSplineSurface)& b_spline_surface, 
                                   int UV_direction, int index)
 {
     //if ( UV_direction != 1 || UV_direction != 2)
@@ -54,7 +57,7 @@ geoml::extract_control_point_column_row (const Handle(Geom_BSplineSurface)& b_sp
 }                            
 
 TColgp_Array1OfPnt 
-geoml::move (const TColgp_Array1OfPnt& points, gp_Vec direction, double factor)
+move (const TColgp_Array1OfPnt& points, gp_Vec direction, double factor)
 {
     TColgp_Array1OfPnt my_array(1,points.Length());
 
@@ -70,7 +73,7 @@ geoml::move (const TColgp_Array1OfPnt& points, gp_Vec direction, double factor)
 }
 
 gp_Pnt 
-geoml::move (const gp_Pnt& point, gp_Vec direction, double factor)
+move (const gp_Pnt& point, gp_Vec direction, double factor)
 {
         gp_Pnt moved_point( point.X() + factor * direction.X(),
                             point.Y() + factor * direction.Y(),
@@ -80,7 +83,7 @@ geoml::move (const gp_Pnt& point, gp_Vec direction, double factor)
 }
 
 Handle(TColgp_HArray1OfPnt) 
-geoml::move (const Handle(TColgp_HArray1OfPnt)& points, gp_Vec direction, double factor)
+move (const Handle(TColgp_HArray1OfPnt)& points, gp_Vec direction, double factor)
 {
     Handle(TColgp_HArray1OfPnt) my_array = new TColgp_HArray1OfPnt(1,points->Length());
 
@@ -95,8 +98,29 @@ geoml::move (const Handle(TColgp_HArray1OfPnt)& points, gp_Vec direction, double
     return my_array;
 }
 
+TopoDS_Shape moved(TopoDS_Shape const& origin, gp_Vec const& direction, double factor)
+{
+    auto t = Transformation(direction*factor);
+    return t.Transform(origin);
+}
+
+TopoDS_Compound repeat_shape(TopoDS_Shape const& origin, Transformation const& trans, int n_repeats)
+{
+    TopoDS_Compound result;
+    BRep_Builder a_builder;
+
+    TopoDS_Shape shape = origin;
+    a_builder.MakeCompound(result);
+    a_builder.Add(result, shape);
+    for (int i=1; i < n_repeats; ++i) {
+        shape = trans.Transform(shape);
+        a_builder.Add(result, shape);
+    }
+    return result;
+}
+
 TColgp_Array2OfPnt 
-geoml::create_point_net_from_arrays (const std::vector<TColgp_Array1OfPnt>& point_lists,
+create_point_net_from_arrays (const std::vector<TColgp_Array1OfPnt>& point_lists,
                                      int rows_columns)
 {
     // TODO: check if all arrays in the vector have the same lenght, throw error otherwise
@@ -140,7 +164,7 @@ geoml::create_point_net_from_arrays (const std::vector<TColgp_Array1OfPnt>& poin
 }
 
 TopoDS_Shape
-geoml::make_fillet (const TopoDS_Shape &solid_shape , int edge_index, double radius)
+make_fillet (const TopoDS_Shape &solid_shape , int edge_index, double radius)
 {
     BRepFilletAPI_MakeFillet MF (solid_shape);
 
@@ -153,7 +177,7 @@ geoml::make_fillet (const TopoDS_Shape &solid_shape , int edge_index, double rad
 }
 
 TopoDS_Shape
-geoml::make_fillet (const TopoDS_Shape &solid_shape , const std::vector<int> &edge_indices, double radius)
+make_fillet (const TopoDS_Shape &solid_shape , const std::vector<int> &edge_indices, double radius)
 {
     BRepFilletAPI_MakeFillet MF (solid_shape);
 
@@ -170,8 +194,9 @@ geoml::make_fillet (const TopoDS_Shape &solid_shape , const std::vector<int> &ed
 
 
 gp_Vec
-geoml::scale_vector (const gp_Vec &vector , double factor)
+scale_vector (const gp_Vec &vector , double factor)
 {
     return vector.Multiplied(factor);
 }
 
+} // namespace geoml

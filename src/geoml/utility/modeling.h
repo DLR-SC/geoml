@@ -19,6 +19,8 @@
 namespace geoml
 {
 
+    class Transformation;
+
 /**
  * @brief Extracts the control points of a Geom_BSplineSurface
  * 
@@ -69,6 +71,28 @@ move (const gp_Pnt& point, gp_Vec direction, double factor);
  */
 GEOML_API_EXPORT Handle(TColgp_HArray1OfPnt) 
 move (const Handle(TColgp_HArray1OfPnt)& points, gp_Vec direction, double factor);
+
+/**
+ * @brief Creates a translated copy of a shape. The translation is performed along a
+ * given direction and factor
+ * 
+ * @param origin The shape to be translated
+ * @param direction The direction of translation
+ * @param factor The factor applied to the direction for the translation (default: 1.0)
+ * @return TopoDS_Shape 
+ */
+TopoDS_Shape moved(TopoDS_Shape const& origin, gp_Vec const& direction, double factor = 1.0);
+
+/**
+ * @brief Creates repeated copies of an input shape by repeatedly transforming the shape 
+ * n times given a geoml::Transformation.
+ * 
+ * @param origin The shape to be repeated n times
+ * @param translation The transformation to be applied to each copy, relative to the previous copy
+ * @param n_repeats The number of repetitions
+ * @return TopoDS_Compound A compound holding all resulting copies
+ */
+TopoDS_Compound repeat_shape(TopoDS_Shape const& origin, Transformation const& trans, int n_repeats);
 
 /**
  * @brief Create a TColgp_Array2OfPnt array out of a vector of TColgp_Array1OfPnt arrays
