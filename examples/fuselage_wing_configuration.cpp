@@ -160,25 +160,35 @@ profile_points_cylinder.push_back(end_point_profile);
 Standard_Integer degree_profile = 1;
 
 // weights:
+/*
 TColStd_Array1OfReal weights_profile(1, 2);
 weights_profile.SetValue(1, 1.0);  
 weights_profile.SetValue(2, 1.0);  
+*/
+std::vector<double> weights_profile;
+weights_profile.push_back(1.0);
+weights_profile.push_back(1.0);
 
 // knots:
+/*
 TColStd_Array1OfReal knots_profile(1,2); 
 knots_profile.SetValue(1,0.0);           
 knots_profile.SetValue(2,1.0);
+*/
+std::vector<double> knots_profile {0.0, 1.0};
 
 // multiplicities: 
+/*
 TColStd_Array1OfInteger mults_profile(1,2); 
 mults_profile.SetValue(1,2);                
 mults_profile.SetValue(2,2);
+*/
+std::vector<int> mults_profile {2, 2};
 
 // create the profile curve:
 Handle(Geom_BSplineCurve) profile_curve_cylinder 
 	= geoml::b_spline_curve(profile_points_cylinder, weights_profile, 
 							knots_profile, mults_profile, degree_profile);
-
 
 // // current_state // //
 /*

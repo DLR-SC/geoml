@@ -43,9 +43,9 @@ interpolate_points_to_b_spline_curve(const Handle(TColgp_HArray1OfPnt) & points)
 GEOML_API_EXPORT Handle(Geom_BSplineCurve)
 b_spline_curve(
     const std::vector<gp_Pnt> & control_points, 
-    const TColStd_Array1OfReal & weights,
-    const TColStd_Array1OfReal & knots, 
-    const TColStd_Array1OfInteger & multiplicities,
+    const std::vector<double> & weights,
+    const std::vector<double> & knots, 
+    const std::vector<int> & multiplicities,
     const int degree, 
     const bool periodic = false, 
     const bool checkRational = false);
