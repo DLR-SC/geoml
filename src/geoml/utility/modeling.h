@@ -8,12 +8,15 @@
 #include <TColgp_Array2OfPnt.hxx>
 #include <TColgp_HArray1OfPnt.hxx>
 #include <Geom_BSplineSurface.hxx>
+#include <Geom_Surface.hxx>
 #include <gp_Vec.hxx>
 #include <vector>
 #include <TopoDS_Shape.hxx> 
+#include <TopoDS_Face.hxx> 
 #include <TopoDS.hxx> 
 #include <TopoDS_Solid.hxx> 
 #include <initializer_list> 
+#include "Geom_Curve.hxx"
 
 
 namespace geoml
@@ -131,6 +134,17 @@ make_fillet (const TopoDS_Shape &solid_shape , const std::vector<int> &edge_indi
 GEOML_API_EXPORT gp_Vec
 scale_vector (const gp_Vec &vector , double factor);
 
+/////////////////////////////////// temporary quick fix for milestone
+
+void writeToStp(Handle_Geom_Curve cur, std::string const& name_file);
+
+void writeGeomEntityToStepFile(Handle_Geom_Surface surface, std::string fileName);
+
+void writeGeomEntityToStepFile(Handle_Geom_BSplineSurface surface, std::string fileName);
+
+void writeGeomEntityToStepFile(const TopoDS_Shape& my_shape, std::string fileName);
+
+TopoDS_Face make_face (const Handle_Geom_BSplineSurface & surface);
     
 
 } // namespace geoml

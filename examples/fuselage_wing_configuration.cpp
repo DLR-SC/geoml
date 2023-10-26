@@ -92,7 +92,6 @@ aStepWriter.Transfer(edge,STEPControl_AsIs);
 aStepWriter.Write(name_file.c_str());
 } 
 
-
 void writeGeomEntityToStepFile(Handle_Geom_Surface surface, std::string fileName)
 {
 	BRepBuilderAPI_MakeFace faceMaker;
@@ -104,7 +103,6 @@ void writeGeomEntityToStepFile(Handle_Geom_Surface surface, std::string fileName
 	writer.Write(fileName.c_str());
 	return;
 }
-
 
 void writeGeomEntityToStepFile(const TopoDS_Shape& my_shape, std::string fileName)
 {
@@ -190,8 +188,7 @@ Handle(Geom_BSplineCurve) profile_curve_cylinder
 	= geoml::b_spline_curve(profile_points_cylinder, weights_profile, 
 							knots_profile, mults_profile, degree_profile);
 
-// // current_state // //
-/*
+
 
 // use this profile curve to define the cylinder:
 gp_Ax1 rot_axis(gp_Pnt(0., 0., 0.), gp_Dir(1., 0., 0.));
@@ -203,6 +200,8 @@ Handle(Geom_BSplineSurface) fuselage_cylinder =
 // write the surface fuselage_cylinder to file:
 writeGeomEntityToStepFile(fuselage_cylinder, "config_fuselage_cylinder.stp");
 
+// // current_state // //
+/*
 
 /////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////

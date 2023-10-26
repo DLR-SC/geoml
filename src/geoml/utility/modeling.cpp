@@ -5,6 +5,11 @@
 #include <TopTools_IndexedMapOfShape.hxx>
 #include <TopExp.hxx>
 #include <TopAbs.hxx>
+#include <BRepBuilderAPI_MakeEdge.hxx>
+#include <TopoDS_Shape.hxx>
+#include "STEPControl_Writer.hxx"
+#include <BRepBuilderAPI_MakeFace.hxx>
+#include <Geom_BSplineSurface.hxx>
 
 #include <iostream>
 
@@ -201,5 +206,59 @@ scale_vector (const gp_Vec &vector , double factor)
 {
     return vector.Multiplied(factor);
 }
+
+///////////////////////////// temp
+
+void writeToStp(Handle_Geom_Curve cur, std::string const& name_file)
+{
+    BRepBuilderAPI_MakeEdge edgeMaker;
+    edgeMaker.Init(cur);
+    TopoDS_Shape edge = edgeMaker.Shape();
+
+    STEPControl_Writer aStepWriter;
+    aStepWriter.Transfer(edge,STEPControl_AsIs);
+    aStepWriter.Write(name_file.c_str());
+}
+
+void writeGeomEntityToStepFile(Handle_Geom_Surface surface, std::string fileName)
+{
+	BRepBuilderAPI_MakeFace faceMaker;
+	faceMaker.Init(surface,true,1E-6);	
+	TopoDS_Shape face = faceMaker.Shape();
+
+	STEPControl_Writer writer;
+	writer.Transfer(face,STEPControl_AsIs);
+	writer.Write(fileName.c_str());
+	return;    
+}
+
+void writeGeomEntityToStepFile(Handle_Geom_BSplineSurface surface, std::string fileName)
+{
+    Handle_Geom_Surface surface_tmp = Handle_Geom_Surface::DownCast(surface);
+
+	BRepBuilderAPI_MakeFace faceMaker;
+	faceMaker.Init(surface_tmp,true,1E-6);	
+	TopoDS_Shape face = faceMaker.Shape();
+
+	STEPControl_Writer writer;
+	writer.Transfer(face,STEPControl_AsIs);
+	writer.Write(fileName.c_str());
+	return;    
+}
+
+void writeGeomEntityToStepFile(const TopoDS_Shape& my_shape, std::string fileName)
+{
+    STEPControl_Writer writer;
+    writer.Transfer(my_shape,STEPControl_AsIs);
+    writer.Write(fileName.c_str());
+}
+
+TopoDS_Face make_face (const Handle_Geom_BSplineSurface & surface)
+{
+   TopoDS_Face face_tmp = BRepBuilderAPI_MakeFace(surface, 1e1); 
+   return face_tmp;
+}
+
+
 
 } // namespace geoml
