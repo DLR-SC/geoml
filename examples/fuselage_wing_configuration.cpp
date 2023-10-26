@@ -77,6 +77,8 @@
 
 #include <BRepPrimAPI_MakeSphere.hxx>
 #include <initializer_list>
+#include <TopoDS_Compound.hxx>
+
 
 // define a function that writes curves to step files:
 void writeToStp(Handle_Geom_Curve cur, std::string const& name_file)
@@ -145,9 +147,14 @@ int main(){
 gp_Pnt start_point_profile(7000., 0., 2000.); // original: z = 2000
 gp_Pnt end_point_profile(23000., 0., 2000.);  //
 
+/*
 TColgp_Array1OfPnt profile_points_cylinder(1,2);
 profile_points_cylinder.SetValue(1,start_point_profile);
 profile_points_cylinder.SetValue(2,end_point_profile);
+*/
+std::vector<gp_Pnt> profile_points_cylinder;
+profile_points_cylinder.push_back(start_point_profile);
+profile_points_cylinder.push_back(end_point_profile);
 
 // degree:
 Standard_Integer degree_profile = 1;
@@ -171,6 +178,10 @@ mults_profile.SetValue(2,2);
 Handle(Geom_BSplineCurve) profile_curve_cylinder 
 	= geoml::b_spline_curve(profile_points_cylinder, weights_profile, 
 							knots_profile, mults_profile, degree_profile);
+
+
+// // current_state // //
+/*
 
 // use this profile curve to define the cylinder:
 gp_Ax1 rot_axis(gp_Pnt(0., 0., 0.), gp_Dir(1., 0., 0.));
@@ -1740,17 +1751,6 @@ builder_wing.Add(shell_wing, face_outer_cap);
 
 writeGeomEntityToStepFile(shell_wing, "shell_wing.stp");
 
-/*
-BRepBuilderAPI_Sewing sewing;
-sewing.Add(face_upper_wing);
-sewing.Add(face_lower_wing);
-sewing.Add(face_inner_cap);
-sewing.Add(face_outer_cap);
-
-TopoDS_Shape combined_wing = sewing.SewedShape();
-writeGeomEntityToStepFile(combined_wing, "combined_wing.stp");
-*/
-
 // Create a solid from the shell
 TopoDS_Solid solid_wing;
 builder_wing.MakeSolid(solid_wing);
@@ -1918,6 +1918,23 @@ TopoDS_Shape rounded_box = geoml::make_fillet(result_cut_box, index_list, 0.05);
 // write rounded_box to disk:
 writeGeomEntityToStepFile(rounded_box, "rounded_box.stp");
 
+// now, subtract the spheres from rounded_box: // create a geoml funktion that executes the following calculation.
+TopoDS_Compound sphere_compound;  
+BRep_Builder final_builder;
+final_builder.MakeCompound(sphere_compound);
+final_builder.Add(sphere_compound, sphere_shape_1);
+final_builder.Add(sphere_compound, sphere_shape_2);
+final_builder.Add(sphere_compound, sphere_shape_3);
+final_builder.Add(sphere_compound, sphere_shape_4);
+
+BRepAlgoAPI_Cut sphere_cutter(rounded_box, sphere_compound); 
+
+TopoDS_Shape final_shape = sphere_cutter.Shape();
+
+// write final_shape to disk:
+writeGeomEntityToStepFile(final_shape, "final_shape.stp");
+
+*/
 
 std::cout << "end of main function" << std::endl;
 

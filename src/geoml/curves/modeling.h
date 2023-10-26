@@ -10,6 +10,7 @@
 #include <Geom_BSplineCurve.hxx>
 #include <Geom_Curve.hxx>
 #include <geoml/geoml.h>
+#include <gp_Pnt.hxx>
 
 
 #include <vector>
@@ -41,6 +42,16 @@ interpolate_points_to_b_spline_curve(const Handle(TColgp_HArray1OfPnt) & points)
  */
 GEOML_API_EXPORT Handle(Geom_BSplineCurve)
 b_spline_curve(
+    const std::vector<gp_Pnt> & control_points, 
+    const TColStd_Array1OfReal & weights,
+    const TColStd_Array1OfReal & knots, 
+    const TColStd_Array1OfInteger & multiplicities,
+    const int degree, 
+    const bool periodic = false, 
+    const bool checkRational = false);
+ /*
+GEOML_API_EXPORT Handle(Geom_BSplineCurve)
+b_spline_curve(
     const TColgp_Array1OfPnt & control_points, 
     const TColStd_Array1OfReal & weights,
     const TColStd_Array1OfReal & knots, 
@@ -48,6 +59,6 @@ b_spline_curve(
     const int degree, 
     const bool periodic = false, 
     const bool checkRational = false);
-
+*/
 
 } // namespace geoml

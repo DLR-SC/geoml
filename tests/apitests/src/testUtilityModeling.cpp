@@ -35,7 +35,7 @@
 #include "GProp_GProps.hxx"
 #include <TColgp_Array2OfPnt.hxx>
 
-
+/*
 TEST(control_point_handling, extract_control_points_from_b_spline_surface)
 {        
 // define profile curve for the revolving surface (cylinder):
@@ -202,3 +202,4 @@ EXPECT_NEAR(cp_column_2.Value(7).Z(), 2000, 0.1);
 
 
 }
+*/

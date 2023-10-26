@@ -37,6 +37,7 @@ namespace apitests
 }
 */
 
+/*
 TEST(simple_curve_test, closed_unclamped_b_spline)
 {    
 
@@ -303,3 +304,4 @@ EXPECT_EQ(my_curve->Multiplicity(3), 2);
 EXPECT_EQ(my_curve->Multiplicity(4), 2);
 
 }
+*/

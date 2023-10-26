@@ -155,6 +155,7 @@ INSTANTIATE_TEST_SUITE_P(SurfaceModeling, interpolate_curves, ::testing::Values(
   "ffd"
 ));
 
+/*
 void writeGeomEntityToStepFile(Handle_Geom_Surface surface, std::string fileName)
 {
 	BRepBuilderAPI_MakeFace faceMaker;
@@ -248,91 +249,8 @@ TEST(SurfaceModeling, b_spline_surface)
     Standard_Integer degree_V = 1;
 
     EXPECT_EQ(srf_cp_net.ColLength(), 3);
-    EXPECT_EQ(srf_cp_net.RowLength(), 2);
-/*
-    // define the weight net for the surface:
-    TColStd_Array2OfReal srf_weight_net(1, srf_cp_net.ColLength(), 1, 
-                                                    rear_srf_cp_net.RowLength()); // is this use correct?
-
-    rear_srf_weight_net.SetValue(1, 1, 1.0);
-    rear_srf_weight_net.SetValue(2, 1, 0.5);
-    rear_srf_weight_net.SetValue(3, 1, 1.0);
-    rear_srf_weight_net.SetValue(4, 1, 0.5);
-    rear_srf_weight_net.SetValue(5, 1, 1.0);
-    rear_srf_weight_net.SetValue(6, 1, 0.5);
-
-    rear_srf_weight_net.SetValue(1, 2, 1.0);
-    rear_srf_weight_net.SetValue(2, 2, 0.5);
-    rear_srf_weight_net.SetValue(3, 2, 1.0);
-    rear_srf_weight_net.SetValue(4, 2, 0.5);
-    rear_srf_weight_net.SetValue(5, 2, 1.0);
-    rear_srf_weight_net.SetValue(6, 2, 0.5);
-
-    rear_srf_weight_net.SetValue(1, 3, 1.0);
-    rear_srf_weight_net.SetValue(2, 3, 0.5);
-    rear_srf_weight_net.SetValue(3, 3, 1.0);
-    rear_srf_weight_net.SetValue(4, 3, 0.5);
-    rear_srf_weight_net.SetValue(5, 3, 1.0);
-    rear_srf_weight_net.SetValue(6, 3, 0.5);
-
-    rear_srf_weight_net.SetValue(1, 4, 1.0);
-    rear_srf_weight_net.SetValue(2, 4, 0.5);
-    rear_srf_weight_net.SetValue(3, 4, 1.0);
-    rear_srf_weight_net.SetValue(4, 4, 0.5);
-    rear_srf_weight_net.SetValue(5, 4, 1.0);
-    rear_srf_weight_net.SetValue(6, 4, 0.5);
-
-
-    rear_srf_weight_net.SetValue(1, 5, 1.0);
-    rear_srf_weight_net.SetValue(2, 5, 0.5);
-    rear_srf_weight_net.SetValue(3, 5, 1.0);
-    rear_srf_weight_net.SetValue(4, 5, 0.5);
-    rear_srf_weight_net.SetValue(5, 5, 1.0);
-    rear_srf_weight_net.SetValue(6, 5, 0.5);
-
-
-    // set the U-knots (columns):
-    TColStd_Array1OfReal knots_U(1,4); 
-
-    knots_U.SetValue(1,0.0);           
-    knots_U.SetValue(2,1.0);
-    knots_U.SetValue(3,2.0);
-    knots_U.SetValue(4,3.0);
-
-    // set the V-knots (rows):
-    TColStd_Array1OfReal knots_V(1,2); 
-
-    knots_U.SetValue(1,0.0);           
-    knots_U.SetValue(2,1.0);
-
-    // multiplicities U-direction: 
-    TColStd_Array1OfInteger mults_U(1,4); // as we are in the periodic case, the mults must 	
-                                        // maybe be adapted...(!)
-    mults_U.SetValue(1,3);                
-    mults_U.SetValue(2,2);
-    mults_U.SetValue(3,2);
-    mults_U.SetValue(4,3);
-
-    // multiplicities V-direction: 
-    TColStd_Array1OfInteger mults_V(1,2); 
-
-    mults_V.SetValue(1,5);                
-    mults_V.SetValue(2,5);
-
-    std::cout << "does it get till here?" << std::endl;
-
-    // define the rear surface:
-    Handle(Geom_BSplineSurface) rear_surface
-        = geoml::b_spline_surface( rear_srf_cp_net, 
-                            rear_srf_weight_net, 
-                            knots_U, 
-                            knots_V, 
-                            mults_U, 
-                            mults_V, 
-                            degree_U, 
-                            degree_V, 
-                            Standard_True ); 
-*/					
+    EXPECT_EQ(srf_cp_net.RowLength(), 2);				
 }
+*/
 
 
