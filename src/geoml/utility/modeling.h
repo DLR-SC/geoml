@@ -41,7 +41,7 @@ extract_control_points_surface(const Handle(Geom_BSplineSurface)& b_spline_surfa
  *                     V-direction (rows)
  * @param index The index of the control point column or row         
  */
-GEOML_API_EXPORT TColgp_Array1OfPnt 
+GEOML_API_EXPORT std::vector<gp_Pnt> 
 extract_control_point_column_row (const Handle(Geom_BSplineSurface)& b_spline_surface, 
                                   int UV_direction, int index);
 

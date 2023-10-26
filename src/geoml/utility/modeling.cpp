@@ -26,7 +26,8 @@ extract_control_points_surface(
 }
  
 
-TColgp_Array1OfPnt 
+//TColgp_Array1OfPnt 
+std::vector<gp_Pnt> 
 extract_control_point_column_row (const Handle(Geom_BSplineSurface)& b_spline_surface, 
 
                                   int UV_direction, int index)
@@ -37,29 +38,25 @@ extract_control_point_column_row (const Handle(Geom_BSplineSurface)& b_spline_su
         //throw error message
 
     TColgp_Array2OfPnt cp_net = b_spline_surface->Poles();
+    std::vector<gp_Pnt> point_vector;
 
     if (UV_direction == 1)
-    {    
-        TColgp_Array1OfPnt cp_column(1, cp_net.ColLength());
-        
+    {            
         for(int i = 1; i <= cp_net.ColLength(); ++i)
         {
-            cp_column.SetValue(i, cp_net.Value(i, index));
+            point_vector.push_back(cp_net.Value(i, index));
         }
 
-        return cp_column;
+        return point_vector;
 
     } else if (UV_direction == 2)
-    {
-        TColgp_Array1OfPnt cp_column(1, cp_net.RowLength());
-        
+    {   
         for(int i = 1; i <= cp_net.RowLength(); ++i)
         {
-            cp_column.SetValue(i, cp_net.Value(index, i));
+            point_vector.push_back(cp_net.Value(index, i));
         }
 
-        return cp_column;
-        
+        return point_vector; 
     }   
 }                            
 

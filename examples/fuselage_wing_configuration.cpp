@@ -200,12 +200,11 @@ Handle(Geom_BSplineSurface) fuselage_cylinder =
 // write the surface fuselage_cylinder to file:
 writeGeomEntityToStepFile(fuselage_cylinder, "config_fuselage_cylinder.stp");
 
-// // current_state // //
-/*
+
 
 /////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////
-//////////	Mid part
+//////////	rear part
 /////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////
 
@@ -213,7 +212,10 @@ writeGeomEntityToStepFile(fuselage_cylinder, "config_fuselage_cylinder.stp");
 // extract the 2nd control point column (U-direction) of fuselage_cylinder: (control points
 // of rear edge)
 
-TColgp_Array1OfPnt cp_column = geoml::extract_control_point_column_row(fuselage_cylinder,1,2);
+std::vector<gp_Pnt> cp_column = geoml::extract_control_point_column_row(fuselage_cylinder,1,2);
+
+// // current_state // //
+/*
 
 std::cout << "first point: " << std::endl;
 std::cout << cp_column.Value(1).X() << std::endl;
