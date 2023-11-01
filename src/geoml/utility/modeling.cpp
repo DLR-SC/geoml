@@ -12,6 +12,10 @@
 #include <Geom_BSplineSurface.hxx>
 #include <GeomConvert.hxx>
 #include <BRepAlgoAPI_Fuse.hxx>
+#include <TopExp_Explorer.hxx>
+#include <BRepAlgoAPI_Cut.hxx>
+#include <TopoDS_Compound.hxx>
+#include <BRepPrimAPI_MakePrism.hxx>
 
 
 #include <iostream>
@@ -362,6 +366,41 @@ TopoDS_Shape fuse_two_solids (const TopoDS_Solid & solid_1, const TopoDS_Solid &
     fuser.Build();
 
     return fuser.Shape();
+}
+
+TopoDS_Shape remove_faces_from_shape (const TopoDS_Shape & shape, const std::vector<int> & indices_of_faces_to_remove)
+{
+    TopoDS_Shape tmp_shape = shape;
+    TopTools_IndexedMapOfShape face_map;
+    TopExp::MapShapes(tmp_shape, TopAbs_FACE, face_map);
+    TopoDS_Compound compound;
+    BRep_Builder builder;
+    builder.MakeCompound(compound);
+
+    for (int face_index: indices_of_faces_to_remove)
+    {
+         TopoDS_Face selected_face = TopoDS::Face(face_map(face_index)); 
+         builder.Add(compound, selected_face);        
+    }
+
+
+    BRepAlgoAPI_Cut cutter(tmp_shape, compound); 
+
+    return cutter.Shape();
+}
+
+TopoDS_Shape extrude_surface (const Handle(Geom_BSplineSurface) & surface, const gp_Vec & extrusion_vector)
+{
+    double tolerance {0.1};
+    Handle(Geom_Surface) surface_geom;
+    surface_geom = surface;
+    TopoDS_Face surface_shape = BRepBuilderAPI_MakeFace(surface_geom, tolerance);
+
+    BRepPrimAPI_MakePrism extrusion (surface_shape, extrusion_vector);
+
+    TopoDS_Shape extruded_shape = extrusion.Shape();
+
+    return extruded_shape;
 }
 
 

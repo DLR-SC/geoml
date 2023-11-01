@@ -176,4 +176,8 @@ Handle(Geom_Surface) convert_to_geom_surface(const Handle(Geom_BSplineSurface)& 
 
 TopoDS_Shape fuse_two_solids (const TopoDS_Solid & solid_1, const TopoDS_Solid & solid_2);
 
+TopoDS_Shape remove_faces_from_shape (const TopoDS_Shape & shape, const std::vector<int> & indices_of_faces_to_remove);
+
+TopoDS_Shape extrude_surface (const Handle(Geom_BSplineSurface) & surface, const gp_Vec & extrusion_vector);
+
 } // namespace geoml
