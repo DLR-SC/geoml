@@ -8,6 +8,7 @@
 #include <TColgp_Array2OfPnt.hxx>
 #include <TColgp_HArray1OfPnt.hxx>
 #include <Geom_BSplineSurface.hxx>
+#include <Geom_BSplineCurve.hxx>
 #include <Geom_Surface.hxx>
 #include <gp_Vec.hxx>
 #include <vector>
@@ -17,6 +18,7 @@
 #include <TopoDS_Solid.hxx> 
 #include <initializer_list> 
 #include "Geom_Curve.hxx"
+#include <Geom_TrimmedCurve.hxx>
 
 
 namespace geoml
@@ -41,7 +43,7 @@ extract_control_points_surface(const Handle(Geom_BSplineSurface)& b_spline_surfa
  *                     V-direction (rows)
  * @param index The index of the control point column or row         
  */
-GEOML_API_EXPORT std::vector<gp_Pnt> 
+GEOML_API_EXPORT TColgp_Array1OfPnt  
 extract_control_point_column_row (const Handle(Geom_BSplineSurface)& b_spline_surface, 
                                   int UV_direction, int index);
 
@@ -74,6 +76,16 @@ move (const gp_Pnt& point, gp_Vec direction, double factor);
  */
 GEOML_API_EXPORT Handle(TColgp_HArray1OfPnt) 
 move (const Handle(TColgp_HArray1OfPnt)& points, gp_Vec direction, double factor);
+
+/**
+ * @brief Move an array of points in vector direction of vector dir times a pre-factor
+ * 
+ * @param points The 1-d collection of points to move
+ * @param direction The direction, in which the movement should take place
+ * @param factor The pre-factor of the movement         
+ */
+GEOML_API_EXPORT std::vector<gp_Pnt> 
+move (const std::vector<gp_Pnt> & points, gp_Vec direction, double factor);
 
 /**
  * @brief Creates a translated copy of a shape. The translation is performed along a
@@ -142,9 +154,26 @@ void writeGeomEntityToStepFile(Handle_Geom_Surface surface, std::string fileName
 
 void writeGeomEntityToStepFile(Handle_Geom_BSplineSurface surface, std::string fileName);
 
-void writeGeomEntityToStepFile(const TopoDS_Shape& my_shape, std::string fileName);
+int writeGeomEntityToStepFile(const TopoDS_Shape& my_shape, std::string fileName);
+
+//////////////////////////////////////
 
 TopoDS_Face make_face (const Handle_Geom_BSplineSurface & surface);
+
+int test_func (const std::vector< std::vector<gp_Pnt> > & control_points);
+
+Handle(Geom_Curve) convert_to_geom_curve(const Handle(Geom_TrimmedCurve)& trimmed_curve);
     
+Handle(Geom_BSplineCurve) geom_convert_from_trimmed_curve(const Handle(Geom_TrimmedCurve)& trimmed_curve);
+
+gp_Pnt vector_of_points_at_index (const std::vector<gp_Pnt> & points, int index);
+
+std::vector<Handle(Geom_Curve)> vector_b_spline_to_geom_curve_converter (const std::vector<Handle(Geom_BSplineCurve)> input_vec);
+
+Handle(Geom_Curve) convert_to_geom_curve(const Handle(Geom_BSplineCurve)& bspline_curve);
+
+Handle(Geom_Surface) convert_to_geom_surface(const Handle(Geom_BSplineSurface)& bspline_surface);
+
+TopoDS_Shape fuse_two_solids (const TopoDS_Solid & solid_1, const TopoDS_Solid & solid_2);
 
 } // namespace geoml

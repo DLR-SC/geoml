@@ -145,50 +145,32 @@ int main(){
 gp_Pnt start_point_profile(7000., 0., 2000.); // original: z = 2000
 gp_Pnt end_point_profile(23000., 0., 2000.);  //
 
-/*
 TColgp_Array1OfPnt profile_points_cylinder(1,2);
 profile_points_cylinder.SetValue(1,start_point_profile);
 profile_points_cylinder.SetValue(2,end_point_profile);
-*/
-std::vector<gp_Pnt> profile_points_cylinder;
-profile_points_cylinder.push_back(start_point_profile);
-profile_points_cylinder.push_back(end_point_profile);
 
 // degree:
 Standard_Integer degree_profile = 1;
 
 // weights:
-/*
 TColStd_Array1OfReal weights_profile(1, 2);
 weights_profile.SetValue(1, 1.0);  
 weights_profile.SetValue(2, 1.0);  
-*/
-std::vector<double> weights_profile;
-weights_profile.push_back(1.0);
-weights_profile.push_back(1.0);
 
 // knots:
-/*
 TColStd_Array1OfReal knots_profile(1,2); 
 knots_profile.SetValue(1,0.0);           
 knots_profile.SetValue(2,1.0);
-*/
-std::vector<double> knots_profile {0.0, 1.0};
 
 // multiplicities: 
-/*
 TColStd_Array1OfInteger mults_profile(1,2); 
 mults_profile.SetValue(1,2);                
 mults_profile.SetValue(2,2);
-*/
-std::vector<int> mults_profile {2, 2};
 
 // create the profile curve:
 Handle(Geom_BSplineCurve) profile_curve_cylinder 
 	= geoml::b_spline_curve(profile_points_cylinder, weights_profile, 
 							knots_profile, mults_profile, degree_profile);
-
-
 
 // use this profile curve to define the cylinder:
 gp_Ax1 rot_axis(gp_Pnt(0., 0., 0.), gp_Dir(1., 0., 0.));
@@ -201,7 +183,6 @@ Handle(Geom_BSplineSurface) fuselage_cylinder =
 writeGeomEntityToStepFile(fuselage_cylinder, "config_fuselage_cylinder.stp");
 
 
-
 /////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////
 //////////	rear part
@@ -212,82 +193,7 @@ writeGeomEntityToStepFile(fuselage_cylinder, "config_fuselage_cylinder.stp");
 // extract the 2nd control point column (U-direction) of fuselage_cylinder: (control points
 // of rear edge)
 
-std::vector<gp_Pnt> cp_column = geoml::extract_control_point_column_row(fuselage_cylinder,1,2);
-
-// // current_state // //
-/*
-
-std::cout << "first point: " << std::endl;
-std::cout << cp_column.Value(1).X() << std::endl;
-std::cout << cp_column.Value(1).Y() << std::endl;
-std::cout << cp_column.Value(1).Z() << std::endl;
-
-std::cout << "second point: " << std::endl;
-std::cout << cp_column.Value(2).X() << std::endl;
-std::cout << cp_column.Value(2).Y() << std::endl;
-std::cout << cp_column.Value(2).Z() << std::endl;
-
-std::cout << "third point: " << std::endl;
-std::cout << cp_column.Value(3).X() << std::endl;
-std::cout << cp_column.Value(3).Y() << std::endl;
-std::cout << cp_column.Value(3).Z() << std::endl;
-
-std::cout << "fourth point: " << std::endl;
-std::cout << cp_column.Value(4).X() << std::endl;
-std::cout << cp_column.Value(4).Y() << std::endl;
-std::cout << cp_column.Value(4).Z() << std::endl;
-
-std::cout << "fifth point: " << std::endl;
-std::cout << cp_column.Value(5).X() << std::endl;
-std::cout << cp_column.Value(5).Y() << std::endl;
-std::cout << cp_column.Value(5).Z() << std::endl;
-
-std::cout << "sixth point: " << std::endl;
-std::cout << cp_column.Value(6).X() << std::endl;
-std::cout << cp_column.Value(6).Y() << std::endl;
-std::cout << cp_column.Value(6).Z() << std::endl;
-
-std::cout << "seventh point: not for the periodic case " << std::endl;
-
-fuselage_cylinder->SetUNotPeriodic();
-
-TColgp_Array1OfPnt cp_column_2 
-	= geoml::extract_control_point_column_row(fuselage_cylinder,1,2);
-
-std::cout << "first point: " << std::endl;
-std::cout << cp_column_2.Value(1).X() << std::endl;
-std::cout << cp_column_2.Value(1).Y() << std::endl;
-std::cout << cp_column_2.Value(1).Z() << std::endl;
-
-std::cout << "second point: " << std::endl;
-std::cout << cp_column_2.Value(2).X() << std::endl;
-std::cout << cp_column_2.Value(2).Y() << std::endl;
-std::cout << cp_column_2.Value(2).Z() << std::endl;
-
-std::cout << "third point: " << std::endl;
-std::cout << cp_column_2.Value(3).X() << std::endl;
-std::cout << cp_column_2.Value(3).Y() << std::endl;
-std::cout << cp_column_2.Value(3).Z() << std::endl;
-
-std::cout << "fourth point: " << std::endl;
-std::cout << cp_column_2.Value(4).X() << std::endl;
-std::cout << cp_column_2.Value(4).Y() << std::endl;
-std::cout << cp_column_2.Value(4).Z() << std::endl;
-
-std::cout << "fifth point: " << std::endl;
-std::cout << cp_column_2.Value(5).X() << std::endl;
-std::cout << cp_column_2.Value(5).Y() << std::endl;
-std::cout << cp_column_2.Value(5).Z() << std::endl;
-
-std::cout << "sixth point: " << std::endl;
-std::cout << cp_column_2.Value(6).X() << std::endl;
-std::cout << cp_column_2.Value(6).Y() << std::endl;
-std::cout << cp_column_2.Value(6).Z() << std::endl;
-
-std::cout << "seventh point: " << std::endl;
-std::cout << cp_column_2.Value(7).X() << std::endl;
-std::cout << cp_column_2.Value(7).Y() << std::endl;
-std::cout << cp_column_2.Value(7).Z() << std::endl;
+TColgp_Array1OfPnt cp_column = geoml::extract_control_point_column_row(fuselage_cylinder,1,2);
 
 // now, create two copies of the periodic rear control points cp_column and move them
 // in x-direction of the world coordinate system, relative to each other:
@@ -299,79 +205,16 @@ gp_Vec move_vec(1.0, 0.0, 0.0);
 double move_factor_1(2500.0); // 
 
 // move the control points cp_column (for the periodic case):
-TColgp_Array1OfPnt moved_cp_points_1 = geoml::move(cp_column, move_vec, move_factor_1);
+TColgp_Array1OfPnt moved_cp_points_1 
+	= geoml::move(cp_column, move_vec, move_factor_1);
 
-// see, what the output is:
-std::cout << "first moved point: " << std::endl;
-std::cout << moved_cp_points_1.Value(1).X() << std::endl;
-std::cout << moved_cp_points_1.Value(1).Y() << std::endl;
-std::cout << moved_cp_points_1.Value(1).Z() << std::endl;
-
-std::cout << "second moved point: " << std::endl;
-std::cout << moved_cp_points_1.Value(2).X() << std::endl;
-std::cout << moved_cp_points_1.Value(2).Y() << std::endl;
-std::cout << moved_cp_points_1.Value(2).Z() << std::endl;
-
-std::cout << "third moved point: " << std::endl;
-std::cout << moved_cp_points_1.Value(3).X() << std::endl;
-std::cout << moved_cp_points_1.Value(3).Y() << std::endl;
-std::cout << moved_cp_points_1.Value(3).Z() << std::endl;
-
-std::cout << "fourth moved point: " << std::endl;
-std::cout << moved_cp_points_1.Value(4).X() << std::endl;
-std::cout << moved_cp_points_1.Value(4).Y() << std::endl;
-std::cout << moved_cp_points_1.Value(4).Z() << std::endl;
-
-std::cout << "fifth moved point: " << std::endl;
-std::cout << moved_cp_points_1.Value(5).X() << std::endl;
-std::cout << moved_cp_points_1.Value(5).Y() << std::endl;
-std::cout << moved_cp_points_1.Value(5).Z() << std::endl;
-
-std::cout << "sixth moved point: " << std::endl;
-std::cout << moved_cp_points_1.Value(6).X() << std::endl;
-std::cout << moved_cp_points_1.Value(6).Y() << std::endl;
-std::cout << moved_cp_points_1.Value(6).Z() << std::endl;
-
-std::cout << "seventh moved point: not for the periodic case " << std::endl;
-
-// move the control points moved_cp_points_1 (still the periodic case):
+// move the control points moved_cp_points_1:
 
 // define the factor multiplied to move_vec for the second (relative) move:
 double move_factor_2(3000.0);
 
-TColgp_Array1OfPnt moved_cp_points_2 
+ TColgp_Array1OfPnt moved_cp_points_2 
 	= geoml::move(moved_cp_points_1, move_vec, move_factor_2);
-
-// see, what the output is:
-std::cout << "first moved point (2): " << std::endl;
-std::cout << moved_cp_points_2.Value(1).X() << std::endl;
-std::cout << moved_cp_points_2.Value(1).Y() << std::endl;
-std::cout << moved_cp_points_2.Value(1).Z() << std::endl;
-
-std::cout << "second moved point (2): " << std::endl;
-std::cout << moved_cp_points_2.Value(2).X() << std::endl;
-std::cout << moved_cp_points_2.Value(2).Y() << std::endl;
-std::cout << moved_cp_points_2.Value(2).Z() << std::endl;
-
-std::cout << "third moved point (2): " << std::endl;
-std::cout << moved_cp_points_2.Value(3).X() << std::endl;
-std::cout << moved_cp_points_2.Value(3).Y() << std::endl;
-std::cout << moved_cp_points_2.Value(3).Z() << std::endl;
-
-std::cout << "fourth moved point (2): " << std::endl;
-std::cout << moved_cp_points_2.Value(4).X() << std::endl;
-std::cout << moved_cp_points_2.Value(4).Y() << std::endl;
-std::cout << moved_cp_points_2.Value(4).Z() << std::endl;
-
-std::cout << "fifth moved point (2): " << std::endl;
-std::cout << moved_cp_points_2.Value(5).X() << std::endl;
-std::cout << moved_cp_points_2.Value(5).Y() << std::endl;
-std::cout << moved_cp_points_2.Value(5).Z() << std::endl;
-
-std::cout << "sixth moved point (2): " << std::endl;
-std::cout << moved_cp_points_2.Value(6).X() << std::endl;
-std::cout << moved_cp_points_2.Value(6).Y() << std::endl;
-std::cout << moved_cp_points_2.Value(6).Z() << std::endl;
 
 // next, define two hand picked 1-d collections of points; these will be the two last
 // control point columns of the fuselage rear surface:
@@ -411,7 +254,7 @@ moved_cp_points_4.SetValue(5, l_pt_5);
 moved_cp_points_4.SetValue(6, l_pt_6);
 
 // create a control point net consisting of the defined four columns:
-std::vector<TColgp_Array1OfPnt> my_point_lists;
+std::vector<TColgp_Array1OfPnt> my_point_lists;                     
 
 my_point_lists.push_back(cp_column);
 my_point_lists.push_back(moved_cp_points_1);
@@ -420,10 +263,7 @@ my_point_lists.push_back(moved_cp_points_3);
 my_point_lists.push_back(moved_cp_points_4);
 
 // the point arrays should be the columns of the control point net:
-TColgp_Array2OfPnt rear_srf_cp_net = geoml::create_point_net_from_arrays (my_point_lists, 2);
-
-std::cout << "rear_srf_cp_net.ColLength(): " << rear_srf_cp_net.ColLength() << std::endl;
-std::cout << "rear_srf_cp_net.RowLength(): " << rear_srf_cp_net.RowLength() << std::endl;
+TColgp_Array2OfPnt rear_srf_cp_net = geoml::create_point_net_from_arrays (my_point_lists, 2); 
 
 // set the degree in U (columns) and V (rows) direction:
 // degree:
@@ -431,8 +271,8 @@ Standard_Integer degree_U = 2;
 Standard_Integer degree_V = 4;
 
 // define the weight net for the fuselage rear surface:
-TColStd_Array2OfReal rear_srf_weight_net(1, rear_srf_cp_net.ColLength(), 1, 
-												rear_srf_cp_net.RowLength()); // is this use correct?
+TColStd_Array2OfReal rear_srf_weight_net(1, rear_srf_cp_net.ColLength(), 1,                      
+												rear_srf_cp_net.RowLength()); 
 
 std::cout << "rear_srf_weight_net.ColLength(): " << rear_srf_weight_net.ColLength() << std::endl;
 std::cout << "rear_srf_weight_net.RowLength(): " << rear_srf_weight_net.RowLength() << std::endl;
@@ -487,8 +327,7 @@ knots_V.SetValue(1,0.0);
 knots_V.SetValue(2,1.0);
 
 // multiplicities U-direction: 
-TColStd_Array1OfInteger mults_U(1,4); // as we are in the periodic case, the mults must 	
-								      // maybe be adapted...(!)
+TColStd_Array1OfInteger mults_U(1,4); // we are in the periodic case
 mults_U.SetValue(1,2);                
 mults_U.SetValue(2,2);
 mults_U.SetValue(3,2);
@@ -1743,6 +1582,8 @@ Handle(Geom_BSplineSurface) half_sl_surface
 // write upper_hl_surface to file:
 writeGeomEntityToStepFile(half_sl_surface, "half_sl_surface.stp");
 
+
+
 // create a solid of the wing:
 // create faces of the four wing surfaces:
 TopoDS_Face face_upper_wing = BRepBuilderAPI_MakeFace(upper_wing_surface, 1e1);
@@ -1822,11 +1663,22 @@ std::cout << "end of wing fuselage configuration modelling" << std::endl;
  
 std::cout << "start to model box with sphere cutouts" << std::endl;
 
-// create points
+// create points (corner points of a rectangle of width rect_width and hight rect_hight):
 gp_Pnt o_corner1(0, 0, 0);
-gp_Pnt o_corner2(0, 1, 0);
-gp_Pnt o_corner3(0, 1, 1);
-gp_Pnt o_corner4(0, 0, 1);
+
+gp_Vec vec_y {0.0, 1.0, 0.0};
+
+double rect_width {2.0}; //// //// //// //// usecase parameter
+
+gp_Pnt o_corner2 = geoml::move(o_corner1, vec_y, rect_width);
+
+gp_Vec vec_z {0.0, 0.0, 1.0};
+
+double rect_hight {3.0}; //// //// //// //// usecase parameter
+
+gp_Pnt o_corner3 = geoml::move(o_corner2, vec_z, rect_hight);
+
+gp_Pnt o_corner4 = geoml::move(o_corner1, vec_z, rect_hight);
 
 // define a surface defined by 4 points:
 std::vector <gp_Pnt> o_corner_points{o_corner1, o_corner2, o_corner3, o_corner4};
@@ -1945,7 +1797,6 @@ TopoDS_Shape final_shape = sphere_cutter.Shape();
 // write final_shape to disk:
 writeGeomEntityToStepFile(final_shape, "final_shape.stp");
 
-*/
 
 std::cout << "end of main function" << std::endl;
 

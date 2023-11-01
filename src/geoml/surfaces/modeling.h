@@ -78,7 +78,6 @@ revolving_surface(const Handle(Geom_BSplineCurve)& profile_curve,
  * //@param U_periodic Boolean flag for periodicity in U-direction
  * //@param V_periodic Boolean flag for periodicity in V-direction
  */
-
 GEOML_API_EXPORT Handle(Geom_BSplineSurface)
 b_spline_surface(const TColgp_Array2OfPnt &control_points, 
                  const TColStd_Array2OfReal &weights, 
@@ -89,7 +88,19 @@ b_spline_surface(const TColgp_Array2OfPnt &control_points,
                  const Standard_Integer U_degree, 
                  const Standard_Integer V_degree, 
                  const Standard_Boolean U_periodic=Standard_False, 
-                 const Standard_Boolean V_periodic=Standard_False); 
+                 const Standard_Boolean V_periodic=Standard_False);
+/*GEOML_API_EXPORT Handle(Geom_BSplineSurface)
+b_spline_surface(const std::vector< std::vector<gp_Pnt> > & control_points, 
+                 const std::vector< std::vector<double> >  & weights, 
+                 const std::vector<double> & U_knots, 
+                 const std::vector<double> & V_knots, 
+                 const std::vector<int> & U_mults, 
+                 const std::vector<int>  & V_mults, 
+                 const Standard_Integer U_degree, 
+                 const Standard_Integer V_degree, 
+                 const Standard_Boolean U_periodic=Standard_False, 
+                 const Standard_Boolean V_periodic=Standard_False);*/                
+
 
 /**
  * @brief Create a surface from 4 points
@@ -98,8 +109,7 @@ b_spline_surface(const TColgp_Array2OfPnt &control_points,
  */
 
 GEOML_API_EXPORT Handle(Geom_BSplineSurface)
-surface_from_4_points (const std::vector<gp_Pnt> & points); 
-
-                                     
+surface_from_4_points (const std::vector<gp_Pnt> & points);
+ 
 
 } // namespace geoml

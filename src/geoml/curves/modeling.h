@@ -26,6 +26,13 @@ namespace geoml
 GEOML_API_EXPORT Handle(Geom_BSplineCurve)
 interpolate_points_to_b_spline_curve(const Handle(TColgp_HArray1OfPnt) & points);
 
+/**
+ * @brief Interpolates points to a B-spline curve
+ * 
+ * @param points Multiple points that will be interpolated
+ */
+GEOML_API_EXPORT Handle(Geom_BSplineCurve)
+interpolate_points_to_b_spline_curve(const std::vector<gp_Pnt> & points);
 
 /**
  * @brief Define a B-spline curve by setting the control points, the weights, the degree,
@@ -40,7 +47,7 @@ interpolate_points_to_b_spline_curve(const Handle(TColgp_HArray1OfPnt) & points)
  * @param periodic ### to do: understand this better! Test it ###
  * @param check ### to do: test this ####
  */
-GEOML_API_EXPORT Handle(Geom_BSplineCurve)
+/*GEOML_API_EXPORT Handle(Geom_BSplineCurve)
 b_spline_curve(
     const std::vector<gp_Pnt> & control_points, 
     const std::vector<double> & weights,
@@ -48,8 +55,7 @@ b_spline_curve(
     const std::vector<int> & multiplicities,
     const int degree, 
     const bool periodic = false, 
-    const bool checkRational = false);
- /*
+    const bool checkRational = false);*/
 GEOML_API_EXPORT Handle(Geom_BSplineCurve)
 b_spline_curve(
     const TColgp_Array1OfPnt & control_points, 
@@ -59,6 +65,6 @@ b_spline_curve(
     const int degree, 
     const bool periodic = false, 
     const bool checkRational = false);
-*/
+
 
 } // namespace geoml

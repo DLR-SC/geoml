@@ -10,15 +10,16 @@
 #include "STEPControl_Writer.hxx"
 #include <BRepBuilderAPI_MakeFace.hxx>
 #include <Geom_BSplineSurface.hxx>
+#include <GeomConvert.hxx>
+#include <BRepAlgoAPI_Fuse.hxx>
+
 
 #include <iostream>
 
 namespace geoml {
 
 TColgp_Array2OfPnt
-extract_control_points_surface(
-
-    const Handle(Geom_BSplineSurface)& b_spline_surface)
+extract_control_points_surface(const Handle(Geom_BSplineSurface)& b_spline_surface)
 {
     TColgp_Array2OfPnt control_points = b_spline_surface->Poles();
 
@@ -26,18 +27,16 @@ extract_control_points_surface(
 }
  
 
-//TColgp_Array1OfPnt 
-std::vector<gp_Pnt> 
+TColgp_Array1OfPnt  
 extract_control_point_column_row (const Handle(Geom_BSplineSurface)& b_spline_surface, 
-
-                                  int UV_direction, int index)
+                                                         int UV_direction, int index)
 {
     //if ( UV_direction != 1 || UV_direction != 2)
         //throw error message
     // if( index < 1 || index > ...)
         //throw error message
 
-    TColgp_Array2OfPnt cp_net = b_spline_surface->Poles();
+    /*TColgp_Array2OfPnt cp_net = b_spline_surface->Poles();
     std::vector<gp_Pnt> point_vector;
 
     if (UV_direction == 1)
@@ -57,8 +56,34 @@ extract_control_point_column_row (const Handle(Geom_BSplineSurface)& b_spline_su
         }
 
         return point_vector; 
-    }   
+    }*/
+
+    TColgp_Array2OfPnt cp_net = b_spline_surface->Poles();
+
+    if (UV_direction == 1)
+    {    
+        TColgp_Array1OfPnt cp_column(1, cp_net.ColLength());
+        
+        for(int i = 1; i <= cp_net.ColLength(); ++i)
+        {
+            cp_column.SetValue(i, cp_net.Value(i, index));
+        }
+
+        return cp_column;
+
+    } else if (UV_direction == 2)
+    {
+        TColgp_Array1OfPnt cp_column(1, cp_net.RowLength());
+        
+        for(int i = 1; i <= cp_net.RowLength(); ++i)
+        {
+            cp_column.SetValue(i, cp_net.Value(index, i));
+        }
+
+        return cp_column;        
+    }
 }                            
+
 
 TColgp_Array1OfPnt 
 move (const TColgp_Array1OfPnt& points, gp_Vec direction, double factor)
@@ -97,11 +122,32 @@ move (const Handle(TColgp_HArray1OfPnt)& points, gp_Vec direction, double factor
         gp_Pnt moved_point( (points->Value(i)).X() + factor * direction.X(),
                             (points->Value(i)).Y() + factor * direction.Y(),
                             (points->Value(i)).Z() + factor * direction.Z() );
+
         my_array->SetValue(i, moved_point);
     }   
 
     return my_array;
 }
+
+std::vector<gp_Pnt> 
+move (const std::vector<gp_Pnt> & points, gp_Vec direction, double factor)
+{
+    //Handle(TColgp_HArray1OfPnt) my_array = new TColgp_HArray1OfPnt(1,points->Length());
+    std::vector<gp_Pnt> point_vector;
+
+    for (int i = 0; i < points.size(); ++i)
+    {
+        gp_Pnt moved_point( (points.at(i)).X() + factor * direction.X(),
+                            (points.at(i)).Y() + factor * direction.Y(),
+                            (points.at(i)).Z() + factor * direction.Z() );
+
+        point_vector.push_back(moved_point);
+    }   
+
+    return point_vector;    
+}
+
+
 
 TopoDS_Shape moved(TopoDS_Shape const& origin, gp_Vec const& direction, double factor)
 {
@@ -243,12 +289,16 @@ void writeGeomEntityToStepFile(Handle_Geom_BSplineSurface surface, std::string f
 	return;    
 }
 
-void writeGeomEntityToStepFile(const TopoDS_Shape& my_shape, std::string fileName)
+int writeGeomEntityToStepFile(const TopoDS_Shape& my_shape, std::string fileName)
 {
     STEPControl_Writer writer;
     writer.Transfer(my_shape,STEPControl_AsIs);
     writer.Write(fileName.c_str());
+
+    return 0;
 }
+
+//////////////////////////////////////
 
 TopoDS_Face make_face (const Handle_Geom_BSplineSurface & surface)
 {
@@ -256,6 +306,63 @@ TopoDS_Face make_face (const Handle_Geom_BSplineSurface & surface)
    return face_tmp;
 }
 
+int test_func (const std::vector< std::vector<gp_Pnt> > & control_points)
+{
+    int length_row = control_points.at(0).size();
+    return length_row;
+}
+
+Handle(Geom_Curve) convert_to_geom_curve(const Handle(Geom_TrimmedCurve)& trimmed_curve)
+{
+    return trimmed_curve->BasisCurve();
+}
+
+Handle(Geom_BSplineCurve) geom_convert_from_trimmed_curve(const Handle(Geom_TrimmedCurve)& trimmed_curve)
+{
+    Handle(Geom_BSplineCurve) b_spline_curve = GeomConvert::CurveToBSplineCurve(trimmed_curve);
+    return b_spline_curve;
+}
+
+gp_Pnt vector_of_points_at_index (const std::vector<gp_Pnt> & points, int index)
+{
+    return points.at(index);
+}
+
+std::vector<Handle(Geom_Curve)> vector_b_spline_to_geom_curve_converter (const std::vector<Handle(Geom_BSplineCurve)> input_vec)
+{
+    std::vector<Handle(Geom_Curve)> tmp_vec;
+
+    for(int i = 0; i < input_vec.size(); ++i)
+    {
+        tmp_vec.push_back(input_vec.at(i));
+    } 
+    
+    return tmp_vec;
+}
+
+Handle(Geom_Curve) convert_to_geom_curve(const Handle(Geom_BSplineCurve)& bspline_curve)
+{
+    Handle(Geom_Curve) tmp_curve;
+    tmp_curve = bspline_curve;
+
+    return tmp_curve;
+}
+
+Handle(Geom_Surface) convert_to_geom_surface(const Handle(Geom_BSplineSurface)& bspline_surface)
+{
+    Handle(Geom_Surface) tmp_surface;
+    tmp_surface = bspline_surface;
+
+    return tmp_surface;
+}
+
+TopoDS_Shape fuse_two_solids (const TopoDS_Solid & solid_1, const TopoDS_Solid & solid_2)
+{
+    BRepAlgoAPI_Fuse fuser (solid_1, solid_2);
+    fuser.Build();
+
+    return fuser.Shape();
+}
 
 
 } // namespace geoml
