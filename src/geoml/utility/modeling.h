@@ -180,4 +180,14 @@ TopoDS_Shape remove_faces_from_shape (const TopoDS_Shape & shape, const std::vec
 
 TopoDS_Shape extrude_surface (const Handle(Geom_BSplineSurface) & surface, const gp_Vec & extrusion_vector);
 
+TopoDS_Shape sphere (const gp_Pnt & center, double radius);
+
+TopoDS_Shape make_compound ( const std::vector<TopoDS_Shape> & shapes);
+
+TopoDS_Shape cut_away ( const TopoDS_Shape & original_shape, const TopoDS_Shape & cutting_tool_shape);
+
+TopoDS_Shell make_shell(TopoDS_Shape const& shape);
+
+TopoDS_Shell remove_faces(TopoDS_Shell const& shell, std::vector<TopoDS_Face> const& faces);
+
 } // namespace geoml

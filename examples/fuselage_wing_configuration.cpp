@@ -6,6 +6,8 @@
 #include <geoml/surfaces/modeling.h>
 #include <geoml/utility/modeling.h>
 
+#include <geoml/internal/common/CommonFunctions.h>
+
 
 #include <gp_Pnt.hxx>
 #include <TColgp_HArray1OfPnt.hxx>
@@ -78,6 +80,8 @@
 #include <BRepPrimAPI_MakeSphere.hxx>
 #include <initializer_list>
 #include <TopoDS_Compound.hxx>
+#include <BRepTools_Modification.hxx>
+#include <BOPAlgo_RemoveFeatures.hxx>
 
 
 // define a function that writes curves to step files:
@@ -1693,7 +1697,10 @@ writeGeomEntityToStepFile(o_four_point_srf, "o_four_point_srf.stp");
 
 // define the extrusion direction:
 gp_Vec extr_dir(1.0, 0.0, 0.0);
-gp_Vec extr_vec = geoml::scale_vector(extr_dir, 10.0);
+
+double box_length {10.0};
+
+gp_Vec extr_vec = geoml::scale_vector(extr_dir, box_length);
 
 // create the extrusion:
 TopoDS_Face o_four_point_srf_shape = BRepBuilderAPI_MakeFace(o_four_point_srf, 1e-1);
@@ -1705,48 +1712,8 @@ TopoDS_Shape o_extruded_shape = o_extrusion.Shape();
 // write extruded_shape to file:
 writeGeomEntityToStepFile(o_extruded_shape, "o_extruded_shape.stp");
 
-// create the inner surface of the box:
-
-double thickness (0.1);
-
-// create points
-gp_Pnt i_corner1(0, o_corner1.Y() + thickness, o_corner1.Z() + thickness);
-gp_Pnt i_corner2(0, o_corner2.Y() - thickness, o_corner2.Z() + thickness);
-gp_Pnt i_corner3(0, o_corner3.Y() - thickness, o_corner3.Z() - thickness);
-gp_Pnt i_corner4(0, o_corner4.Y() + thickness, o_corner4.Z() - thickness);
-
-// define a surface by 4 points:
-std::vector <gp_Pnt> i_corner_points{i_corner1, i_corner2, i_corner3, i_corner4};
-
-Handle(Geom_BSplineSurface) i_four_point_srf 
-	= geoml::surface_from_4_points (i_corner_points);
-
-// write four_point_srf to file:
-writeGeomEntityToStepFile(i_four_point_srf, "i_four_point_srf.stp");
-
-// now, extrude this surface:
-
-// create the extrusion:
-TopoDS_Face i_four_point_srf_shape = BRepBuilderAPI_MakeFace(i_four_point_srf, 1e-1);
-
-BRepPrimAPI_MakePrism i_extrusion (i_four_point_srf_shape, extr_vec);
-
-TopoDS_Shape i_extruded_shape = i_extrusion.Shape();
-
-// write extruded_shape to file:
-writeGeomEntityToStepFile(i_extruded_shape, "i_extruded_shape.stp");
-
-// curout:
-BRepAlgoAPI_Cut cutter(o_extruded_shape, i_extruded_shape);
-cutter.Build();
-TopoDS_Shape result_cut_box = cutter.Shape();
-
-// write result_cut_box to disk:
-writeGeomEntityToStepFile(result_cut_box, "result_cut_box.stp");
-
 // now, position spheres to create cutouts later:
-
-double sphere_position (3.0);
+double sphere_position (3.0); //// //// //// //// usecase parameter
 
 gp_Pnt center_1 = geoml::move(o_corner1, extr_dir, sphere_position);
 gp_Pnt center_2 = geoml::move(o_corner2, extr_dir, sphere_position);
@@ -1754,7 +1721,7 @@ gp_Pnt center_3 = geoml::move(o_corner3, extr_dir, sphere_position);
 gp_Pnt center_4 = geoml::move(o_corner4, extr_dir, sphere_position);
 
 // now, create the spheres:
-double sphere_radius (0.2);
+double sphere_radius (0.2); //// //// //// //// usecase parameter
 
 BRepPrimAPI_MakeSphere sphere_1(center_1, sphere_radius);
 BRepPrimAPI_MakeSphere sphere_2(center_2, sphere_radius);
@@ -1766,7 +1733,7 @@ TopoDS_Shape sphere_shape_2 = sphere_2.Shape();
 TopoDS_Shape sphere_shape_3 = sphere_3.Shape();
 TopoDS_Shape sphere_shape_4 = sphere_4.Shape();
 
-// write result_cut_box to disk:
+// write spheres to disk:
 writeGeomEntityToStepFile(sphere_shape_1, "sphere_shape_1.stp");
 writeGeomEntityToStepFile(sphere_shape_2, "sphere_shape_2.stp");
 writeGeomEntityToStepFile(sphere_shape_3, "sphere_shape_3.stp");
@@ -1776,7 +1743,7 @@ writeGeomEntityToStepFile(sphere_shape_4, "sphere_shape_4.stp");
 std::initializer_list<int> index_list {1,2,5,8};
 
 
-TopoDS_Shape rounded_box = geoml::make_fillet(result_cut_box, index_list, 0.05);
+TopoDS_Shape rounded_box = geoml::make_fillet(o_extruded_shape, index_list, 0.05);
 
 // write rounded_box to disk:
 writeGeomEntityToStepFile(rounded_box, "rounded_box.stp");
@@ -1792,10 +1759,85 @@ final_builder.Add(sphere_compound, sphere_shape_4);
 
 BRepAlgoAPI_Cut sphere_cutter(rounded_box, sphere_compound); 
 
-TopoDS_Shape final_shape = sphere_cutter.Shape();
+TopoDS_Shape cut_shape = sphere_cutter.Shape();
+
+// write cut_shape to disk:
+writeGeomEntityToStepFile(cut_shape, "cut_shape.stp");
+
+// delete faces in the front and in the rear to get a shell:
+//std::vector<int> face_indices_for_removal {2}; // 2,6 
+
+
+
+// extract boundary as shell
+auto shell_prelim = geoml::make_shell(cut_shape);
+
+// remove faces from shell (indices found by trial and error)
+std::vector<TopoDS_Face> exclude_faces{
+	GetFace(cut_shape, 1), 
+	GetFace(cut_shape, 5)
+};
+auto shell = geoml::remove_faces(shell_prelim, exclude_faces);
+	
+
+
 
 // write final_shape to disk:
-writeGeomEntityToStepFile(final_shape, "final_shape.stp");
+	writeGeomEntityToStepFile(shell, "final_shape.stp");
+
+//TopoDS_Shape final_shape = geoml::remove_faces_from_shape(cut_shape, face_indices_for_removal);
+
+   /* TopoDS_Shape tmp_shape = cut_shape;
+    TopTools_IndexedMapOfShape face_map;
+    TopExp::MapShapes(tmp_shape, TopAbs_FACE, face_map);
+    TopoDS_Compound compound;
+    BRep_Builder builder;
+    builder.MakeCompound(compound);
+
+    for (int face_index: face_indices_for_removal)
+    {
+         TopoDS_Face  selected_face = TopoDS::Face(face_map(face_index)); 
+         builder.Add(compound, selected_face);        
+    }
+
+    BRepAlgoAPI_Cut cutter(tmp_shape, compound); */
+
+    //TopoDS_Shape result_shape_end = cutter.Shape();
+
+// // // // // 
+/*
+TopoDS_Face  test_face = TopoDS::Face(face_map(2)); 
+
+    TopoDS_Shape modifiedShape = cut_shape;
+
+    BRepTools_Modification modifier(modifiedShape);
+
+    modifier.Remove(test_face);
+
+     
+
+    TopoDS_Shape result_shape_end = modifiedShape;*/
+
+/*TopTools_IndexedMapOfShape face_map;
+ TopExp::MapShapes(cut_shape, TopAbs_FACE, face_map);
+
+TopoDS_Face  test_face = TopoDS::Face(face_map(2)); 
+BOPAlgo_RemoveFeatures remover;
+remover.SetShape(cut_shape);
+remover.AddFaceToRemove(test_face);
+remover.Perform();
+TopoDS_Shape result_shape_end = remover.Shape();*/
+
+
+
+
+
+// write final_shape to disk:
+//writeGeomEntityToStepFile(result_shape_end, "final_shape.stp");
+
+
+
+
 
 
 std::cout << "end of main function" << std::endl;

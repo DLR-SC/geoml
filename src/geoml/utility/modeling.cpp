@@ -16,6 +16,8 @@
 #include <BRepAlgoAPI_Cut.hxx>
 #include <TopoDS_Compound.hxx>
 #include <BRepPrimAPI_MakePrism.hxx>
+#include <BRepPrimAPI_MakeSphere.hxx>
+#include <algorithm>
 
 
 #include <iostream>
@@ -401,6 +403,68 @@ TopoDS_Shape extrude_surface (const Handle(Geom_BSplineSurface) & surface, const
     TopoDS_Shape extruded_shape = extrusion.Shape();
 
     return extruded_shape;
+}
+
+TopoDS_Shape sphere (const gp_Pnt & center, double radius)
+{
+    BRepPrimAPI_MakeSphere sphere(center, radius);
+    TopoDS_Shape sphere_shape = sphere.Shape();
+
+    return sphere_shape;
+}
+
+TopoDS_Shape make_compound (const std::vector<TopoDS_Shape> & shapes)
+{
+    TopoDS_Compound compound;  
+    BRep_Builder builder;
+    builder.MakeCompound(compound);
+
+    for (auto shape: shapes)
+    {
+        builder.Add(compound, shape);
+    }
+
+    return compound;
+}
+
+TopoDS_Shape cut_away ( const TopoDS_Shape & original_shape, const TopoDS_Shape & cutting_tool_shape)
+{
+    BRepAlgoAPI_Cut cutter(original_shape, cutting_tool_shape); 
+    TopoDS_Shape cut_shape = cutter.Shape();
+
+    return cut_shape;
+}
+
+TopoDS_Shell make_shell(TopoDS_Shape const& shape){
+    BRep_Builder b;
+    TopoDS_Shell s;
+    b.MakeShell(s);
+    TopExp_Explorer exp;
+    for (exp.Init(shape, TopAbs_FACE); exp.More(); exp.Next()) {
+        TopoDS_Face f = TopoDS::Face(exp.Current());
+        b.Add(s, f);
+    }
+    return s;
+}
+
+TopoDS_Shell remove_faces(TopoDS_Shell const& shell, std::vector<TopoDS_Face> const& faces)
+{
+    BRep_Builder b;
+    TopoDS_Shell s;
+    b.MakeShell(s);
+    TopExp_Explorer exp;
+    for (exp.Init(shell, TopAbs_FACE); exp.More(); exp.Next()) {
+        TopoDS_Face f = TopoDS::Face(exp.Current());
+        auto it = std::find_if(
+            faces.begin(), 
+            faces.end(), 
+            [&f](auto const& excl_face){ return excl_face.IsSame(f); }
+        );
+        if (it == faces.end()) {
+            b.Add(s, f);
+        }
+    }
+    return s;
 }
 
 
