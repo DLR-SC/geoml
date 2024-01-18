@@ -146,7 +146,7 @@ int main(){
 // define profile curve for the revolving surface (cylinder):
 
 // control points:
-gp_Pnt start_point_profile(7000., 0., 2000.); // original: z = 2000
+gp_Pnt start_point_profile(7000., 0., 2000.); // default, original: z = 2000
 gp_Pnt end_point_profile(23000., 0., 2000.);  //
 
 TColgp_Array1OfPnt profile_points_cylinder(1,2);
@@ -607,10 +607,10 @@ i_u_profile_curve_points_initial->SetValue(20, i_u_pc_22);
 
 // introduce a move in y direction parameter
 // define the direction vector:
-gp_Vec move_vec_i_wing (0.0, 1.0, 0.0);
+gp_Vec move_vec_i_wing (0.0, 1.0, 0.0); // default: (0.0, 1.0, 0.0)
 
 // define the factor multiplied to this vector for the first move:
-double move_factor_i_wing (1500.0);
+double move_factor_i_wing (1500.0); // default: 1500
 
 // move the control points cp_column (for the periodic case):
 Handle(TColgp_HArray1OfPnt) i_u_profile_curve_points
@@ -727,10 +727,10 @@ o_u_profile_curve_points_initial->SetValue(20, o_u_pc_22);
 
 // introduce a move in y direction parameter
 // define the direction vector:
-gp_Vec move_vec_o_wing (0.0, 1.0, 0.0);
+gp_Vec move_vec_o_wing (1.0, 0.0, 0.0); //default: (0.0, 1.0, 0.0)
 
 // define the factor multiplied to this vector for the first move:
-double move_factor_o_wing (-1500.0);
+double move_factor_o_wing (3000.0); //default: -1500.0
 
 // move the control points 
 Handle(TColgp_HArray1OfPnt) o_u_profile_curve_points
