@@ -10,7 +10,8 @@
 #include <Geom_Curve.hxx>
 #include "BRepBuilderAPI_MakeEdge.hxx"
 #include <TopoDS_Shape.hxx>
-#include "STEPControl_Writer.hxx"
+#include <GeomAdaptor_Curve.hxx>
+#include <GCPnts_AbscissaPoint.hxx>
 
 TEST(SimpleCurveTest, closed_unclamped_nurbs_curve)
 {    
@@ -151,35 +152,126 @@ Handle(Geom_BSplineCurve) curve =
         mults, 
         degree);
 
-    EXPECT_NEAR(
-        curve->StartPoint().X(), 
-        p1.X(), 
-        1e-5);
+EXPECT_NEAR(
+    curve->StartPoint().X(), 
+    p1.X(), 
+    1e-5);
 
-    EXPECT_NEAR(
-        curve->StartPoint().Y(), 
-        p1.Y(), 
-        1e-5);
-    
-    EXPECT_NEAR(
-        curve->StartPoint().Z(), 
-        p1.Z(), 
-        1e-5);
+EXPECT_NEAR(
+    curve->StartPoint().Y(), 
+    p1.Y(), 
+    1e-5);
 
-    EXPECT_NEAR(
-        curve->EndPoint().X(), 
-        p5.X(), 
-        1e-5);
+EXPECT_NEAR(
+    curve->StartPoint().Z(), 
+    p1.Z(), 
+    1e-5);
 
-    EXPECT_NEAR(
-        curve->EndPoint().Y(), 
-        p5.Y(), 
-        1e-5);
-    
-    EXPECT_NEAR(
-        curve->EndPoint().Z(), 
-        p5.Z(), 
-        1e-5);
+EXPECT_NEAR(
+    curve->EndPoint().X(), 
+    p5.X(), 
+    1e-5);
+
+EXPECT_NEAR(
+    curve->EndPoint().Y(), 
+    p5.Y(), 
+    1e-5);
+
+EXPECT_NEAR(
+    curve->EndPoint().Z(), 
+    p5.Z(), 
+    1e-5);
 
 }
+
+TEST(SimpleCurveTest, circle_rational_bspline_three_arcs)
+{
+
+// define a circle via a rational B-spline curve
+// of degree 2:
+
+// control points
+gp_Pnt p_1(0.0, 0.0, 2.0);
+gp_Pnt p_2(0.0, 3.464, 2.0);
+gp_Pnt p_3(0.0, 1.732, -1.0);
+gp_Pnt p_4(0.0, 0.0, -4.0);
+gp_Pnt p_5(0.0, -1.732, -1.0);
+gp_Pnt p_6(0.0, -3.464, 2.0);
+gp_Pnt p_7(0.0, 0.0, 2.0);
+
+TColgp_Array1OfPnt control_points(1,7);
+
+control_points.SetValue(1,p_1);
+control_points.SetValue(2,p_2);
+control_points.SetValue(3,p_3);
+control_points.SetValue(4,p_4);
+control_points.SetValue(5,p_5);  
+control_points.SetValue(6,p_6);
+control_points.SetValue(7,p_7);  
+  
+// degree:
+Standard_Integer degree = 2;
+
+// weights:
+TColStd_Array1OfReal weights(1, 7);
+weights.SetValue(1, 1.0);  
+weights.SetValue(2, 0.5);  
+weights.SetValue(3, 1.0);  
+weights.SetValue(4, 0.5);
+weights.SetValue(5, 1.0);
+weights.SetValue(6, 0.5);
+weights.SetValue(7, 1.0);
+
+// knots: (we need 10 knots (including their multiplicities), which follows from "#knots = #control_points + degree + 1"
+TColStd_Array1OfReal knots(1,4); 
+knots.SetValue(1,0.0);           
+knots.SetValue(2,1.0);
+knots.SetValue(3,2.0);
+knots.SetValue(4,3.0);
+
+// multiplicities: 
+TColStd_Array1OfInteger mults(1,4); 
+mults.SetValue(1,3);                
+mults.SetValue(2,2);
+mults.SetValue(3,2);
+mults.SetValue(4,3);
+
+Handle(Geom_BSplineCurve) curve =
+    geoml::nurbs_curve(
+        control_points, 
+        weights, 
+        knots, 
+        mults, 
+        degree);
+
+// get the length of the curve
+Standard_Real umin = curve->FirstParameter();
+Standard_Real umax = curve->LastParameter();
+GeomAdaptor_Curve adaptorCurve(curve, umin, umax);
+Standard_Real length = GCPnts_AbscissaPoint::Length(adaptorCurve, umin, umax);
+
+// Expect the circumference of the circle.
+EXPECT_NEAR(length, 12.566, 1e-3);
+EXPECT_EQ(curve->NbPoles(), 7);
+EXPECT_EQ(curve->NbKnots(), 4); // note, the number of knots OCC gives is not counting the multiplicities of the knots!
+EXPECT_FALSE(curve->IsPeriodic());
+
+EXPECT_EQ(curve->Multiplicity(1), 3);
+EXPECT_EQ(curve->Multiplicity(2), 2);
+EXPECT_EQ(curve->Multiplicity(3), 2);
+EXPECT_EQ(curve->Multiplicity(4), 3);
+
+curve->SetPeriodic();
+
+EXPECT_TRUE(curve->IsPeriodic());
+EXPECT_EQ(curve->NbPoles(), 6); // the number of control point differs from the curve before envoking SetPeriodic() 
+EXPECT_EQ(curve->NbKnots(), 4);
+
+EXPECT_EQ(curve->Multiplicity(1), 2); // the multiplicities differ, too. 
+EXPECT_EQ(curve->Multiplicity(2), 2);
+EXPECT_EQ(curve->Multiplicity(3), 2);
+EXPECT_EQ(curve->Multiplicity(4), 2);
+
+}
+
 
