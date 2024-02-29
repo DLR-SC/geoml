@@ -12,19 +12,6 @@
 #include <TopoDS_Shape.hxx>
 #include "STEPControl_Writer.hxx"
 
-// define a function that writes curves to step files:
-void writeToStp(Handle_Geom_Curve cur, std::string const& name_file)
-{
-BRepBuilderAPI_MakeEdge edgeMaker;
-edgeMaker.Init(cur);
-TopoDS_Shape edge = edgeMaker.Shape();
-
-STEPControl_Writer aStepWriter;
-aStepWriter.Transfer(edge,STEPControl_AsIs);
-aStepWriter.Write(name_file.c_str());
-} 
-
-
 TEST(SimpleCurveTest, closed_unclamped_nurbs_curve)
 {    
 
@@ -194,6 +181,5 @@ Handle(Geom_BSplineCurve) curve =
         p5.Z(), 
         1e-5);
 
-    writeToStp(curve, "clamped_Nurbs.stp");
 }
 
