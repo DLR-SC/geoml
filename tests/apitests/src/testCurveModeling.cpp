@@ -1,7 +1,5 @@
 #include <geoml/curves/modeling.h>
 
-#include <CommonFunctions.h>
-
 #include <gtest/gtest.h>
 
 #include <gp_Pnt.hxx>
@@ -29,47 +27,21 @@ gp_Pnt p_3(0.0, 2.0, -1.0);
 gp_Pnt p_4(0.0, 0.0, 0.0);
 gp_Pnt p_5(0.0, 1.0, 2.0);
 
-TColgp_Array1OfPnt control_points(1,5);
-
-control_points.SetValue(1,p_1);
-control_points.SetValue(2,p_2);
-control_points.SetValue(3,p_3);
-control_points.SetValue(4,p_4);
-control_points.SetValue(5,p_5);
+std::vector<gp_Pnt> control_points {p_1,p_2,p_3,p_4,p_5};
 
 // degree:
 Standard_Integer degree = 2;
 
 // weights (non-rational):
-TColStd_Array1OfReal weights(1, 5);
-weights.SetValue(1, 1.0);  
-weights.SetValue(2, 1.0);  
-weights.SetValue(3, 1.0);  
-weights.SetValue(4, 1.0);
-weights.SetValue(5, 1.0);
+std::vector<double> weights (5,1.0);
 
 // knots: note: as the number of knots (m+1), the number of control points (p+1) and the degree p
 // are related by m = n + p +1, the number of knots has to be 8 in this case.
-TColStd_Array1OfReal knots(1,8); 
-knots.SetValue(1,0.0);           
-knots.SetValue(2,1.0);
-knots.SetValue(3,2.0);
-knots.SetValue(4,3.0);           
-knots.SetValue(5,4.0);
-knots.SetValue(6,5.0);
-knots.SetValue(7,6.0);           
-knots.SetValue(8,7.0);
+
+std::vector<double> knots {0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0};
 
 // multiplicities: 
-TColStd_Array1OfInteger mults(1,8); 
-mults.SetValue(1,1);               
-mults.SetValue(2,1);
-mults.SetValue(3,1);
-mults.SetValue(4,1);
-mults.SetValue(5,1);
-mults.SetValue(6,1);
-mults.SetValue(7,1);
-mults.SetValue(8,1);
+std::vector<int> mults(8,1);
 
 Handle(Geom_BSplineCurve) curve =
     geoml::nurbs_curve(
@@ -111,40 +83,22 @@ gp_Pnt p3(0.0, 2.0, -1.0);
 gp_Pnt p4(1.0, 0.0, 3.0);
 gp_Pnt p5(0.0, 4.0, 0.0);
 
-TColgp_Array1OfPnt control_points(1,5);
-
-control_points.SetValue(1,p1);
-control_points.SetValue(2,p2);
-control_points.SetValue(3,p3);
-control_points.SetValue(4,p4);
-control_points.SetValue(5,p5);  
+std::vector<gp_Pnt> control_points {p1, p2, p3, p4, p5};
 
 // degree:
 Standard_Integer degree = 2;
 
 // weights:
-TColStd_Array1OfReal weights(1, 5);
-weights.SetValue(1, 1.0);  
-weights.SetValue(2, 1.0);  
-weights.SetValue(3, 1.0);  
-weights.SetValue(4, 1.0);
-weights.SetValue(5, 1.0);
+std::vector<double> weights(5,1.0);
 
 // knots: note: as the number of knots (m+1), the number of control points (p+1) and the degree p
 // are related by m = n + p +1, the number of knots has to be 8 in this case. To achive this, in the following the
 // first and the last knot have to appear trice (have multiplicity of 3)
-TColStd_Array1OfReal knots(1,4); 
-knots.SetValue(1,0.0);           
-knots.SetValue(2,1.0);
-knots.SetValue(3,2.0);
-knots.SetValue(4,3.0);
+
+std::vector<double> knots{0.0, 1.0, 2.0, 3.0};
 
 // multiplicities: 
-TColStd_Array1OfInteger mults(1,4); 
-mults.SetValue(1,3);                
-mults.SetValue(2,1);
-mults.SetValue(3,1);
-mults.SetValue(4,3);
+std::vector<int> mults {3, 1, 1, 3};
 
 Handle(Geom_BSplineCurve) curve =
     geoml::nurbs_curve(
@@ -201,42 +155,19 @@ gp_Pnt p_5(0.0, -1.732, -1.0);
 gp_Pnt p_6(0.0, -3.464, 2.0);
 gp_Pnt p_7(0.0, 0.0, 2.0);
 
-TColgp_Array1OfPnt control_points(1,7);
-
-control_points.SetValue(1,p_1);
-control_points.SetValue(2,p_2);
-control_points.SetValue(3,p_3);
-control_points.SetValue(4,p_4);
-control_points.SetValue(5,p_5);  
-control_points.SetValue(6,p_6);
-control_points.SetValue(7,p_7);  
+std::vector<gp_Pnt> control_points {p_1, p_2, p_3, p_4, p_5, p_6, p_7};
   
 // degree:
 Standard_Integer degree = 2;
 
 // weights:
-TColStd_Array1OfReal weights(1, 7);
-weights.SetValue(1, 1.0);  
-weights.SetValue(2, 0.5);  
-weights.SetValue(3, 1.0);  
-weights.SetValue(4, 0.5);
-weights.SetValue(5, 1.0);
-weights.SetValue(6, 0.5);
-weights.SetValue(7, 1.0);
+std::vector<double> weights {1.0, 0.5, 1.0, 0.5, 1.0, 0.5, 1.0};
 
 // knots: (we need 10 knots (including their multiplicities), which follows from "#knots = #control_points + degree + 1"
-TColStd_Array1OfReal knots(1,4); 
-knots.SetValue(1,0.0);           
-knots.SetValue(2,1.0);
-knots.SetValue(3,2.0);
-knots.SetValue(4,3.0);
+std::vector<double> knots {0.0, 1.0, 2.0, 3.0};
 
 // multiplicities: 
-TColStd_Array1OfInteger mults(1,4); 
-mults.SetValue(1,3);                
-mults.SetValue(2,2);
-mults.SetValue(3,2);
-mults.SetValue(4,3);
+std::vector<int> mults {3, 2, 2, 3};
 
 Handle(Geom_BSplineCurve) curve =
     geoml::nurbs_curve(
@@ -275,5 +206,6 @@ EXPECT_EQ(curve->Multiplicity(3), 2);
 EXPECT_EQ(curve->Multiplicity(4), 2);
 
 }
+
 
 

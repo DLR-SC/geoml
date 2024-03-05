@@ -34,18 +34,6 @@ namespace geoml
  /*
 GEOML_API_EXPORT Handle(Geom_BSplineCurve)
 nurbs_curve(
-    const TColgp_HArray1OfPnt & control_points, 
-    const TColStd_HArray1OfReal & weights,
-    const TColStd_HArray1OfReal & knots, 
-    const TColStd_HArray1OfInteger & multiplicities,
-    const int degree, 
-    const bool periodic = false, 
-    const bool checkRational = false);
-*/
-
-
-GEOML_API_EXPORT Handle(Geom_BSplineCurve)
-nurbs_curve(
     const std::vector<gp_Pnt> &control_points, 
     const std::vector<double> &weights,
     const std::vector<double> &knots, 

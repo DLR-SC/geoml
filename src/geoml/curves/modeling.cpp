@@ -10,10 +10,6 @@ geoml::nurbs_curve(
     const std::vector<double> &weights,
     const std::vector<double> &knots, 
     const std::vector<int> &multiplicities,
-//    const TColgp_HArray1OfPnt & control_points, 
-//    const TColStd_HArray1OfReal & weights,
-//    const TColStd_HArray1OfReal & knots, 
-//    const TColStd_HArray1OfInteger & multiplicities,
     const int degree, 
     const bool periodic, 
     const bool checkRational)
