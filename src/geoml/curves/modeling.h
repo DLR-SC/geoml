@@ -31,7 +31,6 @@ namespace geoml
  * @param periodic ### to do: understand this better! Test it ###
  * @param check ### to do: test this ####
  */
- /*
 GEOML_API_EXPORT Handle(Geom_BSplineCurve)
 nurbs_curve(
     const std::vector<gp_Pnt> &control_points, 
