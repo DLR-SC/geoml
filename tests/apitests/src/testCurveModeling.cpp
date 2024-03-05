@@ -1,5 +1,7 @@
 #include <geoml/curves/modeling.h>
 
+#include <CommonFunctions.h>
+
 #include <gtest/gtest.h>
 
 #include <gp_Pnt.hxx>

@@ -10,7 +10,9 @@
 #include <TColStd_Array1OfInteger.hxx>
 #include <Geom_BSplineCurve.hxx>
 #include <Geom_Curve.hxx>
+#include <gp_Pnt.hxx>
 
+#include <vector>
 
 
 namespace geoml
@@ -29,15 +31,27 @@ namespace geoml
  * @param periodic ### to do: understand this better! Test it ###
  * @param check ### to do: test this ####
  */
+ /*
 GEOML_API_EXPORT Handle(Geom_BSplineCurve)
 nurbs_curve(
-    const TColgp_Array1OfPnt & control_points, 
-    const TColStd_Array1OfReal & weights,
-    const TColStd_Array1OfReal & knots, 
-    const TColStd_Array1OfInteger & multiplicities,
+    const TColgp_HArray1OfPnt & control_points, 
+    const TColStd_HArray1OfReal & weights,
+    const TColStd_HArray1OfReal & knots, 
+    const TColStd_HArray1OfInteger & multiplicities,
     const int degree, 
     const bool periodic = false, 
     const bool checkRational = false);
+*/
 
+
+GEOML_API_EXPORT Handle(Geom_BSplineCurve)
+nurbs_curve(
+    const std::vector<gp_Pnt> &control_points, 
+    const std::vector<double> &weights,
+    const std::vector<double> &knots, 
+    const std::vector<int> &multiplicities,
+    const int degree, 
+    const bool periodic = false, 
+    const bool checkRational = false);
 
 } // namespace geoml
