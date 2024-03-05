@@ -28,14 +28,13 @@ namespace geoml
  * @param knots The knots of the NURBS curve, knots with multiplicity larger than 1 only noted once 
  * @param multiplicities The multiplicities of the knots
  * @param degree The degree of the NURBS curve
- * @param periodic ### to do: understand this better! Test it ###
- * @param check ### to do: test this ####
+ * @param periodic The periodicity, as it is defined for Open Cascade's Geom_BSplineCurve
  */
 GEOML_API_EXPORT Handle(Geom_BSplineCurve)
 nurbs_curve(
     const std::vector<gp_Pnt> &control_points, 
-    const std::vector<double> &weights,
-    const std::vector<double> &knots, 
+    const std::vector<Standard_Real> &weights,
+    const std::vector<Standard_Real> &knots, 
     const std::vector<int> &multiplicities,
     const int degree, 
     const bool periodic = false);
