@@ -38,7 +38,6 @@ nurbs_curve(
     const std::vector<double> &knots, 
     const std::vector<int> &multiplicities,
     const int degree, 
-    const bool periodic = false, 
-    const bool checkRational = false);
+    const bool periodic = false);
 
 } // namespace geoml

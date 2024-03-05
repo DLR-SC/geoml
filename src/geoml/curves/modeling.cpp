@@ -11,11 +11,10 @@ geoml::nurbs_curve(
     const std::vector<double> &knots, 
     const std::vector<int> &multiplicities,
     const int degree, 
-    const bool periodic, 
-    const bool checkRational)
+    const bool periodic)
 {
     Handle(Geom_BSplineCurve) myCurve 
-        = new Geom_BSplineCurve(*OccArray(control_points), *OccFArray(weights), *OccFArray(knots), *OccIArray(multiplicities), degree, periodic, checkRational);
+        = new Geom_BSplineCurve(*OccArray(control_points), *OccFArray(weights), *OccFArray(knots), *OccIArray(multiplicities), degree, periodic);
     return myCurve; 
 }
 
