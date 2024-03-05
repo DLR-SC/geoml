@@ -13,8 +13,13 @@ geoml::nurbs_curve(
     const int degree, 
     const bool periodic)
 {
+    Handle(TColgp_HArray1OfPnt) my_control_points = OccArray(control_points);
+    Handle(TColStd_HArray1OfReal) my_weights = OccFArray(weights);
+    Handle(TColStd_HArray1OfReal) my_knots = OccFArray(knots);
+    Handle(TColStd_HArray1OfInteger) my_multiplicities = OccIArray(multiplicities);
+
     Handle(Geom_BSplineCurve) myCurve 
-        = new Geom_BSplineCurve(*OccArray(control_points), *OccFArray(weights), *OccFArray(knots), *OccIArray(multiplicities), degree, periodic);
+        = new Geom_BSplineCurve(*my_control_points, *my_weights, *my_knots, *my_multiplicities, degree, periodic);
     return myCurve; 
 }
 
