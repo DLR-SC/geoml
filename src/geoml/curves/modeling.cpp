@@ -4,8 +4,9 @@
 
 #include <CommonFunctions.h>
 
-Handle(Geom_BSplineCurve)
-geoml::nurbs_curve(
+namespace geoml{
+
+Handle(Geom_BSplineCurve) nurbs_curve(
     const std::vector<gp_Pnt> &control_points, 
     const std::vector<Standard_Real> &weights,
     const std::vector<Standard_Real> &knots, 
@@ -22,4 +23,6 @@ geoml::nurbs_curve(
         = new Geom_BSplineCurve(*my_control_points, *my_weights, *my_knots, *my_multiplicities, degree, periodic);
     return myCurve; 
 }
+
+} // namespace geoml
 
