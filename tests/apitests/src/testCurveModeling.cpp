@@ -30,12 +30,12 @@ std::vector<gp_Pnt> control_points {p_1,p_2,p_3,p_4,p_5};
 Standard_Integer degree = 2;
 
 // weights (non-rational):
-std::vector<double> weights (5,1.0);
+std::vector<Standard_Real> weights (5,1.0);
 
 // knots: note: as the number of knots (m+1), the number of control points (p+1) and the degree p
 // are related by m = n + p +1, the number of knots has to be 8 in this case.
 
-std::vector<double> knots {0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0};
+std::vector<Standard_Real> knots {0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0};
 
 // multiplicities: 
 std::vector<int> mults(8,1);
@@ -65,7 +65,8 @@ EXPECT_NEAR(
     1e-5);
 
 // expect the curve to be non-rational, as all weights are set to 1
-//EXPECT_EQ(curve->IsRational(), false); // this test has the wrong output - check!
+EXPECT_EQ(curve->IsRational(), false); 
+
 }
 
 TEST(SimpleCurveTest, open_clamped_nurbs_curve)
@@ -86,13 +87,13 @@ std::vector<gp_Pnt> control_points {p1, p2, p3, p4, p5};
 Standard_Integer degree = 2;
 
 // weights:
-std::vector<double> weights(5,1.0);
+std::vector<Standard_Real> weights(5,1.0);
 
 // knots: note: as the number of knots (m+1), the number of control points (p+1) and the degree p
 // are related by m = n + p +1, the number of knots has to be 8 in this case. To achive this, in the following the
 // first and the last knot have to appear trice (have multiplicity of 3)
 
-std::vector<double> knots{0.0, 1.0, 2.0, 3.0};
+std::vector<Standard_Real> knots{0.0, 1.0, 2.0, 3.0};
 
 // multiplicities: 
 std::vector<int> mults {3, 1, 1, 3};
@@ -158,10 +159,10 @@ std::vector<gp_Pnt> control_points {p_1, p_2, p_3, p_4, p_5, p_6, p_7};
 Standard_Integer degree = 2;
 
 // weights:
-std::vector<double> weights {1.0, 0.5, 1.0, 0.5, 1.0, 0.5, 1.0};
+std::vector<Standard_Real> weights {1.0, 0.5, 1.0, 0.5, 1.0, 0.5, 1.0};
 
 // knots: (we need 10 knots (including their multiplicities), which follows from "#knots = #control_points + degree + 1"
-std::vector<double> knots {0.0, 1.0, 2.0, 3.0};
+std::vector<Standard_Real> knots {0.0, 1.0, 2.0, 3.0};
 
 // multiplicities: 
 std::vector<int> mults {3, 2, 2, 3};
