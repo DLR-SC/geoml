@@ -3,9 +3,6 @@
 #include <gtest/gtest.h>
 
 #include <gp_Pnt.hxx>
-#include <TColgp_Array1OfPnt.hxx>
-#include <TColStd_Array1OfReal.hxx>
-#include <TColStd_Array1OfInteger.hxx>
 #include <Geom_BSplineCurve.hxx>
 #include <Geom_Curve.hxx>
 #include "BRepBuilderAPI_MakeEdge.hxx"
