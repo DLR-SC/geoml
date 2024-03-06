@@ -19,9 +19,7 @@ Handle(Geom_BSplineCurve) nurbs_curve(
     Handle(TColStd_HArray1OfReal) my_knots = OccFArray(knots);
     Handle(TColStd_HArray1OfInteger) my_multiplicities = OccIArray(multiplicities);
 
-    Handle(Geom_BSplineCurve) myCurve 
-        = new Geom_BSplineCurve(*my_control_points, *my_weights, *my_knots, *my_multiplicities, degree, periodic);
-    return myCurve; 
+    return new Geom_BSplineCurve(*my_control_points, *my_weights, *my_knots, *my_multiplicities, degree, periodic); 
 }
 
 } // namespace geoml
