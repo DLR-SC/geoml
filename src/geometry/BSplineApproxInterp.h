@@ -29,6 +29,7 @@
 #include <TColgp_Array1OfPnt.hxx>
 #include <math_Matrix.hxx>
 #include <TColStd_Array1OfInteger.hxx>
+#include <GeomAPI_ProjectPointOnCurve.hxx>
 
 class gp_Pnt;
 
