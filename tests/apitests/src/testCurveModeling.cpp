@@ -11,8 +11,6 @@
 #include <GeomAdaptor_Curve.hxx>
 #include <GCPnts_AbscissaPoint.hxx>
 
-#include <iostream>
-
 TEST(Test_nurbs_curve, closed_unclamped_nurbs_curve)
 {    
 
