@@ -39,4 +39,12 @@ nurbs_curve(
     const int degree, 
     const bool periodic = false);
 
+/**
+ * @brief Interpolates points to a B-spline curve
+ * 
+ * @param points Multiple points that will be interpolated
+ */
+GEOML_API_EXPORT Handle(Geom_BSplineCurve)
+interpolate_points_to_b_spline_curve(const std::vector<gp_Pnt> &points);
+
 } // namespace geoml

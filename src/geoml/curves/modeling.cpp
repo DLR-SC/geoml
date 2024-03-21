@@ -22,5 +22,15 @@ Handle(Geom_BSplineCurve) nurbs_curve(
     return new Geom_BSplineCurve(*my_control_points, *my_weights, *my_knots, *my_multiplicities, degree, periodic); 
 }
 
+Handle(Geom_BSplineCurve) interpolate_points_to_b_spline_curve(const std::vector<gp_Pnt> & points)
+{
+    Handle(TColgp_HArray1OfPnt) points_col = OccArray(points);
+
+    PointsToBSplineInterpolation interpolator(points_col);
+
+    return interpolator.Curve();
+}
+
+
 } // namespace geoml
 
