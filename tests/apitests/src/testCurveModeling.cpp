@@ -1,4 +1,5 @@
 #include <geoml/curves/modeling.h>
+#include "geometry/BSplineAlgorithms.h"
 
 #include <gtest/gtest.h>
 
@@ -10,7 +11,9 @@
 #include <GeomAdaptor_Curve.hxx>
 #include <GCPnts_AbscissaPoint.hxx>
 
-TEST(SimpleCurveTest, closed_unclamped_nurbs_curve)
+#include <iostream>
+
+TEST(Test_nurbs_curve, closed_unclamped_nurbs_curve)
 {    
 
 // define a closed B-spline curve of 
@@ -69,7 +72,7 @@ EXPECT_EQ(curve->IsRational(), false);
 
 }
 
-TEST(SimpleCurveTest, open_clamped_nurbs_curve)
+TEST(Test_nurbs_curve, open_clamped_nurbs_curve)
 {
 
 // define an open and clamped NURBS curve of degree 2
@@ -138,7 +141,7 @@ EXPECT_NEAR(
 
 }
 
-TEST(SimpleCurveTest, circle_rational_bspline_three_arcs)
+TEST(Test_nurbs_curve, circle_rational_bspline_three_arcs)
 {
 
 // define a circle via a rational B-spline curve
@@ -202,6 +205,49 @@ EXPECT_EQ(curve->Multiplicity(1), 2); // the multiplicities differ, too.
 EXPECT_EQ(curve->Multiplicity(2), 2);
 EXPECT_EQ(curve->Multiplicity(3), 2);
 EXPECT_EQ(curve->Multiplicity(4), 2);
+
+}
+
+TEST(Test_interpolate_points_to_b_spline_curve, simple_interpolation_of_points)
+{
+    // points to interpolate
+    gp_Pnt pt_1 (0.0, 0.0, 0.0);
+    gp_Pnt pt_2 (1.0, 0.0, 0.0);
+    gp_Pnt pt_3 (2.0, 0.0, 1.0);
+
+    std::vector <gp_Pnt> input_points {pt_1, pt_2, pt_3};
+
+    // create B-spline curve interpolating the points
+    Handle(Geom_BSplineCurve) curve =
+    geoml::interpolate_points_to_b_spline_curve(input_points);
+
+    // check if start and end points are interpolated
+    EXPECT_NEAR(curve->StartPoint().X(), pt_1.X(), 1e-5);
+    EXPECT_NEAR(curve->StartPoint().Y(), pt_1.Y(), 1e-5);
+    EXPECT_NEAR(curve->StartPoint().Z(), pt_1.Z(), 1e-5);
+
+    EXPECT_NEAR(curve->EndPoint().X(), pt_3.X(), 1e-5);
+    EXPECT_NEAR(curve->EndPoint().Y(), pt_3.Y(), 1e-5);
+    EXPECT_NEAR(curve->EndPoint().Z(), pt_3.Z(), 1e-5);
+
+    Handle(TColgp_HArray1OfPnt) points_col = new TColgp_HArray1OfPnt(1, input_points.size());
+    for(int i = 0; i < input_points.size(); ++i)
+    {
+        points_col->SetValue(i + 1, input_points.at(i));
+    }
+
+    // calculate the curve parameters of the interpolated points
+    std::vector<double> params = geoml::BSplineAlgorithms::computeParamsBSplineCurve(points_col);
+    
+    // check if the first and last points match with the right curve parameters
+    EXPECT_NEAR(params[0], 0, 1e-5);
+    EXPECT_NEAR(params[2], 1, 1e-5);
+
+    // check if the second point is interpolated
+    gp_Pnt sec_point = curve -> Value(params[1]);
+    double dist = pt_2.Distance(sec_point);
+
+    EXPECT_NEAR(dist, 0, 1e-5);
 
 }
 
