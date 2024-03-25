@@ -22,7 +22,7 @@
 #ifndef POINT_H
 #define POINT_H
 
-#include "geoml_internal.h"
+#include "geoml/geoml_internal.h"
 #include <climits>
 #include "gp_XYZ.hxx"
 #include "gp_Pnt.hxx"

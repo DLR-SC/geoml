@@ -2,7 +2,7 @@
 #include <Geom_BSplineCurve.hxx>
 #include "geometry/PointsToBSplineInterpolation.h"
 
-#include <CommonFunctions.h>
+#include "common/CommonFunctions.h"
 
 namespace geoml{
 

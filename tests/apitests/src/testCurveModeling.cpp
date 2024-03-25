@@ -1,6 +1,6 @@
 #include <geoml/curves/modeling.h>
 #include "geometry/BSplineAlgorithms.h"
-#include <CommonFunctions.h>
+#include "common/CommonFunctions.h"
 
 #include <gtest/gtest.h>
 
