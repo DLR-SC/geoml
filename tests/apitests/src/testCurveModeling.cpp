@@ -249,5 +249,21 @@ TEST(Test_interpolate_points_to_b_spline_curve, simple_interpolation_of_points)
 
 }
 
+// TEST(Test_interpolate_points_to_b_spline_curve, interpolation_with_lower_degree)
+// {
+//     // points to interpolate
+//     gp_Pnt pt_1 (0.0, 0.0, 0.0);
+//     gp_Pnt pt_2 (1.0, 0.0, 0.0);
+//     gp_Pnt pt_3 (2.0, 0.0, 1.0);
+
+//     std::vector <gp_Pnt> input_points {pt_1, pt_2, pt_3};
+
+//     // create B-spline curve interpolating the points
+//     Handle(Geom_BSplineCurve) curve =
+//     geoml::interpolate_points_to_b_spline_curve(input_points, );
+
+
+// }
+
 
 
