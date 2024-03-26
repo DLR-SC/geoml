@@ -2,7 +2,7 @@
 #include <Geom_BSplineCurve.hxx>
 #include "geometry/PointsToBSplineInterpolation.h"
 
-#include "common/CommonFunctions.h"
+//#include "common/CommonFunctions.h"
 
 namespace geoml{
 
@@ -24,7 +24,13 @@ Handle(Geom_BSplineCurve) nurbs_curve(
 
 Handle(Geom_BSplineCurve) interpolate_points_to_b_spline_curve(const std::vector<gp_Pnt> & points)
 {
-    Handle(TColgp_HArray1OfPnt) points_col = OccArray(points);
+    //Handle(TColgp_HArray1OfPnt) points_col = OccArray(points);
+
+    Handle(TColgp_HArray1OfPnt) points_col = new TColgp_HArray1OfPnt(1, input_points.size());
+    for(int i = 0; i < input_points.size(); ++i)
+    {
+        points_col->SetValue(i + 1, input_points.at(i));
+    }
 
     PointsToBSplineInterpolation interpolator(points_col);
 
