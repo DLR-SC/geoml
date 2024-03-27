@@ -45,6 +45,6 @@ nurbs_curve(
  * @param points Multiple points that will be interpolated
  */
 GEOML_API_EXPORT Handle(Geom_BSplineCurve)
-interpolate_points_to_b_spline_curve(const std::vector<gp_Pnt> &points);
+interpolate_points_to_b_spline_curve(const std::vector<gp_Pnt> &points, int degree = 3, bool continuousIfClosed = false, const std::vector<Standard_Real> &parameters = std::vector<Standard_Real>());
 
 } // namespace geoml
