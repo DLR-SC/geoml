@@ -249,21 +249,63 @@ TEST(Test_interpolate_points_to_b_spline_curve, simple_interpolation_of_points)
 
 }
 
-// TEST(Test_interpolate_points_to_b_spline_curve, interpolation_with_lower_degree)
-// {
-//     // points to interpolate
-//     gp_Pnt pt_1 (0.0, 0.0, 0.0);
-//     gp_Pnt pt_2 (1.0, 0.0, 0.0);
-//     gp_Pnt pt_3 (2.0, 0.0, 1.0);
+TEST(Test_interpolate_points_to_b_spline_curve, interpolation_with_lower_degree)
+{
+    gp_Pnt pt_1 (0.0, 0.0, 0.0);
+    gp_Pnt pt_2 (1.0, 0.0, 0.0);
+    gp_Pnt pt_3 (2.0, 0.0, 1.0);
 
-//     std::vector <gp_Pnt> input_points {pt_1, pt_2, pt_3};
+    std::vector <gp_Pnt> input_points {pt_1, pt_2, pt_3};
 
-//     // create B-spline curve interpolating the points
-//     Handle(Geom_BSplineCurve) curve =
-//     geoml::interpolate_points_to_b_spline_curve(input_points, );
+    Handle(Geom_BSplineCurve) curve_1 =
+    geoml::interpolate_points_to_b_spline_curve(input_points, 1);
 
+    EXPECT_EQ(curve_1->Degree(), 1);
 
-// }
+    Handle(Geom_BSplineCurve) curve_2 =
+    geoml::interpolate_points_to_b_spline_curve(input_points, 5);
+    EXPECT_EQ(curve_2->Degree(), 2);
 
+}
+
+TEST(Test_interpolate_points_to_b_spline_curve, interpolation_closed_curve)
+{
+    gp_Pnt pt_1 (0.0, 0.0, 0.0);
+    gp_Pnt pt_2 (1.0, 0.0, 0.0);
+    gp_Pnt pt_3 (2.0, 0.0, 1.0);
+    gp_Pnt pt_4 (0.0, 0.0, 0.0);
+
+    std::vector <gp_Pnt> input_points {pt_1, pt_2, pt_3, pt_4};
+
+    Handle(Geom_BSplineCurve) curve_1 =
+    geoml::interpolate_points_to_b_spline_curve(input_points, 3, false);
+
+    EXPECT_EQ(curve_1->NbPoles(), 4);
+
+    Handle(Geom_BSplineCurve) curve_2 =
+    geoml::interpolate_points_to_b_spline_curve(input_points, 3, true);
+
+    EXPECT_EQ(curve_2->NbPoles(), 6);
+
+}
+
+TEST(Test_interpolate_points_to_b_spline_curve, interpolation_custom_parameters)
+{
+    gp_Pnt pt_1 (0.0, 0.0, 0.0);
+    gp_Pnt pt_2 (1.0, 0.0, 0.0);
+    gp_Pnt pt_3 (2.0, 0.0, 1.0);
+
+    std::vector <gp_Pnt> input_points {pt_1, pt_2, pt_3};
+    std::vector <Standard_Real> params {0., 0.90, 1.};
+
+    Handle(Geom_BSplineCurve) curve =
+    geoml::interpolate_points_to_b_spline_curve(input_points, 3, false, params);
+
+    gp_Pnt test_point = curve->Value(0.9);
+
+    EXPECT_NEAR(test_point.X(), 1.0, 1e-5);
+    EXPECT_NEAR(test_point.Y(), 0.0, 1e-5);
+    EXPECT_NEAR(test_point.Z(), 0.0, 1e-5);
+}
 
 
