@@ -21,7 +21,7 @@
 
 #include <geometry/Point.h>
 
-//#include "CCPACSImportExport.h"
+#include "CCPACSImportExport.h"
 #include "Standard.hxx"
 #include "Standard_values.h"
 #include "geoml_internal.h"

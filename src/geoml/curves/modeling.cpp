@@ -24,14 +24,8 @@ Handle(Geom_BSplineCurve) nurbs_curve(
 
 Handle(Geom_BSplineCurve) interpolate_points_to_b_spline_curve(const std::vector<gp_Pnt> &points, int degree, bool continuousIfClosed, const std::vector<Standard_Real> &parameters)
 {
-    //Handle(TColgp_HArray1OfPnt) points_col = OccArray(points);
-
-    Handle(TColgp_HArray1OfPnt) points_col = new TColgp_HArray1OfPnt(1, input_points.size());
-    for(int i = 0; i < input_points.size(); ++i)
-    {
-        points_col->SetValue(i + 1, input_points.at(i));
-    }
-
+    Handle(TColgp_HArray1OfPnt) points_col = OccArray(points);
+    
     if (parameters.size() == 0) {
         PointsToBSplineInterpolation interpolator(points_col, degree, continuousIfClosed);
         return interpolator.Curve();
@@ -41,7 +35,6 @@ Handle(Geom_BSplineCurve) interpolate_points_to_b_spline_curve(const std::vector
         return interpolator.Curve();
     }
 }
-
 
 } // namespace geoml
 

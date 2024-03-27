@@ -1,6 +1,5 @@
 #include <geoml/curves/modeling.h>
 #include "geometry/BSplineAlgorithms.h"
-#include "common/CommonFunctions.h"
 
 #include <gtest/gtest.h>
 
@@ -230,7 +229,12 @@ TEST(Test_interpolate_points_to_b_spline_curve, simple_interpolation_of_points)
     EXPECT_NEAR(curve->EndPoint().Z(), pt_3.Z(), 1e-5);
 
     // calculate the curve parameters of the interpolated points
-    Handle(TColgp_HArray1OfPnt) points_col = OccArray(input_points);
+    Handle(TColgp_HArray1OfPnt) points_col = new TColgp_HArray1OfPnt(1, input_points.size());
+    for(int i = 0; i < input_points.size(); ++i)
+    {
+        points_col->SetValue(i + 1, input_points.at(i));
+    }
+
     std::vector<double> params = geoml::BSplineAlgorithms::computeParamsBSplineCurve(points_col);
     
     // check if the first and last points match with the right curve parameters
