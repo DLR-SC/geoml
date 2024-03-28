@@ -16,7 +16,7 @@ namespace geoml
 {
 
 /**
- * @brief Interpolates the curve network by a bspline curve
+ * @brief Interpolates the curve network by a B-spline surface
  * 
  * This uses the Gordon interpolation method.
  * The u curves and v curves must intersect each other within the tolerance.
@@ -36,16 +36,16 @@ interpolate_curve_network(const std::vector<Handle(Geom_Curve)>& ucurves,
 
 
 /**
- * @brief Interpolates the curve network by a bspline curve in v-direction
+ * @brief Interpolates the curves by a B-spline surface in v-direction
  *
  * @param curves The curves to interpolate
  * @param max_degree Maximum degree of the interpolation (actual degree <= number of curves - 1)
- * @param join_continously If true and start and end-curves are the same,
- *        the resulting surface will be joined continously
+ * @param join_continuously If true and start and end-curves are the same,
+ *        the resulting surface will be joined continuously
  */
 GEOML_API_EXPORT Handle(Geom_BSplineSurface)
 interpolate_curves(const std::vector<Handle(Geom_Curve)>& curves,
                    unsigned int max_degree=3,
-                   bool join_continously=false);
+                   bool join_continuously=false);
 
 } // namespace geoml
