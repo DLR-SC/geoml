@@ -19,7 +19,7 @@
 #ifndef BSPLINEALGORITHMS_H
 #define BSPLINEALGORITHMS_H
 
-#include "geoml_internal.h"
+#include "geoml/geoml_internal.h"
 #include "ApproxResult.h"
 
 #include <Geom_BSplineCurve.hxx>

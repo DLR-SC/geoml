@@ -1,4 +1,5 @@
 #include <geoml/curves/modeling.h>
+#include "geometry/BSplineAlgorithms.h"
 
 #include <gtest/gtest.h>
 
@@ -10,7 +11,7 @@
 #include <GeomAdaptor_Curve.hxx>
 #include <GCPnts_AbscissaPoint.hxx>
 
-TEST(SimpleCurveTest, closed_unclamped_nurbs_curve)
+TEST(Test_nurbs_curve, closed_unclamped_nurbs_curve)
 {    
 
 // define a closed B-spline curve of 
@@ -69,7 +70,7 @@ EXPECT_EQ(curve->IsRational(), false);
 
 }
 
-TEST(SimpleCurveTest, open_clamped_nurbs_curve)
+TEST(Test_nurbs_curve, open_clamped_nurbs_curve)
 {
 
 // define an open and clamped NURBS curve of degree 2
@@ -138,7 +139,7 @@ EXPECT_NEAR(
 
 }
 
-TEST(SimpleCurveTest, circle_rational_bspline_three_arcs)
+TEST(Test_nurbs_curve, circle_rational_bspline_three_arcs)
 {
 
 // define a circle via a rational B-spline curve
@@ -205,5 +206,106 @@ EXPECT_EQ(curve->Multiplicity(4), 2);
 
 }
 
+TEST(Test_interpolate_points_to_b_spline_curve, simple_interpolation_of_points)
+{
+    // points to interpolate
+    gp_Pnt pt_1 (0.0, 0.0, 0.0);
+    gp_Pnt pt_2 (1.0, 0.0, 0.0);
+    gp_Pnt pt_3 (2.0, 0.0, 1.0);
+
+    std::vector <gp_Pnt> input_points {pt_1, pt_2, pt_3};
+
+    // create B-spline curve interpolating the points
+    Handle(Geom_BSplineCurve) curve =
+    geoml::interpolate_points_to_b_spline_curve(input_points);
+
+    // check if start and end points are interpolated
+    EXPECT_NEAR(curve->StartPoint().X(), pt_1.X(), 1e-5);
+    EXPECT_NEAR(curve->StartPoint().Y(), pt_1.Y(), 1e-5);
+    EXPECT_NEAR(curve->StartPoint().Z(), pt_1.Z(), 1e-5);
+
+    EXPECT_NEAR(curve->EndPoint().X(), pt_3.X(), 1e-5);
+    EXPECT_NEAR(curve->EndPoint().Y(), pt_3.Y(), 1e-5);
+    EXPECT_NEAR(curve->EndPoint().Z(), pt_3.Z(), 1e-5);
+
+    // calculate the curve parameters of the interpolated points
+    Handle(TColgp_HArray1OfPnt) points_col = new TColgp_HArray1OfPnt(1, input_points.size());
+    for(int i = 0; i < input_points.size(); ++i)
+    {
+        points_col->SetValue(i + 1, input_points.at(i));
+    }
+
+    std::vector<double> params = geoml::BSplineAlgorithms::computeParamsBSplineCurve(points_col);
+    
+    // check if the first and last points match with the right curve parameters
+    EXPECT_NEAR(params[0], 0, 1e-5);
+    EXPECT_NEAR(params[2], 1, 1e-5);
+
+    // check if the second point is interpolated
+    gp_Pnt sec_point = curve -> Value(params[1]);
+    double dist = pt_2.Distance(sec_point);
+
+    EXPECT_NEAR(dist, 0, 1e-5);
+
+}
+
+TEST(Test_interpolate_points_to_b_spline_curve, interpolation_with_lower_degree)
+{
+    gp_Pnt pt_1 (0.0, 0.0, 0.0);
+    gp_Pnt pt_2 (1.0, 0.0, 0.0);
+    gp_Pnt pt_3 (2.0, 0.0, 1.0);
+
+    std::vector <gp_Pnt> input_points {pt_1, pt_2, pt_3};
+
+    Handle(Geom_BSplineCurve) curve_1 =
+    geoml::interpolate_points_to_b_spline_curve(input_points, 1);
+
+    EXPECT_EQ(curve_1->Degree(), 1);
+
+    Handle(Geom_BSplineCurve) curve_2 =
+    geoml::interpolate_points_to_b_spline_curve(input_points, 5);
+    EXPECT_EQ(curve_2->Degree(), 2);
+
+}
+
+TEST(Test_interpolate_points_to_b_spline_curve, interpolation_closed_curve)
+{
+    gp_Pnt pt_1 (0.0, 0.0, 0.0);
+    gp_Pnt pt_2 (1.0, 0.0, 0.0);
+    gp_Pnt pt_3 (2.0, 0.0, 1.0);
+    gp_Pnt pt_4 (0.0, 0.0, 0.0);
+
+    std::vector <gp_Pnt> input_points {pt_1, pt_2, pt_3, pt_4};
+
+    Handle(Geom_BSplineCurve) curve_1 =
+    geoml::interpolate_points_to_b_spline_curve(input_points, 3, false);
+
+    EXPECT_EQ(curve_1->NbPoles(), 4);
+
+    Handle(Geom_BSplineCurve) curve_2 =
+    geoml::interpolate_points_to_b_spline_curve(input_points, 3, true);
+
+    EXPECT_EQ(curve_2->NbPoles(), 6);
+
+}
+
+TEST(Test_interpolate_points_to_b_spline_curve, interpolation_custom_parameters)
+{
+    gp_Pnt pt_1 (0.0, 0.0, 0.0);
+    gp_Pnt pt_2 (1.0, 0.0, 0.0);
+    gp_Pnt pt_3 (2.0, 0.0, 1.0);
+
+    std::vector <gp_Pnt> input_points {pt_1, pt_2, pt_3};
+    std::vector <Standard_Real> params {0., 0.90, 1.};
+
+    Handle(Geom_BSplineCurve) curve =
+    geoml::interpolate_points_to_b_spline_curve(input_points, 3, false, params);
+
+    gp_Pnt test_point = curve->Value(0.9);
+
+    EXPECT_NEAR(test_point.X(), 1.0, 1e-5);
+    EXPECT_NEAR(test_point.Y(), 0.0, 1e-5);
+    EXPECT_NEAR(test_point.Z(), 0.0, 1e-5);
+}
 
 
