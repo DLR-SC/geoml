@@ -16,9 +16,9 @@ Handle(Geom_BSplineSurface) interpolate_curve_network(const std::vector<Handle (
 
 Handle(Geom_BSplineSurface)
 interpolate_curves(const std::vector<Handle (Geom_Curve)> &ucurves, unsigned int max_degree,
-                          bool join_continously)
+                          bool join_continuously)
 {
-    CurvesToSurface c2s(ucurves, join_continously);
+    CurvesToSurface c2s(ucurves, join_continuously);
     c2s.SetMaxDegree(max_degree);
     return c2s.Surface();
 }
