@@ -8,8 +8,9 @@
 #include <Geom_BSplineSurface.hxx>
 #include <Geom_Curve.hxx>
 #include <geoml/geoml.h>
+#include <gp_Ax1.hxx>
 
-
+#include <cmath>
 #include <vector>
 
 namespace geoml
@@ -47,5 +48,19 @@ GEOML_API_EXPORT Handle(Geom_BSplineSurface)
 interpolate_curves(const std::vector<Handle(Geom_Curve)>& curves,
                    unsigned int max_degree=3,
                    bool join_continuously=false);
+
+/**
+ * @brief Create a revolving surface
+ *
+ * //@param profile_curve Profile curve (contained in a plane)
+ * //@param rotation_axis The rotation axis
+ * //@param angle The rotation angle (2*PI by default)
+ */
+
+GEOML_API_EXPORT Handle(Geom_BSplineSurface)
+revolving_surface(const Handle(Geom_BSplineCurve)& profile_curve,
+                  const gp_Ax1& rotation_axis,
+                  const Standard_Real angle=2*M_PI); 
+
 
 } // namespace geoml
