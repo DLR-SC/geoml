@@ -9,6 +9,7 @@
 #include <Geom_Curve.hxx>
 #include <geoml/geoml.h>
 #include <gp_Ax1.hxx>
+#include <Geom_BSplineCurve.hxx>
 
 #include <cmath>
 #include <vector>

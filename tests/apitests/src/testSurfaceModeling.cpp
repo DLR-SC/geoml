@@ -1,4 +1,5 @@
 #include <geoml/surfaces/modeling.h>
+#include <geoml/curves/modeling.h>
 
 #include <gtest/gtest.h>
 
@@ -13,6 +14,10 @@
 #include <TopExp_Explorer.hxx>
 #include <TopoDS.hxx>
 #include <TopoDS_Edge.hxx>
+#include <gp_Ax1.hxx>
+#include <gp_Dir.hxx>
+
+#include "STEPControl_Writer.hxx"
 
 #include <filesystem>
 
@@ -43,6 +48,19 @@ std::vector<Handle(Geom_Curve)> read_curves(const std::string& brepFile, bool& o
 }
 
 } // apitests
+
+void writeGeomEntityToStepFile(Handle_Geom_Surface surface, std::string fileName)
+{
+	BRepBuilderAPI_MakeFace faceMaker;
+	faceMaker.Init(surface,true,1E-6);	
+	TopoDS_Shape face = faceMaker.Shape();
+
+	STEPControl_Writer writer;
+	writer.Transfer(face,STEPControl_AsIs);
+	writer.Write(fileName.c_str());
+	return;
+}
+
 
 class interpolate_curve_network: public ::testing::TestWithParam<std::string>
 {
@@ -146,3 +164,51 @@ INSTANTIATE_TEST_SUITE_P(SurfaceModeling, interpolate_curves, ::testing::Values(
   "fuselage2",
   "ffd"
 ));
+
+TEST(Test_revolving_surface, simple_revolving_surface)
+{    
+
+// define an open and clamped NURBS curve of degree 2
+
+// control points
+gp_Pnt p1(0.0, 0.0, 0.0);
+gp_Pnt p2(0.0, 1.0, 2.0);
+gp_Pnt p3(0.0, 2.0, -1.0);
+gp_Pnt p4(1.0, 0.0, 3.0);
+gp_Pnt p5(0.0, 4.0, 0.0);
+
+std::vector<gp_Pnt> control_points {p1, p2, p3, p4, p5};
+
+// degree:
+Standard_Integer degree = 2;
+
+// weights:
+std::vector<Standard_Real> weights(5,1.0);
+
+// knots: 
+std::vector<Standard_Real> knots{0.0, 1.0, 2.0, 3.0};
+
+// multiplicities: 
+std::vector<int> mults {3, 1, 1, 3};
+
+Handle(Geom_BSplineCurve) curve =
+    geoml::nurbs_curve(
+        control_points, 
+        weights, 
+        knots, 
+        mults, 
+        degree);
+
+gp_Pnt pnt (0., 0., 0.);
+gp_Dir dir (0., 0., 1.);
+gp_Ax1 axis (pnt, dir);
+
+Handle(Geom_BSplineSurface) surf = geoml::revolving_surface(curve, axis); 
+
+writeGeomEntityToStepFile(surf, "my_surface_output.stp");
+
+
+
+
+
+}
