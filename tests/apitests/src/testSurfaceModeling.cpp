@@ -4,10 +4,12 @@
 #include <gtest/gtest.h>
 
 #include <GeomConvert.hxx>
-
 #include <BRep_Builder.hxx>
 #include <BRepTools.hxx>
 #include <BRepBuilderAPI_MakeFace.hxx>
+#include "GProp_GProps.hxx"
+#include "BRepGProp.hxx"
+
 
 #include <TopoDS_Shape.hxx>
 #include <TopExp.hxx>
@@ -20,6 +22,8 @@
 #include "STEPControl_Writer.hxx"
 
 #include <filesystem>
+
+#include <cmath>
 
 namespace apitests
 {
@@ -48,19 +52,6 @@ std::vector<Handle(Geom_Curve)> read_curves(const std::string& brepFile, bool& o
 }
 
 } // apitests
-
-void writeGeomEntityToStepFile(Handle_Geom_Surface surface, std::string fileName)
-{
-	BRepBuilderAPI_MakeFace faceMaker;
-	faceMaker.Init(surface,true,1E-6);	
-	TopoDS_Shape face = faceMaker.Shape();
-
-	STEPControl_Writer writer;
-	writer.Transfer(face,STEPControl_AsIs);
-	writer.Write(fileName.c_str());
-	return;
-}
-
 
 class interpolate_curve_network: public ::testing::TestWithParam<std::string>
 {
@@ -171,11 +162,11 @@ TEST(Test_revolving_surface, simple_revolving_surface)
 // define an open and clamped NURBS curve of degree 2
 
 // control points
-gp_Pnt p1(0.0, 0.0, 0.0);
-gp_Pnt p2(0.0, 1.0, 2.0);
-gp_Pnt p3(0.0, 2.0, -1.0);
+gp_Pnt p1(1.0, 0.0, 0.0);
+gp_Pnt p2(1.0, 0.0, 1.0);
+gp_Pnt p3(1.0, 0.0, 2.0);
 gp_Pnt p4(1.0, 0.0, 3.0);
-gp_Pnt p5(0.0, 4.0, 0.0);
+gp_Pnt p5(1.0, 0.0, 4.0);
 
 std::vector<gp_Pnt> control_points {p1, p2, p3, p4, p5};
 
@@ -205,10 +196,19 @@ gp_Ax1 axis (pnt, dir);
 
 Handle(Geom_BSplineSurface) surf = geoml::revolving_surface(curve, axis); 
 
-writeGeomEntityToStepFile(surf, "my_surface_output.stp");
+// calculate area of a cylinder with radius 1 and hight 4:
+double expected_surface_area = 2 * M_PI * 1 * 4; 
 
+// Convert the surface to a TopoDS_Face
+BRep_Builder builder;
+TopoDS_Face face;
+builder.MakeFace(face, surf, 1e-6);
 
+// calculate intersection area
+GProp_GProps props = GProp_GProps();
+BRepGProp::SurfaceProperties(face, props);
+double area_surf = props.Mass();
 
-
+EXPECT_NEAR(area_surf, expected_surface_area, 1e-1);
 
 }
