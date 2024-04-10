@@ -78,7 +78,7 @@ revolving_surface(const Handle(Geom_BSplineCurve)& profile_curve,
  * //@param V_periodic Boolean flag for periodicity in V-direction
  */
 GEOML_API_EXPORT Handle(Geom_BSplineSurface)
-b_spline_surface(const TColgp_Array2OfPnt &control_points, // now, we have to decide what to do here
+nurbs_surface(const TColgp_Array2OfPnt &control_points, // now, we have to decide what to do here
                  const TColStd_Array2OfReal &weights, 
                  const TColStd_Array1OfReal &U_knots, 
                  const TColStd_Array1OfReal &V_knots, 
