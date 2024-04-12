@@ -37,9 +37,9 @@ interpolate_curves(const std::vector<Handle (Geom_Curve)> &ucurves, unsigned int
 
 TopoDS_Shape
 revolving_shape(const TopoDS_Shape& profile_shape,
-                  const gp_Pnt& start_point_rotation_axis,
-                  const gp_Vec& rotation_axis_direction,
-                  const Standard_Real angle)
+                const gp_Pnt& start_point_rotation_axis,
+                const gp_Vec& rotation_axis_direction,
+                const Standard_Real angle)
 {   
     gp_Dir dir (rotation_axis_direction);
     gp_Ax1 axis (start_point_rotation_axis, dir);
