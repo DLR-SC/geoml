@@ -12,6 +12,8 @@
 #include <TopoDS.hxx>
 #include <BRep_Tool.hxx>
 #include <GeomConvert.hxx>
+#include <gp_Ax1.hxx>
+#include <gp_Dir.hxx>
 
 namespace geoml{
 
@@ -33,21 +35,22 @@ interpolate_curves(const std::vector<Handle (Geom_Curve)> &ucurves, unsigned int
     return c2s.Surface();
 }
 
-Handle(Geom_BSplineSurface)
-revolving_surface(const Handle(Geom_BSplineCurve)& profile_curve,
-                         const gp_Ax1& rotation_axis,
-                         const Standard_Real angle)
+TopoDS_Shape
+revolving_shape(const TopoDS_Shape& profile_shape,
+                  const gp_Pnt& start_point_rotation_axis,
+                  const gp_Vec& rotation_axis_direction,
+                  const Standard_Real angle)
 {   
-    BRepBuilderAPI_MakeEdge edgeMaker(profile_curve);
-    TopoDS_Edge edge = edgeMaker.Edge();
-    TopoDS_Shape shape = edge;
- 
-    BRepPrimAPI_MakeRevol revol_maker(shape, 
-    								  rotation_axis,
+    gp_Dir dir (rotation_axis_direction);
+    gp_Ax1 axis (start_point_rotation_axis, dir);
+    
+    BRepPrimAPI_MakeRevol revol_maker(profile_shape,
+                                      axis,    								
                                       angle); 
 
     TopoDS_Shape revol_shape = revol_maker.Shape();
 
+    /*
     // Now, extract a B-spline surface out of the TopoDS_Shape 
     // For that, extract the face first
     TopoDS_Face face;
@@ -59,9 +62,9 @@ revolving_surface(const Handle(Geom_BSplineCurve)& profile_curve,
     Handle(Geom_Surface) revol_geom_surface = BRep_Tool::Surface(face);
 
     Handle(Geom_BSplineSurface)
-        revol_b_spline_surface = GeomConvert::SurfaceToBSplineSurface(revol_geom_surface);
+        revol_b_spline_surface = GeomConvert::SurfaceToBSplineSurface(revol_geom_surface);*/
 
-    return revol_b_spline_surface;
+    return revol_shape;
 }
 
 } // namespace geoml

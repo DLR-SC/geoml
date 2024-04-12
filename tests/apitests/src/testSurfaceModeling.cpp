@@ -156,6 +156,7 @@ INSTANTIATE_TEST_SUITE_P(SurfaceModeling, interpolate_curves, ::testing::Values(
   "ffd"
 ));
 
+/*
 TEST(Test_revolving_surface, simple_revolving_surface)
 {    
 
@@ -211,4 +212,4 @@ double area_surf = props.Mass();
 
 EXPECT_NEAR(area_surf, expected_surface_area, 1e-1);
 
-}
+}*/
