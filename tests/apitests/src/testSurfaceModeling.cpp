@@ -191,6 +191,8 @@ Handle(Geom_BSplineCurve) curve =
         mults, 
         degree);
 
+
+
 gp_Pnt pnt (0., 0., 0.);
 gp_Dir dir (0., 0., 1.);
 gp_Ax1 axis (pnt, dir);
@@ -212,4 +214,5 @@ double area_surf = props.Mass();
 
 EXPECT_NEAR(area_surf, expected_surface_area, 1e-1);
 
-}*/
+}
+*/

@@ -59,7 +59,6 @@ interpolate_curves(const std::vector<Handle(Geom_Curve)>& curves,
  * //@param rotation_axis_direction The rotation axis direction defined by a vector
  * //@param angle The rotation angle (2*PI by default)
  */
-
 GEOML_API_EXPORT TopoDS_Shape
 revolving_shape(const TopoDS_Shape& profile_shape,
                   const gp_Pnt& start_point_rotation_axis,
