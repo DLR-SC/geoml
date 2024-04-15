@@ -197,7 +197,7 @@ TopoDS_Edge edge = geoml::CurveToEdge(curve);
 gp_Pnt pnt (0., 0., 0.);
 gp_Vec vec (0., 0., 1.);
 
-TopoDS_Shape face = geoml::revolving_shape(edge, pnt, vec); // TODO: Conversion from TopoDS_Shape to TopoDS_Face
+TopoDS_Shape face = geoml::revolving_shape(edge, pnt, vec); 
 
 // calculate area of a cylinder with radius 1 and hight 4:
 double expected_surface_area = 2 * M_PI * 1 * 4; 

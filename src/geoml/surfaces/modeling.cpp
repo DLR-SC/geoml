@@ -50,20 +50,6 @@ revolving_shape(const TopoDS_Shape& profile_shape,
 
     TopoDS_Shape revol_shape = revol_maker.Shape();
 
-    /*
-    // Now, extract a B-spline surface out of the TopoDS_Shape 
-    // For that, extract the face first
-    TopoDS_Face face;
-    for (TopExp_Explorer explorer(revol_shape, TopAbs_FACE); explorer.More(); explorer.Next()) {
-        face = TopoDS::Face(explorer.Current());
-        break; // Let us assume, there is only one face in the shape
-    }
-
-    Handle(Geom_Surface) revol_geom_surface = BRep_Tool::Surface(face);
-
-    Handle(Geom_BSplineSurface)
-        revol_b_spline_surface = GeomConvert::SurfaceToBSplineSurface(revol_geom_surface);*/
-
     return revol_shape;
 }
 
