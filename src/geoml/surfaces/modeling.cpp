@@ -44,9 +44,7 @@ revolving_shape(const TopoDS_Shape& profile_shape,
     gp_Dir dir (rotation_axis_direction);
     gp_Ax1 axis (start_point_rotation_axis, dir);
     
-    BRepPrimAPI_MakeRevol revol_maker(profile_shape,
-                                      axis,    								
-                                      angle); 
+    BRepPrimAPI_MakeRevol revol_maker(profile_shape, axis, angle); 
 
     TopoDS_Shape revol_shape = revol_maker.Shape();
 

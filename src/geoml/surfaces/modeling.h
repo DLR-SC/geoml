@@ -5,14 +5,14 @@
  * by interpolating or approximating points and curves
  */
 
+
+#include <geoml/geoml.h>
+
 #include <Geom_BSplineSurface.hxx>
 #include <Geom_Curve.hxx>
-#include <geoml/geoml.h>
 #include <gp_Vec.hxx>
-#include <Geom_BSplineCurve.hxx>
 #include <TopoDS_Shape.hxx>
 
-#include <cmath>
 #include <vector>
 
 namespace geoml

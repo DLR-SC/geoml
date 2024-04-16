@@ -20,11 +20,7 @@
 #include <gp_Pnt.hxx>
 #include <gp_Vec.hxx>
 
-#include "STEPControl_Writer.hxx"
-
 #include <filesystem>
-
-#include <cmath>
 
 namespace apitests
 {
