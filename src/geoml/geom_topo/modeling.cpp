@@ -8,10 +8,9 @@
 namespace geoml{
 
 TopoDS_Face
-SurfaceToFace(const Handle(Geom_Surface) &surface)
+SurfaceToFace(const Handle(Geom_Surface) &surface, Standard_Real tolDegEd)
 {
-    Standard_Real tolerance (1e-5);
-    BRepBuilderAPI_MakeFace faceMaker(surface, tolerance);
+    BRepBuilderAPI_MakeFace faceMaker(surface, tolDegEd);
     TopoDS_Face face = faceMaker.Face();
 
     return face;
