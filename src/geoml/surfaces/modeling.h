@@ -14,6 +14,7 @@
 #include <TopoDS_Shape.hxx>
 
 #include <vector>
+#include <cmath>
 
 namespace geoml
 {
