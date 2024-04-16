@@ -1,10 +1,9 @@
 #include "geom_topo/modeling.h"
-#include <Geom_Surface.hxx>
-#include <TopoDS_Face.hxx>
-#include <TopoDS_Edge.hxx>
+
 #include <BRepBuilderAPI_MakeFace.hxx>
 #include <BRepBuilderAPI_MakeEdge.hxx>
-
+#include <Geom_Surface.hxx>
+#include <Geom_Curve.hxx>
 
 namespace geoml{
 
