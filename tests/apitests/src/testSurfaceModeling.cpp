@@ -1,5 +1,6 @@
 #include <geoml/surfaces/modeling.h>
 #include <geoml/curves/modeling.h>
+#include <geoml/geom_topo/modeling.h>
 
 #include <gtest/gtest.h>
 
@@ -16,14 +17,10 @@
 #include <TopExp_Explorer.hxx>
 #include <TopoDS.hxx>
 #include <TopoDS_Edge.hxx>
-#include <gp_Ax1.hxx>
-#include <gp_Dir.hxx>
-
-#include "STEPControl_Writer.hxx"
+#include <gp_Pnt.hxx>
+#include <gp_Vec.hxx>
 
 #include <filesystem>
-
-#include <cmath>
 
 namespace apitests
 {
@@ -156,7 +153,8 @@ INSTANTIATE_TEST_SUITE_P(SurfaceModeling, interpolate_curves, ::testing::Values(
   "ffd"
 ));
 
-TEST(Test_revolving_surface, simple_revolving_surface)
+
+TEST(Test_revolving_shape, simple_revolving_surface)
 {    
 
 // define an open and clamped NURBS curve of degree 2
@@ -190,19 +188,15 @@ Handle(Geom_BSplineCurve) curve =
         mults, 
         degree);
 
-gp_Pnt pnt (0., 0., 0.);
-gp_Dir dir (0., 0., 1.);
-gp_Ax1 axis (pnt, dir);
+TopoDS_Edge edge = geoml::CurveToEdge(curve);
 
-Handle(Geom_BSplineSurface) surf = geoml::revolving_surface(curve, axis); 
+gp_Pnt pnt (0., 0., 0.);
+gp_Vec vec (0., 0., 1.);
+
+TopoDS_Shape face = geoml::revolving_shape(edge, pnt, vec); 
 
 // calculate area of a cylinder with radius 1 and hight 4:
 double expected_surface_area = 2 * M_PI * 1 * 4; 
-
-// Convert the surface to a TopoDS_Face
-BRep_Builder builder;
-TopoDS_Face face;
-builder.MakeFace(face, surf, 1e-6);
 
 // calculate intersection area
 GProp_GProps props = GProp_GProps();
