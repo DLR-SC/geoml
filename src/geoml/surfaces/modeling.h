@@ -5,12 +5,16 @@
  * by interpolating or approximating points and curves
  */
 
-#include <Geom_BSplineSurface.hxx>
-#include <Geom_Curve.hxx>
+
 #include <geoml/geoml.h>
 
+#include <Geom_BSplineSurface.hxx>
+#include <Geom_Curve.hxx>
+#include <gp_Vec.hxx>
+#include <TopoDS_Shape.hxx>
 
 #include <vector>
+#include <cmath>
 
 namespace geoml
 {
@@ -47,5 +51,20 @@ GEOML_API_EXPORT Handle(Geom_BSplineSurface)
 interpolate_curves(const std::vector<Handle(Geom_Curve)>& curves,
                    unsigned int max_degree=3,
                    bool join_continuously=false);
+
+/**
+ * @brief Create a revolving shape
+ *
+ * //@param profile_shape Profile shape (can be a point, a curve or a surface)
+ * //@param start_point_rotation_axis Start point of the rotation axis
+ * //@param rotation_axis_direction The rotation axis direction defined by a vector
+ * //@param angle The rotation angle (2*PI by default)
+ */
+GEOML_API_EXPORT TopoDS_Shape
+revolving_shape(const TopoDS_Shape& profile_shape,
+                  const gp_Pnt& start_point_rotation_axis,
+                  const gp_Vec& rotation_axis_direction,
+                  const Standard_Real angle=2*M_PI); 
+
 
 } // namespace geoml

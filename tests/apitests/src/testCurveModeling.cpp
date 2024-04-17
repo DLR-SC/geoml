@@ -90,7 +90,7 @@ Standard_Integer degree = 2;
 // weights:
 std::vector<Standard_Real> weights(5,1.0);
 
-// knots: note: as the number of knots (m+1), the number of control points (p+1) and the degree p
+// knots: note: as the number of knots (m+1), the number of control points (n+1) and the degree p
 // are related by m = n + p +1, the number of knots has to be 8 in this case. To achive this, in the following the
 // first and the last knot have to appear trice (have multiplicity of 3)
 

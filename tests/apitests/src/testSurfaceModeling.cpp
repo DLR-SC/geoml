@@ -1,18 +1,24 @@
 #include <geoml/surfaces/modeling.h>
+#include <geoml/curves/modeling.h>
+#include <geoml/geom_topo/modeling.h>
 
 #include <gtest/gtest.h>
 
 #include <GeomConvert.hxx>
-
 #include <BRep_Builder.hxx>
 #include <BRepTools.hxx>
 #include <BRepBuilderAPI_MakeFace.hxx>
+#include "GProp_GProps.hxx"
+#include "BRepGProp.hxx"
+
 
 #include <TopoDS_Shape.hxx>
 #include <TopExp.hxx>
 #include <TopExp_Explorer.hxx>
 #include <TopoDS.hxx>
 #include <TopoDS_Edge.hxx>
+#include <gp_Pnt.hxx>
+#include <gp_Vec.hxx>
 
 #include <filesystem>
 
@@ -146,3 +152,57 @@ INSTANTIATE_TEST_SUITE_P(SurfaceModeling, interpolate_curves, ::testing::Values(
   "fuselage2",
   "ffd"
 ));
+
+
+TEST(Test_revolving_shape, simple_revolving_surface)
+{    
+
+// define an open and clamped NURBS curve of degree 2
+
+// control points
+gp_Pnt p1(1.0, 0.0, 0.0);
+gp_Pnt p2(1.0, 0.0, 1.0);
+gp_Pnt p3(1.0, 0.0, 2.0);
+gp_Pnt p4(1.0, 0.0, 3.0);
+gp_Pnt p5(1.0, 0.0, 4.0);
+
+std::vector<gp_Pnt> control_points {p1, p2, p3, p4, p5};
+
+// degree:
+Standard_Integer degree = 2;
+
+// weights:
+std::vector<Standard_Real> weights(5,1.0);
+
+// knots: 
+std::vector<Standard_Real> knots{0.0, 1.0, 2.0, 3.0};
+
+// multiplicities: 
+std::vector<int> mults {3, 1, 1, 3};
+
+Handle(Geom_BSplineCurve) curve =
+    geoml::nurbs_curve(
+        control_points, 
+        weights, 
+        knots, 
+        mults, 
+        degree);
+
+TopoDS_Edge edge = geoml::CurveToEdge(curve);
+
+gp_Pnt pnt (0., 0., 0.);
+gp_Vec vec (0., 0., 1.);
+
+TopoDS_Shape face = geoml::revolving_shape(edge, pnt, vec); 
+
+// calculate area of a cylinder with radius 1 and hight 4:
+double expected_surface_area = 2 * M_PI * 1 * 4; 
+
+// calculate intersection area
+GProp_GProps props = GProp_GProps();
+BRepGProp::SurfaceProperties(face, props);
+double area_surf = props.Mass();
+
+EXPECT_NEAR(area_surf, expected_surface_area, 1e-1);
+
+}
