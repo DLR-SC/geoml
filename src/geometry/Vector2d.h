@@ -28,11 +28,11 @@ namespace geoml
 {
 
 template<typename T>
-class List2d
+class Vector2d
 {
 public:
 
-    List2d(int rows, int cols);
+    Vector2d(int rows, int cols);
 
     // 2d_list(std::vector<std::vector<T>> 2d_vec);
 
@@ -44,11 +44,11 @@ public:
 
     const T& operator()(int row, int col) const;
 
-    void add(int row, int col, T input);
+    void setValue(int row, int col, T input);
 
-    int numRows() const;
+    int rowLength() const;
 
-    int numCols() const;
+    int colLength() const;
 
 private:
 
