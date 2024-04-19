@@ -34,27 +34,25 @@ public:
 
     Vector2d(int rows, int cols);
 
-    // 2d_list(std::vector<std::vector<T>> 2d_vec);
+    //T& at(int row, int col);
 
-    T& at(int row, int col);
+    //const T& at(int row, int col); 
 
-    const T& at(int row, int col); 
+    //T& operator()(int row, int col);
 
-    T& operator()(int row, int col);
+    //const T& operator()(int row, int col) const;
 
-    const T& operator()(int row, int col) const;
+    //void setValue(int row, int col, T input);
 
-    void setValue(int row, int col, T input);
+    //int rowLength() const;
 
-    int rowLength() const;
-
-    int colLength() const;
+    //int colLength() const;
 
 private:
 
     int m_rows;
     int m_cols;
-    std::vector<T> flat_data;
+    std::vector<T> m_flat_data;
 
 };
 
