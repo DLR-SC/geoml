@@ -47,9 +47,13 @@ public:
         return m_flat_data.at((row + 1) * m_cols - (m_cols - (col + 1)) - 1);
     } 
 
-    //T& operator()(int row, int col);
+    T& operator()(int row, int col) {
+        return this->at(row, col);
+    }
 
-    //const T& operator()(int row, int col) const;
+    const T& operator()(int row, int col) const {
+        return this->at(row,col);
+    }
 
     //void setValue(int row, int col, T input);
 
