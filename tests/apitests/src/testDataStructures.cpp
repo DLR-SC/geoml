@@ -20,11 +20,12 @@ EXPECT_EQ(vec2d_int.at(3,2), 0);
 vec2d_int.at(3,2) = 55;
 
 EXPECT_EQ(vec2d_int.at(3,2), 55);
+EXPECT_EQ(vec2d_int(3,2), 55);
 
 const geoml::Vector2d<int> vec2d_int_const (4,3);
 
-
-
+EXPECT_EQ(vec2d_int_const.at(1,1), 0);
+EXPECT_EQ(vec2d_int_const(1,1), 0);
 
 }
 
