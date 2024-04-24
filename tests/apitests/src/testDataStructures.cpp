@@ -5,8 +5,6 @@
 
 #include <gp_Pnt.hxx>
 
-#include <iostream>
-
 
 TEST(Test_Vector2d, simple_Vector2d_test)
 {    
