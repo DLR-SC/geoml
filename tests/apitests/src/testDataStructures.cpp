@@ -27,6 +27,16 @@ const geoml::Vector2d<int> vec2d_int_const (4,3);
 EXPECT_EQ(vec2d_int_const.at(1,1), 0);
 EXPECT_EQ(vec2d_int_const(1,1), 0);
 
+vec2d_int.setValue(3,2,888);
+
+EXPECT_EQ(vec2d_int.at(3,2), 888);
+
+EXPECT_EQ(vec2d_int.rowLength(), 5);
+EXPECT_FALSE(vec2d_int.rowLength() == 3);
+EXPECT_EQ(vec2d_int.colLength(), 4);
+EXPECT_FALSE(vec2d_int.colLength() == 3);
+
+
 }
 
 
