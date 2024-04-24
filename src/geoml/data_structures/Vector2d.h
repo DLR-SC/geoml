@@ -52,20 +52,19 @@ public:
         return this->at(row,col);
     }
 
-    void setValue(int row, int col, T input) {
+    GEOML_API_EXPORT void setValue(int row, int col, T input) {
         m_flat_data.at((row + 1) * m_cols - (m_cols - (col + 1)) - 1) = input;
     }
 
-    int rowLength() const {
+    GEOML_API_EXPORT int rowLength() const {
         return m_rows;
     }
 
-    int colLength() const {
+    GEOML_API_EXPORT int colLength() const {
         return m_cols;
     }
 
 private:
-
     int m_rows;
     int m_cols;
     std::vector<T> m_flat_data;
