@@ -34,13 +34,18 @@ public:
 
     GEOML_API_EXPORT Vector2d(int rows, int cols) : m_rows{rows}, m_cols{cols}, m_flat_data(m_rows * m_cols) {}
 
+
     // Remark: We will use the following mapping to map a 2d-index to the corresponding 1d-index in 
     // the flattened vector: (i,j) -> (i + 1) * m - (m - (j + 1)) - 1
     // The inverse mapping is given by: k -> ( floor(k / m_rows), k - floor(k / m) * m )
 
-    //T& at(int row, int col);
+    GEOML_API_EXPORT T& at(int row, int col) {
+        return m_flat_data.at((row + 1) * m_cols - (m_cols - (col + 1)) - 1);
+    }
 
-    //const T& at(int row, int col); 
+    GEOML_API_EXPORT const T& at(int row, int col) const {
+        return m_flat_data.at((row + 1) * m_cols - (m_cols - (col + 1)) - 1);
+    } 
 
     //T& operator()(int row, int col);
 

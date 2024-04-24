@@ -11,7 +11,19 @@
 TEST(Test_Vector2d, simple_Vector2d_test)
 {    
 
-geoml::Vector2d<int> my_vec2d (5,4);
+geoml::Vector2d<int> vec2d_int (5,4);
+
+geoml::Vector2d<double> my_vec2d_double (2,5);
+
+EXPECT_EQ(vec2d_int.at(3,2), 0);
+
+vec2d_int.at(3,2) = 55;
+
+EXPECT_EQ(vec2d_int.at(3,2), 55);
+
+const geoml::Vector2d<int> vec2d_int_const (4,3);
+
+
 
 
 }
