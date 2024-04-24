@@ -36,7 +36,6 @@ EXPECT_FALSE(vec2d_int.rowLength() == 3);
 EXPECT_EQ(vec2d_int.colLength(), 4);
 EXPECT_FALSE(vec2d_int.colLength() == 3);
 
-
 }
 
 

@@ -66,31 +66,5 @@ revolving_shape(const TopoDS_Shape& profile_shape,
                   const gp_Vec& rotation_axis_direction,
                   const Standard_Real angle=2*M_PI); 
 
-/**
- * @brief Create a NURBS surface
- *
- * //@param control_points A 2-dimensional control point net
- * //@param weights A 2-dimensional weights net 
- * //@param U_knots The knot vector in U-direction
- * //@param V_knots The knot vector in V-direction
- * //@param U_mults The multiplicities of the U-direction knots
- * //@param V_mults The multiplicities of the V-direction knots
- * //@param U_degree The degree in U-direction
- * //@param V_degree The degree in V-direction
- * //@param U_periodic Boolean flag for periodicity in U-direction
- * //@param V_periodic Boolean flag for periodicity in V-direction
- */
-GEOML_API_EXPORT Handle(Geom_BSplineSurface)
-nurbs_surface(const TColgp_Array2OfPnt &control_points, // now, we have to decide what to do here
-                 const TColStd_Array2OfReal &weights, 
-                 const TColStd_Array1OfReal &U_knots, 
-                 const TColStd_Array1OfReal &V_knots, 
-                 const TColStd_Array1OfInteger &U_mults, 
-                 const TColStd_Array1OfInteger &V_mults, 
-                 const Standard_Integer U_degree, 
-                 const Standard_Integer V_degree, 
-                 const Standard_Boolean U_periodic=Standard_False, 
-                 const Standard_Boolean V_periodic=Standard_False);
-
 
 } // namespace geoml
