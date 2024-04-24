@@ -55,11 +55,17 @@ public:
         return this->at(row,col);
     }
 
-    //void setValue(int row, int col, T input);
+    void setValue(int row, int col, T input) {
+        m_flat_data.at((row + 1) * m_cols - (m_cols - (col + 1)) - 1) = input;
+    }
 
-    //int rowLength() const;
+    int rowLength() const {
+        return m_rows;
+    }
 
-    //int colLength() const;
+    int colLength() const {
+        return m_cols;
+    }
 
 private:
 
