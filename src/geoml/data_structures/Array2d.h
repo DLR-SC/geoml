@@ -45,11 +45,11 @@ public:
     } 
 
     GEOML_API_EXPORT T& operator()(int row, int col) {
-        return this->at(row, col);
+        return m_flat_data[row * m_cols + col];
     }
 
     GEOML_API_EXPORT const T& operator()(int row, int col) const {
-        return this->at(row,col);
+        return m_flat_data[row * m_cols + col];
     }
 
     GEOML_API_EXPORT void setValue(int row, int col, T input) {
