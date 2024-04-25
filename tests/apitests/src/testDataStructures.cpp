@@ -1,17 +1,17 @@
 
-#include "geoml/data_structures/Vector2d.h"
+#include "geoml/data_structures/Array2d.h"
 
 #include <gtest/gtest.h>
 
 #include <gp_Pnt.hxx>
 
 
-TEST(Test_Vector2d, simple_Vector2d_test)
+TEST(Test_Array2d, simple_Array2d_test)
 {    
 
-geoml::Vector2d<int> vec2d_int (5,4);
+geoml::Array2d<int> vec2d_int (5,4);
 
-geoml::Vector2d<double> my_vec2d_double (2,5);
+geoml::Array2d<double> my_vec2d_double (2,5);
 
 EXPECT_EQ(vec2d_int.at(3,2), 0);
 
@@ -20,7 +20,7 @@ vec2d_int.at(3,2) = 55;
 EXPECT_EQ(vec2d_int.at(3,2), 55);
 EXPECT_EQ(vec2d_int(3,2), 55);
 
-const geoml::Vector2d<int> vec2d_int_const (4,3);
+const geoml::Array2d<int> vec2d_int_const (4,3);
 
 EXPECT_EQ(vec2d_int_const.at(1,1), 0);
 EXPECT_EQ(vec2d_int_const(1,1), 0);
