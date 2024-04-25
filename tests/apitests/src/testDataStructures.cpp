@@ -3,8 +3,6 @@
 
 #include <gtest/gtest.h>
 
-#include <gp_Pnt.hxx>
-
 
 TEST(Test_Array2d, simple_Array2d_test)
 {    
