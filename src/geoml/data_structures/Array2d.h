@@ -32,16 +32,16 @@ class Array2d
 {
 public:
     // Remark: We will use the following mapping to map a 2d-index to the corresponding 1d-index in 
-    // the flattened vector: (i,j) -> (i + 1) * m - (m - (j + 1)) - 1
-    // The inverse mapping is given by: k -> ( floor(k / m_rows), k - floor(k / m) * m )
+    // the flattened vector: (i,j) -> i * m + j
+    // The inverse mapping is given by: k -> ( floor(k / m_rows), k - floor(k / m) * m ) (or a reformulation using division with remainder)
     GEOML_API_EXPORT Array2d(int rows, int cols) : m_rows{rows}, m_cols{cols}, m_flat_data(m_rows * m_cols) {}
 
     GEOML_API_EXPORT T& at(int row, int col) {
-        return m_flat_data.at((row + 1) * m_cols - (m_cols - (col + 1)) - 1);
+        return m_flat_data.at(row * m_cols + col);
     }
 
     GEOML_API_EXPORT const T& at(int row, int col) const {
-        return m_flat_data.at((row + 1) * m_cols - (m_cols - (col + 1)) - 1);
+        return m_flat_data.at(row * m_cols + col);
     } 
 
     GEOML_API_EXPORT T& operator()(int row, int col) {
@@ -53,7 +53,7 @@ public:
     }
 
     GEOML_API_EXPORT void setValue(int row, int col, T input) {
-        m_flat_data.at((row + 1) * m_cols - (m_cols - (col + 1)) - 1) = input;
+        m_flat_data.at(row * m_cols + col) = input;
     }
 
     GEOML_API_EXPORT int rowLength() const {
