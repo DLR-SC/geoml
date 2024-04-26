@@ -8,9 +8,12 @@
 
 #include <geoml/geoml.h>
 
+#include "geoml/data_structures/Array2d.h"
+
 #include <Geom_BSplineSurface.hxx>
 #include <Geom_Curve.hxx>
 #include <gp_Vec.hxx>
+#include <gp_Pnt.hxx>
 #include <TopoDS_Shape.hxx>
 
 #include <vector>
@@ -80,17 +83,17 @@ revolving_shape(const TopoDS_Shape& profile_shape,
  * //@param U_periodic Boolean flag for periodicity in U-direction
  * //@param V_periodic Boolean flag for periodicity in V-direction
  */
-// GEOML_API_EXPORT Handle(Geom_BSplineSurface)
-// nurbs_surface(const Array2d<gp_Pnt> &control_points, // now, we have to decide what to do here
-//                  const Array2d<Standard_Real> &weights, 
-//                  const std::vector<Standard_Real> &U_knots, 
-//                  const std::vector<Standard_Real> &V_knots, 
-//                  const std::vector<int> &U_mults, 
-//                  const std::vector<int> &V_mults, 
-//                  const int U_degree, 
-//                  const int V_degree, 
-//                  const bool U_periodic=false, 
-//                  const bool V_periodic=false);
+GEOML_API_EXPORT Handle(Geom_BSplineSurface)
+nurbs_surface(const Array2d<gp_Pnt> &control_points, // now, we have to decide what to do here
+                 const Array2d<Standard_Real> &weights, 
+                 const std::vector<Standard_Real> &U_knots, 
+                 const std::vector<Standard_Real> &V_knots, 
+                 const std::vector<int> &U_mults, 
+                 const std::vector<int> &V_mults, 
+                 const int U_degree, 
+                 const int V_degree, 
+                 const bool U_periodic=false, 
+                 const bool V_periodic=false);
 /*
 GEOML_API_EXPORT Handle(Geom_BSplineSurface)
 nurbs_surface(const TColgp_Array2OfPnt &control_points, // now, we have to decide what to do here
