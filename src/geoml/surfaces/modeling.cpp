@@ -51,18 +51,18 @@ revolving_shape(const TopoDS_Shape& profile_shape,
     return revol_shape;
 }
 
-Handle(Geom_BSplineSurface)
-nurbs_surface(const Array2d<gp_Pnt> &control_points,
-                 const Array2d<Standard_Real> &weights, 
-                 const std::vector<Standard_Real> &U_knots, 
-                 const std::vector<Standard_Real> &V_knots, 
-                 const std::vector<int> &U_mults, 
-                 const std::vector<int> &V_mults, 
-                 const int U_degree, 
-                 const int V_degree, 
-                 const bool U_periodic=false, 
-                 const bool V_periodic=false)
-{
+// Handle(Geom_BSplineSurface)
+// nurbs_surface(const Array2d<gp_Pnt> &control_points,
+//                  const Array2d<Standard_Real> &weights, 
+//                  const std::vector<Standard_Real> &U_knots, 
+//                  const std::vector<Standard_Real> &V_knots, 
+//                  const std::vector<int> &U_mults, 
+//                  const std::vector<int> &V_mults, 
+//                  const int U_degree, 
+//                  const int V_degree, 
+//                  const bool U_periodic=false, 
+//                  const bool V_periodic=false)
+//{
  /* 
     TColgp_Array2OfPnt control_points_col (1, control_points.at(0).size(), 1, control_points.size());
 
@@ -136,6 +136,6 @@ nurbs_surface(const Array2d<gp_Pnt> &control_points,
 
     return srf_handle; 
 */
-}
+//}
 
 } // namespace geoml

@@ -3,6 +3,8 @@
 
 #include <gtest/gtest.h>
 
+#include <iostream>
+
 
 TEST(Test_Array2d, simple_Array2d_test)
 {    
@@ -31,6 +33,30 @@ EXPECT_EQ(vec2d_int.rowLength(), 5);
 EXPECT_FALSE(vec2d_int.rowLength() == 3);
 EXPECT_EQ(vec2d_int.colLength(), 4);
 EXPECT_FALSE(vec2d_int.colLength() == 3);
+
+}
+
+TEST(Test_ConvertArray2d_gp_Pnt_ToTCol, simple_conversion_to_TCol_gp_Pnt)
+{
+    gp_Pnt pt_00 (0., 0., 0.);
+    gp_Pnt pt_10 (1., 0., 0.);
+    gp_Pnt pt_20 (2., 0., 0.);
+    gp_Pnt pt_01 (3., 0., 0.);
+    gp_Pnt pt_11 (4., 0., 0.);
+    gp_Pnt pt_21 (5., 0., 0.);
+
+    geoml::Array2d<gp_Pnt> vec2d_gp_Pnt (3,2);
+
+    vec2d_gp_Pnt.setValue(0, 0, pt_00);
+    vec2d_gp_Pnt.setValue(1, 0, pt_10);
+    vec2d_gp_Pnt.setValue(2, 0, pt_20);
+    vec2d_gp_Pnt.setValue(0, 1, pt_01);
+    vec2d_gp_Pnt.setValue(1, 1, pt_11);
+    vec2d_gp_Pnt.setValue(2, 1, pt_21);
+
+    TColgp_Array2OfPnt points_2d = geoml::convertArray2d_gp_Pnt_to_TCol(vec2d_gp_Pnt);
+
+    EXPECT_NEAR(points_2d.Value(1,2).X(),pt_01.X(),1e-5);
 
 }
 
