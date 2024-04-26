@@ -51,4 +51,91 @@ revolving_shape(const TopoDS_Shape& profile_shape,
     return revol_shape;
 }
 
+Handle(Geom_BSplineSurface)
+nurbs_surface(const Array2d<gp_Pnt> &control_points,
+                 const Array2d<Standard_Real> &weights, 
+                 const std::vector<Standard_Real> &U_knots, 
+                 const std::vector<Standard_Real> &V_knots, 
+                 const std::vector<int> &U_mults, 
+                 const std::vector<int> &V_mults, 
+                 const int U_degree, 
+                 const int V_degree, 
+                 const bool U_periodic=false, 
+                 const bool V_periodic=false)
+{
+ /* 
+    TColgp_Array2OfPnt control_points_col (1, control_points.at(0).size(), 1, control_points.size());
+
+    for(int i = 0; i < control_points.size(); ++i)
+    {
+        for(int j = 0; j < control_points.at(0).size(); ++j)
+        {
+            control_points_col.SetValue(j + 1, i + 1, control_points.at(i).at(j));
+        }
+    }
+
+    TColStd_Array2OfReal weights_col (1, control_points.at(0).size(), 1, control_points.size());
+
+    for(int i = 0; i < control_points.size(); ++i)
+    {
+        for(int j = 0; j < control_points.at(0).size(); ++j)
+        {
+            weights_col.SetValue(j + 1, i + 1, weights.at(i).at(j));
+        }
+    }
+
+    TColStd_Array1OfReal U_knots_col (1, U_knots.size());
+
+    for(int i = 0; i < U_knots.size(); ++i)
+    {
+        U_knots_col.SetValue(i + 1, U_knots.at(i));
+    }
+
+    TColStd_Array1OfReal V_knots_col (1, V_knots.size());
+
+    for(int i = 0; i < V_knots.size(); ++i)
+    {
+        V_knots_col.SetValue(i + 1, V_knots.at(i));
+    }
+
+    TColStd_Array1OfInteger U_mults_col (1, U_mults.size());
+
+    for(int i = 0; i < U_mults.size(); ++i)
+    {
+        U_mults_col.SetValue(i + 1, U_mults.at(i));
+    }
+
+    TColStd_Array1OfInteger V_mults_col (1, V_mults.size());
+
+    for(int i = 0; i < V_mults.size(); ++i)
+    {
+        V_mults_col.SetValue(i + 1, V_mults.at(i));
+    }
+    
+    Handle(Geom_BSplineSurface) srf_handle = new Geom_BSplineSurface( control_points_col,
+                                                                    weights_col,
+                                                                    U_knots_col,
+                                                                    V_knots_col,
+                                                                    U_mults_col,
+                                                                    V_mults_col,
+                                                                    U_degree,
+                                                                    V_degree,
+                                                                    U_periodic,
+                                                                    V_periodic );
+    
+    Handle(Geom_BSplineSurface) srf_handle = new Geom_BSplineSurface( control_points,
+                                                                    weights,
+                                                                    U_knots,
+                                                                    V_knots,
+                                                                    U_mults,
+                                                                    V_mults,
+                                                                    U_degree,
+                                                                    V_degree,
+                                                                    U_periodic,
+                                                                    V_periodic );
+
+    return srf_handle; 
+*/
+}
+
 } // namespace geoml
