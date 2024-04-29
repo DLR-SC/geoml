@@ -92,7 +92,7 @@ nurbs_surface(const Array2d<gp_Pnt> &control_points, // now, we have to decide w
                  const std::vector<int> &V_mults, 
                  const int U_degree, 
                  const int V_degree, 
-                 const bool U_periodic=false, 
+                 const bool U_periodic=false,
                  const bool V_periodic=false);
 /*
 GEOML_API_EXPORT Handle(Geom_BSplineSurface)
