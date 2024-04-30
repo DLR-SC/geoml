@@ -1,6 +1,7 @@
 #include <geoml/surfaces/modeling.h>
 #include <geoml/curves/modeling.h>
 #include <geoml/geom_topo/modeling.h>
+#include <geoml/data_structures/Array2d.h>
 
 #include <gtest/gtest.h>
 
@@ -21,6 +22,8 @@
 #include <gp_Vec.hxx>
 
 #include <filesystem>
+
+#include <iostream>
 
 namespace apitests
 {
@@ -204,5 +207,64 @@ BRepGProp::SurfaceProperties(face, props);
 double area_surf = props.Mass();
 
 EXPECT_NEAR(area_surf, expected_surface_area, 1e-1);
+
+}
+
+TEST(Test_nurbs_surface, simple_nurbs_surface)
+{    
+// define a non-rational B-spline surface
+
+// control points
+gp_Pnt p_00(0.0, 0.0, 0.0);
+gp_Pnt p_10(0.0, 1.0, 0.0);
+gp_Pnt p_20(0.0, 2.0, 0.0);
+gp_Pnt p_01(1.0, 0.0, 0.0);
+gp_Pnt p_11(1.0, 1.0, 0.0);
+gp_Pnt p_21(1.0, 2.0, 1.0);
+
+geoml::Array2d<gp_Pnt> control_points (3,2);
+
+control_points.setValue(0, 0, p_00);
+control_points.setValue(1, 0, p_10);
+control_points.setValue(2, 0, p_20);
+control_points.setValue(0, 1, p_01);
+control_points.setValue(1, 1, p_11);
+control_points.setValue(2, 1, p_21);
+
+geoml::Array2d<Standard_Real> weights (3,2);
+
+weights.setValue(0, 0, 1.);
+weights.setValue(1, 0, 1.);
+weights.setValue(2, 0, 1.);
+weights.setValue(0, 1, 1.);
+weights.setValue(1, 1, 1.);
+weights.setValue(2, 1, 1.);
+
+std::vector<Standard_Real> U_knots;
+
+U_knots.push_back(0.0);
+U_knots.push_back(1.0);
+
+std::vector<Standard_Real> V_knots;
+
+V_knots.push_back(0.0);
+V_knots.push_back(1.0);
+
+std::vector<int> U_mults;
+
+U_mults.push_back(3);
+U_mults.push_back(3);
+
+std::vector<int> V_mults;
+
+V_mults.push_back(2);
+V_mults.push_back(2);
+
+int U_degree = 2;
+int V_degree = 1;
+
+std::cout << " test here..." << std::endl;
+
+Handle(Geom_BSplineSurface) test_surface = geoml::nurbs_surface(control_points, weights, U_knots, V_knots, U_mults, V_mults, U_degree, V_degree);
 
 }
