@@ -20,10 +20,7 @@
 */
 #pragma once
 
-#include <geoml/geoml.h>
-
-#include <gp_Pnt.hxx>
-#include <TColgp_Array2OfPnt.hxx>   
+#include <geoml/geoml.h>  
 
 #include <vector>
 
@@ -73,8 +70,6 @@ private:
     std::vector<T> m_flat_data;
 
 };
-
-GEOML_API_EXPORT TColgp_Array2OfPnt convertArray2d_gp_Pnt_to_TCol(Array2d<gp_Pnt> &point_net);
 
 } // end namespace geoml
 

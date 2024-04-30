@@ -1,5 +1,6 @@
 
 #include "geoml/data_structures/Array2d.h"
+#include "geoml/data_structures/conversions.h"
 
 #include <gtest/gtest.h>
 
@@ -54,7 +55,7 @@ TEST(Test_ConvertArray2d_gp_Pnt_ToTCol, simple_conversion_to_TCol_gp_Pnt)
     vec2d_gp_Pnt.setValue(1, 1, pt_11);
     vec2d_gp_Pnt.setValue(2, 1, pt_21);
 
-    TColgp_Array2OfPnt points_2d = geoml::convertArray2d_gp_Pnt_to_TCol(vec2d_gp_Pnt);
+    TColgp_Array2OfPnt points_2d = geoml::Array2d_to_TCol(vec2d_gp_Pnt);
 
     EXPECT_NEAR(points_2d.Value(1,2).X(),pt_01.X(),1e-5);
 

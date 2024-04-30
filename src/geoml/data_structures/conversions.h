@@ -1,8 +1,17 @@
-#include Array2d.h
+#pragma once
 
-namespace geoml{
+#include "geoml/data_structures/Array2d.h"
 
-GEOML_API_EXPORT TColgp_Array2OfPnt convertArray2d_gp_Pnt_to_TCol(Array2d<gp_Pnt> &point_net)
+#include <geoml/geoml.h>
+
+#include <gp_Pnt.hxx>
+#include <TColgp_Array2OfPnt.hxx>   
+
+namespace geoml 
+{
+
+template <typename T>
+GEOML_API_EXPORT  NCollection_Array2<T> Array2d_to_TCol(Array2d<T> const &point_net)
 {
     TColgp_Array2OfPnt points_col (1, point_net.rowLength(), 1, point_net.colLength());
 
@@ -16,5 +25,5 @@ GEOML_API_EXPORT TColgp_Array2OfPnt convertArray2d_gp_Pnt_to_TCol(Array2d<gp_Pnt
 
     return points_col;
 }
-} // namespace geoml
 
+} // end namespace geoml
