@@ -12,8 +12,12 @@
 #include <TopoDS.hxx>
 #include <BRep_Tool.hxx>
 #include <GeomConvert.hxx>
+#include <gp_Pnt.hxx>
 #include <gp_Ax1.hxx>
 #include <gp_Dir.hxx>
+#include <TColgp_Array2OfPnt.hxx>
+#include <TColStd_Array2OfReal.hxx>
+#include <TColStd_Array1OfReal.hxx>
 
 namespace geoml{
 
@@ -51,39 +55,39 @@ revolving_shape(const TopoDS_Shape& profile_shape,
     return revol_shape;
 }
 
-// Handle(Geom_BSplineSurface)
-// nurbs_surface(const Array2d<gp_Pnt> &control_points,
-//                  const Array2d<Standard_Real> &weights, 
-//                  const std::vector<Standard_Real> &U_knots, 
-//                  const std::vector<Standard_Real> &V_knots, 
-//                  const std::vector<int> &U_mults, 
-//                  const std::vector<int> &V_mults, 
-//                  const int U_degree, 
-//                  const int V_degree, 
-//                  const bool U_periodic=false, 
-//                  const bool V_periodic=false)
-//{
- /* 
-    TColgp_Array2OfPnt control_points_col (1, control_points.at(0).size(), 1, control_points.size());
+Handle(Geom_BSplineSurface)
+nurbs_surface(const Array2d<gp_Pnt> &control_points, 
+                 const Array2d<Standard_Real> &weights, 
+                 const std::vector<Standard_Real> &U_knots, 
+                 const std::vector<Standard_Real> &V_knots, 
+                 const std::vector<int> &U_mults, 
+                 const std::vector<int> &V_mults, 
+                 const int U_degree, 
+                 const int V_degree, 
+                 const bool U_periodic,
+                 const bool V_periodic)
+{
 
-    for(int i = 0; i < control_points.size(); ++i)
+    TColgp_Array2OfPnt control_points_col (1, control_points.rowLength(), 1, control_points.colLength());
+
+    for(int i = 0; i < control_points.rowLength(); ++i)
     {
-        for(int j = 0; j < control_points.at(0).size(); ++j)
+        for(int j = 0; j < control_points.colLength(); ++j)
         {
-            control_points_col.SetValue(j + 1, i + 1, control_points.at(i).at(j));
+            control_points_col.SetValue(i + 1, j + 1, control_points.at(i, j));
         }
     }
 
-    TColStd_Array2OfReal weights_col (1, control_points.at(0).size(), 1, control_points.size());
+    TColStd_Array2OfReal weights_col (1, control_points.rowLength(), 1, control_points.colLength());
 
-    for(int i = 0; i < control_points.size(); ++i)
+    for(int i = 0; i < control_points.rowLength(); ++i)
     {
-        for(int j = 0; j < control_points.at(0).size(); ++j)
+        for(int j = 0; j < control_points.colLength(); ++j)
         {
-            weights_col.SetValue(j + 1, i + 1, weights.at(i).at(j));
+            weights_col.SetValue(j + 1, i + 1, weights.at(i, j));
         }
     }
-
+ 
     TColStd_Array1OfReal U_knots_col (1, U_knots.size());
 
     for(int i = 0; i < U_knots.size(); ++i)
@@ -111,7 +115,7 @@ revolving_shape(const TopoDS_Shape& profile_shape,
     {
         V_mults_col.SetValue(i + 1, V_mults.at(i));
     }
-    
+
     Handle(Geom_BSplineSurface) srf_handle = new Geom_BSplineSurface( control_points_col,
                                                                     weights_col,
                                                                     U_knots_col,
@@ -122,20 +126,8 @@ revolving_shape(const TopoDS_Shape& profile_shape,
                                                                     V_degree,
                                                                     U_periodic,
                                                                     V_periodic );
-    
-    Handle(Geom_BSplineSurface) srf_handle = new Geom_BSplineSurface( control_points,
-                                                                    weights,
-                                                                    U_knots,
-                                                                    V_knots,
-                                                                    U_mults,
-                                                                    V_mults,
-                                                                    U_degree,
-                                                                    V_degree,
-                                                                    U_periodic,
-                                                                    V_periodic );
 
     return srf_handle; 
-*/
-//}
+}
 
 } // namespace geoml
