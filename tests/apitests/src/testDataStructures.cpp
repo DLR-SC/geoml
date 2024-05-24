@@ -2,6 +2,8 @@
 #include "geoml/data_structures/Array2d.h"
 #include "geoml/data_structures/conversions.h"
 
+#include <TColgp_Array2OfPnt.hxx>
+
 #include <gtest/gtest.h>
 
 #include <iostream>
