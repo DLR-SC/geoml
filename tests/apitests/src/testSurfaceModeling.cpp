@@ -23,8 +23,6 @@
 
 #include <filesystem>
 
-#include <iostream>
-
 namespace apitests
 {
 
@@ -262,8 +260,6 @@ V_mults.push_back(2);
 
 int U_degree = 2;
 int V_degree = 1;
-
-std::cout << " test here..." << std::endl;
 
 Handle(Geom_BSplineSurface) test_surface = geoml::nurbs_surface(control_points, weights, U_knots, V_knots, U_mults, V_mults, U_degree, V_degree);
 

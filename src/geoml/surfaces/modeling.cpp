@@ -19,10 +19,6 @@
 #include <TColStd_Array2OfReal.hxx>
 #include <TColStd_Array1OfReal.hxx>
 
-//
-#include <iostream>
-//
-
 namespace geoml{
 
 Handle(Geom_BSplineSurface) interpolate_curve_network(const std::vector<Handle (Geom_Curve)> &ucurves,
@@ -71,10 +67,6 @@ nurbs_surface(const Array2d<gp_Pnt> &control_points,
                  const bool U_periodic,
                  const bool V_periodic)
 {
-    //
-    std::cout <<"start here" << std::endl;
-    //
-
     TColgp_Array2OfPnt control_points_col (1, control_points.rowLength(), 1, control_points.colLength());
 
     for(int i = 0; i < control_points.rowLength(); ++i)
@@ -84,10 +76,6 @@ nurbs_surface(const Array2d<gp_Pnt> &control_points,
             control_points_col.SetValue(i + 1, j + 1, control_points.at(i, j));
         }
     }
-
-    //
-    std::cout <<"start here two" << std::endl;
-    //
 
     TColStd_Array2OfReal weights_col (1, control_points.rowLength(), 1, control_points.colLength());
 
@@ -126,10 +114,6 @@ nurbs_surface(const Array2d<gp_Pnt> &control_points,
     {
         V_mults_col.SetValue(i + 1, V_mults.at(i));
     }
-
-    //
-    std::cout <<"check last before Geom_BSplineSurface" << std::endl;
-    //
 
     Handle(Geom_BSplineSurface) srf_handle = new Geom_BSplineSurface( control_points_col,
                                                                     weights_col,
