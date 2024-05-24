@@ -1,5 +1,6 @@
 #include "surfaces/modeling.h"
 #include "geoml/curves/modeling.h"
+#include "geoml/data_structures/conversions.h"
 
 #include "geometry/curve-networks/InterpolateCurveNetwork.h"
 #include "geometry/CurvesToSurface.h"
@@ -67,25 +68,9 @@ nurbs_surface(const Array2d<gp_Pnt> &control_points,
                  const bool U_periodic,
                  const bool V_periodic)
 {
-    TColgp_Array2OfPnt control_points_col (1, control_points.rowLength(), 1, control_points.colLength());
+    TColgp_Array2OfPnt control_points_col = geoml::Array2d_to_TCol(control_points);
 
-    for(int i = 0; i < control_points.rowLength(); ++i)
-    {
-        for(int j = 0; j < control_points.colLength(); ++j)
-        {
-            control_points_col.SetValue(i + 1, j + 1, control_points.at(i, j));
-        }
-    }
-
-    TColStd_Array2OfReal weights_col (1, control_points.rowLength(), 1, control_points.colLength());
-
-    for(int i = 0; i < control_points.rowLength(); ++i)
-    {
-        for(int j = 0; j < control_points.colLength(); ++j)
-        {
-            weights_col.SetValue(i + 1, j + 1, weights.at(i, j));
-        }
-    }
+    TColStd_Array2OfReal weights_col = geoml::Array2d_to_TCol(weights);
  
     TColStd_Array1OfReal U_knots_col (1, U_knots.size());
 
