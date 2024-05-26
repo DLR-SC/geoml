@@ -47,4 +47,14 @@ nurbs_curve(
 GEOML_API_EXPORT Handle(Geom_BSplineCurve)
 interpolate_points_to_b_spline_curve(const std::vector<gp_Pnt> &points, int degree = 3, bool continuousIfClosed = false, const std::vector<Standard_Real> &parameters = std::vector<Standard_Real>());
 
+/**
+ * @brief Blending two curves with a Bezier curve
+ * 
+ * @param points 
+ */
+GEOML_API_EXPORT Handle(Geom_BSplineCurve)
+blend_curve(const Handle(Geom_BSplineCurve) &curve_1, const Handle(Geom_BSplineCurve) &curve_2, int continuity_at_start, int continuity_at_end, Standard_Real form_parameter_1, Standard_Real form_parameter_2);
+
+
+
 } // namespace geoml
