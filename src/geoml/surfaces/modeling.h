@@ -5,7 +5,6 @@
  * by interpolating or approximating points and curves
  */
 
-
 #include <geoml/geoml.h>
 
 #include "geoml/data_structures/Array2d.h"
@@ -40,7 +39,6 @@ GEOML_API_EXPORT Handle(Geom_BSplineSurface)
 interpolate_curve_network(const std::vector<Handle(Geom_Curve)>& ucurves,
                           const std::vector<Handle(Geom_Curve)>& vcurves,
                           double tolerance);
-
 
 /**
  * @brief Interpolates the curves by a B-spline surface in v-direction
@@ -94,21 +92,5 @@ nurbs_surface(const Array2d<gp_Pnt> &control_points,
                  const int V_degree, 
                  const bool U_periodic=false,
                  const bool V_periodic=false);
-/*
-GEOML_API_EXPORT Handle(Geom_BSplineSurface)
-nurbs_surface(const TColgp_Array2OfPnt &control_points, // now, we have to decide what to do here
-                 const TColStd_Array2OfReal &weights, 
-                 const TColStd_Array1OfReal &U_knots, 
-                 const TColStd_Array1OfReal &V_knots, 
-                 const TColStd_Array1OfInteger &U_mults, 
-                 const TColStd_Array1OfInteger &V_mults, 
-                 const Standard_Integer U_degree, 
-                 const Standard_Integer V_degree, 
-                 const Standard_Boolean U_periodic=Standard_False, 
-                 const Standard_Boolean V_periodic=Standard_False);
-
-*/
-
-
 
 } // namespace geoml
