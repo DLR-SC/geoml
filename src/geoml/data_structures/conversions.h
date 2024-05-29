@@ -12,7 +12,10 @@ namespace geoml
 
 
 /**
- * @brief We remark that the commonly used class TColgp_Array2OfPnt is a typedef of NCollection_Array2<gp_Pnt>.
+ * @brief Convert an Array2d<T> to NCollection_Array2<T>. We remark that the commonly used class TColgp_Array2OfPnt is a typedef of NCollection_Array2<T>.
+ * 
+ * 
+ * @param net A two dimensional array of objects of type T.
  */
 template <typename T>
 GEOML_API_EXPORT  NCollection_Array2<T> Array2d_to_TCol(Array2d<T> const &net)
