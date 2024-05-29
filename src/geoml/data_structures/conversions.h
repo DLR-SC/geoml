@@ -10,6 +10,10 @@
 namespace geoml 
 {
 
+
+/**
+ * @brief We remark that the commonly used class TColgp_Array2OfPnt is a typedef of NCollection_Array2<gp_Pnt>.
+ */
 template <typename T>
 GEOML_API_EXPORT  NCollection_Array2<T> Array2d_to_TCol(Array2d<T> const &net)
 {
