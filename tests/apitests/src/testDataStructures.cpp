@@ -3,6 +3,7 @@
 #include "geoml/data_structures/conversions.h"
 
 #include <TColgp_Array2OfPnt.hxx>
+#include <TColgp_Array1OfPnt.hxx>
 
 #include <gtest/gtest.h>
 
@@ -39,7 +40,7 @@ EXPECT_FALSE(vec2d_int.colLength() == 3);
 
 }
 
-TEST(Test_ConvertArray2d_gp_Pnt_ToTCol, simple_conversion_to_TCol_gp_Pnt)
+TEST(Test_ConvertArray2d_gp_Pnt_ToTCol, simple_conversion_from_Array2d_to_TCol_gp_Pnt)
 {
     gp_Pnt pt_00 (0., 0., 0.);
     gp_Pnt pt_10 (1., 0., 0.);
@@ -60,6 +61,24 @@ TEST(Test_ConvertArray2d_gp_Pnt_ToTCol, simple_conversion_to_TCol_gp_Pnt)
     TColgp_Array2OfPnt points_2d = geoml::Array2d_to_TCol(vec2d_gp_Pnt);
 
     EXPECT_NEAR(points_2d.Value(1,2).X(),pt_01.X(),1e-5);
+
+}
+
+TEST(Test_ConvertStdVector_ToTCol, simple_conversion_from_std_vector_to_TCol_gp_Pnt)
+{
+    gp_Pnt pt_0 (0., 0., 0.);
+    gp_Pnt pt_1 (1., 0., 0.);
+    gp_Pnt pt_2 (2., 0., 0.);
+
+    std::vector<gp_Pnt> vec_gp_Pnt;
+
+    vec_gp_Pnt.push_back(pt_0);
+    vec_gp_Pnt.push_back(pt_1);
+    vec_gp_Pnt.push_back(pt_2);
+
+    TColgp_Array1OfPnt points = geoml::StdVector_to_TCol(vec_gp_Pnt);
+
+    EXPECT_NEAR(points.Value(2).X(),pt_1.X(),1e-5);
 
 }
 
