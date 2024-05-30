@@ -68,7 +68,7 @@ nurbs_surface(const Array2d<gp_Pnt> &control_points,
                  const bool U_periodic,
                  const bool V_periodic)
 {
-    Handle(Geom_BSplineSurface) srf_handle = new Geom_BSplineSurface( geoml::Array2d_to_TCol(control_points),
+    return new Geom_BSplineSurface(geoml::Array2d_to_TCol(control_points),
                                                                     geoml::Array2d_to_TCol(weights),
                                                                     geoml::StdVector_to_TCol(U_knots),
                                                                     geoml::StdVector_to_TCol(V_knots),
@@ -77,9 +77,8 @@ nurbs_surface(const Array2d<gp_Pnt> &control_points,
                                                                     U_degree,
                                                                     V_degree,
                                                                     U_periodic,
-                                                                    V_periodic );
+                                                                    V_periodic);
 
-    return srf_handle; 
 }
 
 } // namespace geoml
