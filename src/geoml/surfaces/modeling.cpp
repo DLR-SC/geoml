@@ -72,33 +72,13 @@ nurbs_surface(const Array2d<gp_Pnt> &control_points,
 
     TColStd_Array2OfReal weights_col = geoml::Array2d_to_TCol(weights);
  
-    TColStd_Array1OfReal U_knots_col (1, U_knots.size());
+    TColStd_Array1OfReal U_knots_col = geoml::StdVector_to_TCol(U_knots);
 
-    for(int i = 0; i < U_knots.size(); ++i)
-    {
-        U_knots_col.SetValue(i + 1, U_knots.at(i));
-    }
+    TColStd_Array1OfReal V_knots_col = geoml::StdVector_to_TCol(V_knots);
 
-    TColStd_Array1OfReal V_knots_col (1, V_knots.size());
+    TColStd_Array1OfInteger U_mults_col = geoml::StdVector_to_TCol(U_mults);
 
-    for(int i = 0; i < V_knots.size(); ++i)
-    {
-        V_knots_col.SetValue(i + 1, V_knots.at(i));
-    }
-
-    TColStd_Array1OfInteger U_mults_col (1, U_mults.size());
-
-    for(int i = 0; i < U_mults.size(); ++i)
-    {
-        U_mults_col.SetValue(i + 1, U_mults.at(i));
-    }
-
-    TColStd_Array1OfInteger V_mults_col (1, V_mults.size());
-
-    for(int i = 0; i < V_mults.size(); ++i)
-    {
-        V_mults_col.SetValue(i + 1, V_mults.at(i));
-    }
+    TColStd_Array1OfInteger V_mults_col = geoml::StdVector_to_TCol(V_mults);
 
     Handle(Geom_BSplineSurface) srf_handle = new Geom_BSplineSurface( control_points_col,
                                                                     weights_col,
