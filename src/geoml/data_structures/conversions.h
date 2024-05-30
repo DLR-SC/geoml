@@ -6,6 +6,9 @@
 
 #include <gp_Pnt.hxx>
 #include <NCollection_Array2.hxx>   
+#include <NCollection_Array1.hxx>
+
+#include <vector>
 
 namespace geoml 
 {
@@ -31,6 +34,25 @@ GEOML_API_EXPORT  NCollection_Array2<T> Array2d_to_TCol(Array2d<T> const &net)
     }
 
     return net_col;
+}
+
+/**
+ * @brief Convert an std::vector<T> to NCollection_Array1<T>. We remark that the commonly used class TColgp_Array1OfPnt is a typedef of NCollection_Array1<T>.
+ * 
+ *  
+ * @param vec An std::vector<T>. 
+ */
+template <typename T>
+GEOML_API_EXPORT  NCollection_Array1<T> Vector_to_TCol(std::vector<T> const &vec)
+{
+    NCollection_Array1<T> vec_col (1, vec.size());
+
+    for(int i = 0; i < vec.size(); ++i)
+    {
+            vec_col.SetValue(i + 1, vec.at(i));
+    }
+
+    return vec_col;
 }
 
 } // end namespace geoml
