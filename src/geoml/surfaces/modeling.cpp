@@ -68,24 +68,12 @@ nurbs_surface(const Array2d<gp_Pnt> &control_points,
                  const bool U_periodic,
                  const bool V_periodic)
 {
-    TColgp_Array2OfPnt control_points_col = geoml::Array2d_to_TCol(control_points);
-
-    TColStd_Array2OfReal weights_col = geoml::Array2d_to_TCol(weights);
- 
-    TColStd_Array1OfReal U_knots_col = geoml::StdVector_to_TCol(U_knots);
-
-    TColStd_Array1OfReal V_knots_col = geoml::StdVector_to_TCol(V_knots);
-
-    TColStd_Array1OfInteger U_mults_col = geoml::StdVector_to_TCol(U_mults);
-
-    TColStd_Array1OfInteger V_mults_col = geoml::StdVector_to_TCol(V_mults);
-
-    Handle(Geom_BSplineSurface) srf_handle = new Geom_BSplineSurface( control_points_col,
-                                                                    weights_col,
-                                                                    U_knots_col,
-                                                                    V_knots_col,
-                                                                    U_mults_col,
-                                                                    V_mults_col,
+    Handle(Geom_BSplineSurface) srf_handle = new Geom_BSplineSurface( geoml::Array2d_to_TCol(control_points),
+                                                                    geoml::Array2d_to_TCol(weights),
+                                                                    geoml::StdVector_to_TCol(U_knots),
+                                                                    geoml::StdVector_to_TCol(V_knots),
+                                                                    geoml::StdVector_to_TCol(U_mults),
+                                                                    geoml::StdVector_to_TCol(V_mults),
                                                                     U_degree,
                                                                     V_degree,
                                                                     U_periodic,
