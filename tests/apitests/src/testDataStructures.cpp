@@ -60,7 +60,7 @@ TEST(Test_ConvertArray2d_gp_Pnt_ToTCol, simple_conversion_from_Array2d_to_TCol_g
 
     TColgp_Array2OfPnt points_2d = geoml::Array2d_to_TCol(vec2d_gp_Pnt);
 
-    EXPECT_NEAR(points_2d.Value(1,2).X(),pt_01.X(),1e-5);
+    EXPECT_EQ(points_2d.Value(1,2).X(),pt_01.X());
 
 }
 
@@ -78,7 +78,7 @@ TEST(Test_ConvertStdVector_ToTCol, simple_conversion_from_std_vector_to_TCol_gp_
 
     TColgp_Array1OfPnt points = geoml::StdVector_to_TCol(vec_gp_Pnt);
 
-    EXPECT_NEAR(points.Value(2).X(),pt_1.X(),1e-5);
+    EXPECT_EQ(points.Value(2).X(),pt_1.X());
 
 }
 
