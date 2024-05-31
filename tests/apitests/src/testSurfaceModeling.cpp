@@ -263,4 +263,36 @@ int V_degree = 1;
 
 Handle(Geom_BSplineSurface) test_surface = geoml::nurbs_surface(control_points, weights, U_knots, V_knots, U_mults, V_mults, U_degree, V_degree);
 
+gp_Pnt test_pt_00;
+
+test_surface->D0(0., 0., test_pt_00);
+
+EXPECT_NEAR(test_pt_00.X(),0., 1e-5);
+EXPECT_NEAR(test_pt_00.Y(),0., 1e-5);
+EXPECT_NEAR(test_pt_00.Z(),0., 1e-5);
+
+gp_Pnt test_pt_20;
+
+test_surface->D0(1., 0., test_pt_20);
+
+EXPECT_NEAR(test_pt_20.X(),0., 1e-5);
+EXPECT_NEAR(test_pt_20.Y(),2., 1e-5);
+EXPECT_NEAR(test_pt_20.Z(),0., 1e-5);
+
+gp_Pnt test_pt_01;
+
+test_surface->D0(0., 1., test_pt_01);
+
+EXPECT_NEAR(test_pt_01.X(),1., 1e-5);
+EXPECT_NEAR(test_pt_01.Y(),0., 1e-5);
+EXPECT_NEAR(test_pt_01.Z(),0., 1e-5);
+
+gp_Pnt test_pt_21;
+
+test_surface->D0(1., 1., test_pt_21);
+
+EXPECT_NEAR(test_pt_21.X(),1., 1e-5);
+EXPECT_NEAR(test_pt_21.Y(),2., 1e-5);
+EXPECT_NEAR(test_pt_21.Z(),1., 1e-5);
+
 }
