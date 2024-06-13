@@ -18,10 +18,10 @@ namespace geoml
  * @brief Convert an Array2d<T> to NCollection_Array2<T>. We remark as an example that the commonly used class TColgp_Array2OfPnt is a typedef of NCollection_Array2<gp_Pnt>.
  * 
  * 
- * @param net A two dimensional array of objects of type T.
+ * @param net An Array2d<t>.
  */
 template <typename T>
-GEOML_API_EXPORT  NCollection_Array2<T> Array2d_to_TCol(Array2d<T> const &net)
+GEOML_API_EXPORT  NCollection_Array2<T> Array2d_to_TCol (Array2d<T> const &net)
 {
     NCollection_Array2<T> net_col (1, net.rowLength(), 1, net.colLength());
 
@@ -34,6 +34,28 @@ GEOML_API_EXPORT  NCollection_Array2<T> Array2d_to_TCol(Array2d<T> const &net)
     }
 
     return net_col;
+}
+
+/**
+ * @brief Convert an NCollection_Array2<T> to an Array2d<T>. We remark as an example that the commonly used class TColgp_Array2OfPnt is a typedef of NCollection_Array2<gp_Pnt>.
+ * 
+ * 
+ * @param net A NCollection_Array2<T>.
+ */
+template <typename T>
+GEOML_API_EXPORT  Array2d<T> TCol_to_Array2d (NCollection_Array2<T>  const &net)
+{
+    Array2d<T> array_2d (net.RowLength(), net.ColLength());
+
+    for(int i = 0; i < net.RowLength(); ++i)
+    {
+        for(int j = 0; j < net.ColLength(); ++j)
+        {
+            array_2d.setValue(i,j,net.Value(i+1, j+1));
+        }
+    }
+
+    return array_2d;
 }
 
 /**
