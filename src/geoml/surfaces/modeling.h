@@ -5,12 +5,14 @@
  * by interpolating or approximating points and curves
  */
 
-
 #include <geoml/geoml.h>
+
+#include "geoml/data_structures/Array2d.h"
 
 #include <Geom_BSplineSurface.hxx>
 #include <Geom_Curve.hxx>
 #include <gp_Vec.hxx>
+#include <gp_Pnt.hxx>
 #include <TopoDS_Shape.hxx>
 
 #include <vector>
@@ -37,7 +39,6 @@ GEOML_API_EXPORT Handle(Geom_BSplineSurface)
 interpolate_curve_network(const std::vector<Handle(Geom_Curve)>& ucurves,
                           const std::vector<Handle(Geom_Curve)>& vcurves,
                           double tolerance);
-
 
 /**
  * @brief Interpolates the curves by a B-spline surface in v-direction
@@ -66,5 +67,30 @@ revolving_shape(const TopoDS_Shape& profile_shape,
                   const gp_Vec& rotation_axis_direction,
                   const Standard_Real angle=2*M_PI); 
 
+/**
+ * @brief Create a NURBS surface
+ *
+ * //@param control_points A 2d control point net
+ * //@param weights A 2-dimensional weights net 
+ * //@param U_knots The knot vector in U-direction
+ * //@param V_knots The knot vector in V-direction
+ * //@param U_mults The multiplicities of the U-direction knots
+ * //@param V_mults The multiplicities of the V-direction knots
+ * //@param U_degree The degree in U-direction
+ * //@param V_degree The degree in V-direction
+ * //@param U_periodic Boolean flag for periodicity in U-direction
+ * //@param V_periodic Boolean flag for periodicity in V-direction
+ */
+GEOML_API_EXPORT Handle(Geom_BSplineSurface)
+nurbs_surface(const Array2d<gp_Pnt> &control_points, 
+                 const Array2d<Standard_Real> &weights, 
+                 const std::vector<Standard_Real> &U_knots, 
+                 const std::vector<Standard_Real> &V_knots, 
+                 const std::vector<int> &U_mults, 
+                 const std::vector<int> &V_mults, 
+                 const int U_degree, 
+                 const int V_degree, 
+                 const bool U_periodic=false,
+                 const bool V_periodic=false);
 
 } // namespace geoml

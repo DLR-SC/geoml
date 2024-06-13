@@ -1,5 +1,6 @@
 #include "surfaces/modeling.h"
 #include "geoml/curves/modeling.h"
+#include "geoml/data_structures/conversions.h"
 
 #include "geometry/curve-networks/InterpolateCurveNetwork.h"
 #include "geometry/CurvesToSurface.h"
@@ -12,8 +13,12 @@
 #include <TopoDS.hxx>
 #include <BRep_Tool.hxx>
 #include <GeomConvert.hxx>
+#include <gp_Pnt.hxx>
 #include <gp_Ax1.hxx>
 #include <gp_Dir.hxx>
+#include <TColgp_Array2OfPnt.hxx>
+#include <TColStd_Array2OfReal.hxx>
+#include <TColStd_Array1OfReal.hxx>
 
 namespace geoml{
 
@@ -49,6 +54,31 @@ revolving_shape(const TopoDS_Shape& profile_shape,
     TopoDS_Shape revol_shape = revol_maker.Shape();
 
     return revol_shape;
+}
+
+Handle(Geom_BSplineSurface)
+nurbs_surface(const Array2d<gp_Pnt> &control_points, 
+                 const Array2d<Standard_Real> &weights, 
+                 const std::vector<Standard_Real> &U_knots, 
+                 const std::vector<Standard_Real> &V_knots, 
+                 const std::vector<int> &U_mults, 
+                 const std::vector<int> &V_mults, 
+                 const int U_degree, 
+                 const int V_degree, 
+                 const bool U_periodic,
+                 const bool V_periodic)
+{
+    return new Geom_BSplineSurface(geoml::Array2d_to_TCol(control_points),
+                                                                    geoml::Array2d_to_TCol(weights),
+                                                                    geoml::StdVector_to_TCol(U_knots),
+                                                                    geoml::StdVector_to_TCol(V_knots),
+                                                                    geoml::StdVector_to_TCol(U_mults),
+                                                                    geoml::StdVector_to_TCol(V_mults),
+                                                                    U_degree,
+                                                                    V_degree,
+                                                                    U_periodic,
+                                                                    V_periodic);
+
 }
 
 } // namespace geoml
