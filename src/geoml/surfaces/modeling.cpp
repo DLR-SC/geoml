@@ -81,4 +81,60 @@ nurbs_surface(const Array2d<gp_Pnt> &control_points,
 
 }
 
+Handle(Geom_BSplineSurface)
+surface_from_4_points(const std::vector<gp_Pnt> &points)
+{
+    // set the control points
+    geoml::Array2d<gp_Pnt> cp_net(2,2);
+    cp_net.setValue(1, 1, points.at(0));
+    cp_net.setValue(2, 1, points.at(1));
+    cp_net.setValue(2, 2, points.at(3));
+    cp_net.setValue(1, 2, points.at(2));
+
+    // set the degree in u and v direction
+    // degree:
+    int degree_U = 1;
+    int degree_V = 1;
+
+    // define the weight net:
+    geoml::Array2d<Standard_Real> weight_net(2,2); 
+    weight_net.setValue(1, 1, 1);
+    weight_net.setValue(2, 1, 1);
+    weight_net.setValue(2, 2, 1);
+    weight_net.setValue(1, 2, 1);    
+
+    // set the U-knots:
+    std::vector<Standard_Real> knots_U; 
+
+    knots_U.push_back(0.0);           
+    knots_U.push_back(1.0);
+
+    // set the V-knots:
+    std::vector<Standard_Real> knots_V; 
+
+    knots_V.push_back(0.0);           
+    knots_V.push_back(1.0);
+
+    // multiplicities U-direction: 
+    std::vector<int> mults_U; 
+    mults_U.push_back(2);                
+    mults_U.push_back(2);
+
+    // multiplicities V-direction: 
+    std::vector<int> mults_V; 
+    mults_V.push_back(2);                
+    mults_V.push_back(2);
+
+    Handle(Geom_BSplineSurface) srf_handle = nurbs_surface( cp_net, 
+                                                            weight_net, 
+                                                            knots_U, 
+                                                            knots_V, 
+                                                            mults_U, 
+                                                            mults_V, 
+                                                            degree_U, 
+                                                            degree_V);
+                                                                        
+    return srf_handle;
+} 
+
 } // namespace geoml
