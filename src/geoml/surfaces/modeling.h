@@ -93,4 +93,12 @@ nurbs_surface(const Array2d<gp_Pnt> &control_points,
                  const bool U_periodic=false,
                  const bool V_periodic=false);
 
+/**
+ * @brief Create a surface from 4 points
+ *
+ * //@param points 4 points that define the corners of the surface
+ */
+GEOML_API_EXPORT Handle(Geom_BSplineSurface)
+surface_from_4_points(const std::vector<gp_Pnt> &points); 
+
 } // namespace geoml
