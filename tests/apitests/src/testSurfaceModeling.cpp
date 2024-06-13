@@ -296,3 +296,51 @@ EXPECT_NEAR(test_pt_21.Y(),2., 1e-5);
 EXPECT_NEAR(test_pt_21.Z(),1., 1e-5);
 
 }
+
+TEST(Test_surface_from_4_points, simple_surface_from_4_points_test)
+{    
+    // corner points
+    gp_Pnt p_0(0.0, 0.0, 0.0);
+    gp_Pnt p_1(1.0, 0.0, 0.0);
+    gp_Pnt p_2(1.0, 2.0, 0.0);
+    gp_Pnt p_3(0.0, 2.0, 1.0);
+
+    std::vector<gp_Pnt> corner_points {p_0, p_1, p_2, p_3};
+
+    Handle(Geom_BSplineSurface) my_surface = geoml::surface_from_4_points(corner_points);
+
+    gp_Pnt test_pt_0;
+
+    my_surface->D0(0., 0., test_pt_0);
+
+    EXPECT_NEAR(test_pt_0.X(),p_0.X(), 1e-5);
+    EXPECT_NEAR(test_pt_0.Y(),p_0.Y(), 1e-5);
+    EXPECT_NEAR(test_pt_0.Z(),p_0.Z(), 1e-5);
+
+    gp_Pnt test_pt_1;
+
+    my_surface->D0(1., 0., test_pt_1);
+
+    EXPECT_NEAR(test_pt_1.X(),p_1.X(), 1e-5);
+    EXPECT_NEAR(test_pt_1.Y(),p_1.Y(), 1e-5);
+    EXPECT_NEAR(test_pt_1.Z(),p_1.Z(), 1e-5);
+
+    gp_Pnt test_pt_2;
+
+    my_surface->D0(1., 1., test_pt_2);
+
+    EXPECT_NEAR(test_pt_2.X(),p_2.X(), 1e-5);
+    EXPECT_NEAR(test_pt_2.Y(),p_2.Y(), 1e-5);
+    EXPECT_NEAR(test_pt_2.Z(),p_2.Z(), 1e-5);
+
+    gp_Pnt test_pt_3;
+
+    my_surface->D0(0., 1., test_pt_3);
+
+    EXPECT_NEAR(test_pt_3.X(),p_3.X(), 1e-5);
+    EXPECT_NEAR(test_pt_3.Y(),p_3.Y(), 1e-5);
+    EXPECT_NEAR(test_pt_3.Z(),p_3.Z(), 1e-5);
+
+    
+}
+

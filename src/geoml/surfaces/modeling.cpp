@@ -20,6 +20,8 @@
 #include <TColStd_Array2OfReal.hxx>
 #include <TColStd_Array1OfReal.hxx>
 
+#include <iostream>
+
 namespace geoml{
 
 Handle(Geom_BSplineSurface) interpolate_curve_network(const std::vector<Handle (Geom_Curve)> &ucurves,
@@ -86,10 +88,11 @@ surface_from_4_points(const std::vector<gp_Pnt> &points)
 {
     // set the control points
     geoml::Array2d<gp_Pnt> cp_net(2,2);
-    cp_net.setValue(1, 1, points.at(0));
-    cp_net.setValue(2, 1, points.at(1));
-    cp_net.setValue(2, 2, points.at(3));
-    cp_net.setValue(1, 2, points.at(2));
+
+    cp_net.setValue(0, 0, points.at(0));
+    cp_net.setValue(1, 0, points.at(1));
+    cp_net.setValue(1, 1, points.at(2));
+    cp_net.setValue(0, 1, points.at(3));
 
     // set the degree in u and v direction
     // degree:
@@ -98,10 +101,11 @@ surface_from_4_points(const std::vector<gp_Pnt> &points)
 
     // define the weight net:
     geoml::Array2d<Standard_Real> weight_net(2,2); 
+
+    weight_net.setValue(0, 0, 1);
+    weight_net.setValue(1, 0, 1);
     weight_net.setValue(1, 1, 1);
-    weight_net.setValue(2, 1, 1);
-    weight_net.setValue(2, 2, 1);
-    weight_net.setValue(1, 2, 1);    
+    weight_net.setValue(0, 1, 1);    
 
     // set the U-knots:
     std::vector<Standard_Real> knots_U; 
