@@ -37,7 +37,7 @@ GEOML_API_EXPORT  NCollection_Array2<T> Array2d_to_TCol(Array2d<T> const &net)
 }
 
 /**
- * @brief Convert an std::vector<T> to NCollection_Array1<T>. We remark that the commonly used class TColgp_Array1OfPnt is a typedef of NCollection_Array1<T>.
+ * @brief Convert an std::vector<T> to NCollection_Array1<T>. We remark as an example that the commonly used class TColgp_Array1OfPnt is a typedef of NCollection_Array1<gp_Pnt>.
  * 
  *  
  * @param vec An std::vector<T>. 
