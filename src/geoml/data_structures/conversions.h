@@ -10,7 +10,6 @@
 
 #include <vector>
 
-#include <iostream>
 
 namespace geoml 
 {
