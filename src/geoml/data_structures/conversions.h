@@ -10,6 +10,8 @@
 
 #include <vector>
 
+#include <iostream>
+
 namespace geoml 
 {
 
@@ -45,11 +47,11 @@ GEOML_API_EXPORT  NCollection_Array2<T> Array2d_to_TCol (Array2d<T> const &net)
 template <typename T>
 GEOML_API_EXPORT  Array2d<T> TCol_to_Array2d (NCollection_Array2<T>  const &net)
 {
-    Array2d<T> array_2d (net.RowLength(), net.ColLength());
+    Array2d<T> array_2d (net.ColLength(), net.RowLength());
 
-    for(int i = 0; i < net.RowLength(); ++i)
+    for(int i = 0; i < net.ColLength(); ++i)
     {
-        for(int j = 0; j < net.ColLength(); ++j)
+        for(int j = 0; j < net.RowLength(); ++j)
         {
             array_2d.setValue(i,j,net.Value(i+1, j+1));
         }

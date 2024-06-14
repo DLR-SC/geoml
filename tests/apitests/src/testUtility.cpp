@@ -64,11 +64,7 @@ int V_degree = 1;
 
 Handle(Geom_BSplineSurface) test_surface = geoml::nurbs_surface(control_points, weights, U_knots, V_knots, U_mults, V_mults, U_degree, V_degree);
 
-std::cout << "here we are!1" << std::endl;
-
 geoml::Array2d<gp_Pnt> extracted_points(3,2);
-
-std::cout << "here we are!2" << std::endl;
 
 extracted_points = geoml::extract_control_points_surface(test_surface);
 
