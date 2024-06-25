@@ -1,0 +1,80 @@
+#include <geoml/surfaces/modeling.h>
+#include "geoml/utility/utility.h"
+#include <geoml/data_structures/Array2d.h>
+
+#include <gtest/gtest.h>
+
+#include <gp_Pnt.hxx>
+
+
+TEST(Test_extract_control_points_from_surface, extract_control_points_from_surface)
+{    
+
+// define a B-spline surface    
+
+// control points
+gp_Pnt p_00(0.0, 0.0, 0.0);
+gp_Pnt p_10(0.0, 1.0, 0.0);
+gp_Pnt p_20(0.0, 2.0, 0.0);
+gp_Pnt p_01(1.0, 0.0, 0.0);
+gp_Pnt p_11(1.0, 1.0, 0.0);
+gp_Pnt p_21(1.0, 2.0, 1.0);
+
+geoml::Array2d<gp_Pnt> control_points (3,2);
+
+control_points.setValue(0, 0, p_00);
+control_points.setValue(1, 0, p_10);
+control_points.setValue(2, 0, p_20);
+control_points.setValue(0, 1, p_01);
+control_points.setValue(1, 1, p_11);
+control_points.setValue(2, 1, p_21);
+
+geoml::Array2d<Standard_Real> weights (3,2);
+
+weights.setValue(0, 0, 1.);
+weights.setValue(1, 0, 1.);
+weights.setValue(2, 0, 1.);
+weights.setValue(0, 1, 1.);
+weights.setValue(1, 1, 1.);
+weights.setValue(2, 1, 1.);
+
+std::vector<Standard_Real> U_knots;
+
+U_knots.push_back(0.0);
+U_knots.push_back(1.0);
+
+std::vector<Standard_Real> V_knots;
+
+V_knots.push_back(0.0);
+V_knots.push_back(1.0);
+
+std::vector<int> U_mults;
+
+U_mults.push_back(3);
+U_mults.push_back(3);
+
+std::vector<int> V_mults;
+
+V_mults.push_back(2);
+V_mults.push_back(2);
+
+int U_degree = 2;
+int V_degree = 1;
+
+Handle(Geom_BSplineSurface) test_surface = geoml::nurbs_surface(control_points, weights, U_knots, V_knots, U_mults, V_mults, U_degree, V_degree);
+
+geoml::Array2d<gp_Pnt> extracted_points(3,2);
+
+extracted_points = geoml::extract_control_points_surface(test_surface);
+
+for(int i = 0; i < control_points.rowLength(); ++i)
+{
+    for(int j = 0; j < control_points.colLength(); ++j)
+    {
+        EXPECT_EQ(extracted_points.at(i,j).X(), control_points.at(i,j).X());
+        EXPECT_EQ(extracted_points.at(i,j).Y(), control_points.at(i,j).Y());
+        EXPECT_EQ(extracted_points.at(i,j).Z(), control_points.at(i,j).Z());
+    }
+}
+
+}

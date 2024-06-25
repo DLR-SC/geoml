@@ -82,4 +82,28 @@ TEST(Test_ConvertStdVector_ToTCol, simple_conversion_from_std_vector_to_TCol_gp_
 
 }
 
+TEST(Test_ConvertTCol_gp_Pnt_ToArray2d, simple_conversion_from_TCol_gp_Pnt_to_Array2d)
+{
+    gp_Pnt pt_00 (0., 0., 0.);
+    gp_Pnt pt_10 (1., 0., 0.);
+    gp_Pnt pt_20 (2., 0., 0.);
+    gp_Pnt pt_01 (3., 0., 0.);
+    gp_Pnt pt_11 (4., 0., 0.);
+    gp_Pnt pt_21 (5., 0., 0.);
+
+    TColgp_Array2OfPnt points (1,3,1,3);
+
+    points.SetValue(1,1,pt_00);
+    points.SetValue(2,1,pt_10);
+    points.SetValue(3,1,pt_20);
+    points.SetValue(1,2,pt_01);
+    points.SetValue(2,2,pt_11);
+    points.SetValue(3,2,pt_21);
+
+    geoml::Array2d<gp_Pnt> points_array_2d = geoml::TCol_to_Array2d (points);
+
+    EXPECT_EQ(points_array_2d.at(0,0).X(), pt_00.X());
+
+}
+
 
