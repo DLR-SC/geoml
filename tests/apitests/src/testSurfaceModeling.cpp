@@ -14,6 +14,7 @@
 
 
 #include <TopoDS_Shape.hxx>
+#include <TopoDS_Vertex.hxx>
 #include <TopExp.hxx>
 #include <TopExp_Explorer.hxx>
 #include <TopoDS.hxx>
@@ -22,6 +23,8 @@
 #include <gp_Vec.hxx>
 
 #include <filesystem>
+
+#include <iostream>
 
 namespace apitests
 {
@@ -341,3 +344,35 @@ TEST(Test_surface_from_4_points, simple_surface_from_4_points_test)
 
 }
 
+TEST(Test_face_from_4_points, simple_face_from_4_points_test)
+{
+    // corner points
+    gp_Pnt p_0(0.0, 0.0, 0.0);
+    gp_Pnt p_1(1.0, 6.0, 0.0);
+    gp_Pnt p_2(1.0, 2.0, 0.0);
+    gp_Pnt p_3(0.0, 2.0, 1.0);
+
+    TopoDS_Face my_face = geoml::face_from_4_points(p_0, p_1, p_2, p_3);
+
+    std::vector<gp_Pnt> corner_points;
+    
+    // retrieve the corner points from my_face
+    TopExp_Explorer explorer(my_face, TopAbs_VERTEX);
+
+    while (explorer.More()) {
+        TopoDS_Vertex vertex = TopoDS::Vertex(explorer.Current());
+        gp_Pnt point = BRep_Tool::Pnt(vertex);
+        corner_points.push_back(point);
+        explorer.Next();
+    }
+    std::cout << corner_points.size() << std::endl;
+    std::cout << corner_points[0].X() << " " << corner_points[0].Y() << " " << corner_points[0].Z() << std::endl;
+    std::cout << corner_points[1].X() << " " << corner_points[1].Y() << " " << corner_points[1].Z() << std::endl;
+    std::cout << corner_points[2].X() << " " << corner_points[2].Y() << " " << corner_points[2].Z() << std::endl;
+    std::cout << corner_points[3].X() << " " << corner_points[3].Y() << " " << corner_points[3].Z() << std::endl;
+    std::cout << corner_points[4].X() << " " << corner_points[4].Y() << " " << corner_points[4].Z() << std::endl;
+    std::cout << corner_points[5].X() << " " << corner_points[5].Y() << " " << corner_points[5].Z() << std::endl;
+    std::cout << corner_points[6].X() << " " << corner_points[6].Y() << " " << corner_points[6].Z() << std::endl;
+    std::cout << corner_points[7].X() << " " << corner_points[7].Y() << " " << corner_points[7].Z() << std::endl;
+    
+}
