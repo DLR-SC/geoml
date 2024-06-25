@@ -84,15 +84,15 @@ nurbs_surface(const Array2d<gp_Pnt> &control_points,
 }
 
 Handle(Geom_BSplineSurface)
-surface_from_4_points(const std::vector<gp_Pnt> &points)
+surface_from_4_points(const gp_Pnt &p_1, const gp_Pnt &p_2, const gp_Pnt &p_3, const gp_Pnt &p_4)
 {
     // set the control points
     geoml::Array2d<gp_Pnt> cp_net(2,2);
 
-    cp_net.setValue(0, 0, points.at(0));
-    cp_net.setValue(1, 0, points.at(1));
-    cp_net.setValue(1, 1, points.at(2));
-    cp_net.setValue(0, 1, points.at(3));
+    cp_net.setValue(0, 0, p_1);
+    cp_net.setValue(1, 0, p_2);
+    cp_net.setValue(1, 1, p_3);
+    cp_net.setValue(0, 1, p_4);
 
     // set the degree in u and v direction
     // degree:

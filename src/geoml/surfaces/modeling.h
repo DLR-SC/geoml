@@ -14,6 +14,7 @@
 #include <gp_Vec.hxx>
 #include <gp_Pnt.hxx>
 #include <TopoDS_Shape.hxx>
+#include <TopoDS_Face.hxx>
 
 #include <vector>
 #include <cmath>
@@ -99,6 +100,15 @@ nurbs_surface(const Array2d<gp_Pnt> &control_points,
  * //@param points 4 points that define the corners of the surface
  */
 GEOML_API_EXPORT Handle(Geom_BSplineSurface)
-surface_from_4_points(const std::vector<gp_Pnt> &points); 
+surface_from_4_points(const gp_Pnt &p_1, const gp_Pnt &p_2, const gp_Pnt &p_3, const gp_Pnt &p_4); 
+
+/**
+ * @brief Create a face from 4 points
+ *
+ * //@param points 4 points that define the corners of the face
+ */
+GEOML_API_EXPORT TopoDS_Face
+face_from_4_points(const gp_Pnt &p_1, const gp_Pnt &p_2, const gp_Pnt &p_3, const gp_Pnt &p_4); 
+
 
 } // namespace geoml

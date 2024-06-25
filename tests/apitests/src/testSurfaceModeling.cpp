@@ -305,9 +305,7 @@ TEST(Test_surface_from_4_points, simple_surface_from_4_points_test)
     gp_Pnt p_2(1.0, 2.0, 0.0);
     gp_Pnt p_3(0.0, 2.0, 1.0);
 
-    std::vector<gp_Pnt> corner_points {p_0, p_1, p_2, p_3};
-
-    Handle(Geom_BSplineSurface) my_surface = geoml::surface_from_4_points(corner_points);
+    Handle(Geom_BSplineSurface) my_surface = geoml::surface_from_4_points(p_0, p_1, p_2, p_3);
 
     gp_Pnt test_pt_0;
 
@@ -341,6 +339,5 @@ TEST(Test_surface_from_4_points, simple_surface_from_4_points_test)
     EXPECT_NEAR(test_pt_3.Y(),p_3.Y(), 1e-5);
     EXPECT_NEAR(test_pt_3.Z(),p_3.Z(), 1e-5);
 
-    
 }
 
