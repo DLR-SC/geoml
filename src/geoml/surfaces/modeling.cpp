@@ -4,6 +4,7 @@
 
 #include "geometry/curve-networks/InterpolateCurveNetwork.h"
 #include "geometry/CurvesToSurface.h"
+#include "common/CommonFunctions.h"
 
 #include "BRepBuilderAPI_MakeEdge.hxx"
 #include <TopoDS_Edge.hxx>
@@ -140,5 +141,11 @@ surface_from_4_points(const gp_Pnt &p_1, const gp_Pnt &p_2, const gp_Pnt &p_3, c
                                                                         
     return srf_handle;
 } 
+
+TopoDS_Face
+face_from_4_points(const gp_Pnt &p_1, const gp_Pnt &p_2, const gp_Pnt &p_3, const gp_Pnt &p_4)
+{
+    return BuildFace(p_1, p_2, p_3, p_4);
+}
 
 } // namespace geoml
