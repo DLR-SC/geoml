@@ -47,4 +47,23 @@ nurbs_curve(
 GEOML_API_EXPORT Handle(Geom_BSplineCurve)
 interpolate_points_to_b_spline_curve(const std::vector<gp_Pnt> &points, int degree = 3, bool continuousIfClosed = false, const std::vector<Standard_Real> &parameters = std::vector<Standard_Real>());
 
+/**
+ * @brief Create a blending curve between two given curves.
+ * 
+ * 
+ * @param curve_1 First curve to blend
+ * @param curve_2 Second curve to blend
+ * @param start_end_1 Sets if the start of the end point of the first curve should be blended
+ * @param start_end_2 Sets if the start of the end point of the second curve should be blended
+ * @param start_end_1 Continuity of blend to first curve (G_0=0, G_1=1, G_2=2)
+ * @param start_end_2 Continuity of blend to second curve (G_0=0, G_1=1, G_2=2) 
+ */
+GEOML_API_EXPORT Handle(Geom_BSplineCurve)
+blend_curve(Handle(Geom_BSplineCurve) &curve_1,
+            Handle(Geom_BSplineCurve) &curve_2,
+            bool start_end_1, 
+            bool start_end_2,
+            int continuity_1,
+            int continuity_2);
+
 } // namespace geoml
