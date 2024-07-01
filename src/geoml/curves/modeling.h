@@ -57,13 +57,21 @@ interpolate_points_to_b_spline_curve(const std::vector<gp_Pnt> &points, int degr
  * @param start_end_2 Sets if the start or the end point of the second curve should be blended
  * @param start_end_1 Continuity of blend to first curve (G_0=0, G_1=1, G_2=2)
  * @param start_end_2 Continuity of blend to second curve (G_0=0, G_1=1, G_2=2) 
+ * @param form_factor_11 Form factor beta_1 of the first curve
+ * @param form_factor_12 Form factor beta_2 of the first curve
+ * @param form_factor_21 Form factor beta_1 of the second curve
+ * @param form_factor_22 Form factor beta_2 of the second curve 
  */
 GEOML_API_EXPORT Handle(Geom_BSplineCurve)
 blend_curve(Handle(Geom_BSplineCurve) &curve_1,
             Handle(Geom_BSplineCurve) &curve_2,
-            bool start_end_1, 
-            bool start_end_2,
+            int start_end_1, 
+            int start_end_2,
             int continuity_1,
-            int continuity_2);
+            int continuity_2,
+            Standard_Real form_factor_11,
+            Standard_Real form_factor_12,
+            Standard_Real form_factor_21,
+            Standard_Real form_factor_22);
 
 } // namespace geoml
