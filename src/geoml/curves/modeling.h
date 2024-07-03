@@ -53,10 +53,10 @@ interpolate_points_to_b_spline_curve(const std::vector<gp_Pnt> &points, int degr
  * 
  * @param curve_1 First curve to blend
  * @param curve_2 Second curve to blend
- * @param start_end_1 Sets if the start or the end point of the first curve should be blended
- * @param start_end_2 Sets if the start or the end point of the second curve should be blended
- * @param start_end_1 Continuity of blend to first curve (G_0=0, G_1=1, G_2=2)
- * @param start_end_2 Continuity of blend to second curve (G_0=0, G_1=1, G_2=2) 
+ * @param start_end_1 Sets if the start (0) or the end (1) point of the first curve should be blended
+ * @param start_end_2 Sets if the start (0) or the end (1) point of the second curve should be blended
+ * @param continuity_1 Continuity of blend to first curve (G_0=0, G_1=1, G_2=2)
+ * @param continuity_2 Continuity of blend to second curve (G_0=0, G_1=1, G_2=2) 
  * @param form_factor_11 Form factor beta_1 of the first curve
  * @param form_factor_12 Form factor beta_2 of the first curve
  * @param form_factor_21 Form factor beta_1 of the second curve
