@@ -44,10 +44,10 @@ Handle(Geom_BSplineCurve) blend_curve(Handle(Geom_BSplineCurve) &curve_1,
                                       int start_end_2,
                                       int continuity_1,
                                       int continuity_2,
-                                      Standard_Real form_factor_11,
-                                      Standard_Real form_factor_12,
-                                      Standard_Real form_factor_21,
-                                      Standard_Real form_factor_22)
+                                      Standard_Real form_factor_1_curve_1,
+                                      Standard_Real form_factor_1_curve_2,
+                                      Standard_Real form_factor_2_curve_1,
+                                      Standard_Real form_factor_2_curve_2)
 {
     //extract parameter
     Standard_Real param_1;
@@ -79,33 +79,95 @@ Handle(Geom_BSplineCurve) blend_curve(Handle(Geom_BSplineCurve) &curve_1,
         //fatal error 
     }
 
-    if (continuity_1 == 0 && continuity_2 == 0)
-    {
-        // define a degree 1 blending curve:
-
         gp_Pnt pnt_curve_1;
         gp_Pnt pnt_curve_2;
 
-        curve_1->DO(param_1, pnt_curve_1);
-        curve_2->DO(param_2, pnt_curve_2);
+        gp_Vec derivative_1_curve_1;
+        gp_Vec derivative_1_curve_2;
+
+        gp_Vec derivative_2_curve_1;
+        gp_Vec derivative_2_curve_2;
+
+        gp_Pnt cp_1_blend_curve_start;
+        gp_Pnt cp_1_blend_curve_end;
+
+        gp_Pnt cp_2_blend_curve_start;
+        gp_Pnt cp_2_blend_curve_end;
+
+        // define functions to compute the second and third control points of the blending curves (via the formulas):
+        auto compute_cp_1_blend_curve_start = [pnt_curve_1, derivative_1_curve_1, form_factor_1_curve_1](){return pnt_curve_1.Translated(form_factor_1_curve_1 / 3 * derivative_1_curve_1);};
+        auto compute_cp_2_blend_curve_start = [pnt_curve_1, derivative_1_curve_1, derivative_2_curve_1, form_factor_1_curve_1, form_factor_2_curve_1]()
+                                              {
+                                                  gp_Vec trans_vec = form_factor_1_curve_1 / 6 * derivative_2_curve_1 + (form_factor_2_curve_1 / 6 + 2 / 3 * form_factor_1_curve_1) * derivative_1_curve_1;
+                                                  return pnt_curve_1.Translated(trans_vec);  
+                                              };
+
+        auto compute_cp_1_blend_curve_end = [pnt_curve_2, derivative_1_curve_2, form_factor_1_curve_2](){...};                                              
+
+    if (continuity_1 == 0 && continuity_2 == 0) // ct 2 == 0 ########################################################
+    {
+        // define a degree 1 blending curve:
+        curve_1->D0(param_1, pnt_curve_1);
+        curve_2->D0(param_2, pnt_curve_2);
 
         std::vector<gp_Pnt> control_points {pnt_curve_1, pnt_curve_2};
         std::vector<Standard_Real> weights {1., 1.};
         std::vector<Standard_Real> knots {0., 1.};
         std::vector<int> multiplicities {2,2}; 
-/*
-        Handle(Geom_BSplineCurve) nurbs_curve(const std::vector<gp_Pnt> &control_points, 
-                                              const std::vector<Standard_Real> &weights,
-                                              const std::vector<Standard_Real> &knots, 
-                                              const std::vector<int> &multiplicities,
-                                              const int degree, 
-                                              const bool periodic)
-*/
+        int degree = 1;
 
-       
+        return nurbs_curve(control_points, weights, knots, multiplicities, degree);       
+    }
+    else if (continuity_1 == 1 && continuity_2 == 0)
+    {
+        // define a degree 2 blending curve
+        curve_1->D1(param_1, pnt_curve_1, derivative_1_curve_1);
+        curve_2->D0(param_2, pnt_curve_2);
+
+        cp_1_blend_curve_start = compute_cp_1_blend_curve_start();
+
+        std::vector<gp_Pnt> control_points {pnt_curve_1, cp_1_blend_curve_start, pnt_curve_2};
+        std::vector<Standard_Real> weights {1., 1., 1.};
+        std::vector<Standard_Real> knots {0., 1.};
+        std::vector<int> multiplicities {3,3}; 
+        int degree = 2;
+
+        return nurbs_curve(control_points, weights, knots, multiplicities, degree); 
+    }
+    else if (continuity_1 == 2 && continuity_2 == 0)
+    {
+        // define a degree 3 blending curve
+        curve_1->D2(param_1, pnt_curve_1, derivative_1_curve_1, derivative_2_curve_1);
+        curve_2->D0(param_2, pnt_curve_2);
+
+        cp_1_blend_curve_start = compute_cp_1_blend_curve_start();
+        cp_2_blend_curve_start = compute_cp_2_blend_curve_start();
+
+        std::vector<gp_Pnt> control_points {pnt_curve_1, cp_1_blend_curve_start, cp_2_blend_curve_start, pnt_curve_2};
+        std::vector<Standard_Real> weights {1., 1., 1., 1.};
+        std::vector<Standard_Real> knots {0., 1.};
+        std::vector<int> multiplicities {4,4}; 
+        int degree = 3;
+
+        return nurbs_curve(control_points, weights, knots, multiplicities, degree); 
+    }
+    else if (continuity_1 == 0 && continuity_2 == 1) // ct 2 == 1 ########################################################
+    {
+        // define a degree 2 blending curve:
+        curve_1->D0(param_1, pnt_curve_1);
+        curve_2->D1(param_2, pnt_curve_2, derivative_1_curve_2);
+
+        cp_1_blend_curve_end = // ..... !!!!!!!!!!!!!!!!!!!!!!! continue ........... !!!!!!!!!!!!!!!!!!
+
+        std::vector<gp_Pnt> control_points {pnt_curve_1, pnt_curve_2};
+        std::vector<Standard_Real> weights {1., 1.};
+        std::vector<Standard_Real> knots {0., 1.};
+        std::vector<int> multiplicities {2,2}; 
+        int degree = 1;
+
+        return nurbs_curve(control_points, weights, knots, multiplicities, degree);       
     }
 
-    //Handle(Geom_BSplineCurve) my_blend_curve = nurbs_curve(...)
 
     
     Handle(Geom_BSplineCurve) ret;
