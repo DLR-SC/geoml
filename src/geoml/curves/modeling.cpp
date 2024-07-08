@@ -262,9 +262,6 @@ Handle(Geom_BSplineCurve) blend_curve(Handle(Geom_BSplineCurve) &curve_1,
         return nurbs_curve(control_points, weights, knots, multiplicities, degree);       
     } 
 
-    
-    Handle(Geom_BSplineCurve) ret;
-    return ret;
 }                                  
 
 } // namespace geoml
