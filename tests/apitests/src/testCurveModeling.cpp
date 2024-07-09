@@ -308,4 +308,30 @@ TEST(Test_interpolate_points_to_b_spline_curve, interpolation_custom_parameters)
     EXPECT_NEAR(test_point.Z(), 0.0, 1e-5);
 }
 
+TEST(Test_curve_blend_bezier, simple_curve_blend_test)
+{
+    // create two curves which will be connected by a blending curve
+
+    // curve 1
+    gp_Pnt crv_1_pt_1 (0.0, 0.0, 0.0);
+    gp_Pnt crv_1_pt_2 (1.0, 0.0, 0.0);
+    gp_Pnt crv_1_pt_3 (2.0, 0.0, 1.0);
+    gp_Pnt crv_1_pt_4 (0.0, 0.0, 0.0);
+
+    std::vector <gp_Pnt> input_points_1 {crv_1_pt_1, crv_1_pt_2, crv_1_pt_3, crv_1_pt_4};
+
+    Handle(Geom_BSplineCurve) curve_1 = geoml::interpolate_points_to_b_spline_curve(input_points_1, 3, false);
+
+    // curve 2
+    gp_Pnt crv_2_pt_1 (5.0, 0.0, 0.0);
+    gp_Pnt crv_2_pt_2 (6.0, 0.0, 0.0);
+    gp_Pnt crv_2_pt_3 (7.0, 0.0, 1.0);
+    gp_Pnt crv_2_pt_4 (5.0, 0.0, 0.0);
+
+    std::vector <gp_Pnt> input_points_2 {crv_2_pt_1, crv_2_pt_2, crv_2_pt_3, crv_2_pt_4};
+
+    Handle(Geom_BSplineCurve) curve_2 = geoml::interpolate_points_to_b_spline_curve(input_points_2, 3, false);
+}
+
+
 
