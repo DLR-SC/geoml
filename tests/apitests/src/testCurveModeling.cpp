@@ -358,6 +358,13 @@ TEST(Test_curve_blend_bezier, simple_curve_blend_test)
 
     Handle(Geom_BSplineCurve) curve_1 = geoml::interpolate_points_to_b_spline_curve(input_points_1, 3, false);
 
+    gp_Pnt pnt_curve_1;
+    gp_Vec derivative_1_curve_1;
+    gp_Vec derivative_2_curve_1;
+
+    // compute the end point of curve_1 and first and second derivative at this point:
+    curve_1->D2(1., pnt_curve_1, derivative_1_curve_1, derivative_2_curve_1);
+
     // curve 2
     gp_Pnt crv_2_pt_1 (9.0, 0.0, 0.0);
     gp_Pnt crv_2_pt_2 (10.0, 0.0, 0.0);
@@ -384,10 +391,13 @@ TEST(Test_curve_blend_bezier, simple_curve_blend_test)
     EXPECT_NEAR(blending_crv_1->FirstParameter(), 0.0, 1e-5);
     EXPECT_NEAR(blending_crv_1->LastParameter(), 1.0, 1e-5);
 
-    // write to file:
-    writeToStp(blending_crv_1, "blending_curve_bezier_test.stp");
-    writeToStp(curve_1, "blending_curve_bezier_testA.stp");
-    writeToStp(curve_2, "blending_curve_bezier_testB.stp");
+    EXPECT_NEAR(blending_crv_1->StartPoint().X(), crv_1_pt_4.X(), 1e-5);
+    EXPECT_NEAR(blending_crv_1->StartPoint().Y(), crv_1_pt_4.Y(), 1e-5);
+    EXPECT_NEAR(blending_crv_1->StartPoint().Z(), crv_1_pt_4.Z(), 1e-5);
+
+    EXPECT_NEAR(blending_crv_1->EndPoint().X(), crv_2_pt_1.X(), 1e-5);
+    EXPECT_NEAR(blending_crv_1->EndPoint().Y(), crv_2_pt_1.Y(), 1e-5);
+    EXPECT_NEAR(blending_crv_1->EndPoint().Z(), crv_2_pt_1.Z(), 1e-5);
 
     // continuity: G_1, G_1:
 
@@ -405,10 +415,13 @@ TEST(Test_curve_blend_bezier, simple_curve_blend_test)
     EXPECT_NEAR(blending_crv_2->FirstParameter(), 0.0, 1e-5);
     EXPECT_NEAR(blending_crv_2->LastParameter(), 1.0, 1e-5);
 
-    // write to file:
-    writeToStp(blending_crv_2, "blending_curve_bezier_2test.stp");
-    writeToStp(curve_1, "blending_curve_bezier_2testA.stp");
-    writeToStp(curve_2, "blending_curve_bezier_2testB.stp");
+    Standard_Real formfactor_blending_curve_2_11 (2.);
+
+    gp_Pnt tangentially_translated_start_point_of_curve_1_bc_2 = pnt_curve_1.Translated(formfactor_blending_curve_2_11 / 3 * derivative_1_curve_1); 
+
+    EXPECT_NEAR(blending_crv_2->Pole(2).X(), tangentially_translated_start_point_of_curve_1_bc_2.X(), 1e-5);
+    EXPECT_NEAR(blending_crv_2->Pole(2).Y(), tangentially_translated_start_point_of_curve_1_bc_2.Y(), 1e-5);
+    EXPECT_NEAR(blending_crv_2->Pole(2).Z(), tangentially_translated_start_point_of_curve_1_bc_2.Z(), 1e-5);
 
     // continuity: G_2, G_2:
 
@@ -426,10 +439,23 @@ TEST(Test_curve_blend_bezier, simple_curve_blend_test)
     EXPECT_NEAR(blending_crv_3->FirstParameter(), 0.0, 1e-5);
     EXPECT_NEAR(blending_crv_3->LastParameter(), 1.0, 1e-5);
 
-    // write to file:
-    writeToStp(blending_crv_3, "blending_curve_bezier_3test.stp");
-    writeToStp(curve_1, "blending_curve_bezier_3testA.stp");
-    writeToStp(curve_2, "blending_curve_bezier_3testB.stp");
+    Standard_Real formfactor_blending_curve_3_11 (0.2);
+    Standard_Real formfactor_blending_curve_3_21 (0.2);
+
+    gp_Pnt tangentially_translated_start_point_of_curve_1_bc_3 = pnt_curve_1.Translated(formfactor_blending_curve_3_11 / 3 * derivative_1_curve_1); 
+
+    EXPECT_NEAR(blending_crv_3->Pole(2).X(), tangentially_translated_start_point_of_curve_1_bc_3.X(), 1e-5);
+    EXPECT_NEAR(blending_crv_3->Pole(2).Y(), tangentially_translated_start_point_of_curve_1_bc_3.Y(), 1e-5);
+    EXPECT_NEAR(blending_crv_3->Pole(2).Z(), tangentially_translated_start_point_of_curve_1_bc_3.Z(), 1e-5);
+
+    // compute the curvature point at start and compare the third contorl point coincides with the computation:
+    gp_Vec trans_vec_bc_3 = formfactor_blending_curve_3_11 / 6 * derivative_2_curve_1 + (formfactor_blending_curve_3_21 / 6 + 2 / 3 * formfactor_blending_curve_3_11) * derivative_1_curve_1;
+                                                
+    gp_Pnt computed_curvature_point_start_bc_3 = pnt_curve_1.Translated(trans_vec_bc_3);
+
+    EXPECT_NEAR(blending_crv_3->Pole(3).X(), computed_curvature_point_start_bc_3.X(), 1e-5);
+    EXPECT_NEAR(blending_crv_3->Pole(3).Y(), computed_curvature_point_start_bc_3.Y(), 1e-5);
+    EXPECT_NEAR(blending_crv_3->Pole(3).Z(), computed_curvature_point_start_bc_3.Z(), 1e-5);
 
 }
 
