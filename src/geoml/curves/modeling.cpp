@@ -5,7 +5,6 @@
 
 #include <gp_Vec.hxx>
 
-
 namespace geoml{
 
 Handle(Geom_BSplineCurve) nurbs_curve(
@@ -61,10 +60,6 @@ Handle(Geom_BSplineCurve) blend_curve(Handle(Geom_BSplineCurve) &curve_1,
     {
         param_1 = curve_1->LastParameter();
     }
-    else 
-    {
-        //fatal error 
-    }
 
     if(start_end_2 == 0)
     {
@@ -73,10 +68,6 @@ Handle(Geom_BSplineCurve) blend_curve(Handle(Geom_BSplineCurve) &curve_1,
     else if(start_end_2 == 1)
     {
         param_2 = curve_2->LastParameter();
-    }
-    else 
-    {
-        //fatal error 
     }
 
         gp_Pnt pnt_curve_1;
@@ -94,16 +85,16 @@ Handle(Geom_BSplineCurve) blend_curve(Handle(Geom_BSplineCurve) &curve_1,
         gp_Pnt cp_2_blend_curve_start;
         gp_Pnt cp_2_blend_curve_end;
 
-        // define functions to compute the second and third control points of the blending curves (via the formulas):
-        auto compute_cp_1_blend_curve_start = [pnt_curve_1, derivative_1_curve_1, form_factor_1_curve_1](){return pnt_curve_1.Translated(form_factor_1_curve_1 / 3 * derivative_1_curve_1);};
-        auto compute_cp_2_blend_curve_start = [pnt_curve_1, derivative_1_curve_1, derivative_2_curve_1, form_factor_1_curve_1, form_factor_2_curve_1]()
+        //define functions to compute the second and third control points of the blending curves (via the formulas):
+        auto compute_cp_1_blend_curve_start = [&pnt_curve_1, &derivative_1_curve_1, &form_factor_1_curve_1](){return pnt_curve_1.Translated(form_factor_1_curve_1 / 3 * derivative_1_curve_1);};
+        auto compute_cp_2_blend_curve_start = [&pnt_curve_1, &derivative_1_curve_1, &derivative_2_curve_1, &form_factor_1_curve_1, &form_factor_2_curve_1]()
                                               {
                                                   gp_Vec trans_vec = form_factor_1_curve_1 / 6 * derivative_2_curve_1 + (form_factor_2_curve_1 / 6 + 2 / 3 * form_factor_1_curve_1) * derivative_1_curve_1;
                                                   return pnt_curve_1.Translated(trans_vec);  
                                               };
 
-        auto compute_cp_1_blend_curve_end = [pnt_curve_2, derivative_1_curve_2, form_factor_1_curve_2](){return pnt_curve_2.Translated(form_factor_1_curve_2 / 3 * (-derivative_1_curve_2));};                                              
-        auto compute_cp_2_blend_curve_end = [pnt_curve_2, derivative_1_curve_2, derivative_2_curve_2, form_factor_1_curve_2, form_factor_2_curve_2]()
+        auto compute_cp_1_blend_curve_end = [&pnt_curve_2, &derivative_1_curve_2, &form_factor_1_curve_2](){return pnt_curve_2.Translated(form_factor_1_curve_2 / 3 * (-derivative_1_curve_2));};                                              
+        auto compute_cp_2_blend_curve_end = [&pnt_curve_2, &derivative_1_curve_2, &derivative_2_curve_2, &form_factor_1_curve_2, &form_factor_2_curve_2]()
                                               {
                                                   gp_Vec trans_vec = form_factor_1_curve_2 / 6 * derivative_2_curve_2 + (form_factor_2_curve_2 / 6 + 2 / 3 * form_factor_1_curve_2) * (-derivative_1_curve_2);
                                                   return pnt_curve_2.Translated(trans_vec);  
@@ -178,9 +169,10 @@ Handle(Geom_BSplineCurve) blend_curve(Handle(Geom_BSplineCurve) &curve_1,
         curve_1->D1(param_1, pnt_curve_1, derivative_1_curve_1);
         curve_2->D1(param_2, pnt_curve_2, derivative_1_curve_2);
 
+        //cp_1_blend_curve_start = compute_cp_1_blend_curve_start();
         cp_1_blend_curve_start = compute_cp_1_blend_curve_start();
         cp_1_blend_curve_end = compute_cp_1_blend_curve_end();
-
+    
         std::vector<gp_Pnt> control_points {pnt_curve_1, cp_1_blend_curve_start, cp_1_blend_curve_end, pnt_curve_2};
         std::vector<Standard_Real> weights {1., 1., 1., 1.};
         std::vector<Standard_Real> knots {0., 1.};

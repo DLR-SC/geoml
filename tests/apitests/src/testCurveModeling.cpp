@@ -11,6 +11,42 @@
 #include <GeomAdaptor_Curve.hxx>
 #include <GCPnts_AbscissaPoint.hxx>
 
+/////////
+#include "STEPControl_Writer.hxx"
+#include <BRepBuilderAPI_MakeFace.hxx>
+
+void writeToStp(Handle_Geom_Curve cur, std::string const& name_file)
+{
+    BRepBuilderAPI_MakeEdge edgeMaker;
+    edgeMaker.Init(cur);
+    TopoDS_Shape edge = edgeMaker.Shape();
+
+    STEPControl_Writer aStepWriter;
+    aStepWriter.Transfer(edge,STEPControl_AsIs);
+    aStepWriter.Write(name_file.c_str());
+} 
+
+void writeGeomEntityToStepFile(Handle_Geom_Surface surface, std::string fileName)
+{
+	BRepBuilderAPI_MakeFace faceMaker;
+	faceMaker.Init(surface,true,1E-6);	
+	TopoDS_Shape face = faceMaker.Shape();
+
+	STEPControl_Writer writer;
+	writer.Transfer(face,STEPControl_AsIs);
+	writer.Write(fileName.c_str());
+	return;
+}
+
+void writeGeomEntityToStepFile(const TopoDS_Shape& my_shape, std::string fileName)
+{
+    STEPControl_Writer writer;
+    writer.Transfer(my_shape,STEPControl_AsIs);
+    writer.Write(fileName.c_str());
+}
+/////////
+
+
 TEST(Test_nurbs_curve, closed_unclamped_nurbs_curve)
 {    
 
@@ -316,21 +352,85 @@ TEST(Test_curve_blend_bezier, simple_curve_blend_test)
     gp_Pnt crv_1_pt_1 (0.0, 0.0, 0.0);
     gp_Pnt crv_1_pt_2 (1.0, 0.0, 0.0);
     gp_Pnt crv_1_pt_3 (2.0, 0.0, 1.0);
-    gp_Pnt crv_1_pt_4 (0.0, 0.0, 0.0);
+    gp_Pnt crv_1_pt_4 (6.0, 0.0, 0.0);
 
     std::vector <gp_Pnt> input_points_1 {crv_1_pt_1, crv_1_pt_2, crv_1_pt_3, crv_1_pt_4};
 
     Handle(Geom_BSplineCurve) curve_1 = geoml::interpolate_points_to_b_spline_curve(input_points_1, 3, false);
 
     // curve 2
-    gp_Pnt crv_2_pt_1 (5.0, 0.0, 0.0);
-    gp_Pnt crv_2_pt_2 (6.0, 0.0, 0.0);
-    gp_Pnt crv_2_pt_3 (7.0, 0.0, 1.0);
-    gp_Pnt crv_2_pt_4 (5.0, 0.0, 0.0);
+    gp_Pnt crv_2_pt_1 (9.0, 0.0, 0.0);
+    gp_Pnt crv_2_pt_2 (10.0, 0.0, 0.0);
+    gp_Pnt crv_2_pt_3 (11.0, 0.0, 1.0);
+    gp_Pnt crv_2_pt_4 (15.0, 0.0, 0.0);
 
     std::vector <gp_Pnt> input_points_2 {crv_2_pt_1, crv_2_pt_2, crv_2_pt_3, crv_2_pt_4};
 
     Handle(Geom_BSplineCurve) curve_2 = geoml::interpolate_points_to_b_spline_curve(input_points_2, 3, false);
+
+    // continuity: G_0, G_0:
+
+    Handle(Geom_BSplineCurve) blending_crv_1 = geoml::blend_curve(curve_1, 
+                                                                curve_2,   
+                                                                1, //start_end_1
+                                                                0, //start_end_2
+                                                                0, //continuity_1
+                                                                0, //continuity_2
+                                                                1., //form_factor_11
+                                                                1., //form_factor_12
+                                                                1., //form_factor_21
+                                                                1.); //form_factor_22
+
+    EXPECT_NEAR(blending_crv_1->FirstParameter(), 0.0, 1e-5);
+    EXPECT_NEAR(blending_crv_1->LastParameter(), 1.0, 1e-5);
+
+    // write to file:
+    writeToStp(blending_crv_1, "blending_curve_bezier_test.stp");
+    writeToStp(curve_1, "blending_curve_bezier_testA.stp");
+    writeToStp(curve_2, "blending_curve_bezier_testB.stp");
+
+    // continuity: G_1, G_1:
+
+        Handle(Geom_BSplineCurve) blending_crv_2 = geoml::blend_curve(curve_1, 
+                                                                curve_2,   
+                                                                1, //start_end_1
+                                                                0, //start_end_2
+                                                                1, //continuity_1
+                                                                1, //continuity_2
+                                                                2., //form_factor_11
+                                                                2., //form_factor_12
+                                                                2., //form_factor_21
+                                                                2.); //form_factor_22
+
+    EXPECT_NEAR(blending_crv_2->FirstParameter(), 0.0, 1e-5);
+    EXPECT_NEAR(blending_crv_2->LastParameter(), 1.0, 1e-5);
+
+    // write to file:
+    writeToStp(blending_crv_2, "blending_curve_bezier_2test.stp");
+    writeToStp(curve_1, "blending_curve_bezier_2testA.stp");
+    writeToStp(curve_2, "blending_curve_bezier_2testB.stp");
+
+    // continuity: G_2, G_2:
+
+        Handle(Geom_BSplineCurve) blending_crv_3 = geoml::blend_curve(curve_1, 
+                                                                curve_2,   
+                                                                1, //start_end_1
+                                                                0, //start_end_2
+                                                                2, //continuity_1
+                                                                2, //continuity_2
+                                                                0.2, //form_factor_11
+                                                                0.2, //form_factor_12
+                                                                0.2, //form_factor_21
+                                                                0.2); //form_factor_22
+
+    EXPECT_NEAR(blending_crv_3->FirstParameter(), 0.0, 1e-5);
+    EXPECT_NEAR(blending_crv_3->LastParameter(), 1.0, 1e-5);
+
+    // write to file:
+    writeToStp(blending_crv_3, "blending_curve_bezier_3test.stp");
+    writeToStp(curve_1, "blending_curve_bezier_3testA.stp");
+    writeToStp(curve_2, "blending_curve_bezier_3testB.stp");
+
 }
 
 
