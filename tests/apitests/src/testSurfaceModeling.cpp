@@ -375,4 +375,8 @@ TEST(Test_face_from_4_points, simple_face_from_4_points_test)
     std::cout << corner_points[6].X() << " " << corner_points[6].Y() << " " << corner_points[6].Z() << std::endl;
     std::cout << corner_points[7].X() << " " << corner_points[7].Y() << " " << corner_points[7].Z() << std::endl;
     
+        for (TopExp_Explorer exp(my_face, TopAbs_VERTEX); exp.More(); exp.Next()) {
+        const TopoDS_Vertex& vertex = TopoDS::Vertex(exp.Current());
+        std::cout << "Vertex found." << std::endl;
+    }
 }

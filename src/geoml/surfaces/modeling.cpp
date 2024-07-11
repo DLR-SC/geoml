@@ -7,6 +7,8 @@
 #include "common/CommonFunctions.h"
 
 #include "BRepBuilderAPI_MakeEdge.hxx"
+#include <BRepBuilderAPI_MakeFace.hxx>
+#include <TopoDS_Face.hxx>
 #include <TopoDS_Edge.hxx>
 #include <TopoDS_Shape.hxx>
 #include <BRepPrimAPI_MakeRevol.hxx>
@@ -145,7 +147,9 @@ surface_from_4_points(const gp_Pnt &p_1, const gp_Pnt &p_2, const gp_Pnt &p_3, c
 TopoDS_Face
 face_from_4_points(const gp_Pnt &p_1, const gp_Pnt &p_2, const gp_Pnt &p_3, const gp_Pnt &p_4)
 {
-    return BuildFace(p_1, p_4, p_2, p_3);
+    TopoDS_Face face = BRepBuilderAPI_MakeFace(surface_from_4_points(p_1,p_2,p_3,p_4), Precision::Confusion());
+
+    return face;
 }
 
 } // namespace geoml
