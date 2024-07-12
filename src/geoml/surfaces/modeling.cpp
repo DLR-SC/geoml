@@ -8,9 +8,11 @@
 
 #include "BRepBuilderAPI_MakeEdge.hxx"
 #include <BRepBuilderAPI_MakeFace.hxx>
+#include <BRepBuilderAPI_MakeWire.hxx> //
 #include <TopoDS_Face.hxx>
 #include <TopoDS_Edge.hxx>
 #include <TopoDS_Shape.hxx>
+#include <TopoDS_Wire.hxx>
 #include <BRepPrimAPI_MakeRevol.hxx>
 #include <TopExp_Explorer.hxx>
 #include <TopoDS.hxx>
@@ -24,6 +26,16 @@
 #include <TColStd_Array1OfReal.hxx>
 
 #include <iostream>
+
+#include <STEPControl_Writer.hxx>
+////////////////
+void writeGeomEntityToStepFile(const TopoDS_Shape& my_shape, std::string fileName)
+{
+STEPControl_Writer writer;
+writer.Transfer(my_shape,STEPControl_AsIs);
+writer.Write(fileName.c_str());
+}
+////////////////
 
 namespace geoml{
 
@@ -147,9 +159,31 @@ surface_from_4_points(const gp_Pnt &p_1, const gp_Pnt &p_2, const gp_Pnt &p_3, c
 TopoDS_Face
 face_from_4_points(const gp_Pnt &p_1, const gp_Pnt &p_2, const gp_Pnt &p_3, const gp_Pnt &p_4)
 {
-    TopoDS_Face face = BRepBuilderAPI_MakeFace(surface_from_4_points(p_1,p_2,p_3,p_4), Precision::Confusion());
+    // TopoDS_Face face = BRepBuilderAPI_MakeFace(surface_from_4_points(p_1,p_2,p_3,p_4), Precision::Confusion());
 
+    // return face;
+
+    TopoDS_Edge edge1 = BRepBuilderAPI_MakeEdge(p_1, p_2);
+    TopoDS_Edge edge2 = BRepBuilderAPI_MakeEdge(p_2, p_3);
+    TopoDS_Edge edge3 = BRepBuilderAPI_MakeEdge(p_3, p_4);
+    TopoDS_Edge edge4 = BRepBuilderAPI_MakeEdge(p_4, p_1);
+
+    // Create wire from edges
+    BRepBuilderAPI_MakeWire wireMaker;
+    wireMaker.Add(edge1);
+    wireMaker.Add(edge2);
+    wireMaker.Add(edge3);
+    wireMaker.Add(edge4);
+    TopoDS_Wire wire = wireMaker.Wire();
+
+writeGeomEntityToStepFile(wire, "my_wire.stp");
+
+    // Create face from wire
+    TopoDS_Face face = BRepBuilderAPI_MakeFace(wire);
+
+writeGeomEntityToStepFile(face, "my_face.stp");
     return face;
+
 }
 
 } // namespace geoml

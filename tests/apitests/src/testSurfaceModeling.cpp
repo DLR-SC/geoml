@@ -347,10 +347,15 @@ TEST(Test_surface_from_4_points, simple_surface_from_4_points_test)
 TEST(Test_face_from_4_points, simple_face_from_4_points_test)
 {
     // corner points
+    // gp_Pnt p_0(0.0, 0.0, 0.0);
+    // gp_Pnt p_1(1.0, 6.0, 0.0);
+    // gp_Pnt p_2(1.0, 2.0, 0.0);
+    // gp_Pnt p_3(0.0, 2.0, 1.0);
+
     gp_Pnt p_0(0.0, 0.0, 0.0);
-    gp_Pnt p_1(1.0, 6.0, 0.0);
-    gp_Pnt p_2(1.0, 2.0, 0.0);
-    gp_Pnt p_3(0.0, 2.0, 1.0);
+    gp_Pnt p_1(0.0, 1.0, 0.0);
+    gp_Pnt p_2(1.0, 1.0, 0.0);
+    gp_Pnt p_3(1.0, 0.0, 1.0);
 
     TopoDS_Face my_face = geoml::face_from_4_points(p_0, p_1, p_2, p_3);
 
@@ -365,16 +370,13 @@ TEST(Test_face_from_4_points, simple_face_from_4_points_test)
         corner_points.push_back(point);
         explorer.Next();
     }
+std::cout << "Fromwww111" << std::endl;
     std::cout << corner_points.size() << std::endl;
-    std::cout << corner_points[0].X() << " " << corner_points[0].Y() << " " << corner_points[0].Z() << std::endl;
-    std::cout << corner_points[1].X() << " " << corner_points[1].Y() << " " << corner_points[1].Z() << std::endl;
-    std::cout << corner_points[2].X() << " " << corner_points[2].Y() << " " << corner_points[2].Z() << std::endl;
-    std::cout << corner_points[3].X() << " " << corner_points[3].Y() << " " << corner_points[3].Z() << std::endl;
-    std::cout << corner_points[4].X() << " " << corner_points[4].Y() << " " << corner_points[4].Z() << std::endl;
-    std::cout << corner_points[5].X() << " " << corner_points[5].Y() << " " << corner_points[5].Z() << std::endl;
-    std::cout << corner_points[6].X() << " " << corner_points[6].Y() << " " << corner_points[6].Z() << std::endl;
-    std::cout << corner_points[7].X() << " " << corner_points[7].Y() << " " << corner_points[7].Z() << std::endl;
-    
+    // std::cout << corner_points[0].X() << " " << corner_points[0].Y() << " " << corner_points[0].Z() << std::endl;
+    // std::cout << corner_points[1].X() << " " << corner_points[1].Y() << " " << corner_points[1].Z() << std::endl;
+    // std::cout << corner_points[2].X() << " " << corner_points[2].Y() << " " << corner_points[2].Z() << std::endl;
+    // std::cout << corner_points[3].X() << " " << corner_points[3].Y() << " " << corner_points[3].Z() << std::endl;
+
         for (TopExp_Explorer exp(my_face, TopAbs_VERTEX); exp.More(); exp.Next()) {
         const TopoDS_Vertex& vertex = TopoDS::Vertex(exp.Current());
         std::cout << "Vertex found." << std::endl;
