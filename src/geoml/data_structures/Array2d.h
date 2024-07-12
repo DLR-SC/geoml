@@ -64,6 +64,15 @@ public:
         return m_cols;
     }
 
+    GEOML_API_EXPORT std::vector<T> getRow(int index){
+        std::vector<T> row ();
+        for(int j = 0; j < m_cols; ++j){
+            row.push_back(this.at(index, j));
+        }
+
+        return row;
+    }
+
 private:
     int m_rows;
     int m_cols;
