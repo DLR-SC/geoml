@@ -112,8 +112,12 @@ TEST(Test_Array2d, simple_Array2d_getRow_getCol_test)
     
     std::vector<int> vec;
     vec = vec2d_int.getRow(2);
+
+    std::vector<int> vec_2;
+    vec_2 = vec2d_int.getCol(3);
         
     EXPECT_EQ(vec.size(), 4);
+    EXPECT_EQ(vec_2.size(), 5);
 }
 
 
