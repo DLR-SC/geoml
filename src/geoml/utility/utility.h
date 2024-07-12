@@ -23,5 +23,15 @@ namespace geoml
 GEOML_API_EXPORT Array2d<gp_Pnt> 
 extract_control_points_surface(const Handle(Geom_BSplineSurface) &b_spline_surface);
 
+/**
+ * @brief Extracts the j-th control point vector of a Geom_BSplineSurface in U direction
+ * 
+ * @param b_spline_surface A handle on a Geom_BSplineSurface
+ * @param j The V-direction-index of the control point vector   
+
+ */
+GEOML_API_EXPORT std::vector<gp_Pnt>  
+extract_control_point_vector_in_U_direction (const Handle(Geom_BSplineSurface)& b_spline_surface, int j);
+
 
 } // namespace geoml
