@@ -106,4 +106,14 @@ TEST(Test_ConvertTCol_gp_Pnt_ToArray2d, simple_conversion_from_TCol_gp_Pnt_to_Ar
 
 }
 
+TEST(Test_Array2d, simple_Array2d_getRow_getCol_test)
+{    
+    geoml::Array2d<int> vec2d_int (5,4);
+    
+    std::vector<int> vec;
+    vec = vec2d_int.getRow(2);
+        
+    EXPECT_EQ(vec.size(), 4);
+}
+
 
