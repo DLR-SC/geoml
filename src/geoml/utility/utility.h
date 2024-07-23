@@ -31,7 +31,7 @@ extract_control_points_surface(const Handle(Geom_BSplineSurface) &b_spline_surfa
 
  */
 GEOML_API_EXPORT std::vector<gp_Pnt>  
-extract_control_point_vector_in_U_direction (const Handle(Geom_BSplineSurface)& b_spline_surface, int j);
+extract_control_point_vector_in_U_direction (const Handle(Geom_BSplineSurface) &b_spline_surface, int j);
 
 
 } // namespace geoml

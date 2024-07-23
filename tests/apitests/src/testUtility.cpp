@@ -79,8 +79,10 @@ for(int i = 0; i < control_points.rowLength(); ++i)
 
 // test the extraction of rows and cols of control points of a surface:
 EXPECT_EQ(extracted_points.getRow(2).size(), 2);
-//EXPECT_EQ(geoml::extract_control_point_vector_in_U_direction(test_surface,2).size(), 3); // failing
 
+EXPECT_EQ(test_surface->NbUPoles(), 3);
+
+EXPECT_EQ(geoml::extract_control_point_vector_in_U_direction(test_surface,1).size(), 3); 
 
 
 
