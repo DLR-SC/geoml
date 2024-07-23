@@ -16,9 +16,9 @@ namespace geoml
 {
 
 /**
- * @brief Extracts the control point net of a Geom_BSplineSurface
+ * @brief Extracts the control point net of a Geom_BSplineSurface. The first index corresponds to the U-direction and the second index corresponds to the V-direction. 
  * 
- * @param b_spline_surface A Geom_BSplineSurface
+ * @param b_spline_surface A Geom_BSplineSurface 
  */
 GEOML_API_EXPORT Array2d<gp_Pnt> 
 extract_control_points_surface(const Handle(Geom_BSplineSurface) &b_spline_surface);
