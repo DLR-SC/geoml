@@ -51,3 +51,25 @@ TEST(Test_translate, simple_translate_TopoDS_Shape_test)
     EXPECT_NEAR(vertexPoint.Z(), test_point.Z() + 0., 1e-5);
 
 }
+
+TEST(Test_translate, simple_translate_vector_gp_Pnt_test)
+{    
+
+    gp_Pnt test_point_1 (3., -5., 1.);
+    gp_Pnt test_point_2 (6., 2., -1.);
+
+    std::vector<gp_Pnt> vec {test_point_1, test_point_2};
+
+    gp_Vec translation_vector (1., 0.5, 0.);
+
+    std::vector<gp_Pnt> translated_points = geoml::translate(vec, translation_vector);
+
+    EXPECT_NEAR(translated_points.at(0).X(), test_point_1.X() + 1., 1e-5);
+    EXPECT_NEAR(translated_points.at(0).Y(), test_point_1.Y() + 0.5, 1e-5);
+    EXPECT_NEAR(translated_points.at(0).Z(), test_point_1.Z() + 0., 1e-5);
+
+    EXPECT_NEAR(translated_points.at(1).X(), test_point_2.X() + 1., 1e-5);
+    EXPECT_NEAR(translated_points.at(1).Y(), test_point_2.Y() + 0.5, 1e-5);
+    EXPECT_NEAR(translated_points.at(1).Z(), test_point_2.Z() + 0., 1e-5);
+
+}
