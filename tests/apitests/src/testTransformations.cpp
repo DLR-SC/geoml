@@ -14,7 +14,6 @@
 
 
 
-
 TEST(Test_translate, simple_translate_gp_Pnt_test)
 {    
 
@@ -50,6 +49,5 @@ TEST(Test_translate, simple_translate_TopoDS_Shape_test)
     EXPECT_NEAR(vertexPoint.X(), test_point.X() + 1., 1e-5);
     EXPECT_NEAR(vertexPoint.Y(), test_point.Y() + 0.5, 1e-5);
     EXPECT_NEAR(vertexPoint.Z(), test_point.Z() + 0., 1e-5);
-    
 
 }
