@@ -6,10 +6,8 @@
 
 #include <geoml/geoml.h>
 
-#include "geoml/data_structures/Array2d.h"
-
-#include <Geom_BSplineSurface.hxx>
-#include <gp_Pnt.hxx>
+#include <TopoDS_Shape.hxx>
+#include <gp_Vec.hxx>
 
 
 namespace geoml
