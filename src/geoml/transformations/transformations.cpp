@@ -11,4 +11,10 @@ TopoDS_Shape translate(TopoDS_Shape const& origin, gp_Vec const& direction, doub
     return t.Transform(origin);
 }
 
+gp_Pnt translate(gp_Pnt const& origin, gp_Vec const& direction, double factor)
+{
+    auto t = Transformation(direction*factor);
+    return t.Transform(origin);
+}
+
 } // namespace geoml
