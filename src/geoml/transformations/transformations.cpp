@@ -1,6 +1,7 @@
 #include "geoml/transformations/transformations.h"
-
 #include "geometry/Transformation.h"
+
+#include <BRep_Builder.hxx>
 
 
 namespace geoml{
@@ -30,6 +31,22 @@ std::vector<gp_Pnt> translate(std::vector<gp_Pnt> const& origin, gp_Vec const& d
     }
 
     return transformed_points;
+}
+
+TopoDS_Compound repeat_shape(TopoDS_Shape const& origin, Transform const& trans, int n_repeats)
+{
+    TopoDS_Compound result;
+    BRep_Builder a_builder;
+
+    TopoDS_Shape shape = origin;
+    a_builder.MakeCompound(result);
+    a_builder.Add(result, shape);
+    for (int i=1; i < n_repeats; ++i) {
+        shape = trans.Apply_Transform(shape);
+        a_builder.Add(result, shape);
+    }
+
+    return result;
 }
 
 } // namespace geoml

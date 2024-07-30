@@ -5,11 +5,12 @@
  */
 
 #include <geoml/geoml.h>
-//#include "geoml/transformations/Transform.h"
+#include "geoml/transformations/Transform.h"
 
 #include <TopoDS_Shape.hxx>
 #include <gp_Vec.hxx>
 #include <gp_Pnt.hxx>
+#include <TopoDS_Compound.hxx>
 
 #include <vector>
 
@@ -49,6 +50,18 @@ gp_Pnt translate(gp_Pnt const& origin, gp_Vec const& direction, double factor = 
  * @return std::vector<gp_Pnt> 
  */
 std::vector<gp_Pnt> translate(std::vector<gp_Pnt> const& origin, gp_Vec const& direction, double factor = 1.0);
+
+/**
+ * @brief Creates repeated copies of an input shape by repeatedly transforming the shape 
+ * n times given a geoml::Transform.
+ * 
+ * @param origin The shape to be repeated n times
+ * @param translation The transformation to be applied to each copy, relative to the previous copy
+ * @param n_repeats The number of repetitions
+ * @return TopoDS_Compound A compound holding all resulting copies
+ */
+TopoDS_Compound repeat_shape(TopoDS_Shape const& origin, Transform const& trans, int n_repeats);
+
 
 
 } // namespace geoml

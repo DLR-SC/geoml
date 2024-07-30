@@ -58,4 +58,20 @@ Transform operator*(const Transform &a, const Transform &b)
     return result;
 }
 
+TopoDS_Shape Transform::Apply_Transform(const TopoDS_Shape& shape) const {
+    return pImpl->transformation.Transform(shape);
+}
+
+gp_Pnt Transform::Apply_Transform(const gp_Pnt& point) const {
+    return pImpl->transformation.Transform(point);
+}
+
+Handle(Geom_Surface) Transform::Apply_Transform(const Handle(Geom_Surface)& surf) const {
+    return pImpl->transformation.Transform(surf);
+}
+
+gp_Vec Transform::Apply_Transform(const gp_Vec& vec) const {
+    return pImpl->transformation.Transform(vec);
+}
+
 } // namespace geoml

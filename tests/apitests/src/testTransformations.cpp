@@ -73,3 +73,16 @@ TEST(Test_translate, simple_translate_vector_gp_Pnt_test)
     EXPECT_NEAR(translated_points.at(1).Z(), test_point_2.Z() + 0., 1e-5);
 
 }
+
+TEST(Test_Transform, simple_Transform_test)
+{    
+
+    gp_Vec trsf_vec_1 (1., 2., 4.2);
+    gp_Vec trsf_vec_2 (-1., 2.1, 14.7);
+
+    geoml::Transform my_trsf_1 (trsf_vec_1);
+    geoml::Transform my_trsf_2 (trsf_vec_2);
+
+    geoml::Transform my_trsf_3 = my_trsf_1 * my_trsf_2;
+
+}
