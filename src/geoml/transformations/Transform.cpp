@@ -1,7 +1,6 @@
 #include "geoml/transformations/Transform.h"
 
 
-
 namespace geoml{
 
 Transform::Transform() {
@@ -25,8 +24,7 @@ Transform::Transform(const gp_Vec& translation){
 }
 
 void Transform::PreMultiply(const Transform& aTrans){
-    ///////////////////////////////////////////////////////////////////////////// hier weitermachen!
-    this->m_trsf.
+    m_trsf.PreMultiply(aTrans.m_trsf);
 }
 
 Transform operator*(const Transform &a, const Transform &b)
@@ -35,7 +33,5 @@ Transform operator*(const Transform &a, const Transform &b)
     result.PreMultiply(a);
     return result;
 }
-
-
 
 } // namespace geoml
