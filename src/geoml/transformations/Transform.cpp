@@ -1,35 +1,59 @@
 #include "geoml/transformations/Transform.h"
-
+#include <geometry/Transformation.h>
 
 
 namespace geoml{
 
-Transform::Transform() {
-    Transformation tf;
-    m_trsf = tf; 
+class Transform::Impl {
+public:
+    Impl() : transformation() {} 
+    Impl(const gp_GTrsf& ocMatrix) : transformation(ocMatrix) {}
+    Impl(const gp_Trsf& trans) : transformation(trans) {}
+    Impl(const gp_Vec& translation) : transformation(translation) {}
+
+    Transformation transformation;
+};
+
+
+Transform::Transform() : pImpl(std::make_unique<Impl>()) {}
+
+Transform::Transform(const gp_GTrsf& ocMatrix) : pImpl(std::make_unique<Impl>(ocMatrix)) {}
+
+Transform::Transform(const gp_Trsf& trans) : pImpl(std::make_unique<Impl>(trans)) {}
+
+Transform::Transform(const gp_Vec& translation) : pImpl(std::make_unique<Impl>(translation)) {}
+
+// Destructor
+Transform::~Transform() = default;
+
+// copy constructor
+Transform::Transform(const Transform& other) 
+    : pImpl(std::make_unique<Impl>(*other.pImpl)) {}
+
+// copy assignment operator
+Transform& Transform::operator=(const Transform& other) {
+    if (this == &other) {
+        return *this; 
+    }
+    pImpl = std::make_unique<Impl>(*other.pImpl); 
+    return *this;
 }
 
-Transform::Transform(const gp_GTrsf& ocMatrix): m_trsf(ocMatrix){
-    
-}
+// move constructor
+Transform::Transform(Transform&& other) = default;
 
-Transform::Transform(const gp_Trsf& trans){
-    Transformation tf (trans);      /////////////////
-    m_trsf = tf;
-}
+// move assignment operator
+Transform& Transform::operator=(Transform&& other) = default; 
 
-Transform::Transform(const gp_Vec& translation){
-    Transformation tf (translation);
-    m_trsf = tf;//////////////////////////////////////////////////////
-}
 
 void Transform::PreMultiply(const Transform& aTrans){
-    m_trsf.PreMultiply(aTrans.m_trsf);
+    pImpl->transformation.PreMultiply(aTrans.pImpl->transformation);
 }
 
 Transform operator*(const Transform &a, const Transform &b)
 {
-    Transform result = b;
+    Transform result; 
+    result = b;
     result.PreMultiply(a);
     return result;
 }

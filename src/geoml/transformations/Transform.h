@@ -5,11 +5,12 @@
  */
 
 #include <geoml/geoml.h>
-#include <geometry/Transformation.h>
 
 #include <gp_GTrsf.hxx>
 #include <gp_Trsf.hxx>
 #include <gp_Vec.hxx>
+
+#include <memory>
 
 
 namespace geoml
@@ -29,11 +30,24 @@ public:
 
     GEOML_API_EXPORT Transform(const gp_Vec& translation);
 
+    GEOML_API_EXPORT ~Transform();
+
+
+    GEOML_API_EXPORT Transform(const Transform& other); // Copy constructor
+
+    GEOML_API_EXPORT Transform& operator=(const Transform& other); // Copy assignment operator
+
+    GEOML_API_EXPORT Transform(Transform&& other); // Move constructor
+
+    GEOML_API_EXPORT Transform& operator=(Transform&& other); // Move assignment operator
+
     GEOML_API_EXPORT void PreMultiply(const Transform& aTrans);
 
 private: 
     
-    Transformation m_trsf;
+    //Transformation m_trsf;
+    class Impl;
+    std::unique_ptr<Impl> pImpl;
 
 };
 
