@@ -1,6 +1,7 @@
 #include "geoml/transformations/Transform.h"
 
 
+
 namespace geoml{
 
 Transform::Transform() {
@@ -8,19 +9,18 @@ Transform::Transform() {
     m_trsf = tf; 
 }
 
-Transform::Transform(const gp_GTrsf& ocMatrix){
-    Transformation tf (ocMatrix);
-    m_trsf = tf;
+Transform::Transform(const gp_GTrsf& ocMatrix): m_trsf(ocMatrix){
+    
 }
 
 Transform::Transform(const gp_Trsf& trans){
-    Transformation tf (trans);
+    Transformation tf (trans);      /////////////////
     m_trsf = tf;
 }
 
 Transform::Transform(const gp_Vec& translation){
     Transformation tf (translation);
-    m_trsf = tf;
+    m_trsf = tf;//////////////////////////////////////////////////////
 }
 
 void Transform::PreMultiply(const Transform& aTrans){

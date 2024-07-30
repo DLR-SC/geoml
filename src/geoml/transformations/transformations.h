@@ -5,7 +5,7 @@
  */
 
 #include <geoml/geoml.h>
-#include "geoml/transformations/Transform.h"
+//#include "geoml/transformations/Transform.h"
 
 #include <TopoDS_Shape.hxx>
 #include <gp_Vec.hxx>
