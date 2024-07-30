@@ -76,6 +76,7 @@ TEST(Test_translate, simple_translate_vector_gp_Pnt_test)
 
 TEST(Test_Transform, simple_Transform_test)
 {    
+    gp_Pnt test_pnt (1., 2., 3.);
 
     gp_Vec trsf_vec_1 (1., 2., 4.2);
     gp_Vec trsf_vec_2 (-1., 2.1, 14.7);
@@ -84,5 +85,11 @@ TEST(Test_Transform, simple_Transform_test)
     geoml::Transform my_trsf_2 (trsf_vec_2);
 
     geoml::Transform my_trsf_3 = my_trsf_1 * my_trsf_2;
+
+    gp_Pnt moved_pnt = my_trsf_3.Apply_Transform(test_pnt);
+
+    EXPECT_NEAR(moved_pnt.X(), 1., 1e-5);
+    EXPECT_NEAR(moved_pnt.Y(), 6.1, 1e-5);
+    EXPECT_NEAR(moved_pnt.Z(), 21.9, 1e-5);
 
 }
