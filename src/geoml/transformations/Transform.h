@@ -18,10 +18,10 @@
 namespace geoml
 {
 
-                                    
+class Transformation;    
+
 class Transform
 {
-
 public:
 
     GEOML_API_EXPORT Transform();
@@ -65,8 +65,7 @@ public:
 
 private: 
     
-    class Impl;
-    std::unique_ptr<Impl> pImpl;
+    std::unique_ptr<Transformation> pImpl;
 
 };
 
