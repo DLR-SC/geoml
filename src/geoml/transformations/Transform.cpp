@@ -4,17 +4,6 @@
 
 namespace geoml{
 
-// class Transform::Impl {
-// public:
-//     Impl() : transformation() {} 
-//     Impl(const gp_GTrsf& ocMatrix) : transformation(ocMatrix) {}
-//     Impl(const gp_Trsf& trans) : transformation(trans) {}
-//     Impl(const gp_Vec& translation) : transformation(translation) {}
-
-//     Transformation transformation;
-// };
-
-
 Transform::Transform() : pImpl(std::make_unique<Transformation>()) {}
 
 Transform::Transform(const gp_GTrsf& ocMatrix) : pImpl(std::make_unique<Transformation>(ocMatrix)) {}
