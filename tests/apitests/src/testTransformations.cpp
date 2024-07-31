@@ -93,3 +93,26 @@ TEST(Test_Transform, simple_Transform_test)
     EXPECT_NEAR(moved_pnt.Z(), 21.9, 1e-5);
 
 }
+
+TEST(Test_repeat_shapes, repeat_a_point)
+{    
+    gp_Pnt test_pnt (1., 2., 3.);
+
+    TopoDS_Vertex vert = BRepBuilderAPI_MakeVertex(test_pnt);
+
+    TopoDS_Shape shape = vert;
+
+    gp_Vec trsf_vec (1., 2., 4.2);
+
+    geoml::Transform my_trsf (trsf_vec);
+
+    TopoDS_Compound result = geoml::repeat_shape(shape, my_trsf, 3);
+
+    int vertexCount = 0;
+
+    for (TopExp_Explorer explorer(result, TopAbs_VERTEX); explorer.More(); explorer.Next()) {
+        vertexCount++;
+    }
+
+    EXPECT_EQ(vertexCount, 3);
+}

@@ -1,7 +1,6 @@
 #include <geoml/surfaces/surfaces.h>
 #include "geoml/utilities/utilities.h"
 #include <geoml/data_structures/Array2d.h>
-#include <geoml/transformations/transformations.h>
 
 #include <gtest/gtest.h>
 
@@ -96,29 +95,5 @@ EXPECT_NEAR(geoml::extract_control_point_vector_in_U_direction(test_surface,0).a
 EXPECT_NEAR(geoml::extract_control_point_vector_in_U_direction(test_surface,1).at(2).Y(), 2., 1e-5);
 EXPECT_NEAR(geoml::extract_control_point_vector_in_V_direction(test_surface,0).at(1).Y(), 0., 1e-5);
 EXPECT_NEAR(geoml::extract_control_point_vector_in_U_direction(test_surface,1).at(0).Y(), 0., 1e-5);
-
-}
-
-TEST(Test_repeat_shapes, repeat_a_point)
-{    
-    gp_Pnt test_pnt (1., 2., 3.);
-
-    TopoDS_Vertex vert = BRepBuilderAPI_MakeVertex(test_pnt);
-
-    TopoDS_Shape shape = vert;
-
-    gp_Vec trsf_vec (1., 2., 4.2);
-
-    geoml::Transform my_trsf (trsf_vec);
-
-    TopoDS_Compound result = geoml::repeat_shape(shape, my_trsf, 3);
-
-    int vertexCount = 0;
-
-    for (TopExp_Explorer explorer(result, TopAbs_VERTEX); explorer.More(); explorer.Next()) {
-        vertexCount++;
-    }
-
-    EXPECT_EQ(vertexCount, 3);
 
 }

@@ -65,7 +65,6 @@ public:
 
 private: 
     
-    //Transformation m_trsf;
     class Impl;
     std::unique_ptr<Impl> pImpl;
 
