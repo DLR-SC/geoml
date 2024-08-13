@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Operationtion.hpp"
+#include "Operation.hpp"
 #include "BRepBuilderAPI_MakeShape.hxx"
 
 namespace geoml {

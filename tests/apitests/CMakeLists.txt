@@ -5,6 +5,7 @@ add_executable(geoml-apitest
     src/testGeomTopoModeling.cpp
     src/testDataStructures.cpp
     src/testUtility.cpp
+    src/testNamingChoosing.cpp
     src/main.cpp
 )
 target_link_libraries(geoml-apitest PUBLIC gtest geoml)
