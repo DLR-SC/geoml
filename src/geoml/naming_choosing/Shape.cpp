@@ -6,6 +6,8 @@
 #include <BRepPrimAPI_MakeCylinder.hxx>
 #include <BRepPrimAPI_MakeBox.hxx>
 
+#include <algorithm>
+
 namespace geoml {
 
 Shape::Shape(TopoDS_Shape const& theShape)
