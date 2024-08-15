@@ -175,8 +175,6 @@ TEST(Test_naming_choosing_code, example_rectangle_triangle)
 
     BRepTools::Write(cut_result, "cut_result.brep");
 
-    std::cout << "written out" << std::endl;
-
     // extrusion direction
     gp_Vec direction(1., -1., 0.);  
 
@@ -190,22 +188,15 @@ TEST(Test_naming_choosing_code, example_rectangle_triangle)
     std::cout << rectangular_srf_vertices.size() << " edges in rectangular_srf\n";
     auto const&  intended_vertex = *rectangular_srf_vertices.at(3); // "pick" vertex
 
-    //TopoDS_Shape extrudedShape = BRepPrimAPI_MakePrism(first_edge, direction);
-
-    // BRepTools::Write(extrudedShape, "extrudedShape.brep");
-
     // Get edges in result that originate from the edge selected in rectangular_srf
     auto cut_result_edges = cut_result.select_subshapes([&](geoml::Shape const& s){
         return  s.is_type(TopAbs_EDGE) &&               
                 s.is_descendent_of(intended_edge) &&
                 s.has_subshape_that_is_child_of(intended_vertex);       
     });
-    std::cout << cut_result_edges.size() << " edges in result that originate from the intended edge in rectangular_srf and have a vertex that is a child of the intended vertex in rectangular_srf\n";
 
     if(cut_result_edges.size() > 0) {
     auto const& result_intended_edge = *cut_result_edges.at(0); // there is only one entry in the std::vector
-
-    //BRepTools::Write(result_intended_edge, "result_intended_edge.brep");
 
     TopoDS_Shape extrudedShape = BRepPrimAPI_MakePrism(result_intended_edge, direction);
 
