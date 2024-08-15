@@ -138,6 +138,15 @@ bool Shape::is_child_of(Shape const& other) const
     return is_descendent_of(other, 1);
 }
 
+bool Shape::has_subshape_that_is_child_of(Shape const &shape) const
+{
+        return std::find_if(
+               m_subshapes.begin(),
+               m_subshapes.end(),
+               [&](auto const& s){ return s->is_child_of(shape); }
+               ) != m_subshapes.end();
+}
+
 Shape create_cylinder(double radius, double height) {
     return Shape(BRepPrimAPI_MakeCylinder(radius, height));
 }
@@ -145,5 +154,6 @@ Shape create_cylinder(double radius, double height) {
 Shape create_box(double dx, double dy, double dz) {
     return Shape(BRepPrimAPI_MakeBox(dx,dy,dz));
 }
+
 
 } // namespace geoml
