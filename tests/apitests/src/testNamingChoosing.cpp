@@ -78,7 +78,7 @@ TEST(Test_naming_choosing_code, experiment_with_naming_choosing_code)
         int idx = 0;
         for (auto const& face_out : result_faces)
         {
-            std::string filename = "fac111e_out" + std::to_string(idx++) + ".brep";
+            std::string filename = "face_out" + std::to_string(idx++) + ".brep";
             BRepTools::Write(*face_out, filename.c_str());
         }
     }
@@ -87,7 +87,7 @@ TEST(Test_naming_choosing_code, experiment_with_naming_choosing_code)
         int idx = 0;
         for (auto const& face_out : result_faces_from_cylinders)
         {
-            std::string filename = "cyl111face_out" + std::to_string(idx++) + ".brep";
+            std::string filename = "cylface_out" + std::to_string(idx++) + ".brep";
             BRepTools::Write(*face_out, filename.c_str());
         }
     }
@@ -178,29 +178,83 @@ TEST(Test_naming_choosing_code, example_rectangle_triangle)
     // extrusion direction
     gp_Vec direction(1., -1., 0.);  
 
-    // Get an edge from the rectangular_srf. Selecting intended one here.
+    // Select edges from the rectangular_srf.
     auto rectangular_srf_edges = rectangular_srf.select_subshapes([](geoml::Shape const& s){ return s.is_type(TopAbs_EDGE); });
     std::cout << rectangular_srf_edges.size() << " edges in rectangular_srf\n";
-    auto const&  intended_edge = *rectangular_srf_edges.at(2); // "pick" edge
+    auto const&  X = *rectangular_srf_edges.at(2); // "pick" edge
+    auto const&  Y = *rectangular_srf_edges.at(0); // "pick" edge
+    auto const&  Z = *rectangular_srf_edges.at(1); // "pick" edge
+    auto const&  W = *rectangular_srf_edges.at(3); // "pick" edge
 
-    // Get a vertex from the rectangular_srf. Selecting intended one here.
+    BRepTools::Write(X, "X.brep");
+    BRepTools::Write(Y, "Y.brep");
+    BRepTools::Write(Z, "Z.brep");
+    BRepTools::Write(W, "W.brep");
+
+    // Select vertices from the rectangular_srf.
     auto rectangular_srf_vertices = rectangular_srf.select_subshapes([](geoml::Shape const& s){ return s.is_type(TopAbs_VERTEX); });
     std::cout << rectangular_srf_vertices.size() << " edges in rectangular_srf\n";
-    auto const&  intended_vertex = *rectangular_srf_vertices.at(3); // "pick" vertex
+    auto const&  V1 = *rectangular_srf_vertices.at(3); // "pick" vertex
+    auto const&  V2 = *rectangular_srf_vertices.at(0); // "pick" vertex
+    auto const&  V3 = *rectangular_srf_vertices.at(1); // "pick" vertex
+    auto const&  V4 = *rectangular_srf_vertices.at(2); // "pick" vertex
+    auto const&  V5 = *rectangular_srf_vertices.at(4); // "pick" vertex
+    auto const&  V6 = *rectangular_srf_vertices.at(5); // "pick" vertex
+    auto const&  V7 = *rectangular_srf_vertices.at(6); // "pick" vertex
+    auto const&  V8 = *rectangular_srf_vertices.at(7); // "pick" vertex
 
-    // Get edges in result that originate from the edge selected in rectangular_srf
-    auto cut_result_edges = cut_result.select_subshapes([&](geoml::Shape const& s){
+    BRepTools::Write(V1, "V1.brep");
+    BRepTools::Write(V2, "V2.brep");
+    BRepTools::Write(V3, "V3.brep");
+    BRepTools::Write(V4, "V4.brep");
+    BRepTools::Write(V5, "V5.brep");
+    BRepTools::Write(V6, "V6.brep");
+    BRepTools::Write(V7, "V7.brep");
+    BRepTools::Write(V8, "V8.brep");
+
+    // Select edges from the triangular_srf. 
+    auto triangular_srf_edges = triangular_srf.select_subshapes([](geoml::Shape const& s){ return s.is_type(TopAbs_EDGE); });
+    std::cout << triangular_srf_edges.size() << " edges in triangular_srf\n";
+    auto const&  C = *triangular_srf_edges.at(0); // "pick" edge
+    auto const&  B = *triangular_srf_edges.at(1); // "pick" edge
+    auto const&  A = *triangular_srf_edges.at(2); // "pick" edge
+
+    BRepTools::Write(C, "C.brep");
+    BRepTools::Write(B, "B.brep");
+    BRepTools::Write(A, "A.brep");
+
+    // Get edges in result that originate from edge X and have a vertex that originates from V1
+    auto cut_result_edges_X_V1 = cut_result.select_subshapes([&](geoml::Shape const& s){
         return  s.is_type(TopAbs_EDGE) &&               
-                s.is_descendent_of(intended_edge) &&
-                s.has_subshape_that_is_child_of(intended_vertex);       
+                s.is_descendent_of(X) &&
+                s.has_subshape_that_is_child_of(V1);       
     });
 
-    if(cut_result_edges.size() > 0) {
-    auto const& result_intended_edge = *cut_result_edges.at(0); // there is only one entry in the std::vector
+    if(cut_result_edges_X_V1.size() == 1) {
+    auto const& result_X_V1 = *cut_result_edges_X_V1.at(0); // there is only one entry in the std::vector
 
-    TopoDS_Shape extrudedShape = BRepPrimAPI_MakePrism(result_intended_edge, direction);
+    TopoDS_Shape extrudedEdge_X_V1 = BRepPrimAPI_MakePrism(result_X_V1, direction);
 
-    BRepTools::Write(extrudedShape, "extrudedShape.brep");
+    BRepTools::Write(extrudedEdge_X_V1, "extrudedEdge_X_V1.brep");
+    }
+
+    // Get edges in result that originate from edge X or from A or B
+    auto cut_result_edges_X_A_B = cut_result.select_subshapes([&](geoml::Shape const& s){
+        return  s.is_type(TopAbs_EDGE) &&               
+                ( s.is_descendent_of(X) || 
+                  s.is_descendent_of(A) ||
+                  s.is_descendent_of(B)    );       
+    });
+
+    // extrusion direction
+    gp_Vec direction_1 (0., 0., 1.); 
+
+    int i = 0;
+    for (auto const& edge : cut_result_edges_X_A_B)
+    {
+        TopoDS_Shape current_edge = BRepPrimAPI_MakePrism(*edge, direction_1);
+        std::string filename = "edge_X_A_B" + std::to_string(i++) + ".brep";
+        BRepTools::Write(current_edge, filename.c_str());
     }
 
 }
