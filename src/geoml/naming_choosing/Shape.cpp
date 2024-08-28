@@ -13,6 +13,7 @@ namespace geoml {
 Shape::Shape(TopoDS_Shape const& theShape)
     : m_shape(theShape)
     , m_id(std::hash<std::string>{}(new_id("Shape")))
+    //, m_name("")
 {
     std::vector<TopAbs_ShapeEnum> shape_types = {TopAbs_VERTEX, TopAbs_EDGE, TopAbs_FACE, TopAbs_SOLID};
     // add all subshapes. For now this is a big list with subshapes of all types.
@@ -39,6 +40,16 @@ std::vector<std::shared_ptr<Shape>>& Shape::get_subshapes()
 {
     return m_subshapes;
 }
+
+// void Shape::set_name(std::string &name)
+// {
+//     m_name = name;
+// }
+
+// std::string Shape::get_name()
+// {
+//     return m_name;
+// }
 
 auto const& Shape::get_metadata() const
 {

@@ -2,6 +2,7 @@
 
 #include <vector>
 #include <memory>
+#include <string>
 
 #include <TopoDS_Shape.hxx>
 
@@ -33,6 +34,26 @@ public:
     std::vector<std::shared_ptr<Shape>> const& get_subshapes() const;
 
     std::vector<std::shared_ptr<Shape>>& get_subshapes();
+
+    // void set_name(std::string &name);                          
+
+    // std::string get_name();
+
+    // template <typename Pred>
+    // void add_persistent_meta_tag(Pred&& f, std::string input_tag)
+    // {
+    //     std::vector<std::shared_ptr<Shape>> selection = this->select_subshapes(Pred&& f)
+
+    //     for (auto const& selected_shape : selection)
+    //     {
+    //         subshape->push_back_meta_tag(input_tag);
+    //     }
+    // }
+                                                           
+    // void push_back_meta_tag(std::string tag)
+    // {
+    //     meta_tags.push_back(tag);
+    // }
 
     template <typename Pred>
     std::vector<std::shared_ptr<Shape>> select_subshapes(Pred&& f)
@@ -131,6 +152,10 @@ private:
     std::vector<std::shared_ptr<Shape>> m_subshapes;
 
     std::vector<std::shared_ptr<Shape>> m_origins;  // history parents
+
+    //std::string m_name;
+
+    //std::vector<std::string> meta_tags;
 };
 
 Shape create_cylinder(double radius, double height);
