@@ -3,6 +3,7 @@
 #include <vector>
 #include <memory>
 #include <string>
+#include <functional>
 
 #include <TopoDS_Shape.hxx>
 
@@ -13,6 +14,18 @@ namespace internal {
 template <typename Derived>
 class Operation;
 }
+
+class Shape;
+
+struct TagTrack {
+
+    TagTrack(std::string& t, std::function<bool(Shape const&)> &criterion, int remainingSteps) 
+        : m_tag(t), m_criterion(criterion), m_remainingSteps(remainingSteps) {}
+
+    std::function<bool(Shape const&)> m_criterion;
+    std::string m_tag;
+    int m_remainingSteps;
+};
 
 /**
  * @brief The Shape class is a wrapper around TopoDS_Shape, that stores
@@ -35,25 +48,9 @@ public:
 
     std::vector<std::shared_ptr<Shape>>& get_subshapes();
 
-    // void set_name(std::string &name);                          
+    void set_name(std::string &name);                          
 
-    // std::string get_name();
-
-    // template <typename Pred>
-    // void add_persistent_meta_tag(Pred&& f, std::string input_tag)
-    // {
-    //     std::vector<std::shared_ptr<Shape>> selection = this->select_subshapes(Pred&& f)
-
-    //     for (auto const& selected_shape : selection)
-    //     {
-    //         subshape->push_back_meta_tag(input_tag);
-    //     }
-    // }
-                                                           
-    // void push_back_meta_tag(std::string tag)
-    // {
-    //     meta_tags.push_back(tag);
-    // }
+    std::string get_name();
 
     template <typename Pred>
     std::vector<std::shared_ptr<Shape>> select_subshapes(Pred&& f)
@@ -66,6 +63,36 @@ public:
             }
         }
         return ret;
+    }
+
+    template <typename Pred>
+    void check_and_add_persistent_meta_tag_deep(Pred&& f, std::string input_tag) // tag added to this shape itself or/and to its subshapes (investigate morge if/when shape itself is included in m_subshapes)
+    {
+        std::vector<std::shared_ptr<Shape>> selection = this->select_subshapes(f);
+
+        for (auto const& selected_shape : selection)
+        {
+            selected_shape->add_persistent_meta_tag_only_for_this_shape(input_tag);
+        }
+    }
+                                                           
+    void add_persistent_meta_tag_only_for_this_shape(std::string tag) // a meta_tag gets added to this shape (not to its subshapes)
+    {
+        persistent_meta_tags.push_back(tag);
+    }
+
+    void apply_track_tags()
+    {
+        for(auto &subshape : m_subshapes)
+        {
+            for(auto & tag_track : m_tag_tracks)
+            {
+                if(tag_track.m_remainingSteps > 0 && tag_track.m_criterion(*subshape))
+                {
+                    subshape->add_persistent_meta_tag_only_for_this_shape(tag_track.m_tag);
+                }
+            }
+        }
     }
 
     auto const& get_metadata() const;
@@ -148,18 +175,29 @@ private:
     };
 
     TopoDS_Shape m_shape;
+
     std::size_t m_id;
     std::vector<std::shared_ptr<Shape>> m_subshapes;
-
     std::vector<std::shared_ptr<Shape>> m_origins;  // history parents
 
-    //std::string m_name;
-
-    //std::vector<std::string> meta_tags;
+    std::string m_name;
+    std::vector<std::string> persistent_meta_tags;
+    std::vector<TagTrack> m_tag_tracks; 
 };
 
 Shape create_cylinder(double radius, double height);
 
 Shape create_box(double dx, double dy, double dz);
+
+
+template <typename Pred>
+void add_persistent_meta_tag_to_shape(const Shape &input, Pred&& f, const std::string &tag)
+{
+    std::vector<std::shared_ptr<Shape>> selection = input.select_subshapes(f);
+    for (auto const& selected_shape : selection)
+    {
+        selected_shape->add_persistent_meta_tag_only_for_this_shape(tag);
+    }
+}
 
 } // namespace geoml
