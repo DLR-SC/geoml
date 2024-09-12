@@ -342,8 +342,8 @@ TEST(Test_naming_choosing_code, example_rectangle_triangle)
 
     cut_result.add_tag_track(tag_track_1);
 
-    std::cout << "First tag: " << cut_result.get_tag_track_vector().at(0).m_tag << std::endl;
-    std::cout << "Number of tag_tracks: " << cut_result.get_tag_track_vector().size() << std::endl;
+    std::cout << "First tag: " << cut_result.get_tag_tracks().at(0).m_tag << std::endl;
+    std::cout << "Number of tag_tracks: " << cut_result.get_tag_tracks().size() << std::endl;
 
     cut_result.apply_tag_tracks();
 

@@ -99,7 +99,7 @@ public:
 
     void add_tag_track(TagTrack const& tt)
     {
-        m_tag_tracks.insert(tt);
+        m_tag_tracks.push_back(tt);
     }
 
     std::vector<TagTrack>& get_tag_tracks();
@@ -210,8 +210,8 @@ private:
 
     std::string m_name;
     std::vector<std::string> m_persistent_meta_tags;
-    //std::vector<TagTrack> m_tag_tracks; 
-    std::unordered_set<TagTrack> m_tag_tracks;
+    std::vector<TagTrack> m_tag_tracks; 
+    //std::unordered_set<TagTrack> m_tag_tracks;
 
 };
 

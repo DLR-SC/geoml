@@ -73,12 +73,14 @@ private:
         // apply tag tracks to the output
         result.apply_tag_tracks();
 
-        // decrease number of remaining steps for tag tracks and delete the "worn out" ones
+        // delete the "worn out" Tag tracks
+
         // for(auto it = std::begin(result.m_tag_tracks); it!= std::end(result.m_tag_tracks))
         // {
-        //     if(tag_track.m_remainingSteps > 1)
+        //     if(it->m_remainingSteps > 1)
         //     {   
-        //         tag_track.m_remainingSteps--;
+        //         it->m_remainingSteps--;
+        //         ++it;
         //     }
         //     else
         //     {
@@ -87,24 +89,42 @@ private:
         //         // If element is found found, erase it 
         //         if (it != result.m_tag_tracks.end()) 
         //         {
-        //         result.m_tag_tracks.erase(it);
+        //             result.m_tag_tracks.erase(it);
         //         } 
         //     }
         // }
 
-        for (auto it = result.m_tag_tracks.begin(); it != result.m_tag_tracks.end(); ) 
+        for (auto it = result.m_tag_tracks.begin(); it != result.m_tag_tracks.end();)
         {
-            if (it->m_remainingSteps <= 1) 
-            { 
-                it = result.m_tag_tracks.erase(it); 
+            if (it->m_remainingSteps <= 1)
+            {
+                it = result.m_tag_tracks.erase(it);
             } else {
-                 TagTrack updated = *it;
-                 updated.m_remainingSteps--;
-                 result.m_tag_tracks.erase(it);
-                 it = result.m_tag_tracks.insert(updated).first;
-                 ++it;
-            }
-    }
+                ++it;
+            }    
+        }
+
+        // reduce the remaining step number of the remaining tag tracks by one
+        for (auto it = result.m_tag_tracks.begin(); it != result.m_tag_tracks.end();)
+        {
+            it->m_remainingSteps--;
+            ++it;    
+        } 
+
+
+        // for (auto it = result.m_tag_tracks.begin(); it != result.m_tag_tracks.end(); ) 
+        // {
+        //     if (it->m_remainingSteps <= 1) 
+        //     { 
+        //         it = result.m_tag_tracks.erase(it); 
+        //     } else {
+        //          TagTrack updated = *it;
+        //          updated.m_remainingSteps--;
+        //          result.m_tag_tracks.erase(it);
+        //          it = result.m_tag_tracks.insert(updated).first;
+        //          ++it;
+        //     }
+        // }
     }
 };
 

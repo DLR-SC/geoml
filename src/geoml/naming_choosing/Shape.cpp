@@ -12,7 +12,7 @@ namespace geoml {
 
 Shape::Shape(TopoDS_Shape const& theShape)
     : m_shape(theShape)
-    , m_id(std::hash<std::string>{}(new_id("Shape")))
+    //, m_id(std::hash<std::string>{}(new_id("Shape")))
     //, m_name("")
 {
     std::vector<TopAbs_ShapeEnum> shape_types = {TopAbs_VERTEX, TopAbs_EDGE, TopAbs_FACE, TopAbs_SOLID};
