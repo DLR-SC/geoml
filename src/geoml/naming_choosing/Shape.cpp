@@ -151,12 +151,32 @@ bool Shape::is_child_of(Shape const& other) const
 
 bool Shape::has_subshape_that_is_child_of(Shape const &shape) const
 {
-        return std::find_if(
-               m_subshapes.begin(),
-               m_subshapes.end(),
-               [&](auto const& s){ return s->is_child_of(shape); }
-               ) != m_subshapes.end();
+    return std::find_if(
+           m_subshapes.begin(),
+           m_subshapes.end(),
+           [&](auto const& s){ return s->is_child_of(shape); }
+           ) != m_subshapes.end();
 }
+
+bool Shape::has_tag(std::string tag)
+{
+    return std::find_if(
+           m_persistent_meta_tags.begin(),
+           m_persistent_meta_tags.end(),
+           [&](auto const& s){ return s == tag; }
+           ) != m_persistent_meta_tags.end(); 
+}
+
+std::vector<TagTrack>& Shape::get_tag_tracks()
+{
+    return m_tag_tracks;
+}
+
+const std::vector<TagTrack>& Shape::get_tag_tracks() const
+{
+    return m_tag_tracks;
+}
+
 
 Shape create_cylinder(double radius, double height) {
     return Shape(BRepPrimAPI_MakeCylinder(radius, height));

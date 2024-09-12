@@ -21,12 +21,17 @@ template <typename Derived>
 class Operation
 {
 public:
-    Operation() = default;
+    Operation(std::vector<Shape const*> const& inputs) 
+        : m_inputs(inputs)
+    {};
+
     virtual ~Operation() = default;
 
     Shape value() const {
         Shape ret = static_cast<Derived const&>(*this).perform();
         static_cast<Derived const&>(*this).map_subshapes(ret);
+        
+        manage_tag_tracks(ret);
 
         update_persistent_name(ret);
         for (auto& subshape : ret.get_subshapes()) {
@@ -48,6 +53,58 @@ protected:
             id += std::to_string(origin->m_id);
         }
         s.m_id = std::hash<std::string>{}(id);
+    }
+
+    std::vector<Shape const*> m_inputs; // Lifetime issue: Operation may not outlive the inputs!
+
+private:
+
+    void manage_tag_tracks(Shape & result) const
+    {
+        // collect tag tracks of input Shapes and add them to the result Shape
+        for(auto const &shape : m_inputs)
+        {
+            for (auto const &input_tag_track : shape->get_tag_tracks())
+            {
+                result.add_tag_track(input_tag_track);
+            }
+        }
+
+        // apply tag tracks to the output
+        result.apply_tag_tracks();
+
+        // decrease number of remaining steps for tag tracks and delete the "worn out" ones
+        // for(auto it = std::begin(result.m_tag_tracks); it!= std::end(result.m_tag_tracks))
+        // {
+        //     if(tag_track.m_remainingSteps > 1)
+        //     {   
+        //         tag_track.m_remainingSteps--;
+        //     }
+        //     else
+        //     {
+        //         auto it = std::find(result.m_tag_tracks.begin(), result.m_tag_tracks.end(), tag_track); 
+    
+        //         // If element is found found, erase it 
+        //         if (it != result.m_tag_tracks.end()) 
+        //         {
+        //         result.m_tag_tracks.erase(it);
+        //         } 
+        //     }
+        // }
+
+        for (auto it = result.m_tag_tracks.begin(); it != result.m_tag_tracks.end(); ) 
+        {
+            if (it->m_remainingSteps <= 1) 
+            { 
+                it = result.m_tag_tracks.erase(it); 
+            } else {
+                 TagTrack updated = *it;
+                 updated.m_remainingSteps--;
+                 result.m_tag_tracks.erase(it);
+                 it = result.m_tag_tracks.insert(updated).first;
+                 ++it;
+            }
+    }
     }
 };
 

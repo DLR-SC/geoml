@@ -2,6 +2,8 @@
 #include "BRepAlgoAPI_Cut.hxx"
 #include "BRepAlgoAPI_Fuse.hxx"
 
+#include <algorithm>
+
 namespace geoml {
 
 BRepBuilderAPI_MakeShape_Operation::BRepBuilderAPI_MakeShape_Operation(
@@ -9,10 +11,9 @@ BRepBuilderAPI_MakeShape_Operation::BRepBuilderAPI_MakeShape_Operation(
     BRepBuilderAPI_MakeShape* algo,
     std::vector<Shape const*> const& inputs
 )
-    : Operation()
+    : Operation(inputs)
     , m_id(id)
     , m_algo(algo)
-    , m_inputs(inputs)
 {}
 
 std::string BRepBuilderAPI_MakeShape_Operation::id() const {
@@ -54,6 +55,40 @@ void BRepBuilderAPI_MakeShape_Operation::map_subshapes(Shape& result) const
         }
     }
 }
+
+// void BRepBuilderAPI_MakeShape_Operation::manage_tag_tracks(Shape &result)
+// {
+//     // collect tag tracks of input Shapes and add them to the result Shape
+//     for(auto const &shape : m_inputs)
+//     {
+//         for (auto const &input_tag_track : shape->get_tag_tracks())
+//         {
+//             result.add_tag_track(input_tag_track);
+//         }
+//     }
+
+//     // apply tag tracks to the output
+//     result.apply_tag_tracks();
+
+//     // decrease number of remaining steps for tag tracks and delete the "worn out" ones
+//     for(auto &tag_track : result.m_tag_tracks)
+//     {
+//         if(tag_track.m_remainingSteps > 1)
+//         {   
+//             tag_track.m_remainingSteps--;
+//         }
+//         else
+//         {
+//             auto it = std::find(result.m_tag_tracks.begin(), result.m_tag_tracks.end(), tag_track); 
+  
+//             // If element is found found, erase it 
+//             if (it != result.m_tag_tracks.end()) 
+//             {
+//                result.m_tag_tracks.erase(it);
+//             } 
+//         }
+//     }
+// }
 
 Shape operator-(Shape const& l, Shape const& r)
 {
