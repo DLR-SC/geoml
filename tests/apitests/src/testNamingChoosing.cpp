@@ -364,27 +364,204 @@ TEST(Test_naming_choosing_code, example_rectangle_triangle)
         BRepTools::Write(current_edge, filename.c_str());
         std::cout << "wrote a tag_1 edge" << std::endl;
     }
-
-    // now test tag tracks with operations (fist one operation, then two operations)
-
-    
-
 }
 
-// TEST(Test_naming_choosing_code, simple_test_tag_tracks)
-// {  
-//     std::function<bool(Shape const&)> criterion = [](geoml::Shape const& s) {
-//         return shape.id > 0;  // Example condition
-//     };
+TEST(Test_naming_choosing_code, test_tag_tracks_with_operations)
+{   
+    // create a rectangular surface
 
-//     // Step 3: Define the tag
-//     std::string tag = "exampleTag";
+    // control points
+    gp_Pnt p_00(0.0, 2.0, 0.0);
+    gp_Pnt p_10(0.0, 0.0, 0.0);
+    gp_Pnt p_01(4.0, 2.0, 0.0);
+    gp_Pnt p_11(4.0, 0.0, 0.0);
 
-//     // Step 4: Define remaining steps
-//     int remainingSteps = 10;
+    geoml::Array2d<gp_Pnt> control_points (2,2);
 
-//     // Step 5: Construct the TagTrack object
-//     TagTrack tagTrackObj(tag, criterion, remainingSteps);
-// }
+    control_points.setValue(0, 0, p_00);
+    control_points.setValue(1, 0, p_10);
+    control_points.setValue(0, 1, p_01);
+    control_points.setValue(1, 1, p_11);
+
+    geoml::Array2d<Standard_Real> weights (2,2);
+
+    weights.setValue(0, 0, 1.);
+    weights.setValue(1, 0, 1.);
+    weights.setValue(0, 1, 1.);
+    weights.setValue(1, 1, 1.);
+
+    std::vector<Standard_Real> U_knots;
+
+    U_knots.push_back(0.0);
+    U_knots.push_back(1.0);
+
+    std::vector<Standard_Real> V_knots;
+
+    V_knots.push_back(0.0);
+    V_knots.push_back(1.0);
+
+    std::vector<int> U_mults;
+
+    U_mults.push_back(2);
+    U_mults.push_back(2);
+
+    std::vector<int> V_mults;
+
+    V_mults.push_back(2);
+    V_mults.push_back(2);
+
+    int U_degree = 1;
+    int V_degree = 1;
+
+    Handle(Geom_BSplineSurface) srf = geoml::nurbs_surface(control_points, weights, U_knots, V_knots, U_mults, V_mults, U_degree, V_degree);
+
+    geoml::Shape rectangular_srf (geoml::SurfaceToFace(srf,1e-5));
+
+    // define a design parameter for translating a triangle
+    Standard_Real d (3.0);
+
+    // create a triangular surface
+    gp_Pnt p1(5.0 - d, -1.0, 0.0); 
+    gp_Pnt p2(7.0 - d, -1.0, 0.0); 
+    gp_Pnt p3(6.0 - d, 1.0, 0.0); 
+
+    // create a polygon from these points
+    BRepBuilderAPI_MakePolygon polygon;
+    polygon.Add(p1);
+    polygon.Add(p2);
+    polygon.Add(p3);
+    polygon.Close(); 
+
+    // create a face from the polygon
+    TopoDS_Face triangle_face = BRepBuilderAPI_MakeFace(polygon.Wire());
+
+    geoml::Shape triangular_srf (triangle_face);
+
+    // define a second design parameter for translating a triangle
+    Standard_Real d_2 (5.0);
+
+    // create a second triangular surface
+    gp_Pnt p1_2(5.0 - d_2, -1.0, 0.0); 
+    gp_Pnt p2_2(7.0 - d_2, -1.0, 0.0); 
+    gp_Pnt p3_2(6.0 - d_2, .8, 0.0); 
+
+    // create a polygon from these points
+    BRepBuilderAPI_MakePolygon polygon_2;
+    polygon_2.Add(p1_2);
+    polygon_2.Add(p2_2);
+    polygon_2.Add(p3_2);
+    polygon_2.Close(); 
+
+    // create a face from the polygon
+    TopoDS_Face triangle_face_2 = BRepBuilderAPI_MakeFace(polygon_2.Wire());
+
+    geoml::Shape triangular_srf_2(triangle_face_2);
+
+    // Select edges from the rectangular_srf.
+    auto rectangular_srf_edges = rectangular_srf.select_subshapes([](geoml::Shape const& s){ return s.is_type(TopAbs_EDGE); });
+    std::cout << rectangular_srf_edges.size() << " edges in rectangular_srf\n";
+    auto const&  X = *rectangular_srf_edges.at(2); // "pick" edge
+    auto const&  Y = *rectangular_srf_edges.at(0); // "pick" edge
+    auto const&  Z = *rectangular_srf_edges.at(1); // "pick" edge
+    auto const&  W = *rectangular_srf_edges.at(3); // "pick" edge
+
+    // Select vertices from the rectangular_srf.
+    auto rectangular_srf_vertices = rectangular_srf.select_subshapes([](geoml::Shape const& s){ return s.is_type(TopAbs_VERTEX); });
+    std::cout << rectangular_srf_vertices.size() << " edges in rectangular_srf\n";
+    auto const&  V1 = *rectangular_srf_vertices.at(3); // "pick" vertex
+    auto const&  V2 = *rectangular_srf_vertices.at(0); // "pick" vertex
+    auto const&  V3 = *rectangular_srf_vertices.at(1); // "pick" vertex
+    auto const&  V4 = *rectangular_srf_vertices.at(2); // "pick" vertex
+    auto const&  V5 = *rectangular_srf_vertices.at(4); // "pick" vertex
+    auto const&  V6 = *rectangular_srf_vertices.at(5); // "pick" vertex
+    auto const&  V7 = *rectangular_srf_vertices.at(6); // "pick" vertex
+    auto const&  V8 = *rectangular_srf_vertices.at(7); // "pick" vertex
+
+    // Select edges from the triangular_srf. 
+    auto triangular_srf_edges = triangular_srf.select_subshapes([](geoml::Shape const& s){ return s.is_type(TopAbs_EDGE); });
+    std::cout << triangular_srf_edges.size() << " edges in triangular_srf\n";
+    auto const&  C = *triangular_srf_edges.at(0); // "pick" edge
+    auto const&  B = *triangular_srf_edges.at(1); // "pick" edge
+    auto const&  A = *triangular_srf_edges.at(2); // "pick" edge
+
+    // add a tag track to rectangular_srf
+    std::function<bool(geoml::Shape const&)> criterion = [&](geoml::Shape const& s){
+        return s.is_type(TopAbs_EDGE) &&  
+               s.is_descendent_of(X) &&      
+               s.has_subshape_that_is_child_of(V1); 
+    }; 
+
+    std::string tag = "vertically persistent name";
+    int remainingSteps = 2;
+
+    geoml::TagTrack tag_track(tag, criterion, remainingSteps);
+
+    rectangular_srf.add_tag_track(tag_track);
+    rectangular_srf.apply_tag_tracks();
+
+    // extrude edge in rectangular_srf with tag "vertically persisten name"
+    // get edges in rectuangular_srf carrying tag "vertically persisten name"
+    auto rectangular_srf_tagged_edges = rectangular_srf.select_subshapes([&](geoml::Shape& s){
+        return  s.has_tag(tag_track.m_tag);       
+    });
+
+    std::cout << "Number of edges in rectangular_srf with tag vertically persistent name: " << rectangular_srf_tagged_edges.size() << std::endl;
+
+    // extrude the edges carrying this tag in negative z-direction
+    gp_Vec direction (0., 0., -1.); 
+    int i = 0;
+    for (auto const& edge : rectangular_srf_tagged_edges)
+    {
+        TopoDS_Shape current_edge = BRepPrimAPI_MakePrism(*edge, direction);
+        std::string filename = "0_th_step_" + std::to_string(i++) + ".brep";
+        BRepTools::Write(current_edge, filename.c_str());
+    }
+
+    // perform first modelling operation
+    geoml::Shape cut_result = rectangular_srf - triangular_srf;
+
+    // extrude edge in cut_result with tag "vertically persisten name"
+    // get edges in cut_result carrying tag "vertically persisten name"
+    auto cut_result_tagged_edges = cut_result.select_subshapes([&](geoml::Shape& s){
+        return  s.has_tag(tag_track.m_tag);       
+    });
+
+    std::cout << "Number of edges in cut_result with tag vertically persistent name: " << cut_result_tagged_edges.size() << std::endl;
+
+    // extrude the edges carrying this tag in negative z-direction 
+    int i_1 = 0;
+    for (auto const& edge : cut_result_tagged_edges)
+    {
+        TopoDS_Shape current_edge = BRepPrimAPI_MakePrism(*edge, direction);
+        std::string filename = "1_st_step_" + std::to_string(i++) + ".brep";
+        BRepTools::Write(current_edge, filename.c_str());
+    }
+
+    // perform second modelling operation
+    geoml::Shape cut_result_2 = cut_result - triangular_srf_2;
+
+    // extrude edge in cut_result_2 with tag "vertically persisten name"
+    // get edges in cut_result_2 carrying tag "vertically persisten name"
+    auto cut_result_2_tagged_edges = cut_result_2.select_subshapes([&](geoml::Shape& s){
+        return  s.has_tag(tag_track.m_tag);       
+    });
+
+    std::cout << "Number of edges in cut_result_2 with tag vertically persistent name: " << cut_result_2_tagged_edges.size() << std::endl;
+
+    // extrude the edges carrying this tag in negative z-direction 
+    int i_2 = 0;
+    for (auto const& edge : cut_result_2_tagged_edges)
+    {
+        TopoDS_Shape current_edge = BRepPrimAPI_MakePrism(*edge, direction);
+        std::string filename = "2_st_step_" + std::to_string(i++) + ".brep";
+        BRepTools::Write(current_edge, filename.c_str());
+    }
+    
+    // write shapes in 0-th, 1-st and 2-nd step to file
+    BRepTools::Write(rectangular_srf, "rectangular_srf.brep");
+    BRepTools::Write(cut_result, "cut_result.brep");
+    BRepTools::Write(cut_result_2, "cut_result_2.brep");
+
+}
 
 

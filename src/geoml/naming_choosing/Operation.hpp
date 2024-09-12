@@ -74,26 +74,6 @@ private:
         result.apply_tag_tracks();
 
         // delete the "worn out" Tag tracks
-
-        // for(auto it = std::begin(result.m_tag_tracks); it!= std::end(result.m_tag_tracks))
-        // {
-        //     if(it->m_remainingSteps > 1)
-        //     {   
-        //         it->m_remainingSteps--;
-        //         ++it;
-        //     }
-        //     else
-        //     {
-        //         auto it = std::find(result.m_tag_tracks.begin(), result.m_tag_tracks.end(), tag_track); 
-    
-        //         // If element is found found, erase it 
-        //         if (it != result.m_tag_tracks.end()) 
-        //         {
-        //             result.m_tag_tracks.erase(it);
-        //         } 
-        //     }
-        // }
-
         for (auto it = result.m_tag_tracks.begin(); it != result.m_tag_tracks.end();)
         {
             if (it->m_remainingSteps <= 1)
@@ -111,20 +91,6 @@ private:
             ++it;    
         } 
 
-
-        // for (auto it = result.m_tag_tracks.begin(); it != result.m_tag_tracks.end(); ) 
-        // {
-        //     if (it->m_remainingSteps <= 1) 
-        //     { 
-        //         it = result.m_tag_tracks.erase(it); 
-        //     } else {
-        //          TagTrack updated = *it;
-        //          updated.m_remainingSteps--;
-        //          result.m_tag_tracks.erase(it);
-        //          it = result.m_tag_tracks.insert(updated).first;
-        //          ++it;
-        //     }
-        // }
     }
 };
 
