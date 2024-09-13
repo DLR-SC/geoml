@@ -21,7 +21,7 @@ template <typename Derived>
 class Operation
 {
 public:
-    Operation(std::vector<Shape const*> const& inputs) 
+    Operation(std::vector<Shape const*> const& inputs) // check if Shape const* is the right choice for this purpose (see the respective Issue)
         : m_inputs(inputs)
     {};
 
