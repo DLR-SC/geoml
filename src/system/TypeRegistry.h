@@ -19,7 +19,7 @@
 #ifndef TYPEREGISTRY_H
 #define TYPEREGISTRY_H
 
-
+#include "geoml_internal.h"
 /**
  * The registry allows classes to enrigster class functions, that
  * should be run automatically after loading geoml.
@@ -48,7 +48,7 @@ namespace geoml
 class TypeRegistry
 {
 public:
-    static void Init();
+    GEOML_EXPORT static void Init();
 };
 
 }

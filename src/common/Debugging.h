@@ -16,6 +16,7 @@
 
 #pragma once
 
+#include "geoml_internal.h"
 #include <atomic>
 #include <string>
 #include <map>
@@ -26,24 +27,24 @@ class Geom_Curve;
 
 namespace geoml
 {
-void dumpShape(const TopoDS_Shape& shape, const std::string& outputDir, const std::string& filename, int counter = -1);
+GEOML_EXPORT void dumpShape(const TopoDS_Shape& shape, const std::string& outputDir, const std::string& filename, int counter = -1);
 
 // represents a point in the execution of a program at which shapes can be dumped
 class TracePoint
 {
 public:
-    TracePoint(const std::string& outputDir);
+    GEOML_EXPORT TracePoint(const std::string& outputDir);
 
-    void operator++(int);
-    int hitCount() const;
-    void dumpShape(const TopoDS_Shape& shape, const std::string& filename);
+    GEOML_EXPORT void operator++(int);
+    GEOML_EXPORT int hitCount() const;
+    GEOML_EXPORT void dumpShape(const TopoDS_Shape& shape, const std::string& filename);
 
-    static void setDebugDataDir(const std::string& dir)
+    GEOML_EXPORT static void setDebugDataDir(const std::string& dir)
     {
         m_debugDataDir = dir;
     }
     
-    static std::string debugDataDir()
+    GEOML_EXPORT static std::string debugDataDir()
     {
         return m_debugDataDir;
     }
@@ -52,7 +53,7 @@ private:
     std::string m_outputDir;
     std::atomic<int> m_counter;
 
-    static std::string m_debugDataDir;
+    GEOML_EXPORT static std::string m_debugDataDir;
 };
 
 // creates a trace point at the location of this macro with the specified variable name and output directory
@@ -66,16 +67,16 @@ private:
 class DebugScope
 {
 public:
-    DebugScope(TracePoint& tp);
-    ~DebugScope();
+    GEOML_EXPORT DebugScope(TracePoint& tp);
+    GEOML_EXPORT ~DebugScope();
 
     // stores shape and dumps it in case the scope is left by exception
-    void addShape(const TopoDS_Shape& shape, const std::string& filename);
+    GEOML_EXPORT void addShape(const TopoDS_Shape& shape, const std::string& filename);
 
-    void addShape(const Handle(Geom_Curve) & curve, const std::string& filename);
+    GEOML_EXPORT void addShape(const Handle(Geom_Curve) & curve, const std::string& filename);
 
     // dumps the shape to the filesystem immediately
-    void dumpShape(const TopoDS_Shape& shape, const std::string& filename);
+    GEOML_EXPORT void dumpShape(const TopoDS_Shape& shape, const std::string& filename);
 
 private:
     TracePoint& m_tp;

@@ -41,7 +41,7 @@ void createDirs(const std::string& path)
 namespace geoml
 {
 
-std::string TracePoint::m_debugDataDir = "CrashInfo";
+GEOML_EXPORT std::string TracePoint::m_debugDataDir = "CrashInfo";
 
 void dumpShape(const TopoDS_Shape& shape, const std::string& outputDir, const std::string& filename, int counter)
 {
