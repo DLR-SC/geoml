@@ -35,7 +35,7 @@ struct TagTrack {
 
 /**
  * @brief The Shape class is a wrapper around TopoDS_Shape, that stores
- *  - its subshapes
+ *  - its subshapes (the Shape itself is not included in its subshapes!)
  *  - a reference to its origin in the parametric modelling history
  *  - some functionality to select subshapes
  */
