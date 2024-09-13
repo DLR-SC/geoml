@@ -82,7 +82,7 @@ public:
         }
     }
                                                            
-    void add_meta_tag(std::string tag); // a meta_tag gets added to this shape (not to its subshapes)
+    void add_meta_tag(std::string const& tag); // a meta_tag gets added to this shape (not to its subshapes)
 
     void add_tag_track(TagTrack const& tt);
 
