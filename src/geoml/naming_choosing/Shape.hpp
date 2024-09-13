@@ -173,7 +173,6 @@ private:
 
     TopoDS_Shape m_shape;
 
-    std::size_t m_id;
     std::vector<std::shared_ptr<Shape>> m_subshapes;
     std::vector<std::shared_ptr<Shape>> m_origins;  // history parents
 

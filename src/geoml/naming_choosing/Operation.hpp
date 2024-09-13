@@ -33,11 +33,6 @@ public:
         
         manage_tag_tracks(ret);
 
-        update_persistent_name(ret);
-        for (auto& subshape : ret.get_subshapes()) {
-            update_persistent_name(*subshape);
-        }
-
         return ret;
     }
 
@@ -45,14 +40,6 @@ protected:
 
     static void add_origin(std::shared_ptr<Shape> output, std::shared_ptr<Shape> const input){
         output->m_origins.push_back({input});
-    }
-
-    void update_persistent_name(Shape& s) const{
-        std::string id = static_cast<Derived const&>(*this).id();
-        for (auto const& origin : s.m_origins) {
-            id += std::to_string(origin->m_id);
-        }
-        s.m_id = std::hash<std::string>{}(id);
     }
 
     std::vector<Shape const*> m_inputs; // Lifetime issue: Operation may not outlive the inputs!
