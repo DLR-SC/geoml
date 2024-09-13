@@ -4,11 +4,8 @@
 #include <memory>
 #include <string>
 #include <functional>
-#include <unordered_set>
 
 #include <TopoDS_Shape.hxx>
-
-#include <iostream>
 
 namespace geoml {
 
@@ -20,6 +17,12 @@ class Operation;
 
 class Shape;
 
+/**
+* @brief A TagTrack stores
+*  - a tag name
+*  - the number of remaining modeling steps determining its lifetime in the modelling history 
+*  - a logical criterion
+*/
 struct TagTrack {
 
     TagTrack(std::string& t, std::function<bool(Shape const&)> &criterion, int remainingSteps) 
@@ -28,19 +31,6 @@ struct TagTrack {
     std::function<bool(Shape const&)> m_criterion;
     std::string m_tag;
     int m_remainingSteps;
-
-    bool operator==(const TagTrack& other) const 
-    {
-        return (m_remainingSteps == other.m_remainingSteps && m_tag == other.m_tag); // the comparison of the criterion is missing! (even generally possible?...)
-    }
-
-    struct HashFunction 
-    {
-        std::size_t operator()(const TagTrack &tagTrack) const 
-        {
-            return std::hash<int>()(tagTrack.m_remainingSteps);
-        }
-    };
 };
 
 /**
@@ -82,7 +72,7 @@ public:
     }
 
     template <typename Pred>
-    void add_meta_tag_to_sub_shapes(Pred&& f, std::string input_tag) // so far, this function can only add a tag to a subshape of the shape and not the shape itself
+    void add_meta_tag_to_subshapes(Pred&& f, std::string input_tag) // so far, this function can only add a tag to a subshape of the shape and not the shape itself
     {    
         std::vector<std::shared_ptr<Shape>> selection = this->select_subshapes(f);
 
@@ -92,36 +82,15 @@ public:
         }
     }
                                                            
-    void add_meta_tag(std::string tag) // a meta_tag gets added to this shape (not to its subshapes)
-    {
-        m_persistent_meta_tags.push_back(tag);
-    }
+    void add_meta_tag(std::string tag); // a meta_tag gets added to this shape (not to its subshapes)
 
-    void add_tag_track(TagTrack const& tt)
-    {
-        m_tag_tracks.push_back(tt);
-    }
+    void add_tag_track(TagTrack const& tt);
 
     std::vector<TagTrack>& get_tag_tracks();
 
     const std::vector<TagTrack>& get_tag_tracks() const;
 
-    void apply_tag_tracks()
-    {
-        for(auto &subshape : m_subshapes)
-        {
-            std::cout << "apply_outer_loop" << std::endl;
-            for(auto & tag_track : m_tag_tracks)
-            {
-                std::cout << "apply_inner_loop" << std::endl;
-                if(tag_track.m_remainingSteps > 0 && tag_track.m_criterion(*subshape))
-                {
-                    subshape->add_meta_tag(tag_track.m_tag);
-                    std::cout << "innerst_loop" << std::endl;
-                }
-            }
-        }
-    }
+    void apply_tag_tracks();
 
     auto const& get_metadata() const;
 
@@ -173,7 +142,7 @@ public:
 
 private:
 
-    /**
+         /**
          * @brief The FindIfVisitor class is a convenience visitor to
          * be used with Shape::accept to find shapes in the history graph
          */
@@ -211,7 +180,6 @@ private:
     std::string m_name;
     std::vector<std::string> m_persistent_meta_tags;
     std::vector<TagTrack> m_tag_tracks; 
-    //std::unordered_set<TagTrack> m_tag_tracks;
 
 };
 
@@ -221,7 +189,7 @@ Shape create_box(double dx, double dy, double dz);
 
 
 template <typename Pred>
-void check_and_add_persistent_meta_tag_to_shape(const Shape &input, Pred&& f, const std::string &tag)
+void add_persistent_meta_tag_to_subshapes(const Shape &input, Pred&& f, const std::string &tag)
 {
     std::vector<std::shared_ptr<Shape>> selection = input.select_subshapes(f);
     for (auto const& selected_shape : selection)

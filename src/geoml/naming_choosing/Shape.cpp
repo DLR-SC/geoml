@@ -177,6 +177,30 @@ const std::vector<TagTrack>& Shape::get_tag_tracks() const
     return m_tag_tracks;
 }
 
+void Shape::add_meta_tag(std::string tag) 
+{
+    m_persistent_meta_tags.push_back(tag);
+}
+
+void Shape::add_tag_track(TagTrack const& tt)
+{
+    m_tag_tracks.push_back(tt);
+}
+
+void Shape::apply_tag_tracks()
+{
+    for(auto &subshape : m_subshapes)
+    {
+        for(auto & tag_track : m_tag_tracks)
+        {
+            if(tag_track.m_remainingSteps > 0 && tag_track.m_criterion(*subshape))
+            {
+                subshape->add_meta_tag(tag_track.m_tag);
+            }
+        }
+    }
+}
+
 
 Shape create_cylinder(double radius, double height) {
     return Shape(BRepPrimAPI_MakeCylinder(radius, height));
