@@ -1,8 +1,6 @@
 #include "Shape.hpp"
 
 #include <TopExp_Explorer.hxx>
-#include <BRepPrimAPI_MakeCylinder.hxx>
-#include <BRepPrimAPI_MakeBox.hxx>
 
 #include <algorithm>
 
@@ -178,15 +176,5 @@ void Shape::apply_tag_tracks()
         }
     }
 }
-
-
-Shape create_cylinder(double radius, double height) {
-    return Shape(BRepPrimAPI_MakeCylinder(radius, height));
-}
-
-Shape create_box(double dx, double dy, double dz) {
-    return Shape(BRepPrimAPI_MakeBox(dx,dy,dz));
-}
-
 
 } // namespace geoml

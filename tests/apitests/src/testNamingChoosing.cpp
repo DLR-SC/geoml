@@ -4,6 +4,7 @@
 #include <geoml/surfaces/modeling.h>
 #include <geoml/data_structures/Array2d.h>
 #include <geoml/geom_topo/modeling.h>
+#include <geoml/primitives/modeling.hpp>
 
 #include <gtest/gtest.h>
 

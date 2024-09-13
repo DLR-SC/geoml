@@ -175,11 +175,6 @@ private:
 
 };
 
-Shape create_cylinder(double radius, double height);
-
-Shape create_box(double dx, double dy, double dz);
-
-
 template <typename Pred>
 void add_persistent_meta_tag_to_subshapes(const Shape &input, Pred&& f, const std::string &tag)
 {
