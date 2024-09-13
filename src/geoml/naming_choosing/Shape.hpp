@@ -54,10 +54,6 @@ public:
 
     std::vector<std::shared_ptr<Shape>>& get_subshapes();
 
-    void set_name(std::string &name);                          
-
-    std::string get_name();
-
     template <typename Pred>
     std::vector<std::shared_ptr<Shape>> select_subshapes(Pred&& f)
     {
@@ -176,7 +172,6 @@ private:
     std::vector<std::shared_ptr<Shape>> m_subshapes;
     std::vector<std::shared_ptr<Shape>> m_origins;  // history parents
 
-    std::string m_name;
     std::vector<std::string> m_persistent_meta_tags;
     std::vector<TagTrack> m_tag_tracks; 
 

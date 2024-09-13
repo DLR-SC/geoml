@@ -9,7 +9,7 @@
 namespace geoml {
 
 Shape::Shape(TopoDS_Shape const& theShape)
-    : m_shape(theShape), m_name("")
+    : m_shape(theShape)
 {
     std::vector<TopAbs_ShapeEnum> shape_types = {TopAbs_VERTEX, TopAbs_EDGE, TopAbs_FACE, TopAbs_SOLID};
     // add all subshapes. For now this is a big list with subshapes of all types.
@@ -36,17 +36,6 @@ std::vector<std::shared_ptr<Shape>>& Shape::get_subshapes()
 {
     return m_subshapes;
 }
-
-void Shape::set_name(std::string &name)
-{
-    m_name = name;
-}
-
-std::string Shape::get_name()
-{
-    return m_name;
-}
-
 
 bool Shape::is_type(TopAbs_ShapeEnum shape_type) const
 {
@@ -166,7 +155,7 @@ const std::vector<TagTrack>& Shape::get_tag_tracks() const
     return m_tag_tracks;
 }
 
-void Shape::add_meta_tag(std::string tag) 
+void Shape::add_meta_tag(std::string const& tag) 
 {
     m_persistent_meta_tags.push_back(tag);
 }
