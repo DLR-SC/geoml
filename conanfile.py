@@ -23,13 +23,14 @@ class geomlConan(ConanFile):
     settings = "os", "compiler", "build_type", "arch"
     options = {"shared": [True, False], "fPIC": [True, False]}
     default_options = {"shared": True, "fPIC": True}
-    requires = "opencascade/7.6.2"
+    requires = "opencascade/7.6.2@dlr-sc/stable"
     exports_sources =  "src/*", "CMakeLists.txt", "cmake/*", "docs/*", "bindings/*", "LICENSE.txt"
 
     def config_options(self):
         if self.settings.os == "Windows":
             self.options.rm_safe("fPIC")
         self.options["opencascade"].shared = self.options.shared
+        self.options["opencascade"].patch_GeomFill_CoonsC2Style = True
 
     def layout(self):
         cmake_layout(self)
@@ -57,6 +58,11 @@ class geomlConan(ConanFile):
             self.cpp_info.requires = ["opencascade::opencascade"]
         # this can't be the correct way to set the include dirs of geoml_internal...
         self.cpp_info.includedirs.append(os.path.join("include", "geoml"))
+        self.cpp_info.includedirs.append(os.path.join("include", "geoml", "curves"))
+        self.cpp_info.includedirs.append(os.path.join("include", "geoml", "data_structures"))
+        self.cpp_info.includedirs.append(os.path.join("include", "geoml", "geom_topo"))
+        self.cpp_info.includedirs.append(os.path.join("include", "geoml", "surfaces"))
+        self.cpp_info.includedirs.append(os.path.join("include", "geoml", "utility"))
         self.cpp_info.includedirs.append(os.path.join("include", "geoml", "internal"))
         self.cpp_info.includedirs.append(os.path.join("include", "geoml", "internal", "boolean_operations"))
         self.cpp_info.includedirs.append(os.path.join("include", "geoml", "internal", "common"))
@@ -68,6 +74,5 @@ class geomlConan(ConanFile):
         self.cpp_info.includedirs.append(os.path.join("include", "geoml", "internal", "math"))
         self.cpp_info.includedirs.append(os.path.join("include", "geoml", "internal", "system"))
         self.cpp_info.includedirs.append(os.path.join("include", "geoml", "internal", "topology"))
-        self.cpp_info.includedirs.append(os.path.join("include", "geoml", "surface"))
 
 

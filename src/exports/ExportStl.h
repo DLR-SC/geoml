@@ -51,7 +51,7 @@ public:
 
 private:
 
-    bool WriteImpl(const std::string& filename) const override;
+    GEOML_EXPORT bool WriteImpl(const std::string& filename) const override;
 
     std::string SupportedFileTypeImpl() const override
     {
