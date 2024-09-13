@@ -48,18 +48,18 @@ void BRepBuilderAPI_MakeShape_Operation::map_subshapes(Shape& result) const
     }
 }
 
-Shape operator-(Shape const& l, Shape const& r)
-{
-    BRepAlgoAPI_Cut cutter(l, r);
-    auto operation = BRepBuilderAPI_MakeShape_Operation(&cutter, {&l,&r});
-    return operation.value();
-}
+// Shape operator-(Shape const& l, Shape const& r)
+// {
+//     BRepAlgoAPI_Cut cutter(l, r);
+//     auto operation = BRepBuilderAPI_MakeShape_Operation(&cutter, {&l,&r});
+//     return operation.value();
+// }
 
-Shape operator+(Shape const& l, Shape const& r)
-{
-    BRepAlgoAPI_Fuse fuser(l, r);
-    auto operation = BRepBuilderAPI_MakeShape_Operation(&fuser, {&l,&r});
-    return operation.value();
-}
+// Shape operator+(Shape const& l, Shape const& r)
+// {
+//     BRepAlgoAPI_Fuse fuser(l, r);
+//     auto operation = BRepBuilderAPI_MakeShape_Operation(&fuser, {&l,&r});
+//     return operation.value();
+// }
 
 } // namespace geoml

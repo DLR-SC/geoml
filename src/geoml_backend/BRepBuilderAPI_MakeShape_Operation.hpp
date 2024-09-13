@@ -25,9 +25,4 @@ private:
    // std::vector<Shape const*> m_inputs; // Lifetime issue: Operation may not outlive the inputs!
 };
 
-
-// Some convenience operators for Boolean operations from BRepBuilderAPI_MakeShape
-Shape operator-(Shape const& l, Shape const& r);
-Shape operator+(Shape const& l, Shape const& r);
-
 } // namespace geoml

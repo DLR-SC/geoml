@@ -1,10 +1,11 @@
-#include <geoml/naming_choosing/BRepBuilderAPI_MakeShape_Operation.hpp>
+#include <geoml_backend/BRepBuilderAPI_MakeShape_Operation.hpp>
 #include <geoml/naming_choosing/Shape.hpp>
-#include <geoml/naming_choosing/Operation.hpp>
+#include <geoml_backend/Operation.hpp>
 #include <geoml/surfaces/modeling.h>
 #include <geoml/data_structures/Array2d.h>
 #include <geoml/geom_topo/modeling.h>
 #include <geoml/primitives/modeling.hpp>
+#include <geoml/boolean_ops/modeling.hpp>
 
 #include <gtest/gtest.h>
 
@@ -14,7 +15,6 @@
 #include <BRepBuilderAPI_MakePolygon.hxx>
 #include <BRepBuilderAPI_MakeFace.hxx>
 #include <BRepPrimAPI_MakePrism.hxx>
-
 
 TEST(Test_naming_choosing_code, experiment_with_naming_choosing_code)
 {   
