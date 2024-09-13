@@ -169,7 +169,7 @@ void Shape::apply_tag_tracks()
 {
     for(auto &subshape : m_subshapes)
     {
-        for(auto & tag_track : m_tag_tracks)
+        for(auto const& tag_track : m_tag_tracks)
         {
             if(tag_track.m_remainingSteps > 0 && tag_track.m_criterion(*subshape))
             {
