@@ -1,6 +1,4 @@
-#include <geoml_backend/BRepBuilderAPI_MakeShape_Operation.hpp>
 #include <geoml/naming_choosing/Shape.hpp>
-#include <geoml_backend/Operation.hpp>
 #include <geoml/surfaces/modeling.h>
 #include <geoml/data_structures/Array2d.h>
 #include <geoml/geom_topo/modeling.h>
