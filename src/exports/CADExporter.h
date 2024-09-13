@@ -161,15 +161,15 @@ private:
 class ICADExporterBuilder
 {
 public:
-    virtual std::unique_ptr<CADExporter> create(const ExporterOptions& options = DefaultExporterOption()) const = 0;
-    virtual ~ICADExporterBuilder(){}
+    GEOML_EXPORT virtual std::unique_ptr<CADExporter> create(const ExporterOptions& options = DefaultExporterOption()) const = 0;
+    GEOML_EXPORT virtual ~ICADExporterBuilder(){}
 };
 
 template <class T>
 class CCADExporterBuilder : public ICADExporterBuilder
 {
 public:
-    std::unique_ptr<CADExporter> create(const ExporterOptions& options = DefaultExporterOption()) const override
+   GEOML_EXPORT  std::unique_ptr<CADExporter> create(const ExporterOptions& options = DefaultExporterOption()) const override
    {
         return std::make_unique<T>(options);
    }
