@@ -68,7 +68,7 @@ public:
     }
 
     template <typename Pred>
-    void add_meta_tag_to_subshapes(Pred&& f, std::string input_tag) // so far, this function can only add a tag to a subshape of the shape and not the shape itself
+    void add_meta_tag_to_subshapes(Pred&& f, std::string const& input_tag) // this function can only add a tag to a subshape of the shape and not the shape itself
     {    
         std::vector<std::shared_ptr<Shape>> selection = this->select_subshapes(f);
 
