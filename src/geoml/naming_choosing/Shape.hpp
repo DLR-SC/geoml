@@ -25,7 +25,7 @@ class Shape;
 */
 struct TagTrack {
 
-    TagTrack(std::string& t, std::function<bool(Shape const&)> &criterion, int remainingSteps) 
+    TagTrack(std::string const& t, std::function<bool(Shape const&)> const& criterion, int remainingSteps) 
         : m_tag(t), m_criterion(criterion), m_remainingSteps(remainingSteps) {}
 
     std::function<bool(Shape const&)> m_criterion;
