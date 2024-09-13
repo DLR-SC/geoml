@@ -4,6 +4,8 @@
 #include <geoml/geom_topo/modeling.h>
 #include <geoml/primitives/modeling.hpp>
 #include <geoml/boolean_ops/modeling.hpp>
+#include <geoml/predicates/ShapePredicate.hpp>
+#include <geoml/predicates/predicate_functions.hpp>
 
 #include <gtest/gtest.h>
 
@@ -438,4 +440,67 @@ TEST(Test_naming_choosing_code, test_tag_tracks_with_operations)
 
 }
 
+TEST(Test_naming_choosing_code, test_shape_predicates)
+{   
+    // create a rectangular surface
 
+    // control points
+    gp_Pnt p_00(0.0, 2.0, 0.0);
+    gp_Pnt p_10(0.0, 0.0, 0.0);
+    gp_Pnt p_01(4.0, 2.0, 0.0);
+    gp_Pnt p_11(4.0, 0.0, 0.0);
+
+    geoml::Array2d<gp_Pnt> control_points (2,2);
+
+    control_points.setValue(0, 0, p_00);
+    control_points.setValue(1, 0, p_10);
+    control_points.setValue(0, 1, p_01);
+    control_points.setValue(1, 1, p_11);
+
+    geoml::Array2d<Standard_Real> weights (2,2);
+
+    weights.setValue(0, 0, 1.);
+    weights.setValue(1, 0, 1.);
+    weights.setValue(0, 1, 1.);
+    weights.setValue(1, 1, 1.);
+
+    std::vector<Standard_Real> U_knots;
+
+    U_knots.push_back(0.0);
+    U_knots.push_back(1.0);
+
+    std::vector<Standard_Real> V_knots;
+
+    V_knots.push_back(0.0);
+    V_knots.push_back(1.0);
+
+    std::vector<int> U_mults;
+
+    U_mults.push_back(2);
+    U_mults.push_back(2);
+
+    std::vector<int> V_mults;
+
+    V_mults.push_back(2);
+    V_mults.push_back(2);
+
+    int U_degree = 1;
+    int V_degree = 1;
+
+    Handle(Geom_BSplineSurface) srf = geoml::nurbs_surface(control_points, weights, U_knots, V_knots, U_mults, V_mults, U_degree, V_degree);
+
+    geoml::Shape rectangular_srf (geoml::SurfaceToFace(srf,1e-5));
+
+    // define a predicate
+    std::function<bool(geoml::Shape const&)> pred = [&](geoml::Shape const& s){
+        return s.is_type(TopAbs_EDGE);   
+    }; 
+
+    geoml::ShapePredicate shape_pred (pred);
+
+    // get edges in rectuangular_srf 
+    auto rectangular_srf_edges = rectangular_srf.select_subshapes(shape_pred);
+
+    EXPECT_EQ(rectangular_srf_edges.size(), 4);
+
+}
