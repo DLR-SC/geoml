@@ -95,7 +95,7 @@ public:
     auto const& get_metadata() const;
 
     /**
-     * @brief accept accpets a Visitor that explores the
+     * @brief accept accepts a Visitor that explores the
      * history of a shape in DFS manner. It expects the
      * visitor to implement
      *
