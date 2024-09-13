@@ -31,7 +31,7 @@ public:
         Shape ret = static_cast<Derived const&>(*this).perform();
         static_cast<Derived const&>(*this).map_subshapes(ret);
         
-        manage_tag_tracks(ret);
+        merge_and_apply_tag_tracks(ret);
 
         return ret;
     }
@@ -46,7 +46,7 @@ protected:
 
 private:
 
-    void manage_tag_tracks(Shape & result) const
+    void merge_and_apply_tag_tracks(Shape & result) const
     {
         // collect tag tracks of input Shapes and add them to the result Shape
         for(auto const &shape : m_inputs)
@@ -60,23 +60,17 @@ private:
         // apply tag tracks to the output
         result.apply_tag_tracks();
 
-        // delete the "worn out" Tag tracks
+        // delete the "worn out" Tag tracks and reduce the remaining step number of the remaining tag tracks by one
         for (auto it = result.m_tag_tracks.begin(); it != result.m_tag_tracks.end();)
         {
             if (it->m_remainingSteps <= 1)
             {
                 it = result.m_tag_tracks.erase(it);
             } else {
+                it->m_remainingSteps--;
                 ++it;
             }    
         }
-
-        // reduce the remaining step number of the remaining tag tracks by one
-        for (auto it = result.m_tag_tracks.begin(); it != result.m_tag_tracks.end();)
-        {
-            it->m_remainingSteps--;
-            ++it;    
-        } 
 
     }
 };
