@@ -88,8 +88,6 @@ public:
 
     void apply_tag_tracks();
 
-    auto const& get_metadata() const;
-
     /**
      * @brief accept accepts a Visitor that explores the
      * history of a shape in DFS manner. It expects the
