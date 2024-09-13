@@ -348,12 +348,6 @@ TEST(Test_naming_choosing_code, example_rectangle_triangles)
     // define tag_track_1
     geoml::TagTrack tag_track_1(tag_1, criterion_1, remainingSteps_1);
 
-    // add tag_track_1 to cut_result
-    cut_result.add_tag_track(tag_track_1);
-
-    // apply all tag tracks of cut_result to the Shape itself
-    cut_result.apply_tag_tracks();
-
     // get edges in cut_result carrying tag_1
     auto cut_result_edges_tag_1 = cut_result.select_subshapes([&](geoml::Shape& s){
         return  s.has_tag(tag_track_1.m_tag);       
