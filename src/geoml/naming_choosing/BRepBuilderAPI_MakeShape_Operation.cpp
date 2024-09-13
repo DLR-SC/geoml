@@ -5,18 +5,12 @@
 namespace geoml {
 
 BRepBuilderAPI_MakeShape_Operation::BRepBuilderAPI_MakeShape_Operation(
-    std::string const& id,
     BRepBuilderAPI_MakeShape* algo,
     std::vector<Shape const*> const& inputs
 )
-    : Operation(inputs)
-    , m_id(id)
-    , m_algo(algo)
+    : Operation(inputs), 
+      m_algo(algo)
 {}
-
-std::string BRepBuilderAPI_MakeShape_Operation::id() const {
-    return m_id;
-}
 
 Shape BRepBuilderAPI_MakeShape_Operation::perform() const
 {
@@ -57,14 +51,14 @@ void BRepBuilderAPI_MakeShape_Operation::map_subshapes(Shape& result) const
 Shape operator-(Shape const& l, Shape const& r)
 {
     BRepAlgoAPI_Cut cutter(l, r);
-    auto operation = BRepBuilderAPI_MakeShape_Operation("cut", &cutter, {&l,&r});
+    auto operation = BRepBuilderAPI_MakeShape_Operation(&cutter, {&l,&r});
     return operation.value();
 }
 
 Shape operator+(Shape const& l, Shape const& r)
 {
     BRepAlgoAPI_Fuse fuser(l, r);
-    auto operation = BRepBuilderAPI_MakeShape_Operation("fuse", &fuser, {&l,&r});
+    auto operation = BRepBuilderAPI_MakeShape_Operation(&fuser, {&l,&r});
     return operation.value();
 }
 
