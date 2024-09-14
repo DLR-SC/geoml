@@ -500,4 +500,10 @@ TEST(Test_naming_choosing_code, test_shape_predicates)
 
     EXPECT_EQ(rectangular_srf_edges.size(), 4);
 
+    rectangular_srf.add_meta_tag_to_subshapes(pred, "edge_tag");
+
+    geoml::ShapePredicate has_tag_predicate = geoml::make_predicate_has_tag("edge_tag");
+
+    auto rectangular_srf_edges_with_tag = rectangular_srf.select_subshapes(has_tag_predicate);    
+
 }
