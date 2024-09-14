@@ -134,7 +134,7 @@ bool Shape::has_subshape_that_is_child_of(Shape const &shape) const
            ) != m_subshapes.end();
 }
 
-bool Shape::has_tag(std::string const& tag)
+bool Shape::has_tag(std::string const& tag) const
 {
     return std::find_if(
            m_persistent_meta_tags.begin(),

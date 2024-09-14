@@ -4,7 +4,6 @@
 #include <geoml/geom_topo/modeling.h>
 #include <geoml/primitives/modeling.hpp>
 #include <geoml/boolean_ops/modeling.hpp>
-#include <geoml/predicates/ShapePredicate.hpp>
 #include <geoml/predicates/predicate_functions.hpp>
 
 #include <gtest/gtest.h>
