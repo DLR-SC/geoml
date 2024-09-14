@@ -6,6 +6,7 @@
 #include <geoml/geoml.h>
 
 #include <geoml/predicates/ShapePredicate.hpp>
+#include <geoml/naming_choosing/Shape.hpp>
 
 
 namespace geoml
@@ -82,5 +83,14 @@ ShapePredicate operator||(ShapePredicate const& l, ShapePredicate const& r);
  * @param r Second predicate
  */
 std::function<bool(Shape const&)> operator||(std::function<bool(Shape const&)> const& l, std::function<bool(Shape const&)> const& r);
+
+ShapePredicate make_shape_predicate_has_tag(std::string const& tag);
+
+std::function<bool(Shape const&)> make_predicate_has_tag(std::string const& tag);
+
+ShapePredicate make_shape_predicate_has_subshape_that_is_child_of(Shape const &shape);
+
+std::function<bool(Shape const&)> make_predicate_has_subshape_that_is_child_of(Shape const &shape);
+
 
 } // namespace geoml

@@ -42,4 +42,26 @@ std::function<bool(Shape const&)> operator||(std::function<bool(Shape const&)> c
     return OR(l,r);
 }
 
+ShapePredicate make_shape_predicate_has_tag(std::string const& tag)
+{
+    return ShapePredicate([&](geoml::Shape& s){ return  s.has_tag(tag); });
+}
+
+std::function<bool(Shape const&)> make_predicate_has_tag(std::string const& tag)
+{
+    return [&](geoml::Shape& s){ return  s.has_tag(tag); };
+}
+
+ShapePredicate make_shape_predicate_has_subshape_that_is_child_of(Shape const &shape)
+{
+    return ShapePredicate([&](geoml::Shape& s){ return  s.has_subshape_that_is_child_of(shape); });
+}
+
+std::function<bool(Shape const&)> make_predicate_has_subshape_that_is_child_of(Shape const &shape)
+{
+    return [&](geoml::Shape& s){ return  s.has_subshape_that_is_child_of(shape); };
+}
+
+
+
 } // namespace geoml
