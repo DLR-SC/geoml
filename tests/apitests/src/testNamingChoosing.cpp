@@ -506,4 +506,5 @@ TEST(Test_naming_choosing_code, test_shape_predicates)
 
     auto rectangular_srf_edges_with_tag = rectangular_srf.select_subshapes(has_tag_predicate);    
 
+    EXPECT_EQ(rectangular_srf_edges_with_tag.size(), 4);
 }
