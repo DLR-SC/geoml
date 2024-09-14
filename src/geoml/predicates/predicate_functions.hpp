@@ -30,6 +30,24 @@ ShapePredicate AND(ShapePredicate const& l, ShapePredicate const& r);
 ShapePredicate operator&&(ShapePredicate const& l, ShapePredicate const& r);
 
 /**
+ * @brief Returns the predicate representing the conjunction of the two input predicates
+ * 
+ * 
+ * @param l First predicate
+ * @param r Second predicate
+ */
+std::function<bool(Shape const&)> AND(std::function<bool(Shape const&)> const& l, std::function<bool(Shape const&)> const& r);
+
+/**
+ * @brief Returns the predicate representing the conjunction of the two input predicates
+ * 
+ * 
+ * @param l First predicate
+ * @param r Second predicate
+ */
+std::function<bool(Shape const&)> operator&&(std::function<bool(Shape const&)> const& l, std::function<bool(Shape const&)> const& r);
+
+/**
  * @brief Returns the ShapePredicate representing the disjunction of the two input ShapePredicates
  * 
  * 
@@ -39,6 +57,15 @@ ShapePredicate operator&&(ShapePredicate const& l, ShapePredicate const& r);
 ShapePredicate OR(ShapePredicate const& l, ShapePredicate const& r);
 
 /**
+ * @brief Returns the predicate representing the disjunction of the two input predicates
+ * 
+ * 
+ * @param l First predicate
+ * @param r Second predicate
+ */
+std::function<bool(Shape const&)> OR(std::function<bool(Shape const&)> const& l, std::function<bool(Shape const&)> const& r);
+
+/**
  * @brief Returns the ShapePredicate representing the disjunction of the two input ShapePredicates
  * 
  * 
@@ -46,5 +73,14 @@ ShapePredicate OR(ShapePredicate const& l, ShapePredicate const& r);
  * @param r Second ShapePredicate
  */
 ShapePredicate operator||(ShapePredicate const& l, ShapePredicate const& r);
+
+/**
+ * @brief Returns the predicate representing the disjunction of the two input predicate
+ * 
+ * 
+ * @param l First predicate
+ * @param r Second predicate
+ */
+std::function<bool(Shape const&)> operator||(std::function<bool(Shape const&)> const& l, std::function<bool(Shape const&)> const& r);
 
 } // namespace geoml
