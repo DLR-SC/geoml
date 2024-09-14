@@ -491,14 +491,12 @@ TEST(Test_naming_choosing_code, test_shape_predicates)
     geoml::Shape rectangular_srf (geoml::SurfaceToFace(srf,1e-5));
 
     // define a predicate
-    std::function<bool(geoml::Shape const&)> pred = [&](geoml::Shape const& s){
+    geoml::ShapePredicate pred = [&](geoml::Shape const& s){
         return s.is_type(TopAbs_EDGE);   
     }; 
 
-    geoml::ShapePredicate shape_pred (pred);
-
     // get edges in rectuangular_srf 
-    auto rectangular_srf_edges = rectangular_srf.select_subshapes(shape_pred);
+    auto rectangular_srf_edges = rectangular_srf.select_subshapes(pred);
 
     EXPECT_EQ(rectangular_srf_edges.size(), 4);
 
