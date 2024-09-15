@@ -20,7 +20,7 @@ using ShapePredicate = std::function<bool(Shape const&)>;
  * @param l First ShapePredicate
  * @param r Second ShapePredicate
  */
-ShapePredicate AND(ShapePredicate const& l, ShapePredicate const& r);
+GEOML_API_EXPORT ShapePredicate AND(ShapePredicate const& l, ShapePredicate const& r);
 
 /**
  * @brief Returns the ShapePredicate representing the conjunction of the two input ShapePredicates
@@ -29,7 +29,7 @@ ShapePredicate AND(ShapePredicate const& l, ShapePredicate const& r);
  * @param l First ShapePredicate
  * @param r Second ShapePredicate
  */
-ShapePredicate operator&&(ShapePredicate const& l, ShapePredicate const& r);
+GEOML_API_EXPORT ShapePredicate operator&&(ShapePredicate const& l, ShapePredicate const& r);
 
 /**
  * @brief Returns the ShapePredicate representing the disjunction of the two input ShapePredicates
@@ -38,7 +38,7 @@ ShapePredicate operator&&(ShapePredicate const& l, ShapePredicate const& r);
  * @param l First ShapePredicate
  * @param r Second ShapePredicate
  */
-ShapePredicate OR(ShapePredicate const& l, ShapePredicate const& r);
+GEOML_API_EXPORT ShapePredicate OR(ShapePredicate const& l, ShapePredicate const& r);
 
 /**
  * @brief Returns the ShapePredicate representing the disjunction of the two input ShapePredicates
@@ -47,28 +47,28 @@ ShapePredicate OR(ShapePredicate const& l, ShapePredicate const& r);
  * @param l First ShapePredicate
  * @param r Second ShapePredicate
  */
-ShapePredicate operator||(ShapePredicate const& l, ShapePredicate const& r);
+GEOML_API_EXPORT ShapePredicate operator||(ShapePredicate const& l, ShapePredicate const& r);
 
 
 
-ShapePredicate make_predicate_has_tag(std::string const& tag);
+GEOML_API_EXPORT ShapePredicate make_predicate_has_tag(std::string const& tag);
 
-ShapePredicate make_predicate_has_subshape_that_is_child_of(Shape const &shape);
+GEOML_API_EXPORT ShapePredicate make_predicate_has_subshape_that_is_child_of(Shape const &shape);
 
-ShapePredicate make_predicate_is_type(TopAbs_ShapeEnum shape_type);
+GEOML_API_EXPORT ShapePredicate make_predicate_is_type(TopAbs_ShapeEnum shape_type);
 
-ShapePredicate make_predicate_is_same(Shape const& other);
-ShapePredicate make_predicate_is_same(TopoDS_Shape const& other); 
-ShapePredicate make_predicate_has_subshape(Shape const& shape);
-ShapePredicate make_predicate_has_origin();
-ShapePredicate make_predicate_is_unmodified_descendent_of(Shape const& other, int max_depth=std::numeric_limits<int>::max());
-ShapePredicate make_predicate_is_unmodified_descendent_of_subshape_in(Shape const& other, int max_depth=std::numeric_limits<int>::max());
-ShapePredicate make_predicate_is_modified_descendent_of(Shape const& other, int max_depth=std::numeric_limits<int>::max());
-ShapePredicate make_predicate_is_modified_descendent_of_subshape_in(Shape const& other, int max_depth=std::numeric_limits<int>::max());
-ShapePredicate make_predicate_is_descendent_of_subshape_in(Shape const& other, int max_depth=std::numeric_limits<int>::max());
-ShapePredicate make_predicate_is_child_of_subshape_in(Shape const& other);
-ShapePredicate make_predicate_is_descendent_of(Shape const& other, int max_depth=std::numeric_limits<int>::max());
-ShapePredicate make_predicate_is_child_of(Shape const& other);
+GEOML_API_EXPORT ShapePredicate make_predicate_is_same(Shape const& other);
+GEOML_API_EXPORT ShapePredicate make_predicate_is_same(TopoDS_Shape const& other); 
+GEOML_API_EXPORT ShapePredicate make_predicate_has_subshape(Shape const& shape);
+GEOML_API_EXPORT ShapePredicate make_predicate_has_origin();
+GEOML_API_EXPORT ShapePredicate make_predicate_is_unmodified_descendent_of(Shape const& other, int max_depth=std::numeric_limits<int>::max());
+GEOML_API_EXPORT ShapePredicate make_predicate_is_unmodified_descendent_of_subshape_in(Shape const& other, int max_depth=std::numeric_limits<int>::max());
+GEOML_API_EXPORT ShapePredicate make_predicate_is_modified_descendent_of(Shape const& other, int max_depth=std::numeric_limits<int>::max());
+GEOML_API_EXPORT ShapePredicate make_predicate_is_modified_descendent_of_subshape_in(Shape const& other, int max_depth=std::numeric_limits<int>::max());
+GEOML_API_EXPORT ShapePredicate make_predicate_is_descendent_of_subshape_in(Shape const& other, int max_depth=std::numeric_limits<int>::max());
+GEOML_API_EXPORT ShapePredicate make_predicate_is_child_of_subshape_in(Shape const& other);
+GEOML_API_EXPORT ShapePredicate make_predicate_is_descendent_of(Shape const& other, int max_depth=std::numeric_limits<int>::max());
+GEOML_API_EXPORT ShapePredicate make_predicate_is_child_of(Shape const& other);
 
 
 } // namespace geoml
