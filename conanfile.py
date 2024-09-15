@@ -58,12 +58,10 @@ class geomlConan(ConanFile):
             self.cpp_info.requires = ["opencascade::opencascade"]
         # this can't be the correct way to set the include dirs of geoml_internal...
         self.cpp_info.includedirs.append(os.path.join("include", "geoml"))
+        self.cpp_info.includedirs.append(os.path.join("include", "geoml", "boolean_ops"))
         self.cpp_info.includedirs.append(os.path.join("include", "geoml", "curves"))
         self.cpp_info.includedirs.append(os.path.join("include", "geoml", "data_structures"))
         self.cpp_info.includedirs.append(os.path.join("include", "geoml", "geom_topo"))
-        self.cpp_info.includedirs.append(os.path.join("include", "geoml", "surfaces"))
-        self.cpp_info.includedirs.append(os.path.join("include", "geoml", "utility"))
-        self.cpp_info.includedirs.append(os.path.join("include", "geoml", "naming_choosing"))
         self.cpp_info.includedirs.append(os.path.join("include", "geoml", "internal"))
         self.cpp_info.includedirs.append(os.path.join("include", "geoml", "internal", "boolean_operations"))
         self.cpp_info.includedirs.append(os.path.join("include", "geoml", "internal", "common"))
@@ -75,6 +73,10 @@ class geomlConan(ConanFile):
         self.cpp_info.includedirs.append(os.path.join("include", "geoml", "internal", "math"))
         self.cpp_info.includedirs.append(os.path.join("include", "geoml", "internal", "system"))
         self.cpp_info.includedirs.append(os.path.join("include", "geoml", "internal", "topology"))
-
+        self.cpp_info.includedirs.append(os.path.join("include", "geoml", "naming_choosing"))
+        self.cpp_info.includedirs.append(os.path.join("include", "geoml", "predicates"))
+        self.cpp_info.includedirs.append(os.path.join("include", "geoml", "primitives"))
+        self.cpp_info.includedirs.append(os.path.join("include", "geoml", "surfaces"))
+        self.cpp_info.includedirs.append(os.path.join("include", "geoml", "utility"))
 
 
