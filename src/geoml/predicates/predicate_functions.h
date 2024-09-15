@@ -5,7 +5,7 @@
  */
 #include <geoml/geoml.h>
 
-#include <geoml/naming_choosing/Shape.hpp>
+#include <geoml/naming_choosing/Shape.h>
 
 
 namespace geoml

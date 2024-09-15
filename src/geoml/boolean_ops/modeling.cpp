@@ -1,5 +1,5 @@
-#include "boolean_ops/modeling.hpp"
-#include "topology/BRepBuilderAPI_MakeShape_Operation.hpp"
+#include "boolean_ops/modeling.h"
+#include "topology/BRepBuilderAPI_MakeShape_Operation.h"
 
 #include "BRepAlgoAPI_Cut.hxx"
 #include "BRepAlgoAPI_Fuse.hxx"

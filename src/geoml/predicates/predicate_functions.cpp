@@ -1,4 +1,4 @@
-#include "predicates/predicate_functions.hpp"
+#include "predicates/predicate_functions.h"
 
 namespace geoml{
 
