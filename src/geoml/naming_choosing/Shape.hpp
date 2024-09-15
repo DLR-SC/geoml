@@ -132,7 +132,7 @@ public:
     bool is_descendent_of(Shape const& other, int max_depth=std::numeric_limits<int>::max()) const;
     bool is_child_of(Shape const& other) const;
     bool has_subshape_that_is_child_of(Shape const &shape) const;
-    bool has_tag(std::string const& tag);
+    bool has_tag(std::string const& tag) const;
 
 private:
 
