@@ -22,9 +22,6 @@ ShapePredicate operator||(ShapePredicate const& l, ShapePredicate const& r)
     return OR(l,r);
 }
 
-
-
-
 ShapePredicate make_predicate_has_tag(std::string const& tag)
 {
     return [&](geoml::Shape const& s){ return s.has_tag(tag); };

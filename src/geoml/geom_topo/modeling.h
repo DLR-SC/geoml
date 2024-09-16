@@ -33,4 +33,5 @@ SurfaceToFace(const Handle(Geom_Surface) &surface, Standard_Real tolDegEd);
 GEOML_API_EXPORT TopoDS_Edge
 CurveToEdge(const Handle(Geom_Curve) &curve);
 
+
 } // namespace geoml
