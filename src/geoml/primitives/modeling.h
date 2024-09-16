@@ -1,7 +1,7 @@
 #pragma once
 
 /**
- * @brief geoml/primitives/modeling.hpp includes functions to create geometric primitives
+ * @brief geoml/primitives/modeling.h includes functions to create geometric primitives
  */
 #include <geoml/geoml.h>
 

@@ -1,7 +1,7 @@
 #pragma once
 
 /**
- * @brief geoml/boolean_operations/modeling.hpp includes functions to perform boolean operations
+ * @brief geoml/boolean_operations/modeling.h includes functions to perform boolean operations
  */
 #include <geoml/geoml.h>
 
