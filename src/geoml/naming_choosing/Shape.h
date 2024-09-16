@@ -173,7 +173,8 @@ private:
         int m_max_depth;
     };
 
-    static Shape vector_of_shape_to_shape(std::vector<std::shared_ptr<Shape>> const& shapes);
+	//TODO: Could be static. Or moved to commonfunctions.
+    GEOML_API_EXPORT Shape vector_of_shape_to_shape(std::vector<std::shared_ptr<Shape>> const& shapes);
 
     TopoDS_Shape m_shape;
 

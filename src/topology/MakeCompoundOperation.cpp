@@ -1,6 +1,8 @@
 #include "MakeCompoundOperation.h"
 #include <BRep_Builder.hxx>
 
+#include <algorithm>
+
 namespace geoml {
 
 MakeCompoundOperation::MakeCompoundOperation(
