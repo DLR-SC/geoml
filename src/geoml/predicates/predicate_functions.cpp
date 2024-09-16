@@ -95,5 +95,10 @@ ShapePredicate make_predicate_is_child_of(Shape const& other)
     return [&](geoml::Shape const& s){ return s.is_child_of(other); };
 }
 
+ShapePredicate make_predicate_is_type(TopAbs_ShapeEnum shape_type)
+{
+    return [&](geoml::Shape const& s){ return s.is_type(shape_type); };
+}
+
 
 } // namespace geoml
