@@ -70,6 +70,12 @@ public:
     }
 
     template <typename Pred>
+    Shape select_subshapes_as_compound(Pred&& f)
+    {
+        return vector_of_shape_to_shape(select_subshapes(f));
+    }
+
+    template <typename Pred>
     void add_meta_tag_to_subshapes(Pred&& f, std::string const& input_tag) // this function can only add a tag to a subshape of the shape and not the shape itself
     {    
         std::vector<std::shared_ptr<Shape>> selection = this->select_subshapes(f);
@@ -166,6 +172,8 @@ private:
         Pred m_f;
         int m_max_depth;
     };
+
+    static Shape vector_of_shape_to_shape(std::vector<std::shared_ptr<Shape>> const& shapes);
 
     TopoDS_Shape m_shape;
 

@@ -1,8 +1,10 @@
 #include "Shape.h"
 
+#include "topology/MakeCompoundOperation.h"
 #include <TopExp_Explorer.hxx>
 
 #include <algorithm>
+#include <iterator>
 
 namespace geoml {
 
@@ -175,6 +177,21 @@ void Shape::apply_tag_tracks()
             }
         }
     }
+}
+
+Shape Shape::vector_of_shape_to_shape(std::vector<std::shared_ptr<Shape>> const& shapes)
+{
+    if (shapes.size() == 0) {
+            // return an empty shape
+            return Shape(TopoDS_Shape());
+    }
+
+    if (shapes.size() == 1) {
+        return *shapes[0];
+    }
+
+    MakeCompoundOperation op(shapes);
+    return op.value();
 }
 
 } // namespace geoml
