@@ -1,4 +1,4 @@
-#include "primitives/modeling.hpp"
+#include "primitives/modeling.h"
 
 #include <BRepPrimAPI_MakeCylinder.hxx>
 #include <BRepPrimAPI_MakeBox.hxx>

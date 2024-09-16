@@ -1,6 +1,6 @@
 #pragma once
 
-#include "geoml/naming_choosing/Shape.hpp"
+#include "geoml/naming_choosing/Shape.h"
 #include <vector>
 
 namespace geoml {
