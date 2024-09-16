@@ -1,5 +1,7 @@
 #pragma once
 
+#include "geoml/geoml.h"
+
 #include <vector>
 #include <memory>
 #include <string>
@@ -25,7 +27,7 @@ class Shape;
 */
 struct TagTrack {
 
-    TagTrack(std::string const& t, std::function<bool(Shape const&)> const& criterion, int remainingSteps) 
+    GEOML_API_EXPORT TagTrack(std::string const& t, std::function<bool(Shape const&)> const& criterion, int remainingSteps) 
         : m_tag(t), m_criterion(criterion), m_remainingSteps(remainingSteps) {}
 
     std::function<bool(Shape const&)> m_criterion;
@@ -45,14 +47,14 @@ class Shape
     friend class Operation;
 
 public:
-    Shape(TopoDS_Shape const& theShape);
+    GEOML_API_EXPORT Shape(TopoDS_Shape const& theShape);
 
     // conversion to TopoDS_Shape
-    operator TopoDS_Shape() const;
+    GEOML_API_EXPORT operator TopoDS_Shape() const;
 
-    std::vector<std::shared_ptr<Shape>> const& get_subshapes() const;
+    GEOML_API_EXPORT std::vector<std::shared_ptr<Shape>> const& get_subshapes() const;
 
-    std::vector<std::shared_ptr<Shape>>& get_subshapes();
+    GEOML_API_EXPORT std::vector<std::shared_ptr<Shape>>& get_subshapes();
 
     template <typename Pred>
     std::vector<std::shared_ptr<Shape>> select_subshapes(Pred&& f)
@@ -78,15 +80,15 @@ public:
         }
     }
                                                            
-    void add_meta_tag(std::string const& tag); // a meta_tag gets added to this shape (not to its subshapes)
+    GEOML_API_EXPORT void add_meta_tag(std::string const& tag); // a meta_tag gets added to this shape (not to its subshapes)
 
-    void add_tag_track(TagTrack const& tt);
+    GEOML_API_EXPORT void add_tag_track(TagTrack const& tt);
 
-    std::vector<TagTrack>& get_tag_tracks();
+    GEOML_API_EXPORT std::vector<TagTrack>& get_tag_tracks();
 
-    const std::vector<TagTrack>& get_tag_tracks() const;
+    GEOML_API_EXPORT const std::vector<TagTrack>& get_tag_tracks() const;
 
-    void apply_tag_tracks();
+    GEOML_API_EXPORT void apply_tag_tracks();
 
     /**
      * @brief accept accepts a Visitor that explores the
@@ -118,21 +120,21 @@ public:
     // The following are convenience functions that can be used
     // as predicates when selecting subshapes
 
-    bool is_type(TopAbs_ShapeEnum shape_type) const;
-    bool is_same(Shape const& other) const;
-    bool is_same(TopoDS_Shape const& other) const; //IMPORTANT! This is the predicate used to check if two shapes match. Not sure if it is the best choice.
-    bool has_subshape(Shape const& shape) const;
-    bool has_origin() const;
-    bool is_unmodified_descendent_of(Shape const& other, int max_depth=std::numeric_limits<int>::max()) const;
-    bool is_unmodified_descendent_of_subshape_in(Shape const& other, int max_depth=std::numeric_limits<int>::max()) const;
-    bool is_modified_descendent_of(Shape const& other, int max_depth=std::numeric_limits<int>::max()) const;
-    bool is_modified_descendent_of_subshape_in(Shape const& other, int max_depth=std::numeric_limits<int>::max()) const;
-    bool is_descendent_of_subshape_in(Shape const& other, int max_depth=std::numeric_limits<int>::max()) const;
-    bool is_child_of_subshape_in(Shape const& other) const;
-    bool is_descendent_of(Shape const& other, int max_depth=std::numeric_limits<int>::max()) const;
-    bool is_child_of(Shape const& other) const;
-    bool has_subshape_that_is_child_of(Shape const &shape) const;
-    bool has_tag(std::string const& tag) const;
+    GEOML_API_EXPORT bool is_type(TopAbs_ShapeEnum shape_type) const;
+    GEOML_API_EXPORT bool is_same(Shape const& other) const;
+    GEOML_API_EXPORT bool is_same(TopoDS_Shape const& other) const; //IMPORTANT! This is the predicate used to check if two shapes match. Not sure if it is the best choice.
+    GEOML_API_EXPORT bool has_subshape(Shape const& shape) const;
+    GEOML_API_EXPORT bool has_origin() const;
+    GEOML_API_EXPORT bool is_unmodified_descendent_of(Shape const& other, int max_depth=std::numeric_limits<int>::max()) const;
+    GEOML_API_EXPORT bool is_unmodified_descendent_of_subshape_in(Shape const& other, int max_depth=std::numeric_limits<int>::max()) const;
+    GEOML_API_EXPORT bool is_modified_descendent_of(Shape const& other, int max_depth=std::numeric_limits<int>::max()) const;
+    GEOML_API_EXPORT bool is_modified_descendent_of_subshape_in(Shape const& other, int max_depth=std::numeric_limits<int>::max()) const;
+    GEOML_API_EXPORT bool is_descendent_of_subshape_in(Shape const& other, int max_depth=std::numeric_limits<int>::max()) const;
+    GEOML_API_EXPORT bool is_child_of_subshape_in(Shape const& other) const;
+    GEOML_API_EXPORT bool is_descendent_of(Shape const& other, int max_depth=std::numeric_limits<int>::max()) const;
+    GEOML_API_EXPORT bool is_child_of(Shape const& other) const;
+    GEOML_API_EXPORT bool has_subshape_that_is_child_of(Shape const &shape) const;
+    GEOML_API_EXPORT bool has_tag(std::string const& tag) const;
 
 private:
 

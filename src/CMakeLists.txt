@@ -17,6 +17,7 @@ endforeach()
 file(GLOB_RECURSE SOURCES
     "*.h"
     "*.hxx"
+    "*.hpp"
     "*.cpp"
     "*.cxx"
 )

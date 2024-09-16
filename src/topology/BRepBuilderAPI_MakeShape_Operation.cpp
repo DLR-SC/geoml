@@ -1,4 +1,4 @@
-#include "BRepBuilderAPI_MakeShape_Operation.hpp"
+#include "BRepBuilderAPI_MakeShape_Operation.h"
 #include "BRepAlgoAPI_Cut.hxx"
 #include "BRepAlgoAPI_Fuse.hxx"
 

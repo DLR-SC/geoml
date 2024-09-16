@@ -1,4 +1,4 @@
-#include "Shape.hpp"
+#include "Shape.h"
 
 #include <TopExp_Explorer.hxx>
 

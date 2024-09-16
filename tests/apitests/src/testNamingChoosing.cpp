@@ -1,10 +1,10 @@
-#include <geoml/naming_choosing/Shape.hpp>
+#include <geoml/naming_choosing/Shape.h>
 #include <geoml/surfaces/modeling.h>
 #include <geoml/data_structures/Array2d.h>
 #include <geoml/geom_topo/modeling.h>
-#include <geoml/primitives/modeling.hpp>
-#include <geoml/boolean_ops/modeling.hpp>
-#include <geoml/predicates/predicate_functions.hpp>
+#include <geoml/primitives/modeling.h>
+#include <geoml/boolean_ops/modeling.h>
+#include <geoml/predicates/predicate_functions.h>
 
 #include <gtest/gtest.h>
 
