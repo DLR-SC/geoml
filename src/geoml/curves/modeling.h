@@ -74,4 +74,16 @@ blend_curve(Handle(Geom_BSplineCurve) &curve_1,
             Standard_Real form_factor_21,
             Standard_Real form_factor_22);
 
+/**
+ * @brief Get the start point of a Geom_Curve
+ * 
+ */
+GEOML_API_EXPORT gp_Pnt get_start_point(Handle(Geom_BSplineCurve) const& curve);
+
+/**
+ * @brief Get the end point of a Geom_Curve
+ * 
+ */
+GEOML_API_EXPORT gp_Pnt get_end_point(Handle(Geom_BSplineCurve) const& curve);
+
 } // namespace geoml

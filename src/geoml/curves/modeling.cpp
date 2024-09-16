@@ -253,8 +253,27 @@ Handle(Geom_BSplineCurve) blend_curve(Handle(Geom_BSplineCurve) &curve_1,
 
         return nurbs_curve(control_points, weights, knots, multiplicities, degree);       
     } 
+}
 
-}                                  
+
+gp_Pnt get_start_point(Handle(Geom_BSplineCurve) const& curve)
+{
+    Standard_Real start_param = curve->FirstParameter();
+    gp_Pnt start_point;
+    curve->D0(start_param, start_point);
+
+    return start_point;
+}
+
+gp_Pnt get_end_point(Handle(Geom_BSplineCurve) const& curve)
+{
+    Standard_Real end_param = curve->LastParameter();
+    gp_Pnt end_point;
+    curve->D0(end_param, end_point);
+
+    return end_point;
+}
+                                 
 
 } // namespace geoml
 

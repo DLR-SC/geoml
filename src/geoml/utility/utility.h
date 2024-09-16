@@ -24,4 +24,5 @@ GEOML_API_EXPORT Array2d<gp_Pnt>
 extract_control_points_surface(const Handle(Geom_BSplineSurface) &b_spline_surface);
 
 
+
 } // namespace geoml
