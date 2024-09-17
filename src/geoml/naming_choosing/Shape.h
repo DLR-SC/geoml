@@ -57,7 +57,7 @@ public:
     GEOML_API_EXPORT std::vector<std::shared_ptr<Shape>>& get_subshapes();
 
     template <typename Pred>
-    std::vector<std::shared_ptr<Shape>> select_subshapes(Pred&& f)
+    std::vector<std::shared_ptr<Shape>> select_subshapes(Pred&& f) const
     {
         std::vector<std::shared_ptr<Shape>> ret;
         for (auto const& subshape : m_subshapes)
@@ -70,7 +70,7 @@ public:
     }
 
     template <typename Pred>
-    Shape select_subshapes_as_compound(Pred&& f)
+    Shape select_subshapes_as_compound(Pred&& f) const
     {
         return vector_of_shape_to_shape(select_subshapes(f));
     }
@@ -174,7 +174,7 @@ private:
     };
 
 	//TODO: Could be static. Or moved to commonfunctions.
-    GEOML_API_EXPORT Shape vector_of_shape_to_shape(std::vector<std::shared_ptr<Shape>> const& shapes);
+    GEOML_API_EXPORT Shape vector_of_shape_to_shape(std::vector<std::shared_ptr<Shape>> const& shapes) const;
 
     TopoDS_Shape m_shape;
 

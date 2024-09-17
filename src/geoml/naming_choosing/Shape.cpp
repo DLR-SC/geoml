@@ -179,7 +179,7 @@ void Shape::apply_tag_tracks()
     }
 }
 
-Shape Shape::vector_of_shape_to_shape(std::vector<std::shared_ptr<Shape>> const& shapes)
+Shape Shape::vector_of_shape_to_shape(std::vector<std::shared_ptr<Shape>> const& shapes) const
 {
     if (shapes.size() == 0) {
             // return an empty shape
