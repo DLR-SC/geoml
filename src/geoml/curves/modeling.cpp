@@ -37,8 +37,8 @@ Handle(Geom_BSplineCurve) interpolate_points_to_b_spline_curve(const std::vector
     }
 }
 
-Handle(Geom_BSplineCurve) blend_curve(Handle(Geom_BSplineCurve) &curve_1,
-                                      Handle(Geom_BSplineCurve) &curve_2,
+Handle(Geom_BSplineCurve) blend_curve(Handle(Geom_Curve) const& curve_1,
+                                      Handle(Geom_Curve) const& curve_2,
                                       int start_end_1, 
                                       int start_end_2,
                                       int continuity_1,
