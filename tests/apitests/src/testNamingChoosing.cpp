@@ -405,27 +405,42 @@ TEST(Test_naming_choosing_code, test_tag_tracks_with_operations)
 
     geoml::TagTrack tag_track(tag, criterion, remainingSteps);
 
+    geoml::Shape copy_of_shape (rectangular_srf);
+
     rectangular_srf.add_tag_track(tag_track);
+    copy_of_shape.add_tag_track(tag_track);
 
     // apply the tag tracks of rectangular_srf to the Shape itself
     rectangular_srf.apply_tag_tracks();
+    copy_of_shape.apply_tag_tracks();
 
     // get edges in rectuangular_srf carrying tag "vertically persisten name"
     auto rectangular_srf_tagged_edges = rectangular_srf.select_subshapes([&](geoml::Shape& s){
         return  s.has_tag(tag_track.m_tag);       
     });
 
+    auto copy_of_shape_tagged_edges = copy_of_shape.select_subshapes([&](geoml::Shape& s){
+        return  s.has_tag(tag_track.m_tag);       
+    });
+
     EXPECT_EQ(rectangular_srf_tagged_edges.size(), 1);
+    EXPECT_EQ(copy_of_shape_tagged_edges.size(), 1);
 
     // perform first modelling operation
     geoml::Shape cut_result = rectangular_srf - triangular_srf;
+    geoml::Shape copy_cut_result = copy_of_shape - triangular_srf;
 
     // get edges in cut_result carrying tag "vertically persisten name"
     auto cut_result_tagged_edges = cut_result.select_subshapes([&](geoml::Shape& s){
         return  s.has_tag(tag_track.m_tag);       
     });
 
+    auto copy_cut_result_tagged_edges = copy_cut_result.select_subshapes([&](geoml::Shape& s){
+        return  s.has_tag(tag_track.m_tag);       
+    });
+
     EXPECT_EQ(cut_result_tagged_edges .size(), 1);
+    EXPECT_EQ(copy_cut_result_tagged_edges .size(), 1);
 
     // perform second modelling operation
     geoml::Shape cut_result_2 = cut_result - triangular_srf_2;

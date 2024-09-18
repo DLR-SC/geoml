@@ -69,6 +69,7 @@ GEOML_API_EXPORT ShapePredicate make_predicate_is_descendent_of_subshape_in(Shap
 GEOML_API_EXPORT ShapePredicate make_predicate_is_child_of_subshape_in(Shape const& other);
 GEOML_API_EXPORT ShapePredicate make_predicate_is_descendent_of(Shape const& other, int max_depth=std::numeric_limits<int>::max());
 GEOML_API_EXPORT ShapePredicate make_predicate_is_child_of(Shape const& other);
-
+// has_subshape_that_is_descendet_of
+// has subshape_with(is_descendent_of(Shape const& other))
 
 } // namespace geoml
