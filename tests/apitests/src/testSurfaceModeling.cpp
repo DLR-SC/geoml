@@ -1,3 +1,9 @@
+/*
+* SPDX-License-Identifier: Apache-2.0
+* SPDX-FileCopyrightText: 2018 German Aerospace Center (DLR)
+*/
+
+
 #include <geoml/surfaces/modeling.h>
 #include <geoml/curves/modeling.h>
 #include <geoml/geom_topo/modeling.h>

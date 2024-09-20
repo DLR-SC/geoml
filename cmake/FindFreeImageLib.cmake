@@ -1,3 +1,8 @@
+#
+# SPDX-License-Identifier: Apache-2.0
+# SPDX-FileCopyrightText: 2018 German Aerospace Center (DLR)
+#
+
 find_library(FREEIMAGE_LIBRARY
   NAMES FreeImage freeimage
   HINTS

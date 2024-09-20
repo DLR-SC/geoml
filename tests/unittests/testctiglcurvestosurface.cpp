@@ -1,3 +1,8 @@
+/*
+* SPDX-License-Identifier: Apache-2.0
+* SPDX-FileCopyrightText: 2014 German Aerospace Center (DLR)
+*/
+
 #include "test.h"
 
 #include "geometry/CurvesToSurface.h"

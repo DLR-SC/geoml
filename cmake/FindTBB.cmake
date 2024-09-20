@@ -50,8 +50,9 @@
 #-------------------------------------------------------------------
 #
 #=============================================================================
-# Copyright 2010-2012 Kitware, Inc.
-# Copyright 2012      Rolf Eike Beer <eike@sf-mail.de>
+# SPDX-License-Identifier: LicenseRef-BSD-3-Clause-CMake
+# SPDX-FileCopyrightText: 2010-2012 Kitware, Inc.
+# SPDX-FileCopyrightText: 2012      Rolf Eike Beer <eike@sf-mail.de>
 #
 # Distributed under the OSI-approved BSD License (the "License");
 # see accompanying file Copyright.txt for details.

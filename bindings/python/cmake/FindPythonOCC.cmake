@@ -1,3 +1,8 @@
+#
+# SPDX-License-Identifier: Apache-2.0
+# SPDX-FileCopyrightText: 2018 German Aerospace Center (DLR)
+#
+
 # Look for the interface file
 FIND_PATH(PythonOCC_SOURCE_DIR
     NAMES src/SWIG_files/wrapper/Standard.i

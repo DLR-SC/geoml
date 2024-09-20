@@ -1,5 +1,6 @@
 /* 
- * Copyright (C) 2007-2013 German Aerospace Center (DLR/SC)
+ * SPDX-License-Identifier: Apache-2.0
+* SPDX-FileCopyrightText: 2013 German Aerospace Center (DLR)
  *
  * Created: 2013-02-13 Markus Litz <Markus.Litz@dlr.de>
 

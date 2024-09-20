@@ -1,5 +1,6 @@
 /**
- * Copyright (C) 2015 DLR-SC
+ * SPDX-License-Identifier: Apache-2.0
+ * SPDX-FileCopyrightText: 2015 German Aerospace Center (DLR)
  *
  * Author: Martin Siggel
  *

@@ -1,3 +1,9 @@
+#
+# SPDX-License-Identifier: Apache-2.0
+# SPDX-FileCopyrightText: 2018 German Aerospace Center (DLR)
+#
+
+
 file (GLOB test_SRCS *.cpp *.cxx *.cc *.C *.c *.h *.hpp)
 
 set (test_BIN "geoml-unittests")

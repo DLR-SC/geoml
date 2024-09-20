@@ -1,3 +1,7 @@
+/*
+* SPDX-License-Identifier: Apache-2.0
+* SPDX-FileCopyrightText: 2024 German Aerospace Center (DLR)
+*/
 
 #include "geoml/data_structures/Array2d.h"
 #include "geoml/data_structures/conversions.h"

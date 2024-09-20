@@ -1,6 +1,9 @@
 #pragma once
 
 /**
+ * SPDX-License-Identifier: Apache-2.0
+ * SPDX-FileCopyrightText: 2024 German Aerospace Center (DLR)
+ * 
  * @brief geoml/geom_topo/modeling.h includes functions to convert between OCCT's geometry and topology data types
  */
 #include <geoml/geoml.h>
