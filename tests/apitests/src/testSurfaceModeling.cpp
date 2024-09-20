@@ -23,6 +23,8 @@
 
 #include <filesystem>
 
+#include <vector>
+
 namespace apitests
 {
 
@@ -296,3 +298,45 @@ EXPECT_NEAR(test_pt_21.Y(),2., 1e-5);
 EXPECT_NEAR(test_pt_21.Z(),1., 1e-5);
 
 }
+
+
+TEST(Test_nurbs_surface, gordon_fuselage)
+{   
+
+gp_Pnt P_1 (-4600., 0., 1950.);
+gp_Pnt P_2 (-4600., -1076.95526217, 1950.);
+gp_Pnt P_3 (-4600., -1950., 1076.95526217);
+gp_Pnt P_4 (-4600., -1950., 0.);
+gp_Pnt P_5 (-4600., -1950., -1076.95526217);
+gp_Pnt P_6 (-4600., -1076.95526217, -1950.);
+gp_Pnt P_7 (-4600., 0., -1950.);
+
+
+
+ 
+0., 1.
+0.552284749831, 1.
+1., 0.552284749831
+1., 0.
+1., -0.552284749831
+0.552284749831, -0.552284749831
+0., -1. 
+ 
+
+
+// gp_Pnt 
+// // now, define the upper wing's surface:
+// std::vector<Handle(Geom_Curve)> list_of_profiles_upper_wing;
+// list_of_profiles_upper_wing.push_back(i_u_profile_curve);
+// list_of_profiles_upper_wing.push_back(m_u_profile_curve);
+// list_of_profiles_upper_wing.push_back(o_u_profile_curve);
+
+// std::vector<Handle(Geom_Curve)> list_of_guides_upper_wing;
+// list_of_guides_upper_wing.push_back(leading_curve);
+// list_of_guides_upper_wing.push_back(trailing_curve);
+
+// Handle(Geom_BSplineSurface) upper_wing_surface
+// 	= geoml::interpolate_curve_network(list_of_profiles_upper_wing,
+//                           list_of_guides_upper_wing,
+//                           1.0);
+}                          
