@@ -9,6 +9,7 @@
 #include <BRep_Builder.hxx>
 #include <BRepTools.hxx>
 #include <BRepBuilderAPI_MakeFace.hxx>
+#include <BRepBuilderAPI_MakeEdge.hxx>
 #include "GProp_GProps.hxx"
 #include "BRepGProp.hxx"
 
@@ -20,10 +21,17 @@
 #include <TopoDS_Edge.hxx>
 #include <gp_Pnt.hxx>
 #include <gp_Vec.hxx>
+#include <TColgp_Array1OfPnt.hxx>
+#include <Geom_BezierCurve.hxx>
 
 #include <filesystem>
 
 #include <vector>
+#include "BRepTools.hxx" 
+#include <gp_GTrsf.hxx>
+#include <gp_Mat.hxx>
+#include <gp_XYZ.hxx>
+#include <BRepBuilderAPI_GTransform.hxx>
 
 namespace apitests
 {
@@ -301,7 +309,11 @@ EXPECT_NEAR(test_pt_21.Z(),1., 1e-5);
 
 
 TEST(Test_nurbs_surface, gordon_fuselage)
-{   
+{  
+
+// middle part of fuselage
+
+// front fuselage profile
 
 gp_Pnt P_1 (-4600., 0., 1950.);
 gp_Pnt P_2 (-4600., -1076.95526217, 1950.);
@@ -311,17 +323,137 @@ gp_Pnt P_5 (-4600., -1950., -1076.95526217);
 gp_Pnt P_6 (-4600., -1076.95526217, -1950.);
 gp_Pnt P_7 (-4600., 0., -1950.);
 
+TColgp_Array1OfPnt profile_control_points(1,7);
+profile_control_points.SetValue(1,P_1);
+profile_control_points.SetValue(2,P_2);
+profile_control_points.SetValue(3,P_3);
+profile_control_points.SetValue(4,P_4);
+profile_control_points.SetValue(5,P_5);
+profile_control_points.SetValue(6,P_6);
+profile_control_points.SetValue(7,P_7);
+
+Handle(Geom_BezierCurve) profile = new Geom_BezierCurve(profile_control_points);
+
+// back fuselage profile
+
+gp_Pnt P_back_1 (12500., 0., 1950.);
+gp_Pnt P_back_2 (12500., -1076.95526217, 1950.);
+gp_Pnt P_back_3 (12500., -1950., 1076.95526217);
+gp_Pnt P_back_4 (12500., -1950., 0.);
+gp_Pnt P_back_5 (12500., -1950., -1076.95526217);
+gp_Pnt P_back_6 (12500., -1076.95526217, -1950.);
+gp_Pnt P_back_7 (12500., 0., -1950.);
+
+TColgp_Array1OfPnt back_profile_control_points(1,7);
+back_profile_control_points.SetValue(1,P_back_1);
+back_profile_control_points.SetValue(2,P_back_2);
+back_profile_control_points.SetValue(3,P_back_3);
+back_profile_control_points.SetValue(4,P_back_4);
+back_profile_control_points.SetValue(5,P_back_5);
+back_profile_control_points.SetValue(6,P_back_6);
+back_profile_control_points.SetValue(7,P_back_7);
+
+Handle(Geom_BezierCurve) back_profile = new Geom_BezierCurve(back_profile_control_points);
+
+// guiding curves
+
+// upper guiding curve
+TColgp_Array1OfPnt upper_guiding_curve_control_points(1,2);
+upper_guiding_curve_control_points.SetValue(1,P_1);
+upper_guiding_curve_control_points.SetValue(2,P_back_1);
+
+Handle(Geom_BezierCurve) upper_guiding_curve = new Geom_BezierCurve(upper_guiding_curve_control_points);
+
+// lower guiding curve
+TColgp_Array1OfPnt lower_guiding_curve_control_points(1,2);
+lower_guiding_curve_control_points.SetValue(1,P_7);
+lower_guiding_curve_control_points.SetValue(2,P_back_7);
+
+Handle(Geom_BezierCurve) lower_guiding_curve = new Geom_BezierCurve(lower_guiding_curve_control_points);
+
+// create middle fuselage surface
+std::vector<Handle(Geom_Curve)> list_of_profiles_middle_fuselage;
+list_of_profiles_middle_fuselage.push_back(profile);
+list_of_profiles_middle_fuselage.push_back(back_profile);
+
+std::vector<Handle(Geom_Curve)> list_of_guides_middle_fuselage;
+list_of_guides_middle_fuselage.push_back(upper_guiding_curve);
+list_of_guides_middle_fuselage.push_back(lower_guiding_curve);
+
+Handle(Geom_BSplineSurface) middle_fuselage
+	= geoml::interpolate_curve_network(list_of_profiles_middle_fuselage,
+                          list_of_guides_middle_fuselage,
+                          1.0);
+std::string filename = "middle_fuselage.brep";
+BRepTools::Write(BRepBuilderAPI_MakeFace(middle_fuselage, Precision::Confusion()), filename.c_str());
+
+// tail
+
+// tail guides
+
+// upper guide curve
+gp_Pnt P_upper_guide_end_point (25716., 0., 1950.);
+
+
+TColgp_Array1OfPnt tail_upper_guide_control_points(1,2);
+tail_upper_guide_control_points.SetValue(1,P_back_1);
+tail_upper_guide_control_points.SetValue(2,P_upper_guide_end_point);
+
+Handle(Geom_BezierCurve) tail_upper_guide_curve = new Geom_BezierCurve(tail_upper_guide_control_points);
+
+// lower guide curve
+gp_Pnt P_lower_guide_2 (14000., 0., -1950.);
+gp_Pnt P_lower_guide_3 (15500., 0., -1950.);
+gp_Pnt P_lower_guide_end (25716., 0., 1200.);
+
+TColgp_Array1OfPnt tail_lower_guide_curve_control_points(1,4);
+tail_lower_guide_curve_control_points.SetValue(1,P_back_7);
+tail_lower_guide_curve_control_points.SetValue(2,P_lower_guide_2);
+tail_lower_guide_curve_control_points.SetValue(3,P_lower_guide_3);
+tail_lower_guide_curve_control_points.SetValue(4,P_lower_guide_end);
+
+Handle(Geom_BezierCurve) tail_lower_guide_curve = new Geom_BezierCurve(tail_lower_guide_curve_control_points);
+
+
+// tail profile
+
+// scaling and translation values
+Standard_Real difference_in_z_1 = Abs(tail_upper_guide_control_points.Value(1).Z() - tail_lower_guide_curve_control_points.Value(1).Z());
+Standard_Real difference_in_z_2 = Abs(tail_upper_guide_control_points.Value(tail_upper_guide_control_points.Upper()).Z() - tail_lower_guide_curve_control_points.Value(tail_lower_guide_curve_control_points.Upper()).Z());
+ 
+Standard_Real difference_ratio = difference_in_z_2 / difference_in_z_1;
+
+std::cout << "difference_in_z_1: " << difference_in_z_1 << std::endl; 
+std::cout << "difference_in_z_2: " << difference_in_z_2 << std::endl; 
+
+Standard_Real scale_x = 1.;
+Standard_Real scale_y = difference_ratio;
+Standard_Real scale_z = difference_ratio;
+
+Standard_Real move_x = tail_upper_guide_control_points.Value(tail_upper_guide_control_points.Upper()).X() - back_profile_control_points.Value(1).X();
+
+Standard_Real move_z = (Abs(P_back_1.Z() - P_back_7.Z()) * (1 - difference_ratio)) / 2;
+  
+gp_GTrsf gTrsf (gp_Mat(scale_x, 0, 0, 0, scale_y, 0, 0, 0, scale_z), gp_XYZ(move_x, 0., move_z));
+
+
+// create an edge of back_profile
+BRepBuilderAPI_MakeEdge back_profile_edge (back_profile);
+
+BRepBuilderAPI_GTransform gTransform (back_profile_edge, gTrsf, true);
+
+TopoDS_Shape tail_profile_edge = gTransform.Shape();
+
+std::string filename_2 = "tail_profile_edge.brep";
+BRepTools::Write(tail_profile_edge, filename_2.c_str());
+
+
+
+
 
 
  
-0., 1.
-0.552284749831, 1.
-1., 0.552284749831
-1., 0.
-1., -0.552284749831
-0.552284749831, -0.552284749831
-0., -1. 
- 
+
 
 
 // gp_Pnt 
@@ -339,4 +471,65 @@ gp_Pnt P_7 (-4600., 0., -1950.);
 // 	= geoml::interpolate_curve_network(list_of_profiles_upper_wing,
 //                           list_of_guides_upper_wing,
 //                           1.0);
+
+// cap for nose surface:
+
+// define a profile curve tangential to the profile curve of 
+// nose_ogive_srf (arc_b_spline_curve):
+
+// last control point of the cap-profile curve:
+// gp_Pnt end_point_arc_cap(1000.0, 0.0, 0.0); // original: x = 1000.0
+
+// // get the first control point of the cap-profile curve and the starting tangent vector:
+// double start_param_cap = arc_b_spline_curve->LastParameter();
+// gp_Pnt start_point_arc_cap;
+// gp_Vec tangent_vector_cap;
+// arc_b_spline_curve->D1(start_param_cap, start_point_arc_cap, tangent_vector_cap);
+
+// // second control point of cap-profile curve:
+// gp_Pnt cp_cap_2 = geoml::move(start_point_arc_cap, tangent_vector_cap, 0.04);
+
+// //third control point of cap-profile curve:
+// gp_Pnt cp_cap_3 = geoml::move(end_point_arc_cap, gp_Vec(0., 0., 1.), 550.0);
+
+// // define the cap-profile curve:
+// TColgp_Array1OfPnt profile_points_cap(1,4);
+// profile_points_cap.SetValue(1,start_point_arc_cap);
+// profile_points_cap.SetValue(2,cp_cap_2);
+// profile_points_cap.SetValue(3,cp_cap_3);
+// profile_points_cap.SetValue(4,end_point_arc_cap);
+
+// // degree:
+// Standard_Integer degree_profile_cap = 3;
+
+// // weights:
+// TColStd_Array1OfReal weights_profile_cap(1, 4);
+// weights_profile_cap.SetValue(1, 1.0);  
+// weights_profile_cap.SetValue(2, 1.0);
+// weights_profile_cap.SetValue(3, 1.0);  
+// weights_profile_cap.SetValue(4, 1.0);  
+
+// // knots:
+// TColStd_Array1OfReal knots_profile_cap(1,2); 
+// knots_profile_cap.SetValue(1,0.0);           
+// knots_profile_cap.SetValue(2,1.0);
+
+// // multiplicities: 
+// TColStd_Array1OfInteger mults_profile_cap(1,2); 
+// mults_profile_cap.SetValue(1,4);                
+// mults_profile_cap.SetValue(2,4);
+
+// // create the profile curve:
+// Handle(Geom_BSplineCurve) profile_curve_cap 
+// 	= geoml::b_spline_curve(profile_points_cap, weights_profile_cap, 
+// 							knots_profile_cap, mults_profile_cap, degree_profile_cap);
+
+// writeToStp(profile_curve_cap, "profile_curve_cap.stp"); 
+
+// // now, create a surface of revolution around the profile curve profile_curve_cap:
+// Handle(Geom_BSplineSurface) nose_ogive_cap_srf
+// 	= geoml::revolving_surface(profile_curve_cap,
+//                   rot_axis);
+
+
 }                          
