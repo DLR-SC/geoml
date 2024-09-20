@@ -1,0 +1,12 @@
+stages:
+  - test
+
+check-licenses:  
+  stage: test
+  tags: ["linux", "docker"]
+  image: "python:3.12"
+  before_script:
+    - pip install reuse
+  script:
+    - reuse lint
+
