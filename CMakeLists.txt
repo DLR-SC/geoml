@@ -58,7 +58,7 @@ add_custom_target(checkstylexml)
 add_subdirectory(src)
 
 #create gtests, override gtest standard setting
-option(GEOML_BUILD_TESTS "Build geoml Testsuite" OFF)
+option(GEOML_BUILD_TESTS "Build geoml Testsuite" ON)
 
 if(GEOML_BUILD_TESTS)
   enable_testing()

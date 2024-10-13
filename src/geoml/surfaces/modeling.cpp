@@ -159,31 +159,10 @@ surface_from_4_points(const gp_Pnt &p_1, const gp_Pnt &p_2, const gp_Pnt &p_3, c
 TopoDS_Face
 face_from_4_points(const gp_Pnt &p_1, const gp_Pnt &p_2, const gp_Pnt &p_3, const gp_Pnt &p_4)
 {
-    // TopoDS_Face face = BRepBuilderAPI_MakeFace(surface_from_4_points(p_1,p_2,p_3,p_4), Precision::Confusion());
 
-    // return face;
+    TopoDS_Face face = BuildFace(p_1, p_2, p_4, p_3);
 
-    TopoDS_Edge edge1 = BRepBuilderAPI_MakeEdge(p_1, p_2);
-    TopoDS_Edge edge2 = BRepBuilderAPI_MakeEdge(p_2, p_3);
-    TopoDS_Edge edge3 = BRepBuilderAPI_MakeEdge(p_3, p_4);
-    TopoDS_Edge edge4 = BRepBuilderAPI_MakeEdge(p_4, p_1);
-
-    // Create wire from edges
-    BRepBuilderAPI_MakeWire wireMaker;
-    wireMaker.Add(edge1);
-    wireMaker.Add(edge2);
-    wireMaker.Add(edge3);
-    wireMaker.Add(edge4);
-    TopoDS_Wire wire = wireMaker.Wire();
-
-writeGeomEntityToStepFile(wire, "my_wire.stp");
-
-    // Create face from wire
-    TopoDS_Face face = BRepBuilderAPI_MakeFace(wire);
-
-writeGeomEntityToStepFile(face, "my_face.stp");
     return face;
-
 }
 
 } // namespace geoml
