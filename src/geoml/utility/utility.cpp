@@ -12,16 +12,29 @@ Array2d<gp_Pnt> extract_control_points_surface(const Handle(Geom_BSplineSurface)
 
 std::vector<gp_Pnt> extract_control_point_vector_in_U_direction (const Handle(Geom_BSplineSurface)& b_spline_surface, int j)
 {
-    Array2d<gp_Pnt> cp_net = extract_control_points_surface(b_spline_surface);
+    std::vector<gp_Pnt> vec;
+    vec.reserve(b_spline_surface->NbUPoles());
 
-    return cp_net.getCol(j);
+    for(int i = 0; i < b_spline_surface->NbUPoles(); ++i)
+    {
+        vec.push_back(b_spline_surface->Poles().Value(i + 1, j));
+    }
+
+    return vec;
 }
 
 std::vector<gp_Pnt> extract_control_point_vector_in_V_direction (const Handle(Geom_BSplineSurface)& b_spline_surface, int i)
 {
-    Array2d<gp_Pnt> cp_net = extract_control_points_surface(b_spline_surface);
+    std::vector<gp_Pnt> vec;
+    vec.reserve(b_spline_surface->NbVPoles());
 
-    return cp_net.getRow(i);
+    for(int j = 0; j < b_spline_surface->NbVPoles(); ++j)
+    {
+        vec.push_back(b_spline_surface->Poles().Value(i, j + 1));
+    }
+
+    return vec;    
+
 }
 
 
