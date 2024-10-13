@@ -118,6 +118,11 @@ TEST(Test_Array2d, simple_Array2d_getRow_getCol_test)
         
     EXPECT_EQ(vec.size(), 4);
     EXPECT_EQ(vec_2.size(), 5);
+
+    EXPECT_EQ(vec.at(0), 0);
+    EXPECT_EQ(vec.at(3), 0);
+    EXPECT_EQ(vec_2.at(0), 0);
+    EXPECT_EQ(vec_2.at(4), 0);    
 }
 
 TEST(Test_ConvertTCol_To_StdVector, simple_conversion_from_TCol_to_std_vector)
