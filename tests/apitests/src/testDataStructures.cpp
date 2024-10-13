@@ -120,4 +120,24 @@ TEST(Test_Array2d, simple_Array2d_getRow_getCol_test)
     EXPECT_EQ(vec_2.size(), 5);
 }
 
+TEST(Test_ConvertTCol_To_StdVector, simple_conversion_from_TCol_to_std_vector)
+{
+    gp_Pnt pt_0 (0., 0., 0.);
+    gp_Pnt pt_1 (1., 0., 0.);
+    gp_Pnt pt_2 (2., 0., 0.);
+
+    TColgp_Array1OfPnt points_TCol(1, 3);
+
+    points_TCol.SetValue(1, pt_0);
+    points_TCol.SetValue(2, pt_1);
+    points_TCol.SetValue(3, pt_2);
+
+    std::vector<gp_Pnt> points_vec = geoml::TCol_to_StdVector(points_TCol);
+
+    EXPECT_EQ(points_vec.at(0).X(),pt_0.X());
+    EXPECT_EQ(points_vec.at(1).X(),pt_1.X());
+    EXPECT_EQ(points_vec.at(2).X(),pt_2.X());
+
+}
+
 
