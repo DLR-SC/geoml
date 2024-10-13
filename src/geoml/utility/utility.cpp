@@ -17,7 +17,7 @@ std::vector<gp_Pnt> extract_control_point_vector_in_U_direction (const Handle(Ge
 
     for(int i = 0; i < b_spline_surface->NbUPoles(); ++i)
     {
-        vec.push_back(b_spline_surface->Poles().Value(i + 1, j));
+        vec.push_back(b_spline_surface->Poles().Value(i + 1, j + 1));
     }
 
     return vec;
@@ -30,7 +30,7 @@ std::vector<gp_Pnt> extract_control_point_vector_in_V_direction (const Handle(Ge
 
     for(int j = 0; j < b_spline_surface->NbVPoles(); ++j)
     {
-        vec.push_back(b_spline_surface->Poles().Value(i, j + 1));
+        vec.push_back(b_spline_surface->Poles().Value(i + 1, j + 1));
     }
 
     return vec;    
