@@ -4,15 +4,10 @@
 
 #include "geometry/curve-networks/InterpolateCurveNetwork.h"
 #include "geometry/CurvesToSurface.h"
-#include "common/CommonFunctions.h"
 
 #include "BRepBuilderAPI_MakeEdge.hxx"
-#include <BRepBuilderAPI_MakeFace.hxx>
-#include <BRepBuilderAPI_MakeWire.hxx> //
-#include <TopoDS_Face.hxx>
 #include <TopoDS_Edge.hxx>
 #include <TopoDS_Shape.hxx>
-#include <TopoDS_Wire.hxx>
 #include <BRepPrimAPI_MakeRevol.hxx>
 #include <TopExp_Explorer.hxx>
 #include <TopoDS.hxx>
@@ -24,18 +19,6 @@
 #include <TColgp_Array2OfPnt.hxx>
 #include <TColStd_Array2OfReal.hxx>
 #include <TColStd_Array1OfReal.hxx>
-
-#include <iostream>
-
-#include <STEPControl_Writer.hxx>
-////////////////
-void writeGeomEntityToStepFile(const TopoDS_Shape& my_shape, std::string fileName)
-{
-STEPControl_Writer writer;
-writer.Transfer(my_shape,STEPControl_AsIs);
-writer.Write(fileName.c_str());
-}
-////////////////
 
 namespace geoml{
 
@@ -96,73 +79,6 @@ nurbs_surface(const Array2d<gp_Pnt> &control_points,
                                                                     U_periodic,
                                                                     V_periodic);
 
-}
-
-Handle(Geom_BSplineSurface)
-surface_from_4_points(const gp_Pnt &p_1, const gp_Pnt &p_2, const gp_Pnt &p_3, const gp_Pnt &p_4)
-{
-    // set the control points
-    geoml::Array2d<gp_Pnt> cp_net(2,2);
-
-    cp_net.setValue(0, 0, p_1);
-    cp_net.setValue(1, 0, p_2);
-    cp_net.setValue(1, 1, p_3);
-    cp_net.setValue(0, 1, p_4);
-
-    // set the degree in u and v direction
-    // degree:
-    int degree_U = 1;
-    int degree_V = 1;
-
-    // define the weight net:
-    geoml::Array2d<Standard_Real> weight_net(2,2); 
-
-    weight_net.setValue(0, 0, 1);
-    weight_net.setValue(1, 0, 1);
-    weight_net.setValue(1, 1, 1);
-    weight_net.setValue(0, 1, 1);    
-
-    // set the U-knots:
-    std::vector<Standard_Real> knots_U; 
-
-    knots_U.push_back(0.0);           
-    knots_U.push_back(1.0);
-
-    // set the V-knots:
-    std::vector<Standard_Real> knots_V; 
-
-    knots_V.push_back(0.0);           
-    knots_V.push_back(1.0);
-
-    // multiplicities U-direction: 
-    std::vector<int> mults_U; 
-    mults_U.push_back(2);                
-    mults_U.push_back(2);
-
-    // multiplicities V-direction: 
-    std::vector<int> mults_V; 
-    mults_V.push_back(2);                
-    mults_V.push_back(2);
-
-    Handle(Geom_BSplineSurface) srf_handle = nurbs_surface( cp_net, 
-                                                            weight_net, 
-                                                            knots_U, 
-                                                            knots_V, 
-                                                            mults_U, 
-                                                            mults_V, 
-                                                            degree_U, 
-                                                            degree_V);
-                                                                        
-    return srf_handle;
-} 
-
-TopoDS_Face
-face_from_4_points(const gp_Pnt &p_1, const gp_Pnt &p_2, const gp_Pnt &p_3, const gp_Pnt &p_4)
-{
-
-    TopoDS_Face face = BuildFace(p_1, p_2, p_4, p_3);
-
-    return face;
 }
 
 } // namespace geoml
