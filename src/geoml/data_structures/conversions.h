@@ -78,4 +78,24 @@ GEOML_API_EXPORT  NCollection_Array1<T> StdVector_to_TCol(std::vector<T> const &
     return vec_col;
 }
 
+/**
+ * @brief Convert a NCollection_Array1<T> to an std::vector<T>. We remark as an example that the commonly used class TColgp_Array1OfPnt is a typedef of NCollection_Array1<gp_Pnt>.
+ * 
+ *  
+ * @param array A NCollection_Array1<T>. 
+ */
+template <typename T>
+GEOML_API_EXPORT  std::vector<T> TCol_to_StdVector(NCollection_Array1<T> const &array)
+{
+    std::vector<T> vec;
+    vec.reserve(array.Size());
+
+    for(int i = 0; i < array.Size(); ++i)
+    {
+        vec.push_back(array.Value(i + 1));
+    }
+
+    return vec;
+}
+
 } // end namespace geoml

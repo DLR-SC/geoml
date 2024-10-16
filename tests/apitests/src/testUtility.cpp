@@ -77,4 +77,17 @@ for(int i = 0; i < control_points.rowLength(); ++i)
     }
 }
 
+// test the extraction of rows and cols of control points of a surface:
+EXPECT_EQ(extracted_points.getRow(2).size(), 2);
+
+EXPECT_EQ(test_surface->NbUPoles(), 3); // this together with the previous line shows that poles in U-direction are aranged in a column of extracted_points 
+
+EXPECT_EQ(geoml::extract_control_point_vector_in_U_direction(test_surface,1).size(), 3); 
+EXPECT_EQ(geoml::extract_control_point_vector_in_V_direction(test_surface,1).size(), 2); 
+
+EXPECT_NEAR(geoml::extract_control_point_vector_in_U_direction(test_surface,0).at(2).Y(), 2., 1e-5);
+EXPECT_NEAR(geoml::extract_control_point_vector_in_U_direction(test_surface,1).at(2).Y(), 2., 1e-5);
+EXPECT_NEAR(geoml::extract_control_point_vector_in_V_direction(test_surface,0).at(1).Y(), 0., 1e-5);
+EXPECT_NEAR(geoml::extract_control_point_vector_in_U_direction(test_surface,1).at(0).Y(), 0., 1e-5);
+
 }
