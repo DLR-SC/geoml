@@ -1,3 +1,9 @@
+#
+# SPDX-License-Identifier: Apache-2.0
+# SPDX-FileCopyrightText: 2018 German Aerospace Center (DLR)
+#
+
+
 # Set a default build type if none was specified
 if(NOT DEFINED CMAKE_BUILD_TYPE)
   message(STATUS "Setting build type to 'Release' as none was specified.")

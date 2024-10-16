@@ -1,6 +1,9 @@
 #pragma once
 
 /**
+ * SPDX-License-Identifier: Apache-2.0
+ * SPDX-FileCopyrightText: 2024 German Aerospace Center (DLR)
+ * 
  * @brief geoml/curves/modeling.h includes functions to create and modify curves
  */
 #include <geoml/geoml.h>

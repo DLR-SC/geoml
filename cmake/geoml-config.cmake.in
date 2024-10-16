@@ -1,3 +1,8 @@
+#
+# SPDX-License-Identifier: Apache-2.0
+# SPDX-FileCopyrightText: 2018 German Aerospace Center (DLR)
+#
+
 # - Config file for the geoml package
 # It defines the following variables
 include(CMakeFindDependencyMacro)

@@ -1,3 +1,8 @@
+#
+# SPDX-License-Identifier: Apache-2.0
+# SPDX-FileCopyrightText: 2019 German Aerospace Center (DLR)
+#
+
 from OCC.Core.TopExp import TopExp_Explorer
 from OCC.Core.BRepTools import BRepTools_WireExplorer, breptools_Read, breptools_Write
 from OCC.Core.TopoDS import topods_Edge, topods_Wire, TopoDS_Compound, TopoDS_Shape

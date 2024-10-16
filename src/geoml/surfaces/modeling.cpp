@@ -1,3 +1,8 @@
+/**
+ * SPDX-License-Identifier: Apache-2.0
+ * SPDX-FileCopyrightText: 2024 German Aerospace Center (DLR)
+ */
+
 #include "surfaces/modeling.h"
 #include "geoml/curves/modeling.h"
 #include "geoml/data_structures/conversions.h"

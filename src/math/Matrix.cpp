@@ -1,3 +1,10 @@
+/*
+* SPDX-License-Identifier: Apache-2.0
+* SPDX-FileCopyrightText: 2019 German Aerospace Center (DLR)
+*
+* Created: 2019-01-17 Jan Kleinert <Jan.Kleinert@dlr.de>
+*/
+
 #include "Matrix.h"
 
 #include <fstream>

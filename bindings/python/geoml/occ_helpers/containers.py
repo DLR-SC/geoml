@@ -1,3 +1,8 @@
+#
+# SPDX-License-Identifier: Apache-2.0
+# SPDX-FileCopyrightText: 2019 German Aerospace Center (DLR)
+#
+
 from OCC.Core.TColStd import TColStd_HArray1OfReal, TColStd_HArray1OfInteger
 from OCC.Core.TColgp import TColgp_HArray1OfPnt
 from OCC.Core.TColGeom import TColGeom_HArray1OfBSplineCurve

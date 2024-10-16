@@ -1,3 +1,8 @@
+/**
+ * SPDX-License-Identifier: Apache-2.0
+ * SPDX-FileCopyrightText: 2024 German Aerospace Center (DLR)
+ */
+
 #include "primitives/modeling.hpp"
 
 #include <BRepPrimAPI_MakeCylinder.hxx>

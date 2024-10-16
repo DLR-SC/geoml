@@ -1,3 +1,8 @@
+#
+# SPDX-License-Identifier: Apache-2.0
+# SPDX-FileCopyrightText: 2018 German Aerospace Center (DLR)
+#
+
 # gets the list of all subdirectories relative to curdir
 # example use:
 #   SUBDIRLIST(SUBDIRS ${MY_CURRENT_DIR})

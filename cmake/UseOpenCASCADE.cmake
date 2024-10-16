@@ -1,3 +1,9 @@
+#
+# SPDX-License-Identifier: Apache-2.0
+# SPDX-FileCopyrightText: 2018 German Aerospace Center (DLR)
+#
+
+
 # required opencascade libraries
 # please don't change the order of libraries as this can cause linking problems
 set (OCC_LIBS 

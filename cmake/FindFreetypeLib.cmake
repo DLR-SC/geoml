@@ -8,7 +8,8 @@
 # used in building FREETYPE.
 
 #=============================================================================
-# Copyright 2007-2009 Kitware, Inc.
+# SPDX-License-Identifier: LicenseRef-BSD-3-Clause-CMake
+# SPDX-FileCopyrightText: 2007-2009 Kitware, Inc.
 #
 # Distributed under the OSI-approved BSD License (the "License");
 # see accompanying file Copyright.txt for details.

@@ -1,3 +1,8 @@
+#
+# SPDX-License-Identifier: Apache-2.0
+# SPDX-FileCopyrightText: 2018 German Aerospace Center (DLR)
+#
+
 # Set a default build type if none was specified
 if(NOT DEFINED CMAKE_BUILD_TYPE)
   message(STATUS "Setting build type to 'Release' as none was specified.")
@@ -74,7 +79,7 @@ endif(GEOML_BUILD_EXAMPLES)
 
 set(CPACK_DEBIAN_PACKAGE_MAINTAINER "Martin Siggel") #required for debian/ubuntu
 set(CPACK_PACKAGE_VENDOR "www.dlr.de/sc")
-set(CPACK_RESOURCE_FILE_LICENSE ${PROJECT_SOURCE_DIR}/LICENSE.txt)
+set(CPACK_RESOURCE_FILE_LICENSE ${PROJECT_SOURCE_DIR}/LICENSES/Apache-2.0.txt)
 
 # set generators
 if(CPACK_GENERATOR)    
