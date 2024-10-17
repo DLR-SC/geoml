@@ -571,6 +571,71 @@ TopoDS_Shape tail_profile_shape_2 = gTransform_2.Shape();
 filename_2 = "tail_profile_edge_2.brep";
 BRepTools::Write(tail_profile_shape_2, filename_2.c_str());
 
+// tail profile 3
+
+// scaling and translation values
+
+// create a plane through P_lower_guide_3 that is othogonal to the x-axsis
+gp_Pln plane_3(P_lower_guide_3, plane_normal);
+
+Handle(Geom_Plane) geom_plane_3 = new Geom_Plane(plane_3);
+
+// intersect geom_plane_3 with tail_lower_guide_curve
+GeomAPI_IntCS int_cs_3(tail_lower_guide_curve, geom_plane_3);
+
+if(int_cs_3.IsDone() && (int_cs_3.NbPoints() == 1))
+{
+    std::cout << "int_cs_3 succeeded" << std::endl;
+}
+
+gp_Pnt intersection_point_3 = int_cs_3.Point(1);
+
+Standard_Real difference_in_z_3 = Abs(tail_upper_guide_control_points.Value(tail_upper_guide_control_points.Upper()).Z() - intersection_point_3.Z());
+
+difference_ratio = difference_in_z_3 / difference_in_z_1;
+
+std::cout << "difference_in_z_1: " << difference_in_z_1 << std::endl; 
+std::cout << "difference_in_z_3: " << difference_in_z_3 << std::endl; 
+
+scale_y = difference_ratio;
+scale_z = difference_ratio;
+
+move_x = intersection_point_3.X() - back_profile_control_points.Value(1).X();
+
+move_z = (Abs(P_back_1.Z() - P_back_7.Z()) * (1 - difference_ratio)) / 2;
+  
+gp_GTrsf gTrsf_3 (gp_Mat(scale_x, 0, 0, 0, scale_y, 0, 0, 0, scale_z), gp_XYZ(move_x, 0., move_z));
+
+BRepBuilderAPI_GTransform gTransform_3 (back_profile_edge.Edge(), gTrsf_3, true);
+
+TopoDS_Shape tail_profile_shape_3 = gTransform_3.Shape();
+
+filename_2 = "tail_profile_edge_3.brep";
+BRepTools::Write(tail_profile_shape_3, filename_2.c_str());
+
+// fuselage tail part (multiple profile curves)
+
+// create gordon surface 
+
+TopoDS_Edge tail_profile_edge_2 = TopoDS::Edge(tail_profile_shape_2); 
+Handle(Geom_Curve) tail_profile_curve_2 = BRep_Tool::Curve(tail_profile_edge_2, First, Last); 
+
+TopoDS_Edge tail_profile_edge_3 = TopoDS::Edge(tail_profile_shape_3); 
+Handle(Geom_Curve) tail_profile_curve_3 = BRep_Tool::Curve(tail_profile_edge_3, First, Last); 
+
+std::vector<Handle(Geom_Curve)> list_of_profiles_tail_fuselage_multiple_profiles;
+list_of_profiles_tail_fuselage_multiple_profiles.push_back(back_profile);
+list_of_profiles_tail_fuselage_multiple_profiles.push_back(tail_profile_curve_2);
+list_of_profiles_tail_fuselage_multiple_profiles.push_back(tail_profile_curve_3);
+list_of_profiles_tail_fuselage_multiple_profiles.push_back(tail_profile_curve);
+
+Handle(Geom_BSplineSurface) tail_fuselage_multiple_profiles
+	= geoml::interpolate_curve_network(list_of_profiles_tail_fuselage_multiple_profiles,
+                          list_of_guides_tail_fuselage,
+                          1.0);
+filename = "tail_fuselage_multiple_profiles.brep";
+BRepTools::Write(BRepBuilderAPI_MakeFace(tail_fuselage_multiple_profiles, Precision::Confusion()), filename.c_str());
+
 
 
 
