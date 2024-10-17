@@ -37,6 +37,7 @@
 #include <GeomAPI_IntCS.hxx>
 
 #include <GeomConvert_CompCurveToBSplineCurve.hxx>
+#include <LocalAnalysis_SurfaceContinuity.hxx>
 
 #include <iostream>
  
@@ -636,8 +637,93 @@ Handle(Geom_BSplineSurface) tail_fuselage_multiple_profiles
 filename = "tail_fuselage_multiple_profiles.brep";
 BRepTools::Write(BRepBuilderAPI_MakeFace(tail_fuselage_multiple_profiles, Precision::Confusion()), filename.c_str());
 
+// test continuity between middle and tail fuselage parts
+
+Standard_Real u_min, u_max, v_min, v_max;
+
+middle_fuselage->Bounds(u_min, u_max, v_min, v_max);
+
+std::cout << "u_min: " << u_min << " u_max: " << u_max << " v_min: " << v_min << " v_max: " << v_max << std::endl;
+
+gp_Pnt point_on_middle_fuselage;
+
+middle_fuselage->D0(0.5, v_max, point_on_middle_fuselage);
+
+std::cout << "point_on_middle_fuselage.X(): " << point_on_middle_fuselage.X() << std::endl;
+std::cout << "point_on_middle_fuselage.Y(): " << point_on_middle_fuselage.Y() << std::endl;
+std::cout << "point_on_middle_fuselage.Z(): " << point_on_middle_fuselage.Z() << std::endl;
 
 
+//u=0.5, v_max:
+// point_on_middle_fuselage.X(): 12500
+// point_on_middle_fuselage.Y(): -1725.37
+// point_on_middle_fuselage.Z(): -1.56319e-13
+
+//u_min, v_min:
+// point_on_middle_fuselage.X(): -4600
+// point_on_middle_fuselage.Y(): 0
+// point_on_middle_fuselage.Z(): 1950
+
+//u_max, v_min:
+// point_on_middle_fuselage.X(): -4600
+// point_on_middle_fuselage.Y(): 0
+// point_on_middle_fuselage.Z(): -1950
+
+//u_min, v_max:
+// point_on_middle_fuselage.X(): 12500
+// point_on_middle_fuselage.Y(): 0
+// point_on_middle_fuselage.Z(): 1950
+
+//u_max, v_max:
+// point_on_middle_fuselage.X(): 12500
+// point_on_middle_fuselage.Y(): 0
+// point_on_middle_fuselage.Z(): -1950
+
+tail_fuselage_multiple_profiles->Bounds(u_min, u_max, v_min, v_max);
+
+std::cout << "u_min: " << u_min << " u_max: " << u_max << " v_min: " << v_min << " v_max: " << v_max << std::endl;
+
+gp_Pnt point_on_tail_fuselage;
+
+tail_fuselage_multiple_profiles->D0(0.5, v_min, point_on_tail_fuselage);
+
+std::cout << "point_on_tail_fuselage.X(): " << point_on_tail_fuselage.X() << std::endl;
+std::cout << "point_on_tail_fuselage.Y(): " << point_on_tail_fuselage.Y() << std::endl;
+std::cout << "point_on_tail_fuselage.Z(): " << point_on_tail_fuselage.Z() << std::endl;
+
+//u=0.5, v_min:
+// point_on_tail_fuselage.X(): 12500
+// point_on_tail_fuselage.Y(): -1725.37
+// point_on_tail_fuselage.Z(): -1.42109e-13
+
+//u_min, v_min:
+// point_on_tail_fuselage.X(): 12500
+// point_on_tail_fuselage.Y(): 0
+// point_on_tail_fuselage.Z(): 1950
+
+//u_max, v_min:
+// point_on_tail_fuselage.X(): 12500
+// point_on_tail_fuselage.Y(): 0
+// point_on_tail_fuselage.Z(): -1950
+
+//u_min, v_max:
+// point_on_tail_fuselage.X(): 25716
+// point_on_tail_fuselage.Y(): 0
+// point_on_tail_fuselage.Z(): 1950
+
+//u_max, v_max:
+// point_on_tail_fuselage.X(): 25716
+// point_on_tail_fuselage.Y(): 0
+// point_on_tail_fuselage.Z(): 1200
+
+LocalAnalysis_SurfaceContinuity continuity_check (middle_fuselage, 0.5, 1.0, tail_fuselage_multiple_profiles, 0.5, 0.0, GeomAbs_C1);
+
+std::cout << "concontinuity_check: " << continuity_check.IsG1() << std::endl;
+
+std::cout << "C1VAngle: " << continuity_check.C1VAngle() << std::endl;
+std::cout << "C1VRatio: " << continuity_check.C1VRatio() << std::endl;
+
+std::cout << "tail number of U poles: " << tail_fuselage_multiple_profiles->NbUPoles() << "tail number of V poles: " << tail_fuselage_multiple_profiles->NbVPoles() << std::endl;
 
 
 
