@@ -10,11 +10,14 @@
 #include <BRepTools.hxx>
 #include <BRepBuilderAPI_MakeFace.hxx>
 #include <BRepBuilderAPI_MakeEdge.hxx>
+#include <BRepBuilderAPI_MakeVertex.hxx>
 #include "GProp_GProps.hxx"
 #include "BRepGProp.hxx"
 
 
 #include <TopoDS_Shape.hxx>
+#include <TopoDS_Compound.hxx>
+#include <TopoDS_Vertex.hxx>
 #include <TopExp.hxx>
 #include <TopExp_Explorer.hxx>
 #include <TopoDS.hxx>
@@ -716,17 +719,84 @@ std::cout << "point_on_tail_fuselage.Z(): " << point_on_tail_fuselage.Z() << std
 // point_on_tail_fuselage.Y(): 0
 // point_on_tail_fuselage.Z(): 1200
 
-LocalAnalysis_SurfaceContinuity continuity_check (middle_fuselage, 0.5, 1.0, tail_fuselage_multiple_profiles, 0.5, 0.0, GeomAbs_C1);
+// analyse the continuity
+for(Standard_Real u_step = 0; u_step <= 1.001; u_step += 0.1 )
+{
+    LocalAnalysis_SurfaceContinuity continuity_check (middle_fuselage, u_step, 1.0, tail_fuselage_multiple_profiles, u_step, 0.0, GeomAbs_G1);
 
-std::cout << "concontinuity_check: " << continuity_check.IsG1() << std::endl;
+    std::cout << "G1_concontinuity_check: " << continuity_check.IsG1() << std::endl;
 
-std::cout << "C1VAngle: " << continuity_check.C1VAngle() << std::endl;
-std::cout << "C1VRatio: " << continuity_check.C1VRatio() << std::endl;
+    std::cout << "G1Angle: " << continuity_check.G1Angle() << std::endl;
+}
 
 std::cout << "tail number of U poles: " << tail_fuselage_multiple_profiles->NbUPoles() << "tail number of V poles: " << tail_fuselage_multiple_profiles->NbVPoles() << std::endl;
 
+// extract control points from tail fuselage part
+
+TopoDS_Compound control_points_compound;
+
+BRep_Builder aBuilder;
+
+aBuilder.MakeCompound(control_points_compound);
 
 
+for(int i = 1; i <= tail_fuselage_multiple_profiles->NbUPoles(); ++i)
+{
+    for(int j = 1; j <= tail_fuselage_multiple_profiles->NbVPoles(); ++j)
+    {
+        BRepBuilderAPI_MakeVertex aVertex(tail_fuselage_multiple_profiles->Pole(i,j));
+        aBuilder.Add(control_points_compound, aVertex.Shape());
+    }
+}
+
+filename = "tail_fuselage_control_points.brep";
+BRepTools::Write(control_points_compound, filename.c_str());
+
+TColgp_Array1OfPnt new_set_of_control_points_in_second_column(1, tail_fuselage_multiple_profiles->NbUPoles());
+
+for(int i = 1; i <= tail_fuselage_multiple_profiles->NbUPoles(); ++i)
+{
+    gp_Pnt a_point = tail_fuselage_multiple_profiles->Pole(i, 2);
+    std::cout << "x-coord. of second control point column: " << a_point.X() << std::endl;
+    gp_Pnt tmp_point_first_column = tail_fuselage_multiple_profiles->Pole(i, 1);
+    tmp_point_first_column.SetX(a_point.X());
+    new_set_of_control_points_in_second_column.SetValue(i, tmp_point_first_column);
+}
+
+tail_fuselage_multiple_profiles->SetPoleCol(2, new_set_of_control_points_in_second_column);
+
+filename = "tail_fuselage_multiple_profiles_updated_control_points.brep";
+BRepTools::Write(BRepBuilderAPI_MakeFace(tail_fuselage_multiple_profiles, Precision::Confusion()), filename.c_str());
+
+// display updated control points
+TopoDS_Compound control_points_compound_updated;
+
+BRep_Builder aBuilder_updated;
+
+aBuilder_updated.MakeCompound(control_points_compound_updated);
+
+
+for(int i = 1; i <= tail_fuselage_multiple_profiles->NbUPoles(); ++i)
+{
+    for(int j = 1; j <= tail_fuselage_multiple_profiles->NbVPoles(); ++j)
+    {
+        BRepBuilderAPI_MakeVertex aVertex(tail_fuselage_multiple_profiles->Pole(i,j));
+        aBuilder_updated.Add(control_points_compound_updated, aVertex.Shape());
+    }
+}
+
+filename = "tail_fuselage_control_points_updated.brep";
+BRepTools::Write(control_points_compound_updated, filename.c_str());
+
+// analyse the continuity
+for(Standard_Real u_step = 0; u_step <= 1.001; u_step += 0.01 )
+{
+    LocalAnalysis_SurfaceContinuity continuity_check_updated (middle_fuselage, u_step, 1.0, tail_fuselage_multiple_profiles, u_step, 0.0, GeomAbs_G1);
+
+    std::cout << "G1_concontinuity_check_updated: " << continuity_check_updated.IsG1() << std::endl;
+
+    std::cout << "G1Angle: " << continuity_check_updated.G1Angle() << std::endl;
+}
 
 
 }                          
