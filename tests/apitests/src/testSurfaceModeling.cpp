@@ -42,6 +42,8 @@
 #include <GeomConvert_CompCurveToBSplineCurve.hxx>
 #include <LocalAnalysis_SurfaceContinuity.hxx>
 
+#include "STEPControl_Writer.hxx"
+
 #include <iostream>
  
 
@@ -798,5 +800,14 @@ for(Standard_Real u_step = 0; u_step <= 1.001; u_step += 0.01 )
     std::cout << "G1Angle: " << continuity_check_updated.G1Angle() << std::endl;
 }
 
+// write to step file
+STEPControl_Writer writer;
+writer.Transfer(BRepBuilderAPI_MakeFace(middle_fuselage, Precision::Confusion()),STEPControl_AsIs);
+writer.Transfer(BRepBuilderAPI_MakeFace(tail_fuselage_multiple_profiles, Precision::Confusion()),STEPControl_AsIs);
 
-}                          
+filename = "middle_and_tail_fuselage_faces.stp";
+writer.Write(filename.c_str());
+
+
+
+}                         
