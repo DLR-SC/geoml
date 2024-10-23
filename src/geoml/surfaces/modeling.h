@@ -99,7 +99,7 @@ nurbs_surface(const Array2d<gp_Pnt> &control_points,
  *
  * //@param points 4 points that define the corners of the surface
  */
-GEOML_API_EXPORT Handle(Geom_BSplineSurface)
+GEOML_API_EXPORT Handle(Geom_Surface)
 surface_from_4_points(const gp_Pnt &p_1, const gp_Pnt &p_2, const gp_Pnt &p_3, const gp_Pnt &p_4); 
 
 /**

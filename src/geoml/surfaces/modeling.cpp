@@ -17,6 +17,7 @@
 #include <TopExp_Explorer.hxx>
 #include <TopoDS.hxx>
 #include <BRep_Tool.hxx>
+#include <BRepTools.hxx>
 #include <GeomConvert.hxx>
 #include <gp_Pnt.hxx>
 #include <gp_Ax1.hxx>
@@ -88,62 +89,13 @@ nurbs_surface(const Array2d<gp_Pnt> &control_points,
 
 }
 
-Handle(Geom_BSplineSurface)
+Handle(Geom_Surface)
 surface_from_4_points(const gp_Pnt &p_1, const gp_Pnt &p_2, const gp_Pnt &p_3, const gp_Pnt &p_4)
 {
-    // set the control points
-    geoml::Array2d<gp_Pnt> cp_net(2,2);
+    TopoDS_Face face = face_from_4_points(p_1, p_2, p_3, p_4);
+    Handle(Geom_Surface) surface = BRep_Tool::Surface(face);
 
-    cp_net.setValue(0, 0, p_1);
-    cp_net.setValue(1, 0, p_2);
-    cp_net.setValue(1, 1, p_3);
-    cp_net.setValue(0, 1, p_4);
-
-    // set the degree in u and v direction
-    // degree:
-    int degree_U = 1;
-    int degree_V = 1;
-
-    // define the weight net:
-    geoml::Array2d<Standard_Real> weight_net(2,2); 
-
-    weight_net.setValue(0, 0, 1);
-    weight_net.setValue(1, 0, 1);
-    weight_net.setValue(1, 1, 1);
-    weight_net.setValue(0, 1, 1);    
-
-    // set the U-knots:
-    std::vector<Standard_Real> knots_U; 
-
-    knots_U.push_back(0.0);           
-    knots_U.push_back(1.0);
-
-    // set the V-knots:
-    std::vector<Standard_Real> knots_V; 
-
-    knots_V.push_back(0.0);           
-    knots_V.push_back(1.0);
-
-    // multiplicities U-direction: 
-    std::vector<int> mults_U; 
-    mults_U.push_back(2);                
-    mults_U.push_back(2);
-
-    // multiplicities V-direction: 
-    std::vector<int> mults_V; 
-    mults_V.push_back(2);                
-    mults_V.push_back(2);
-
-    Handle(Geom_BSplineSurface) srf_handle = nurbs_surface( cp_net, 
-                                                            weight_net, 
-                                                            knots_U, 
-                                                            knots_V, 
-                                                            mults_U, 
-                                                            mults_V, 
-                                                            degree_U, 
-                                                            degree_V);
-                                                                        
-    return srf_handle;
+    return surface;
 } 
 
 TopoDS_Face
