@@ -27,16 +27,6 @@
 
 #include <iostream>
 
-#include <STEPControl_Writer.hxx>
-////////////////
-void writeGeomEntityToStepFile(const TopoDS_Shape& my_shape, std::string fileName)
-{
-STEPControl_Writer writer;
-writer.Transfer(my_shape,STEPControl_AsIs);
-writer.Write(fileName.c_str());
-}
-////////////////
-
 namespace geoml{
 
 Handle(Geom_BSplineSurface) interpolate_curve_network(const std::vector<Handle (Geom_Curve)> &ucurves,
