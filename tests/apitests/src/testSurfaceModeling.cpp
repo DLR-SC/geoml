@@ -808,6 +808,62 @@ writer.Transfer(BRepBuilderAPI_MakeFace(tail_fuselage_multiple_profiles, Precisi
 filename = "middle_and_tail_fuselage_faces.stp";
 writer.Write(filename.c_str());
 
+// manual modelling of the nose part
+
+// points for column 1
+gp_Pnt leading_point (-11800., 0., 0.);
+
+// points for column 2
+
+Standard_Real z_column_2 = 783;
+
+Standard_Real z_column_2_difference_ratio = z_column_2 / P_1.Z();
+
+gp_Pnt P_1_column_2 (leading_point.X(), P_1.Y() * z_column_2_difference_ratio, P_1.Z() * z_column_2_difference_ratio);
+gp_Pnt P_2_column_2 (leading_point.X(), P_2.Y() * z_column_2_difference_ratio, P_2.Z() * z_column_2_difference_ratio);
+gp_Pnt P_3_column_2 (leading_point.X(), P_3.Y() * z_column_2_difference_ratio, P_3.Z() * z_column_2_difference_ratio);
+gp_Pnt P_4_column_2 (leading_point.X(), P_4.Y() * z_column_2_difference_ratio, P_4.Z() * z_column_2_difference_ratio);
+gp_Pnt P_5_column_2 (leading_point.X(), P_5.Y() * z_column_2_difference_ratio, P_5.Z() * z_column_2_difference_ratio);
+gp_Pnt P_6_column_2 (leading_point.X(), P_6.Y() * z_column_2_difference_ratio, P_6.Z() * z_column_2_difference_ratio);
+gp_Pnt P_7_column_2 (leading_point.X(), P_7.Y() * z_column_2_difference_ratio, P_7.Z() * z_column_2_difference_ratio);
+
+// points for column 3
+
+Standard_Real z_column_3 = 1800;
+
+Standard_Real z_column_3_difference_ratio = z_column_3 / P_1.Z();
+
+Standard_Real x_column_3 = -9050;
+
+gp_Pnt P_1_column_3 (x_column_3, P_1.Y() * z_column_3_difference_ratio, P_1.Z() * z_column_3_difference_ratio);
+gp_Pnt P_2_column_3 (x_column_3, P_2.Y() * z_column_3_difference_ratio, P_2.Z() * z_column_3_difference_ratio);
+gp_Pnt P_3_column_3 (x_column_3, P_3.Y() * z_column_3_difference_ratio, P_3.Z() * z_column_3_difference_ratio);
+gp_Pnt P_4_column_3 (x_column_3, P_4.Y() * z_column_3_difference_ratio, P_4.Z() * z_column_3_difference_ratio);
+gp_Pnt P_5_column_3 (x_column_3, P_5.Y() * z_column_3_difference_ratio, P_5.Z() * z_column_3_difference_ratio);
+gp_Pnt P_6_column_3 (x_column_3, P_6.Y() * z_column_3_difference_ratio, P_6.Z() * z_column_3_difference_ratio);
+gp_Pnt P_7_column_3 (x_column_3, P_7.Y() * z_column_3_difference_ratio, P_7.Z() * z_column_3_difference_ratio);
+
+// points for column 4
+
+Standard_Real x_column_4 = -7480;
+
+gp_Pnt P_1_column_4 (x_column_4, P_1.Y(), P_1.Z());
+gp_Pnt P_2_column_4 (x_column_4, P_2.Y(), P_2.Z());
+gp_Pnt P_3_column_4 (x_column_4, P_3.Y(), P_3.Z());
+gp_Pnt P_4_column_4 (x_column_4, P_4.Y(), P_4.Z());
+gp_Pnt P_5_column_4 (x_column_4, P_5.Y(), P_5.Z());
+gp_Pnt P_6_column_4 (x_column_4, P_6.Y(), P_6.Z());
+gp_Pnt P_7_column_4 (x_column_4, P_7.Y(), P_7.Z());
+
+
+
+
+
+
+
+
+
+
 
 
 }                         
