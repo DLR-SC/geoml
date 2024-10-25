@@ -25,7 +25,9 @@
 #include <gp_Pnt.hxx>
 #include <gp_Vec.hxx>
 #include <TColgp_Array1OfPnt.hxx>
+#include <TColgp_Array2OfPnt.hxx>
 #include <Geom_BezierCurve.hxx>
+#include <Geom_BezierSurface.hxx>
 
 #include <filesystem>
 
@@ -814,7 +816,6 @@ writer.Write(filename.c_str());
 gp_Pnt leading_point (-11800., 0., 0.);
 
 // points for column 2
-
 Standard_Real z_column_2 = 783;
 
 Standard_Real z_column_2_difference_ratio = z_column_2 / P_1.Z();
@@ -828,7 +829,6 @@ gp_Pnt P_6_column_2 (leading_point.X(), P_6.Y() * z_column_2_difference_ratio, P
 gp_Pnt P_7_column_2 (leading_point.X(), P_7.Y() * z_column_2_difference_ratio, P_7.Z() * z_column_2_difference_ratio);
 
 // points for column 3
-
 Standard_Real z_column_3 = 1800;
 
 Standard_Real z_column_3_difference_ratio = z_column_3 / P_1.Z();
@@ -844,7 +844,6 @@ gp_Pnt P_6_column_3 (x_column_3, P_6.Y() * z_column_3_difference_ratio, P_6.Z() 
 gp_Pnt P_7_column_3 (x_column_3, P_7.Y() * z_column_3_difference_ratio, P_7.Z() * z_column_3_difference_ratio);
 
 // points for column 4
-
 Standard_Real x_column_4 = -7480;
 
 gp_Pnt P_1_column_4 (x_column_4, P_1.Y(), P_1.Z());
@@ -855,11 +854,50 @@ gp_Pnt P_5_column_4 (x_column_4, P_5.Y(), P_5.Z());
 gp_Pnt P_6_column_4 (x_column_4, P_6.Y(), P_6.Z());
 gp_Pnt P_7_column_4 (x_column_4, P_7.Y(), P_7.Z());
 
+// create nose part as Bezier surface
+TColgp_Array2OfPnt nose_surface_control_points (1,7,1,5);
 
+for(int i = 1; i <= nose_surface_control_points.NbRows(); ++i)
+{
+    nose_surface_control_points.SetValue(i, 1, leading_point);
+}
 
+nose_surface_control_points.SetValue(1, 2, P_1_column_2);
+nose_surface_control_points.SetValue(2, 2, P_2_column_2);
+nose_surface_control_points.SetValue(3, 2, P_3_column_2);
+nose_surface_control_points.SetValue(4, 2, P_4_column_2);
+nose_surface_control_points.SetValue(5, 2, P_5_column_2);
+nose_surface_control_points.SetValue(6, 2, P_6_column_2);
+nose_surface_control_points.SetValue(7, 2, P_7_column_2);
 
+nose_surface_control_points.SetValue(1, 3, P_1_column_3);
+nose_surface_control_points.SetValue(2, 3, P_2_column_3);
+nose_surface_control_points.SetValue(3, 3, P_3_column_3);
+nose_surface_control_points.SetValue(4, 3, P_4_column_3);
+nose_surface_control_points.SetValue(5, 3, P_5_column_3);
+nose_surface_control_points.SetValue(6, 3, P_6_column_3);
+nose_surface_control_points.SetValue(7, 3, P_7_column_3);
 
+nose_surface_control_points.SetValue(1, 4, P_1_column_4);
+nose_surface_control_points.SetValue(2, 4, P_2_column_4);
+nose_surface_control_points.SetValue(3, 4, P_3_column_4);
+nose_surface_control_points.SetValue(4, 4, P_4_column_4);
+nose_surface_control_points.SetValue(5, 4, P_5_column_4);
+nose_surface_control_points.SetValue(6, 4, P_6_column_4);
+nose_surface_control_points.SetValue(7, 4, P_7_column_4);
 
+nose_surface_control_points.SetValue(1, 5, P_1);
+nose_surface_control_points.SetValue(2, 5, P_2);
+nose_surface_control_points.SetValue(3, 5, P_3);
+nose_surface_control_points.SetValue(4, 5, P_4);
+nose_surface_control_points.SetValue(5, 5, P_5);
+nose_surface_control_points.SetValue(6, 5, P_6);
+nose_surface_control_points.SetValue(7, 5, P_7);
+
+Handle(Geom_BezierSurface) nose_surface = new Geom_BezierSurface(nose_surface_control_points); 
+
+filename = "nose_surface.brep";
+BRepTools::Write(BRepBuilderAPI_MakeFace(nose_surface, Precision::Confusion()), filename.c_str());
 
 
 
