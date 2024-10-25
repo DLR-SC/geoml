@@ -90,16 +90,16 @@ nurbs_surface(const Array2d<gp_Pnt> &control_points,
 }
 
 Handle(Geom_Surface)
-surface_from_4_points(const gp_Pnt &p_1, const gp_Pnt &p_2, const gp_Pnt &p_3, const gp_Pnt &p_4)
+create_surface(const gp_Pnt &p_1, const gp_Pnt &p_2, const gp_Pnt &p_3, const gp_Pnt &p_4)
 {
-    TopoDS_Face face = face_from_4_points(p_1, p_2, p_3, p_4);
+    TopoDS_Face face = create_face(p_1, p_2, p_3, p_4);
     Handle(Geom_Surface) surface = BRep_Tool::Surface(face);
 
     return surface;
 } 
 
 TopoDS_Face
-face_from_4_points(const gp_Pnt &p_1, const gp_Pnt &p_2, const gp_Pnt &p_3, const gp_Pnt &p_4)
+create_face(const gp_Pnt &p_1, const gp_Pnt &p_2, const gp_Pnt &p_3, const gp_Pnt &p_4)
 {
     TopoDS_Face face = BuildFace(p_1, p_2, p_4, p_3);
 

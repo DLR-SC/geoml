@@ -308,7 +308,7 @@ TEST(Test_surface_from_4_points, simple_surface_from_4_points_test)
     gp_Pnt p_2(1.0, 2.0, 0.0);
     gp_Pnt p_3(0.0, 2.0, 1.0);
 
-    Handle(Geom_Surface) my_surface = geoml::surface_from_4_points(p_0, p_1, p_2, p_3);
+    Handle(Geom_Surface) my_surface = geoml::create_surface(p_0, p_1, p_2, p_3);
 
     Standard_Real u_min, u_max, v_min, v_max;
     my_surface->Bounds(u_min, u_max, v_min, v_max);
@@ -389,10 +389,7 @@ TEST(Test_face_from_4_points, simple_face_from_4_points_test)
     gp_Pnt p_2(1.0, 2.0, 0.0);
     gp_Pnt p_3(0.0, 2.0, 1.0);
 
-    TopoDS_Face my_face = geoml::face_from_4_points(p_0, p_1, p_2, p_3);
-
-    std::string filename = "4_point_surface.brep";
-    BRepTools::Write(my_face, filename.c_str());
+    TopoDS_Face my_face = geoml::create_face(p_0, p_1, p_2, p_3);
 
     std::vector<gp_Pnt> corner_points;
     

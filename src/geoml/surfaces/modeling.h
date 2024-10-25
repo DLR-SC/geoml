@@ -100,7 +100,7 @@ nurbs_surface(const Array2d<gp_Pnt> &control_points,
  * //@param points 4 points that define the corners of the surface. The order is anti-clockwise around the surface (mathematical positive).
  */
 GEOML_API_EXPORT Handle(Geom_Surface)
-surface_from_4_points(const gp_Pnt &p_1, const gp_Pnt &p_2, const gp_Pnt &p_3, const gp_Pnt &p_4); 
+create_surface(const gp_Pnt &p_1, const gp_Pnt &p_2, const gp_Pnt &p_3, const gp_Pnt &p_4); 
 
 /**
  * @brief Create a face from 4 points
@@ -108,7 +108,7 @@ surface_from_4_points(const gp_Pnt &p_1, const gp_Pnt &p_2, const gp_Pnt &p_3, c
  * //@param points 4 points that define the corners of the face. The order is anti-clockwise around the face (mathematical positive).
  */
 GEOML_API_EXPORT TopoDS_Face
-face_from_4_points(const gp_Pnt &p_1, const gp_Pnt &p_2, const gp_Pnt &p_3, const gp_Pnt &p_4); 
+create_face(const gp_Pnt &p_1, const gp_Pnt &p_2, const gp_Pnt &p_3, const gp_Pnt &p_4); 
 
 
 } // namespace geoml
