@@ -13,7 +13,7 @@
 #include <BRepBuilderAPI_MakeVertex.hxx>
 #include "GProp_GProps.hxx"
 #include "BRepGProp.hxx"
-
+#include <gp_Pnt2d.hxx>
 
 #include <TopoDS_Shape.hxx>
 #include <TopoDS_Compound.hxx>
@@ -40,6 +40,7 @@
 #include <gp_Pln.hxx>
 #include <Geom_Plane.hxx>
 #include <GeomAPI_IntCS.hxx>
+#include <ShapeAnalysis_Surface.hxx>
 
 #include <GeomConvert_CompCurveToBSplineCurve.hxx>
 #include <LocalAnalysis_SurfaceContinuity.hxx>
@@ -898,6 +899,73 @@ Handle(Geom_BezierSurface) nose_surface = new Geom_BezierSurface(nose_surface_co
 
 filename = "nose_surface.brep";
 BRepTools::Write(BRepBuilderAPI_MakeFace(nose_surface, Precision::Confusion()), filename.c_str());
+
+// testing coninutiy between nose and middle fuselage
+Standard_Integer number_of_testing_points = 101;
+
+TColgp_Array1OfPnt testing_points_on_nose_surface(1, number_of_testing_points);
+
+nose_surface->Bounds(u_min, u_max, v_min, v_max);
+
+Standard_Real v_max_nose_surface = v_max;
+
+TColStd_Array1OfReal u_steps_testing_points_nose_fuselage (1, number_of_testing_points);
+
+for(Standard_Integer i = 1; i <= number_of_testing_points - 1; ++i)
+{
+    gp_Pnt testing_point;
+    Standard_Real u_step = u_min + (i - 1) * (u_max - u_min) / Standard_Real(number_of_testing_points - 1);
+
+    nose_surface->D0(u_step, v_max_nose_surface, testing_point);
+    testing_points_on_nose_surface.SetValue(i, testing_point);
+
+    u_steps_testing_points_nose_fuselage.SetValue(i, u_step);
+
+    std::cout << "u steps: " << u_step << "point coordinates: " 
+    << testing_point.X() << ", " << testing_point.Y() << ", " << testing_point.Z() << std::endl;
+}
+
+gp_Pnt testing_point;
+nose_surface->D0(u_max, v_max_nose_surface, testing_point);
+testing_points_on_nose_surface.SetValue(number_of_testing_points, testing_point);
+
+u_steps_testing_points_nose_fuselage.SetValue(number_of_testing_points, u_max);
+
+std::cout << "last u step: " << u_max << "point coordinates: " 
+    << testing_point.X() << ", " << testing_point.Y() << ", " << testing_point.Z() << std::endl;
+
+TColStd_Array1OfReal u_steps_testing_points_middle_fuselage (1, number_of_testing_points);
+
+ShapeAnalysis_Surface shape_analysis_middle_fuselage (middle_fuselage);
+
+for(Standard_Integer i = 1; i <= number_of_testing_points; ++i)
+{
+    gp_Pnt2d projected_point = shape_analysis_middle_fuselage.ValueOfUV(testing_points_on_nose_surface.Value(i), Precision::Confusion());
+    u_steps_testing_points_middle_fuselage.SetValue(i, projected_point.X());
+    std::cout << "projected point u value: " << u_steps_testing_points_middle_fuselage.Value(i) << std::endl;
+}
+
+// analyse the continuity
+for(Standard_Integer i = 1; i <= number_of_testing_points; ++i)
+{
+    LocalAnalysis_SurfaceContinuity continuity_check (nose_surface, u_steps_testing_points_nose_fuselage.Value(i), v_max_nose_surface, 
+        middle_fuselage, u_steps_testing_points_middle_fuselage.Value(i), 0.0, GeomAbs_C0);
+
+    gp_Pnt testing_point_nose_surface;
+    gp_Pnt testing_point_middle_fuselage;
+
+    nose_surface->D0(u_steps_testing_points_nose_fuselage.Value(i), v_max_nose_surface, testing_point_nose_surface);
+    middle_fuselage->D0(u_steps_testing_points_middle_fuselage.Value(i), 0.0, testing_point_middle_fuselage);
+
+    std::cout << "G1_concontinuity_check: " << continuity_check.IsC0() << " difference in X: " << Abs(testing_point_nose_surface.X() - testing_point_middle_fuselage.X())
+        << " difference in Y: " << Abs(testing_point_nose_surface.Y() - testing_point_middle_fuselage.Y())
+        << " difference in Z: " << Abs(testing_point_nose_surface.Z() - testing_point_middle_fuselage.Z()) << std::endl;
+
+    std::cout << "G1Angle: " << continuity_check.G1Angle() << std::endl;
+}
+
+
+
 
 
 
