@@ -345,6 +345,40 @@ TEST(Test_surface_from_4_points, simple_surface_from_4_points_test)
     EXPECT_NEAR(test_pt_3.Y(),p_3.Y(), 1e-5);
     EXPECT_NEAR(test_pt_3.Z(),p_3.Z(), 1e-5);
 
+    // test the order of the four corner points - expect an anti-clockwise setup
+    // in U,V-coordinates, this would mean: 
+    //  p_0 is the corner point of the surface for U = u_min, V = v_min,
+    //  p_1 is the corner point of the surface for U = u_max, V = v_min,
+    //  p_2 is the corner point of the surface for U = u_max, V = v_max,
+    //  p_3 is the corner point of the surface for U = u_min, V = v_max.
+
+    gp_Pnt u_min_v_min_corner_point_of_my_surface;
+    gp_Pnt u_max_v_min_corner_point_of_my_surface;
+    gp_Pnt u_max_v_max_corner_point_of_my_surface;
+    gp_Pnt u_min_v_max_corner_point_of_my_surface;
+
+    my_surface->D0(u_min, v_min, u_min_v_min_corner_point_of_my_surface);
+    my_surface->D0(u_max, v_min, u_max_v_min_corner_point_of_my_surface);
+    my_surface->D0(u_max, v_max, u_max_v_max_corner_point_of_my_surface);
+    my_surface->D0(u_min, v_max, u_min_v_max_corner_point_of_my_surface);
+
+    EXPECT_NEAR(p_0.X(), u_min_v_min_corner_point_of_my_surface.X(), 1e-5);
+    EXPECT_NEAR(p_0.Y(), u_min_v_min_corner_point_of_my_surface.Y(), 1e-5);
+    EXPECT_NEAR(p_0.Z(), u_min_v_min_corner_point_of_my_surface.Z(), 1e-5);
+
+    EXPECT_NEAR(p_1.X(), u_max_v_min_corner_point_of_my_surface.X(), 1e-5);
+    EXPECT_NEAR(p_1.Y(), u_max_v_min_corner_point_of_my_surface.Y(), 1e-5);
+    EXPECT_NEAR(p_1.Z(), u_max_v_min_corner_point_of_my_surface.Z(), 1e-5);
+
+    EXPECT_NEAR(p_2.X(), u_max_v_max_corner_point_of_my_surface.X(), 1e-5);
+    EXPECT_NEAR(p_2.Y(), u_max_v_max_corner_point_of_my_surface.Y(), 1e-5);
+    EXPECT_NEAR(p_2.Z(), u_max_v_max_corner_point_of_my_surface.Z(), 1e-5);
+
+    EXPECT_NEAR(p_3.X(), u_min_v_max_corner_point_of_my_surface.X(), 1e-5);
+    EXPECT_NEAR(p_3.Y(), u_min_v_max_corner_point_of_my_surface.Y(), 1e-5);
+    EXPECT_NEAR(p_3.Z(), u_min_v_max_corner_point_of_my_surface.Z(), 1e-5);
+
+
 }
 
 TEST(Test_face_from_4_points, simple_face_from_4_points_test)
@@ -405,5 +439,6 @@ TEST(Test_face_from_4_points, simple_face_from_4_points_test)
     EXPECT_NEAR(corner_points.at(7).X(), 0., 1e-5);
     EXPECT_NEAR(corner_points.at(7).Y(), 2., 1e-5);
     EXPECT_NEAR(corner_points.at(7).Z(), 1., 1e-5);
+
 
 }
