@@ -357,6 +357,9 @@ TEST(Test_face_from_4_points, simple_face_from_4_points_test)
 
     TopoDS_Face my_face = geoml::face_from_4_points(p_0, p_1, p_2, p_3);
 
+    std::string filename = "4_point_surface.brep";
+    BRepTools::Write(my_face, filename.c_str());
+
     std::vector<gp_Pnt> corner_points;
     
     // retrieve the corner points from my_face
