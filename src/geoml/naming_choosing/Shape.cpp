@@ -184,5 +184,9 @@ Shape Shape::vector_of_shape_to_shape(std::vector<std::shared_ptr<Shape>> const&
     return op.value();
 }
 
+Shape operator||(Shape const& l, Shape const& r) {
+    return l.get_subshapes().size() > 0? l : r;
+}
+
 
 } // namespace geoml

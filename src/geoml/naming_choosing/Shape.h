@@ -206,4 +206,13 @@ void add_persistent_meta_tag_to_subshapes(const Shape &input, Pred&& f, const st
     }
 }
 
+/**
+ * @brief The or-operator for shapes returns the first argument that is not empty
+ * 
+ * @param l left operand shape
+ * @param r right operand shape
+ * @return l if it is not empty, r otherwise 
+ */
+GEOML_API_EXPORT Shape operator||(Shape const& l, Shape const& r);
+
 } // namespace geoml
