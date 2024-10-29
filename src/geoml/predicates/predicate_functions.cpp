@@ -22,24 +22,9 @@ ShapePredicate operator||(ShapePredicate const& l, ShapePredicate const& r)
     return OR(l,r);
 }
 
-bool is_vertex(Shape const& s) {
-    return s.is_type(TopAbs_VERTEX);
-}
-
-bool is_edge(Shape const& s) {
-    return s.is_type(TopAbs_EDGE);
-}
-
-bool is_face(Shape const& s) {
-    return s.is_type(TopAbs_FACE);
-}
-
-bool is_solid(Shape const& s) {
-    return s.is_type(TopAbs_SOLID);
-}
-
-bool has_origin(Shape const& s) {
-    return s.has_origin();
+ShapePredicate operator!(ShapePredicate const& pred)
+{
+    return [=](Shape const& s){ return !pred(s); };
 }
 
 ShapePredicate has_tag(std::string const& tag)
@@ -65,6 +50,11 @@ ShapePredicate is_same(TopoDS_Shape const& other)
 ShapePredicate has_subshape(Shape const& shape)
 {
     return [=](Shape const& s){ return s.has_subshape(shape); };
+}
+
+ShapePredicate is_subshape_of(Shape const& other)
+{
+    return [=](Shape const& s){ return other.has_subshape(s); };
 }
 
 ShapePredicate is_unmodified_descendent_of(Shape const& other, int max_depth)
