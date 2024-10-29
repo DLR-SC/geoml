@@ -1,5 +1,6 @@
-#include "Shape.hpp"
+#include "Shape.h"
 
+#include "topology/MakeCompound_Operation.h"
 #include <TopExp_Explorer.hxx>
 
 #include <algorithm>
@@ -125,15 +126,6 @@ bool Shape::is_child_of(Shape const& other) const
     return is_descendent_of(other, 1);
 }
 
-bool Shape::has_subshape_that_is_child_of(Shape const &shape) const
-{
-    return std::find_if(
-           m_subshapes.begin(),
-           m_subshapes.end(),
-           [&](auto const& s){ return s->is_child_of(shape); }
-           ) != m_subshapes.end();
-}
-
 bool Shape::has_tag(std::string const& tag) const
 {
     return std::find_if(
@@ -176,5 +168,21 @@ void Shape::apply_tag_tracks()
         }
     }
 }
+
+Shape Shape::vector_of_shape_to_shape(std::vector<std::shared_ptr<Shape>> const& shapes) const
+{
+    if (shapes.size() == 0) {
+            // return an empty shape
+            return Shape(TopoDS_Shape());
+    }
+
+    if (shapes.size() == 1) {
+        return *shapes[0];
+    }
+
+    MakeCompound_Operation op(shapes);
+    return op.value();
+}
+
 
 } // namespace geoml

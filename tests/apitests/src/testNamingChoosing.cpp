@@ -1,10 +1,10 @@
-#include <geoml/naming_choosing/Shape.hpp>
+#include <geoml/naming_choosing/Shape.h>
 #include <geoml/surfaces/surfaces.h>
 #include <geoml/data_structures/Array2d.h>
 #include <geoml/geom_topo_conversions/geom_topo_conversions.h>
 #include <geoml/primitives/modeling.hpp>
 #include <geoml/boolean_ops/modeling.hpp>
-#include <geoml/predicates/predicate_functions.hpp>
+#include <geoml/predicates/predicate_functions.h>
 
 #include <gtest/gtest.h>
 
@@ -193,7 +193,7 @@ TEST(Test_naming_choosing_code, example_rectangle_triangles)
     auto cut_result_edges_X_V1 = cut_result.select_subshapes([&](geoml::Shape const& s){
         return  s.is_type(TopAbs_EDGE) &&               
                 s.is_descendent_of(X) &&
-                s.has_subshape_that_is_child_of(V1);       
+                s.has_subshape_that(is_child_of(V1));       
     });
 
     EXPECT_EQ(cut_result_edges_X_V1.size(), 1);
@@ -217,7 +217,7 @@ TEST(Test_naming_choosing_code, example_rectangle_triangles)
     // Get edges in result that originate from edge X and have a vertex originating from V1 or originates from A:
     auto cut_result_2_edges_X_V1_A = cut_result_2.select_subshapes([&](geoml::Shape const& s){
         return  s.is_type(TopAbs_EDGE) &&               
-                ( (s.is_descendent_of(X) && s.has_subshape_that_is_child_of(V1)) ||
+                ( (s.is_descendent_of(X) && s.has_subshape_that(is_child_of(V1))) ||
                   s.is_descendent_of(A) );       
     });
 
@@ -229,7 +229,7 @@ TEST(Test_naming_choosing_code, example_rectangle_triangles)
     std::function<bool(geoml::Shape const&)> criterion_2 = [&](geoml::Shape const& s){
         return s.is_type(TopAbs_EDGE) &&  
                s.is_descendent_of(X) &&      
-               !(s.has_subshape_that_is_child_of(V1)); 
+               !(s.has_subshape_that(is_child_of(V1))); 
     }; 
 
     // define tag 
@@ -397,7 +397,7 @@ TEST(Test_naming_choosing_code, test_tag_tracks_with_operations)
     std::function<bool(geoml::Shape const&)> criterion = [&](geoml::Shape const& s){
         return s.is_type(TopAbs_EDGE) &&  
                s.is_descendent_of(X) &&      
-               s.has_subshape_that_is_child_of(V1); 
+               s.has_subshape_that(is_child_of(V1)); 
     }; 
 
     std::string tag = "vertically persistent name";
@@ -502,9 +502,7 @@ TEST(Test_naming_choosing_code, test_shape_predicates)
 
     rectangular_srf.add_meta_tag_to_subshapes(pred, "edge_tag");
 
-    geoml::ShapePredicate has_tag_predicate = geoml::make_predicate_has_tag("edge_tag");
-
-    auto rectangular_srf_edges_with_tag = rectangular_srf.select_subshapes(has_tag_predicate);    
+    auto rectangular_srf_edges_with_tag = rectangular_srf.select_subshapes(geoml::has_tag("edge_tag"));    
 
     EXPECT_EQ(rectangular_srf_edges_with_tag.size(), 4);
 }
