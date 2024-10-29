@@ -57,7 +57,7 @@ public:
     GEOML_API_EXPORT std::vector<std::shared_ptr<Shape>>& get_subshapes();
 
     template <typename Pred>
-    std::vector<std::shared_ptr<Shape>> select_subshapes(Pred&& f)
+    std::vector<std::shared_ptr<Shape>> select_subshapes(Pred&& f) const
     {
         std::vector<std::shared_ptr<Shape>> ret;
         for (auto const& subshape : m_subshapes)

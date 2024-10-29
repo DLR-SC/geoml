@@ -14,7 +14,10 @@
 #include <BRepBuilderAPI_MakePolygon.hxx>
 #include <BRepBuilderAPI_MakeFace.hxx>
 #include <BRepPrimAPI_MakePrism.hxx>
+#include <BRepPrimAPI_MakeBox.hxx>
+#include <TopoDS.hxx>
 
+//TODO: experiment_with_naming_choosing_code is a very bad name
 TEST(Test_naming_choosing_code, experiment_with_naming_choosing_code)
 {   
     auto box = geoml::create_box(1., 1., 1.);
@@ -61,6 +64,7 @@ TEST(Test_naming_choosing_code, experiment_with_naming_choosing_code)
 
 }
 
+//TODO: experiment_with_naming_choosing_code is a very bad name
 TEST(Test_naming_choosing_code, example_rectangle_triangles)
 {   
     // create a rectangular surface
@@ -505,4 +509,127 @@ TEST(Test_naming_choosing_code, test_shape_predicates)
     auto rectangular_srf_edges_with_tag = rectangular_srf.select_subshapes(geoml::has_tag("edge_tag"));    
 
     EXPECT_EQ(rectangular_srf_edges_with_tag.size(), 4);
+}
+
+
+//TODO: I also don't like "Test_naming_choosing_code"
+TEST(Test_naming_choosing_code, split_edge)
+{
+    using namespace geoml;
+
+    /****************************
+     * create a face and a tool *
+     ****************************/
+
+    auto v = BRepBuilderAPI_MakeVertex(gp_Pnt(0., 0., 0.));
+    auto e = BRepPrimAPI_MakePrism(v, gp_Vec(2., 0., 0.));
+    auto f = BRepPrimAPI_MakePrism(e, gp_Vec(0., 2., 0.));
+    auto face = Shape(f);
+
+    auto t = BRepPrimAPI_MakeBox(gp_Pnt(-0.5, -0.5, -0.5), 1., 1., 1.);
+    auto tool = Shape(t);
+
+    /***********************************************
+     * extract some edges and vertices of the face *
+     ***********************************************/
+
+    /*
+       Vertices: alpha, beta, gamma, delta. (only interested in alpha, beta)
+       edges: a,b,c,d (only interested in a,b,d)
+
+             +----+
+             |    |
+          d  |    |  b
+             +----+
+       alpha    a   beta 
+    */
+
+    // let a be any edge of the face
+    auto edges_candidates = face.select_subshapes(is_edge);
+    ASSERT_TRUE(edges_candidates.size() > 0);
+    Shape const& a = *edges_candidates[0];
+
+    // let alpha and beta be the two vertices of edge a
+    auto vertices = a.select_subshapes(is_vertex);
+    ASSERT_EQ(vertices.size(), 2);
+    Shape const& alpha = *vertices[0];
+    Shape const& beta = *vertices[1];
+
+    // let b be the edge that is adjacent to a at beta
+    auto b_candidates = face.select_subshapes(
+        is_edge &&
+        !is_same(a) &&
+        has_subshape(beta)
+    );
+    ASSERT_EQ(b_candidates.size(), 1);
+    Shape const& b = *b_candidates[0];
+
+    // let d be the edge that is adjacent to a at alpha
+    auto d_candidates = face.select_subshapes(
+        is_edge &&
+        !is_same(a) &&
+        has_subshape(beta)
+    );
+    ASSERT_EQ(d_candidates.size(), 1);
+    Shape const& d = *d_candidates[0];
+
+    {
+        auto test_alpha = BRep_Tool::Pnt(TopoDS::Vertex(alpha));
+        EXPECT_NEAR(test_alpha.X(), 0., 1e-14);
+        EXPECT_NEAR(test_alpha.Y(), 0., 1e-14);
+        EXPECT_NEAR(test_alpha.Z(), 0., 1e-14);
+
+        auto test_beta = BRep_Tool::Pnt(TopoDS::Vertex(beta));
+        EXPECT_NEAR(test_beta.X(), 0., 1e-14);
+        EXPECT_NEAR(test_beta.Y(), 2., 1e-14);
+        EXPECT_NEAR(test_beta.Z(), 0., 1e-14);
+    }
+
+    /******************************
+     * cut the face with the tool *
+     ******************************/
+
+    auto face_cut = face - tool;
+
+    /*********************************
+     * select edge of cutting result *
+     *********************************/
+
+    /* modeling intent:
+
+       Always choose the edge that is a descendent of a. 
+       If this is not unique, choose the edge of that is a descendent of a and
+       closest to alpha.
+
+       Challenge formulate predicate only with history- and topological predicates
+       for our specific parametric model
+    */ 
+
+    auto edge1 = 
+        face_cut.filter(is_edge && is_descendent_of(a) && has_subshape(alpha)) ||
+        face_cut.filter(is_edge && is_descendent_of(a));
+
+    auto has_common_vertex_with = [](Shape const& other) {
+        return has_subshape_that(is_vertex && is_subshape_of(other)) &&
+               !is_same(other);
+    };
+
+    auto edge2 = face_cut.filter(
+        is_edge && 
+        has_common_vertex_with(edge1) &&
+        !is_same(d)
+    );
+
+    // we could just sweep edge1 and edge2 seperately or make a compound out of them, 
+    // but just for fun lets use a filter again
+    auto edges = face_cut.filter(is_same(edge1) || is_same(edge2));
+
+    auto result = BRepPrimAPI_MakePrism(edges, gp_Vec(0., 0., -2.));
+
+    BRepTools::Write(tool, "tool.brep");
+    BRepTools::Write(edge1, "edge1.brep");
+    BRepTools::Write(edge2, "edge2.brep");
+    BRepTools::Write(edges, "edges.brep");
+    BRepTools::Write(face_cut, "face_cut.brep");
+    BRepTools::Write(result, "result.brep");
 }
