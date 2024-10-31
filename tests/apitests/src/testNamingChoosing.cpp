@@ -517,119 +517,235 @@ TEST(Test_naming_choosing_code, split_edge)
 {
     using namespace geoml;
 
-    /****************************
-     * create a face and a tool *
-     ****************************/
 
-    auto v = BRepBuilderAPI_MakeVertex(gp_Pnt(0., 0., 0.));
-    auto e = BRepPrimAPI_MakePrism(v, gp_Vec(2., 0., 0.));
-    auto f = BRepPrimAPI_MakePrism(e, gp_Vec(0., 2., 0.));
-    auto face = Shape(f);
+    auto do_step = [](int idx, gp_Pnt const& tool_pos){
 
-    auto t = BRepPrimAPI_MakeBox(gp_Pnt(-0.5, -0.5, -0.5), 1., 1., 1.);
-    auto tool = Shape(t);
+        /****************************
+        * create a face and a tool *
+        ****************************/
 
-    /***********************************************
-     * extract some edges and vertices of the face *
-     ***********************************************/
+        auto v = BRepBuilderAPI_MakeVertex(gp_Pnt(0., 0., 0.));
+        auto e = BRepPrimAPI_MakePrism(v, gp_Vec(2., 0., 0.));
+        auto f = BRepPrimAPI_MakePrism(e, gp_Vec(0., 2., 0.));
+        auto face = Shape(f);
 
-    /*
-       Vertices: alpha, beta, gamma, delta. (only interested in alpha, beta)
-       edges: a,b,c,d (only interested in a,b,d)
+        // auto t = BRepPrimAPI_MakeBox(gp_Pnt(-0.5, -0.5, -0.5), 1., 1., 1.);
+        auto t = BRepPrimAPI_MakeBox(tool_pos, 1., 1., 0.5);
+        auto tool = Shape(t);
 
-             +----+
-             |    |
-          d  |    |  b
-             +----+
-       alpha    a   beta 
-    */
+        /***********************************************
+        * extract some edges and vertices of the face *
+        ***********************************************/
 
-    // let a be any edge of the face
-    auto edges_candidates = face.select_subshapes(is_edge);
-    ASSERT_TRUE(edges_candidates.size() > 0);
-    Shape const& a = *edges_candidates[0];
+        /*
+        Vertices: alpha, beta, gamma, delta. (only interested in alpha, beta)
+        edges: a,b,c,d (only interested in a,b,d)
 
-    // let alpha and beta be the two vertices of edge a
-    auto vertices = a.select_subshapes(is_vertex);
-    ASSERT_EQ(vertices.size(), 2);
-    Shape const& alpha = *vertices[0];
-    Shape const& beta = *vertices[1];
+                +----+
+                |    |
+             d  |    |  b
+                +----+
+          alpha    a   beta 
+        */
 
-    // let b be the edge that is adjacent to a at beta
-    auto b_candidates = face.select_subshapes(
-        is_edge &&
-        !is_same(a) &&
-        has_subshape(beta)
-    );
-    ASSERT_EQ(b_candidates.size(), 1);
-    Shape const& b = *b_candidates[0];
+        // let a be any edge of the face
+        auto edges_candidates = face.select_subshapes(is_edge);
+        ASSERT_TRUE(edges_candidates.size() > 0);
+        Shape const& a = *edges_candidates[0];
 
-    // let d be the edge that is adjacent to a at alpha
-    auto d_candidates = face.select_subshapes(
-        is_edge &&
-        !is_same(a) &&
-        has_subshape(beta)
-    );
-    ASSERT_EQ(d_candidates.size(), 1);
-    Shape const& d = *d_candidates[0];
+        // let alpha and beta be the two vertices of edge a
+        auto vertices = a.select_subshapes(is_vertex);
+        ASSERT_EQ(vertices.size(), 2);
+        Shape const& beta = *vertices[0];
+        Shape const& alpha = *vertices[1];
 
-    {
-        auto test_alpha = BRep_Tool::Pnt(TopoDS::Vertex(alpha));
-        EXPECT_NEAR(test_alpha.X(), 0., 1e-14);
-        EXPECT_NEAR(test_alpha.Y(), 0., 1e-14);
-        EXPECT_NEAR(test_alpha.Z(), 0., 1e-14);
+        // let b be the edge that is adjacent to a at beta
+        auto b_candidates = face.select_subshapes(
+            is_edge &&
+            !is_same(a) &&
+            has_subshape(beta)
+        );
+        ASSERT_EQ(b_candidates.size(), 1);
+        Shape const& b = *b_candidates[0];
 
-        auto test_beta = BRep_Tool::Pnt(TopoDS::Vertex(beta));
-        EXPECT_NEAR(test_beta.X(), 0., 1e-14);
-        EXPECT_NEAR(test_beta.Y(), 2., 1e-14);
-        EXPECT_NEAR(test_beta.Z(), 0., 1e-14);
-    }
+        // let d be the edge that is adjacent to a at alpha
+        auto d_candidates = face.select_subshapes(
+            is_edge &&
+            !is_same(a) &&
+            has_subshape(alpha)
+        );
+        ASSERT_EQ(d_candidates.size(), 1);
+        Shape const& d = *d_candidates[0];
 
-    /******************************
-     * cut the face with the tool *
-     ******************************/
+        {
+            auto test_alpha = BRep_Tool::Pnt(TopoDS::Vertex(alpha));
+            EXPECT_NEAR(test_alpha.X(), 0., 1e-14);
+            EXPECT_NEAR(test_alpha.Y(), 2., 1e-14);
+            EXPECT_NEAR(test_alpha.Z(), 0., 1e-14);
 
-    auto face_cut = face - tool;
+            auto test_beta = BRep_Tool::Pnt(TopoDS::Vertex(beta));
+            EXPECT_NEAR(test_beta.X(), 0., 1e-14);
+            EXPECT_NEAR(test_beta.Y(), 0., 1e-14);
+            EXPECT_NEAR(test_beta.Z(), 0., 1e-14);
+        }
 
-    /*********************************
-     * select edge of cutting result *
-     *********************************/
+        /******************************
+        * cut the face with the tool *
+        ******************************/
 
-    /* modeling intent:
+        auto face_cut = face - tool;
 
-       Always choose the edge that is a descendent of a. 
-       If this is not unique, choose the edge of that is a descendent of a and
-       closest to alpha.
+        /*********************************
+        * select edge of cutting result *
+        *********************************/
 
-       Challenge formulate predicate only with history- and topological predicates
-       for our specific parametric model
-    */ 
+        /* modeling intent:
 
-    auto edge1 = 
-        face_cut.filter(is_edge && is_descendent_of(a) && has_subshape(alpha)) ||
-        face_cut.filter(is_edge && is_descendent_of(a));
+        Always choose the edge that is a descendent of a. 
+        If this is not unique, choose the edge of that is a descendent of a and
+        closest to alpha.
 
-    auto has_common_vertex_with = [](Shape const& other) {
-        return has_subshape_that(is_vertex && is_subshape_of(other)) &&
-               !is_same(other);
+        Challenge formulate predicate only with history- and topological predicates
+        for our specific parametric model
+        */ 
+
+        auto edge1 = 
+            face_cut.filter(is_edge && is_descendent_of(a) && has_subshape(alpha)) ||
+            face_cut.filter(is_edge && is_descendent_of(a));
+
+        auto has_common_vertex_with = [](Shape const& other) {
+            return has_subshape_that(is_vertex && is_subshape_of(other)) &&
+                !is_same(other);
+        };
+
+        auto edge2 = 
+            face_cut.filter(is_edge && has_common_vertex_with(edge1) && is_descendent_of(b)) ||
+            face_cut.filter(is_edge && has_common_vertex_with(edge1) && !is_descendent_of(d)
+        );
+
+        auto result1 = BRepPrimAPI_MakePrism(edge1, gp_Vec(0., 0., -1.));
+        auto result2 = BRepPrimAPI_MakePrism(edge2, gp_Vec(0., 0., -1.));
+
+        std::stringstream ss;
+        ss << std::setw(3) << std::setfill('0') << idx << "_";
+        std::string prefix = ss.str();
+        BRepTools::Write(face_cut, (prefix + "face_cut.brep").c_str());
+        BRepTools::Write(tool,     (prefix + "tool.brep").c_str());
+        BRepTools::Write(edge1,    (prefix + "edge1.brep").c_str());
+        BRepTools::Write(edge2,    (prefix + "edge2.brep").c_str());
+        BRepTools::Write(result1,  (prefix + "result1.brep").c_str());
+        BRepTools::Write(result2,  (prefix + "result2.brep").c_str());
+
+        // Now for animation only: pure history-based selection
+
+        auto edge1_history = face_cut.filter(is_edge && is_descendent_of(a));
+        auto edge2_history = face_cut.filter(is_edge && is_descendent_of(b));
+        auto result1_history = BRepPrimAPI_MakePrism(edge1_history, gp_Vec(0., 0., -1.));
+        auto result2_history = BRepPrimAPI_MakePrism(edge2_history, gp_Vec(0., 0., -1.));
+        BRepTools::Write(edge1_history,    (prefix + "edge1_history.brep").c_str());
+        BRepTools::Write(edge2_history,    (prefix + "edge2_history.brep").c_str());
+        BRepTools::Write(result1_history,  (prefix + "result1_history.brep").c_str());
+        BRepTools::Write(result2_history,  (prefix + "result2_history.brep").c_str());
+
+        // Now index-based:
+        auto edge1_index = *face_cut.select_subshapes(is_edge)[0];
+        auto edge2_index = *face_cut.select_subshapes(is_edge)[1];
+        auto result1_index = BRepPrimAPI_MakePrism(edge1_index, gp_Vec(0., 0., -1.));
+        auto result2_index = BRepPrimAPI_MakePrism(edge2_index, gp_Vec(0., 0., -1.));
+        BRepTools::Write(edge1_index,    (prefix + "edge1_index.brep").c_str());
+        BRepTools::Write(edge2_index,    (prefix + "edge2_index.brep").c_str());
+        BRepTools::Write(result1_index,  (prefix + "result1_index.brep").c_str());
+        BRepTools::Write(result2_index,  (prefix + "result2_index.brep").c_str());
+
+        if (idx == 0) {
+            BRepTools::Write(face, (prefix + "face.brep").c_str());
+        }
     };
 
-    auto edge2 = face_cut.filter(
-        is_edge && 
-        has_common_vertex_with(edge1) &&
-        !is_same(d)
-    );
 
-    // we could just sweep edge1 and edge2 seperately or make a compound out of them, 
-    // but just for fun lets use a filter again
-    auto edges = face_cut.filter(is_same(edge1) || is_same(edge2));
+    auto start = gp_Pnt(0.5,0.5, -0.25);
+    auto end = gp_Pnt(0.5, -0.5, -0.25);
+    int idx = 0;
+    { 
+        int start_idx = idx;
+        int end_idx = idx + 10;
+        for (; idx < end_idx; idx++) {
+            double alpha = double(idx - start_idx)/(end_idx - start_idx);
+            auto pos = alpha*end.Coord() + (1-alpha)*start.Coord();
+            do_step(idx, pos);
+        }
+    }
 
-    auto result = BRepPrimAPI_MakePrism(edges, gp_Vec(0., 0., -2.));
+    start = end;
+    end = gp_Pnt(-0.5, -0.5, -0.25);
+    { 
+        int start_idx = idx;
+        int end_idx = idx + 10;
+        for (; idx < end_idx; idx++) {
+            double alpha = double(idx - start_idx)/(end_idx - start_idx);
+            auto pos = alpha*end.Coord() + (1-alpha)*start.Coord();
+            do_step(idx, pos);
+        }
+    }
 
-    BRepTools::Write(tool, "tool.brep");
-    BRepTools::Write(edge1, "edge1.brep");
-    BRepTools::Write(edge2, "edge2.brep");
-    BRepTools::Write(edges, "edges.brep");
-    BRepTools::Write(face_cut, "face_cut.brep");
-    BRepTools::Write(result, "result.brep");
+    start = end;
+    end = gp_Pnt(-0.5, 1.5, -0.25);
+    { 
+        int start_idx = idx;
+        int end_idx = idx + 20;
+        for (; idx < end_idx; idx++) {
+            double alpha = double(idx - start_idx)/(end_idx - start_idx);
+            auto pos = alpha*end.Coord() + (1-alpha)*start.Coord();
+            do_step(idx, pos);
+        }
+    }
+
+    start = end;
+    end = gp_Pnt(1.5, 1.5, -0.25);
+    { 
+        int start_idx = idx;
+        int end_idx = idx + 20;
+        for (; idx < end_idx; idx++) {
+            double alpha = double(idx - start_idx)/(end_idx - start_idx);
+            auto pos = alpha*end.Coord() + (1-alpha)*start.Coord();
+            do_step(idx, pos);
+        }
+    }
+
+    start = end;
+    end = gp_Pnt(1.5, -1.5, -0.25);
+    { 
+        int start_idx = idx;
+        int end_idx = idx + 30;
+        for (; idx < end_idx; idx++) {
+            double alpha = double(idx - start_idx)/(end_idx - start_idx);
+            auto pos = alpha*end.Coord() + (1-alpha)*start.Coord();
+            do_step(idx, pos);
+        }
+    }
+
+    start = end;
+    end = gp_Pnt(0.5, -1.5, -0.25);
+    { 
+        int start_idx = idx;
+        int end_idx = idx + 10;
+        for (; idx < end_idx; idx++) {
+            double alpha = double(idx - start_idx)/(end_idx - start_idx);
+            auto pos = alpha*end.Coord() + (1-alpha)*start.Coord();
+            do_step(idx, pos);
+        }
+    }
+
+    start = end;
+    end = gp_Pnt(0.5, 0.5, -0.25);
+    { 
+        int start_idx = idx;
+        int end_idx = idx + 20;
+        for (; idx < end_idx; idx++) {
+            double alpha = double(idx - start_idx)/(end_idx - start_idx);
+            auto pos = alpha*end.Coord() + (1-alpha)*start.Coord();
+            do_step(idx, pos);
+        }
+    }
+
 }
