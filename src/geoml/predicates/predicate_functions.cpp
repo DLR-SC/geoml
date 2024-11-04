@@ -82,19 +82,9 @@ ShapePredicate is_descendent_of_subshape_in(Shape const& other, int max_depth)
     return [=](Shape const& s){ return s.is_descendent_of_subshape_in(other, max_depth); };
 }
 
-ShapePredicate is_child_of_subshape_in(Shape const& other)
-{
-    return [=](Shape const& s){ return s.is_child_of_subshape_in(other); };
-}
-
 ShapePredicate is_descendent_of(Shape const& other, int max_depth)
 {
     return [=](Shape const& s){ return s.is_descendent_of(other, max_depth); };
-}
-
-ShapePredicate is_child_of(Shape const& other)
-{
-    return [=](Shape const& s){ return s.is_child_of(other); };
 }
 
 ShapePredicate has_subshape_that(ShapePredicate const& pred) 

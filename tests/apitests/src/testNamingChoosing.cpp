@@ -23,20 +23,21 @@ TEST(Test_naming_choosing_code, experiment_with_naming_choosing_code)
     auto box = geoml::create_box(1., 1., 1.);
     auto cylinder_big = geoml::create_cylinder(0.5, 0.5);
     auto cylinder_small = geoml::create_cylinder(0.25, 0.75);
+
     auto result = box - cylinder_big - cylinder_small;
 
     // Get an edge from the box. Selecting first one here.
-    auto box_edges = box.select_subshapes([](geoml::Shape const& s){ return s.is_type(TopAbs_EDGE); });
+    auto box_edges = box.select_subshapes(geoml::is_edge);
     
     EXPECT_EQ(box_edges.size(), 24);
 
-    auto const& edge_in = *box_edges.front();
+    auto const& edge_in = box_edges.front();
 
     // Get edges in result that originate from the edge selected in box
-    auto result_edges = result.select_subshapes([&](geoml::Shape const& s){
-        return  s.is_type(TopAbs_EDGE) &&               // any edge,
-               s.is_descendent_of(edge_in);            // created from edge_in thru any number of operations
-    });
+    auto result_edges = result.select_subshapes(
+        geoml::is_edge &&                 // any edge,
+        geoml::is_descendent_of(edge_in)  // created from edge_in thru any number of operations
+    );
 
     EXPECT_EQ(result_edges.size(), 2);
 
@@ -45,7 +46,7 @@ TEST(Test_naming_choosing_code, experiment_with_naming_choosing_code)
 
     EXPECT_EQ(cyl_faces.size(), 3);
 
-    auto const& face_in = *cyl_faces[1];
+    auto const& face_in = cyl_faces[1];
 
     // Get face in result that originate from the face selected in cylinder
     auto result_faces = result.select_subshapes([&](geoml::Shape const& s){
@@ -165,65 +166,65 @@ TEST(Test_naming_choosing_code, example_rectangle_triangles)
 
     EXPECT_EQ(rectangular_srf_edges.size(), 4);
 
-    auto const&  X = *rectangular_srf_edges.at(2); // "pick" edge
-    auto const&  Y = *rectangular_srf_edges.at(0); // "pick" edge
-    auto const&  Z = *rectangular_srf_edges.at(1); // "pick" edge
-    auto const&  W = *rectangular_srf_edges.at(3); // "pick" edge
+    auto const&  X = rectangular_srf_edges.at(2); // "pick" edge
+    auto const&  Y = rectangular_srf_edges.at(0); // "pick" edge
+    auto const&  Z = rectangular_srf_edges.at(1); // "pick" edge
+    auto const&  W = rectangular_srf_edges.at(3); // "pick" edge
 
     // Select vertices from the rectangular_srf.
     auto rectangular_srf_vertices = rectangular_srf.select_subshapes([](geoml::Shape const& s){ return s.is_type(TopAbs_VERTEX); });
    
     EXPECT_EQ(rectangular_srf_vertices.size(), 8);
 
-    auto const&  V1 = *rectangular_srf_vertices.at(3); // "pick" vertex
-    auto const&  V2 = *rectangular_srf_vertices.at(0); // "pick" vertex
-    auto const&  V3 = *rectangular_srf_vertices.at(1); // "pick" vertex
-    auto const&  V4 = *rectangular_srf_vertices.at(2); // "pick" vertex
-    auto const&  V5 = *rectangular_srf_vertices.at(4); // "pick" vertex
-    auto const&  V6 = *rectangular_srf_vertices.at(5); // "pick" vertex
-    auto const&  V7 = *rectangular_srf_vertices.at(6); // "pick" vertex
-    auto const&  V8 = *rectangular_srf_vertices.at(7); // "pick" vertex
+    auto const&  V1 = rectangular_srf_vertices.at(3); // "pick" vertex
+    auto const&  V2 = rectangular_srf_vertices.at(0); // "pick" vertex
+    auto const&  V3 = rectangular_srf_vertices.at(1); // "pick" vertex
+    auto const&  V4 = rectangular_srf_vertices.at(2); // "pick" vertex
+    auto const&  V5 = rectangular_srf_vertices.at(4); // "pick" vertex
+    auto const&  V6 = rectangular_srf_vertices.at(5); // "pick" vertex
+    auto const&  V7 = rectangular_srf_vertices.at(6); // "pick" vertex
+    auto const&  V8 = rectangular_srf_vertices.at(7); // "pick" vertex
 
     // Select edges from the triangular_srf. 
     auto triangular_srf_edges = triangular_srf.select_subshapes([](geoml::Shape const& s){ return s.is_type(TopAbs_EDGE); });
 
     EXPECT_EQ(triangular_srf_edges.size(), 3);
 
-    auto const&  C = *triangular_srf_edges.at(0); // "pick" edge
-    auto const&  B = *triangular_srf_edges.at(1); // "pick" edge
-    auto const&  A = *triangular_srf_edges.at(2); // "pick" edge
+    auto const&  C = triangular_srf_edges.at(0); // "pick" edge
+    auto const&  B = triangular_srf_edges.at(1); // "pick" edge
+    auto const&  A = triangular_srf_edges.at(2); // "pick" edge
 
     // Get edges in result that originate from edge X and have a vertex that originates from V1
     auto cut_result_edges_X_V1 = cut_result.select_subshapes([&](geoml::Shape const& s){
         return  s.is_type(TopAbs_EDGE) &&               
                 s.is_descendent_of(X) &&
-                s.has_subshape_that(is_child_of(V1));       
+                s.has_subshape_that(is_descendent_of(V1, 1));       
     });
 
     EXPECT_EQ(cut_result_edges_X_V1.size(), 1);
 
     if(cut_result_edges_X_V1.size() == 1) {
-    auto const& result_X_V1 = *cut_result_edges_X_V1.at(0); // there is only one entry in the std::vector
+    auto const& result_X_V1 = cut_result_edges_X_V1.at(0); // there is only one entry in the std::vector
     }
 
     // Get edges in result that originate from edge X or from A or B
-    auto cut_result_edges_X_A_B = cut_result.select_subshapes([&](geoml::Shape const& s){
-        return  s.is_type(TopAbs_EDGE) &&               
-                ( s.is_descendent_of(X) || 
-                  s.is_descendent_of(A) ||
-                  s.is_descendent_of(B)    );       
-    });
+    auto cut_result_edges_X_A_B = cut_result.select_subshapes(
+        geoml::is_edge &&               
+        ( geoml::is_descendent_of(X) || 
+          geoml::is_descendent_of(A) ||
+          geoml::is_descendent_of(B)    )   
+    );
 
     EXPECT_EQ(cut_result_edges_X_A_B.size(), 4);
 
     // test choosing after two modelling steps:
 
     // Get edges in result that originate from edge X and have a vertex originating from V1 or originates from A:
-    auto cut_result_2_edges_X_V1_A = cut_result_2.select_subshapes([&](geoml::Shape const& s){
-        return  s.is_type(TopAbs_EDGE) &&               
-                ( (s.is_descendent_of(X) && s.has_subshape_that(is_child_of(V1))) ||
-                  s.is_descendent_of(A) );       
-    });
+    auto cut_result_2_edges_X_V1_A = cut_result_2.select_subshapes(
+        (geoml::is_edge && geoml::is_descendent_of(X) && geoml::has_subshape_that(geoml::is_descendent_of(V1, 1)) ) || 
+        geoml::is_descendent_of(A)
+    );
+
 
     EXPECT_EQ(cut_result_2_edges_X_V1_A.size(), 2);
 
@@ -233,7 +234,7 @@ TEST(Test_naming_choosing_code, example_rectangle_triangles)
     std::function<bool(geoml::Shape const&)> criterion_2 = [&](geoml::Shape const& s){
         return s.is_type(TopAbs_EDGE) &&  
                s.is_descendent_of(X) &&      
-               !(s.has_subshape_that(is_child_of(V1))); 
+               !(s.has_subshape_that(is_descendent_of(V1,1))); 
     }; 
 
     // define tag 
@@ -243,9 +244,7 @@ TEST(Test_naming_choosing_code, example_rectangle_triangles)
     cut_result.add_meta_tag_to_subshapes(criterion_2, tag_2);
 
     // Select edges in cut_result carrying tag_2
-    auto cut_result_edges_tag_2 = cut_result.select_subshapes([&](geoml::Shape& s){
-        return  s.has_tag(tag_2);       
-    });
+    auto cut_result_edges_tag_2 = cut_result.select_subshapes(geoml::has_tag(tag_2));
 
     EXPECT_EQ(cut_result_edges_tag_2.size(), 1);
 
@@ -266,9 +265,7 @@ TEST(Test_naming_choosing_code, example_rectangle_triangles)
     geoml::TagTrack tag_track_1(tag_1, criterion_1, remainingSteps_1);
 
     // get edges in cut_result carrying tag_1
-    auto cut_result_edges_tag_1 = cut_result.select_subshapes([&](geoml::Shape& s){
-        return  s.has_tag(tag_track_1.m_tag);       
-    });
+    auto cut_result_edges_tag_1 = cut_result.select_subshapes(geoml::has_tag(tag_track_1.m_tag));
 
     EXPECT_EQ(cut_result_edges_tag_1.size(), 0);
 }
@@ -369,39 +366,39 @@ TEST(Test_naming_choosing_code, test_tag_tracks_with_operations)
 
     EXPECT_EQ(rectangular_srf_edges.size(), 4);
 
-    auto const&  X = *rectangular_srf_edges.at(2); // "pick" edge
-    auto const&  Y = *rectangular_srf_edges.at(0); // "pick" edge
-    auto const&  Z = *rectangular_srf_edges.at(1); // "pick" edge
-    auto const&  W = *rectangular_srf_edges.at(3); // "pick" edge
+    auto const&  X = rectangular_srf_edges.at(2); // "pick" edge
+    auto const&  Y = rectangular_srf_edges.at(0); // "pick" edge
+    auto const&  Z = rectangular_srf_edges.at(1); // "pick" edge
+    auto const&  W = rectangular_srf_edges.at(3); // "pick" edge
 
     // Select vertices from the rectangular_srf.
     auto rectangular_srf_vertices = rectangular_srf.select_subshapes([](geoml::Shape const& s){ return s.is_type(TopAbs_VERTEX); });
 
     EXPECT_EQ(rectangular_srf_vertices.size(), 8);
 
-    auto const&  V1 = *rectangular_srf_vertices.at(3); // "pick" vertex
-    auto const&  V2 = *rectangular_srf_vertices.at(0); // "pick" vertex
-    auto const&  V3 = *rectangular_srf_vertices.at(1); // "pick" vertex
-    auto const&  V4 = *rectangular_srf_vertices.at(2); // "pick" vertex
-    auto const&  V5 = *rectangular_srf_vertices.at(4); // "pick" vertex
-    auto const&  V6 = *rectangular_srf_vertices.at(5); // "pick" vertex
-    auto const&  V7 = *rectangular_srf_vertices.at(6); // "pick" vertex
-    auto const&  V8 = *rectangular_srf_vertices.at(7); // "pick" vertex
+    auto const&  V1 = rectangular_srf_vertices.at(3); // "pick" vertex
+    auto const&  V2 = rectangular_srf_vertices.at(0); // "pick" vertex
+    auto const&  V3 = rectangular_srf_vertices.at(1); // "pick" vertex
+    auto const&  V4 = rectangular_srf_vertices.at(2); // "pick" vertex
+    auto const&  V5 = rectangular_srf_vertices.at(4); // "pick" vertex
+    auto const&  V6 = rectangular_srf_vertices.at(5); // "pick" vertex
+    auto const&  V7 = rectangular_srf_vertices.at(6); // "pick" vertex
+    auto const&  V8 = rectangular_srf_vertices.at(7); // "pick" vertex
 
     // Select edges from the triangular_srf. 
     auto triangular_srf_edges = triangular_srf.select_subshapes([](geoml::Shape const& s){ return s.is_type(TopAbs_EDGE); });
 
     EXPECT_EQ(triangular_srf_edges .size(), 3);
 
-    auto const&  C = *triangular_srf_edges.at(0); // "pick" edge
-    auto const&  B = *triangular_srf_edges.at(1); // "pick" edge
-    auto const&  A = *triangular_srf_edges.at(2); // "pick" edge
+    auto const&  C = triangular_srf_edges.at(0); // "pick" edge
+    auto const&  B = triangular_srf_edges.at(1); // "pick" edge
+    auto const&  A = triangular_srf_edges.at(2); // "pick" edge
 
     // add a tag track to rectangular_srf
     std::function<bool(geoml::Shape const&)> criterion = [&](geoml::Shape const& s){
         return s.is_type(TopAbs_EDGE) &&  
                s.is_descendent_of(X) &&      
-               s.has_subshape_that(is_child_of(V1)); 
+               s.has_subshape_that(is_descendent_of(V1, 1)); 
     }; 
 
     std::string tag = "vertically persistent name";
@@ -415,19 +412,16 @@ TEST(Test_naming_choosing_code, test_tag_tracks_with_operations)
     rectangular_srf.apply_tag_tracks();
 
     // get edges in rectuangular_srf carrying tag "vertically persisten name"
-    auto rectangular_srf_tagged_edges = rectangular_srf.select_subshapes([&](geoml::Shape& s){
-        return  s.has_tag(tag_track.m_tag);       
-    });
+    auto rectangular_srf_tagged_edges = rectangular_srf.select_subshapes(geoml::has_tag(tag_track.m_tag));
 
+    EXPECT_EQ(rectangular_srf.select_subshapes(criterion).size(), 1);
     EXPECT_EQ(rectangular_srf_tagged_edges.size(), 1);
 
     // perform first modelling operation
     geoml::Shape cut_result = rectangular_srf - triangular_srf;
 
     // get edges in cut_result carrying tag "vertically persisten name"
-    auto cut_result_tagged_edges = cut_result.select_subshapes([&](geoml::Shape& s){
-        return  s.has_tag(tag_track.m_tag);       
-    });
+    auto cut_result_tagged_edges = cut_result.select_subshapes(geoml::has_tag(tag_track.m_tag));
 
     EXPECT_EQ(cut_result_tagged_edges .size(), 1);
 
@@ -435,9 +429,7 @@ TEST(Test_naming_choosing_code, test_tag_tracks_with_operations)
     geoml::Shape cut_result_2 = cut_result - triangular_srf_2;
 
     // get edges in cut_result_2 carrying tag "vertically persisten name"
-    auto cut_result_2_tagged_edges = cut_result_2.select_subshapes([&](geoml::Shape& s){
-        return  s.has_tag(tag_track.m_tag);       
-    });
+    auto cut_result_2_tagged_edges = cut_result_2.select_subshapes(geoml::has_tag(tag_track.m_tag));
 
     EXPECT_EQ(cut_result_2_tagged_edges.size(), 1);
 
@@ -547,13 +539,13 @@ TEST(Test_naming_choosing_code, split_edge)
     // let a be any edge of the face
     auto edges_candidates = face.select_subshapes(is_edge);
     ASSERT_TRUE(edges_candidates.size() > 0);
-    Shape const& a = *edges_candidates[0];
+    Shape const& a = edges_candidates[0];
 
     // let alpha and beta be the two vertices of edge a
     auto vertices = a.select_subshapes(is_vertex);
     ASSERT_EQ(vertices.size(), 2);
-    Shape const& alpha = *vertices[0];
-    Shape const& beta = *vertices[1];
+    Shape const& alpha = vertices[0];
+    Shape const& beta = vertices[1];
 
     // let b be the edge that is adjacent to a at beta
     auto b_candidates = face.select_subshapes(
@@ -562,7 +554,7 @@ TEST(Test_naming_choosing_code, split_edge)
         has_subshape(beta)
     );
     ASSERT_EQ(b_candidates.size(), 1);
-    Shape const& b = *b_candidates[0];
+    Shape const b = b_candidates[0];
 
     // let d be the edge that is adjacent to a at alpha
     auto d_candidates = face.select_subshapes(
@@ -571,7 +563,7 @@ TEST(Test_naming_choosing_code, split_edge)
         has_subshape(beta)
     );
     ASSERT_EQ(d_candidates.size(), 1);
-    Shape const& d = *d_candidates[0];
+    Shape const d = d_candidates[0];
 
     {
         auto test_alpha = BRep_Tool::Pnt(TopoDS::Vertex(alpha));
@@ -605,20 +597,22 @@ TEST(Test_naming_choosing_code, split_edge)
        for our specific parametric model
     */ 
 
-    auto edge1 = 
-        face_cut.filter(is_edge && is_descendent_of(a) && has_subshape(alpha)) ||
-        face_cut.filter(is_edge && is_descendent_of(a));
+    auto m = face_cut.filter(is_edge && is_descendent_of(a));
+    auto n = m.filter(has_subshape(alpha));
+    auto edge1 = n.is_empty()? m : n;
 
     auto has_common_vertex_with = [](Shape const& other) {
         return has_subshape_that(is_vertex && is_subshape_of(other)) &&
                !is_same(other);
     };
 
-    auto edge2 = face_cut.filter(
+    auto p = face_cut.filter(
         is_edge && 
         has_common_vertex_with(edge1) &&
-        !is_same(d)
+        !is_descendent_of(d)
     );
+    auto q = p.filter(is_descendent_of(b));
+    auto edge2 = q.is_empty() ? p : q;
 
     // we could just sweep edge1 and edge2 seperately or make a compound out of them, 
     // but just for fun lets use a filter again

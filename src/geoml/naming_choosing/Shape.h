@@ -8,6 +8,7 @@
 #include <functional>
 
 #include <TopoDS_Shape.hxx>
+#include <TopoDS_Iterator.hxx>
 
 namespace geoml {
 
@@ -47,26 +48,25 @@ class Shape
     friend class Operation;
 
 public:
+
+    GEOML_API_EXPORT Shape();
     GEOML_API_EXPORT Shape(TopoDS_Shape const& theShape);
 
     // conversion to TopoDS_Shape
     GEOML_API_EXPORT operator TopoDS_Shape() const;
 
-    GEOML_API_EXPORT std::vector<std::shared_ptr<Shape>> const& get_subshapes() const;
+    GEOML_API_EXPORT std::vector<Shape> const& get_children() const;
 
-    GEOML_API_EXPORT std::vector<std::shared_ptr<Shape>>& get_subshapes();
+    GEOML_API_EXPORT std::vector<Shape>& get_children();
+
+    GEOML_API_EXPORT std::vector<Shape> get_subshapes() const;
 
     template <typename Pred>
-    std::vector<std::shared_ptr<Shape>> select_subshapes(Pred&& f) const
+    std::vector<Shape> select_subshapes(Pred&& f) const
     {
-        std::vector<std::shared_ptr<Shape>> ret;
-        for (auto const& subshape : m_subshapes)
-        {
-            if (f(*subshape)) {
-                ret.push_back(subshape);
-            }
-        }
-        return ret;
+        auto v = FindVisitor<Pred>(std::forward<Pred>(f));
+        accept_topology_visitor(v);
+        return v.results;
     }
 
     template <typename Pred>
@@ -79,11 +79,11 @@ public:
     template <typename Pred>
     void add_meta_tag_to_subshapes(Pred&& f, std::string const& input_tag) // this function can only add a tag to a subshape of the shape and not the shape itself
     {    
-        std::vector<std::shared_ptr<Shape>> selection = this->select_subshapes(f);
+        std::vector<Shape> selection = this->select_subshapes(f);
 
-        for (auto const& selected_shape : selection)
+        for (auto& selected_shape : selection)
         {
-            selected_shape->add_meta_tag(input_tag);
+            selected_shape.add_meta_tag(input_tag);
         }
     }
                                                            
@@ -111,18 +111,47 @@ public:
      * @param v
      */
     template <typename Visitor>
-    bool accept(Visitor&& v, int depth=0) const
+    bool accept_history_visitor(Visitor&& v, int depth=0) const
     {
         bool stop = v.visit(*this, depth);
         if (!stop) {
-            for(auto const& origin : m_origins) {
-                if(origin->accept(v, depth+1)) {
+            for(auto const& origin : m_data->origins) {
+                if(origin.accept_history_visitor(v, depth+1)) {
                     return true;
                 }
             }
         }
         return stop;
     }
+
+    /**
+     * @brief accept accepts a Visitor that explores the
+     * history of a shape in DFS manner. It expects the
+     * visitor to implement
+     *
+     *    bool Visitor::visit(Shape const& s, int depth)
+     *
+     *
+     * that returns true, if the exploration is to be stopped
+     * and false otherwise. The depth is passed in from accept
+     *
+     * @param v
+     */
+    template <typename Visitor>
+    bool accept_topology_visitor(Visitor&& v, int depth=0) const
+    {
+        bool stop = v.visit(*this, depth);
+        if (!stop) {
+            for(auto const& child : m_data->children) {
+                if(child.accept_topology_visitor(v, depth+1)) {
+                    return true;
+                }
+            }
+        }
+        return stop;
+    }
+
+    GEOML_API_EXPORT bool is_empty() const;
 
     // The following are convenience functions that can be used
     // as predicates when selecting subshapes
@@ -137,26 +166,25 @@ public:
     GEOML_API_EXPORT bool is_modified_descendent_of(Shape const& other, int max_depth=std::numeric_limits<int>::max()) const;
     GEOML_API_EXPORT bool is_modified_descendent_of_subshape_in(Shape const& other, int max_depth=std::numeric_limits<int>::max()) const;
     GEOML_API_EXPORT bool is_descendent_of_subshape_in(Shape const& other, int max_depth=std::numeric_limits<int>::max()) const;
-    GEOML_API_EXPORT bool is_child_of_subshape_in(Shape const& other) const;
     GEOML_API_EXPORT bool is_descendent_of(Shape const& other, int max_depth=std::numeric_limits<int>::max()) const;
-    GEOML_API_EXPORT bool is_child_of(Shape const& other) const;
+    GEOML_API_EXPORT bool is_ancestor_of(Shape const& other, int max_depth=std::numeric_limits<int>::max()) const;
     GEOML_API_EXPORT bool has_tag(std::string const& tag) const;
 
     template <typename Pred>
-    bool has_subshape_that(Pred const& pred) const {
-        return std::find_if(
-           m_subshapes.begin(),
-           m_subshapes.end(),
-           [&](auto const& s){ return pred(*s); }
-        ) != m_subshapes.end();
+    bool has_subshape_that(Pred&& pred) const {
+        auto v = FindIfVisitor<Pred>(std::forward<Pred>(pred));
+        accept_topology_visitor(v);
+        return v.found;
     }
 
 private:
 
-         /**
-         * @brief The FindIfVisitor class is a convenience visitor to
-         * be used with Shape::accept to find shapes in the history graph
-         */
+    /**
+     * @brief The FindIfVisitor class is a convenience visitor to
+     * be used with Shape::accept_xxx_visitor to find shapes in the 
+     * history graph or topology graph. It returns true if a shape 
+     * is found matching the predicate
+     */
     template <typename Pred>
     class FindIfVisitor
     {
@@ -182,37 +210,75 @@ private:
         int m_max_depth;
     };
 
+    /**
+     * @brief The FindVisitor class is a convenience visitor to
+     * be used with Shape::accept_xxx_visitor to find shapes in the 
+     * history graph or topology graph. It returns a vector of all shapes
+     * satisfying the predicate
+     */
+    template <typename Pred>
+    class FindVisitor
+    {
+    public:
+        FindVisitor(Pred&& f, int max_depth = std::numeric_limits<int>::max())
+            : m_f(std::forward<Pred>(f))
+            , m_max_depth(max_depth)
+        {}
+
+        bool visit(Shape const& shape, int depth) {
+            if (depth > m_max_depth) {
+                return true;
+            }
+            if (m_f(shape)) {
+                results.push_back(shape);
+            }
+            return false;
+        }
+
+        std::vector<Shape> results;
+
+    private:
+        Pred m_f;
+        int m_max_depth;
+    };
+
+    // The data of a Shape is stored in a shared_ptr to make sure
+    // it is a lightweight wrapper around shared memory
+    struct Data {
+
+        inline explicit Data(TopoDS_Shape const& theShape)
+        : shape(theShape)
+        {
+            for (TopoDS_Iterator it(shape); it.More(); it.Next()) {
+                    children.push_back(Shape(it.Value()));
+            }
+        }
+
+        TopoDS_Shape shape;
+
+        std::vector<Shape> children; // direct topology children
+        std::vector<Shape> origins;  // direct history parents
+
+        std::vector<std::string> persistent_meta_tags;
+        std::vector<TagTrack> tag_tracks; 
+    };
+
     //TODO: Could be static. Or moved to commonfunctions.
-    GEOML_API_EXPORT Shape vector_of_shape_to_shape(std::vector<std::shared_ptr<Shape>> const& shapes) const;
+    GEOML_API_EXPORT Shape vector_of_shape_to_shape(std::vector<Shape> const& shapes) const;
 
 
-    TopoDS_Shape m_shape;
-
-    std::vector<std::shared_ptr<Shape>> m_subshapes;
-    std::vector<std::shared_ptr<Shape>> m_origins;  // history parents
-
-    std::vector<std::string> m_persistent_meta_tags;
-    std::vector<TagTrack> m_tag_tracks; 
+    std::shared_ptr<Data> m_data;
 
 };
 
 template <typename Pred>
 void add_persistent_meta_tag_to_subshapes(const Shape &input, Pred&& f, const std::string &tag)
 {
-    std::vector<std::shared_ptr<Shape>> selection = input.select_subshapes(f);
-    for (auto const& selected_shape : selection)
+    std::vector<Shape> selection = input.select_subshapes(f);
+    for (auto& selected_shape : selection)
     {
-        selected_shape->add_meta_tag(tag);
+        selected_shape.add_meta_tag(tag);
     }
 }
-
-/**
- * @brief The or-operator for shapes returns the first argument that is not empty
- * 
- * @param l left operand shape
- * @param r right operand shape
- * @return l if it is not empty, r otherwise 
- */
-GEOML_API_EXPORT Shape operator||(Shape const& l, Shape const& r);
 
 } // namespace geoml

@@ -62,9 +62,7 @@ GEOML_API_EXPORT ShapePredicate is_unmodified_descendent_of_subshape_in(Shape co
 GEOML_API_EXPORT ShapePredicate is_modified_descendent_of(Shape const& other, int max_depth=std::numeric_limits<int>::max());
 GEOML_API_EXPORT ShapePredicate is_modified_descendent_of_subshape_in(Shape const& other, int max_depth=std::numeric_limits<int>::max());
 GEOML_API_EXPORT ShapePredicate is_descendent_of_subshape_in(Shape const& other, int max_depth=std::numeric_limits<int>::max());
-GEOML_API_EXPORT ShapePredicate is_child_of_subshape_in(Shape const& other);
 GEOML_API_EXPORT ShapePredicate is_descendent_of(Shape const& other, int max_depth=std::numeric_limits<int>::max());
-GEOML_API_EXPORT ShapePredicate is_child_of(Shape const& other);
 GEOML_API_EXPORT ShapePredicate has_subshape_that(ShapePredicate const& pred);
 
 

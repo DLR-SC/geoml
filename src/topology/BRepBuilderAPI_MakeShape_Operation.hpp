@@ -14,7 +14,7 @@ class BRepBuilderAPI_MakeShape_Operation : public Operation<BRepBuilderAPI_MakeS
 public:
     BRepBuilderAPI_MakeShape_Operation(
         BRepBuilderAPI_MakeShape* algo,
-        std::vector<Shape const*> const& inputs
+        std::vector<Shape> const& inputs
     );
 
     Shape perform() const;

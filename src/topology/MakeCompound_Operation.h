@@ -15,13 +15,13 @@ class MakeCompound_Operation : public Operation<MakeCompound_Operation>
 {
 public:
     MakeCompound_Operation(
-        std::vector<std::shared_ptr<Shape>> const& inputs
+        std::vector<Shape> const& inputs
     );
 
     Shape perform() const;
     void map_subshapes(Shape& result) const;
 private:
-    std::vector<std::shared_ptr<Shape>> m_shapes;
+    std::vector<Shape> m_shapes;
 };
 
 } // namespace geoml
