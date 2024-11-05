@@ -4,14 +4,20 @@
 
 #include "geometry/curve-networks/InterpolateCurveNetwork.h"
 #include "geometry/CurvesToSurface.h"
+#include "common/CommonFunctions.h"
 
 #include "BRepBuilderAPI_MakeEdge.hxx"
+#include <BRepBuilderAPI_MakeFace.hxx>
+#include <BRepBuilderAPI_MakeWire.hxx> //
+#include <TopoDS_Face.hxx>
 #include <TopoDS_Edge.hxx>
 #include <TopoDS_Shape.hxx>
+#include <TopoDS_Wire.hxx>
 #include <BRepPrimAPI_MakeRevol.hxx>
 #include <TopExp_Explorer.hxx>
 #include <TopoDS.hxx>
 #include <BRep_Tool.hxx>
+#include <BRepTools.hxx>
 #include <GeomConvert.hxx>
 #include <gp_Pnt.hxx>
 #include <gp_Ax1.hxx>
@@ -19,6 +25,7 @@
 #include <TColgp_Array2OfPnt.hxx>
 #include <TColStd_Array2OfReal.hxx>
 #include <TColStd_Array1OfReal.hxx>
+
 
 namespace geoml{
 
@@ -79,6 +86,23 @@ nurbs_surface(const Array2d<gp_Pnt> &control_points,
                                                                     U_periodic,
                                                                     V_periodic);
 
+}
+
+Handle(Geom_Surface)
+create_surface(const gp_Pnt &p_1, const gp_Pnt &p_2, const gp_Pnt &p_3, const gp_Pnt &p_4)
+{
+    TopoDS_Face face = create_face(p_1, p_2, p_3, p_4);
+    Handle(Geom_Surface) surface = BRep_Tool::Surface(face);
+
+    return surface;
+} 
+
+TopoDS_Face
+create_face(const gp_Pnt &p_1, const gp_Pnt &p_2, const gp_Pnt &p_3, const gp_Pnt &p_4)
+{
+    TopoDS_Face face = BuildFace(p_1, p_2, p_4, p_3);
+
+    return face;
 }
 
 } // namespace geoml

@@ -14,6 +14,7 @@
 
 
 #include <TopoDS_Shape.hxx>
+#include <TopoDS_Vertex.hxx>
 #include <TopExp.hxx>
 #include <TopExp_Explorer.hxx>
 #include <TopoDS.hxx>
@@ -294,5 +295,145 @@ test_surface->D0(1., 1., test_pt_21);
 EXPECT_NEAR(test_pt_21.X(),1., 1e-5);
 EXPECT_NEAR(test_pt_21.Y(),2., 1e-5);
 EXPECT_NEAR(test_pt_21.Z(),1., 1e-5);
+
+}
+
+TEST(Test_surface_from_4_points, simple_surface_from_4_points_test)
+{    
+    // corner points
+    gp_Pnt p_0(0.0, 0.0, 0.0);
+    gp_Pnt p_1(1.0, 0.0, 0.0);
+    gp_Pnt p_2(1.0, 2.0, 0.0);
+    gp_Pnt p_3(0.0, 2.0, 1.0);
+
+    Handle(Geom_Surface) my_surface = geoml::create_surface(p_0, p_1, p_2, p_3);
+
+    Standard_Real u_min, u_max, v_min, v_max;
+    my_surface->Bounds(u_min, u_max, v_min, v_max);
+
+    gp_Pnt test_pt_0;
+
+    my_surface->D0(u_min, v_min, test_pt_0);
+
+    EXPECT_NEAR(test_pt_0.X(),p_0.X(), 1e-5);
+    EXPECT_NEAR(test_pt_0.Y(),p_0.Y(), 1e-5);
+    EXPECT_NEAR(test_pt_0.Z(),p_0.Z(), 1e-5);
+
+    gp_Pnt test_pt_1;
+
+    my_surface->D0(u_max, v_min, test_pt_1);
+
+    EXPECT_NEAR(test_pt_1.X(),p_1.X(), 1e-5);
+    EXPECT_NEAR(test_pt_1.Y(),p_1.Y(), 1e-5);
+    EXPECT_NEAR(test_pt_1.Z(),p_1.Z(), 1e-5);
+
+    gp_Pnt test_pt_2;
+
+    my_surface->D0(u_max, v_max, test_pt_2);
+
+    EXPECT_NEAR(test_pt_2.X(),p_2.X(), 1e-5);
+    EXPECT_NEAR(test_pt_2.Y(),p_2.Y(), 1e-5);
+    EXPECT_NEAR(test_pt_2.Z(),p_2.Z(), 1e-5);
+
+    gp_Pnt test_pt_3;
+
+    my_surface->D0(u_min, v_max, test_pt_3);
+
+    EXPECT_NEAR(test_pt_3.X(),p_3.X(), 1e-5);
+    EXPECT_NEAR(test_pt_3.Y(),p_3.Y(), 1e-5);
+    EXPECT_NEAR(test_pt_3.Z(),p_3.Z(), 1e-5);
+
+    // test the order of the four corner points - expect an anti-clockwise setup
+    // in U,V-coordinates, this would mean: 
+    //  p_0 is the corner point of the surface for U = u_min, V = v_min,
+    //  p_1 is the corner point of the surface for U = u_max, V = v_min,
+    //  p_2 is the corner point of the surface for U = u_max, V = v_max,
+    //  p_3 is the corner point of the surface for U = u_min, V = v_max.
+
+    gp_Pnt u_min_v_min_corner_point_of_my_surface;
+    gp_Pnt u_max_v_min_corner_point_of_my_surface;
+    gp_Pnt u_max_v_max_corner_point_of_my_surface;
+    gp_Pnt u_min_v_max_corner_point_of_my_surface;
+
+    my_surface->D0(u_min, v_min, u_min_v_min_corner_point_of_my_surface);
+    my_surface->D0(u_max, v_min, u_max_v_min_corner_point_of_my_surface);
+    my_surface->D0(u_max, v_max, u_max_v_max_corner_point_of_my_surface);
+    my_surface->D0(u_min, v_max, u_min_v_max_corner_point_of_my_surface);
+
+    EXPECT_NEAR(p_0.X(), u_min_v_min_corner_point_of_my_surface.X(), 1e-5);
+    EXPECT_NEAR(p_0.Y(), u_min_v_min_corner_point_of_my_surface.Y(), 1e-5);
+    EXPECT_NEAR(p_0.Z(), u_min_v_min_corner_point_of_my_surface.Z(), 1e-5);
+
+    EXPECT_NEAR(p_1.X(), u_max_v_min_corner_point_of_my_surface.X(), 1e-5);
+    EXPECT_NEAR(p_1.Y(), u_max_v_min_corner_point_of_my_surface.Y(), 1e-5);
+    EXPECT_NEAR(p_1.Z(), u_max_v_min_corner_point_of_my_surface.Z(), 1e-5);
+
+    EXPECT_NEAR(p_2.X(), u_max_v_max_corner_point_of_my_surface.X(), 1e-5);
+    EXPECT_NEAR(p_2.Y(), u_max_v_max_corner_point_of_my_surface.Y(), 1e-5);
+    EXPECT_NEAR(p_2.Z(), u_max_v_max_corner_point_of_my_surface.Z(), 1e-5);
+
+    EXPECT_NEAR(p_3.X(), u_min_v_max_corner_point_of_my_surface.X(), 1e-5);
+    EXPECT_NEAR(p_3.Y(), u_min_v_max_corner_point_of_my_surface.Y(), 1e-5);
+    EXPECT_NEAR(p_3.Z(), u_min_v_max_corner_point_of_my_surface.Z(), 1e-5);
+
+
+}
+
+TEST(Test_face_from_4_points, simple_face_from_4_points_test)
+{
+    // corner points
+    gp_Pnt p_0(0.0, 0.0, 0.0);
+    gp_Pnt p_1(1.0, 0.0, 0.0);
+    gp_Pnt p_2(1.0, 2.0, 0.0);
+    gp_Pnt p_3(0.0, 2.0, 1.0);
+
+    TopoDS_Face my_face = geoml::create_face(p_0, p_1, p_2, p_3);
+
+    std::vector<gp_Pnt> corner_points;
+    
+    // retrieve the corner points from my_face
+    TopExp_Explorer explorer(my_face, TopAbs_VERTEX);
+
+    while (explorer.More()) {
+        TopoDS_Vertex vertex = TopoDS::Vertex(explorer.Current());
+        gp_Pnt point = BRep_Tool::Pnt(vertex);
+        corner_points.push_back(point);
+        explorer.Next();
+    }
+
+    EXPECT_EQ(corner_points.size(), 8);
+
+    EXPECT_NEAR(corner_points.at(0).X(), 0., 1e-5);
+    EXPECT_NEAR(corner_points.at(0).Y(), 0., 1e-5);
+    EXPECT_NEAR(corner_points.at(0).Z(), 0., 1e-5);
+    
+    EXPECT_NEAR(corner_points.at(1).X(), 1., 1e-5);
+    EXPECT_NEAR(corner_points.at(1).Y(), 0., 1e-5);
+    EXPECT_NEAR(corner_points.at(1).Z(), 0., 1e-5);
+
+    EXPECT_NEAR(corner_points.at(2).X(), 1., 1e-5);
+    EXPECT_NEAR(corner_points.at(2).Y(), 0., 1e-5);
+    EXPECT_NEAR(corner_points.at(2).Z(), 0., 1e-5);
+
+    EXPECT_NEAR(corner_points.at(3).X(), 1., 1e-5);
+    EXPECT_NEAR(corner_points.at(3).Y(), 2., 1e-5);
+    EXPECT_NEAR(corner_points.at(3).Z(), 0., 1e-5);
+
+    EXPECT_NEAR(corner_points.at(4).X(), 0., 1e-5);
+    EXPECT_NEAR(corner_points.at(4).Y(), 2., 1e-5);
+    EXPECT_NEAR(corner_points.at(4).Z(), 1., 1e-5);
+
+    EXPECT_NEAR(corner_points.at(5).X(), 1., 1e-5);
+    EXPECT_NEAR(corner_points.at(5).Y(), 2., 1e-5);
+    EXPECT_NEAR(corner_points.at(5).Z(), 0., 1e-5);
+
+    EXPECT_NEAR(corner_points.at(6).X(), 0., 1e-5);
+    EXPECT_NEAR(corner_points.at(6).Y(), 0., 1e-5);
+    EXPECT_NEAR(corner_points.at(6).Z(), 0., 1e-5);
+
+    EXPECT_NEAR(corner_points.at(7).X(), 0., 1e-5);
+    EXPECT_NEAR(corner_points.at(7).Y(), 2., 1e-5);
+    EXPECT_NEAR(corner_points.at(7).Z(), 1., 1e-5);
+
 
 }

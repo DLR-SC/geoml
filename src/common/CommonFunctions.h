@@ -243,7 +243,9 @@ GEOML_EXPORT bool IsPointAbovePlane(const gp_Pln& pln, gp_Pnt point);
 // Throws an exception when number of faces != 1
 GEOML_EXPORT TopoDS_Face GetSingleFace(const TopoDS_Shape& shape);
 
-// Builds a face out of 4 points
+// Builds a face out of 4 points: the points are not ordered in a mathematical positive or negative way:
+// p1 and p2 describe one edge and p3 and p4 another one. The surface is then created by interpolating these two edges in such
+// a way, that p1 and p3 are connected by one edge of the surface, and p2 and p4 are connected by another edge of the surface
 GEOML_EXPORT TopoDS_Face BuildFace(const gp_Pnt& p1, const gp_Pnt& p2, const gp_Pnt& p3, const gp_Pnt& p4);
 
 // Returns true, if a path is relative

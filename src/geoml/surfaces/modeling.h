@@ -14,6 +14,7 @@
 #include <gp_Vec.hxx>
 #include <gp_Pnt.hxx>
 #include <TopoDS_Shape.hxx>
+#include <TopoDS_Face.hxx>
 
 #include <vector>
 #include <cmath>
@@ -92,5 +93,22 @@ nurbs_surface(const Array2d<gp_Pnt> &control_points,
                  const int V_degree, 
                  const bool U_periodic=false,
                  const bool V_periodic=false);
+
+/**
+ * @brief Create a surface from 4 points
+ *
+ * //@param points 4 points that define the corners of the surface. The order is anti-clockwise around the surface (mathematical positive).
+ */
+GEOML_API_EXPORT Handle(Geom_Surface)
+create_surface(const gp_Pnt &p_1, const gp_Pnt &p_2, const gp_Pnt &p_3, const gp_Pnt &p_4); 
+
+/**
+ * @brief Create a face from 4 points
+ *
+ * //@param points 4 points that define the corners of the face. The order is anti-clockwise around the face (mathematical positive).
+ */
+GEOML_API_EXPORT TopoDS_Face
+create_face(const gp_Pnt &p_1, const gp_Pnt &p_2, const gp_Pnt &p_3, const gp_Pnt &p_4); 
+
 
 } // namespace geoml
