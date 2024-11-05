@@ -503,9 +503,8 @@ TEST(Test_naming_choosing_code, test_shape_predicates)
     EXPECT_EQ(rectangular_srf_edges_with_tag.size(), 4);
 }
 
-
-//TODO: I also don't like "Test_naming_choosing_code"
-TEST(Test_naming_choosing_code, split_edge)
+class PredicateFilter : public testing::TestWithParam<gp_Pnt> {};
+TEST_P(PredicateFilter, split_edge_modeling_intent)
 {
     using namespace geoml;
 
@@ -513,12 +512,14 @@ TEST(Test_naming_choosing_code, split_edge)
      * create a face and a tool *
      ****************************/
 
+    auto origin = GetParam(); // gp_Pnt(-0.5, -0.5, -0.5)
+
     auto v = BRepBuilderAPI_MakeVertex(gp_Pnt(0., 0., 0.));
     auto e = BRepPrimAPI_MakePrism(v, gp_Vec(2., 0., 0.));
     auto f = BRepPrimAPI_MakePrism(e, gp_Vec(0., 2., 0.));
     auto face = Shape(f);
 
-    auto t = BRepPrimAPI_MakeBox(gp_Pnt(-0.5, -0.5, -0.5), 1., 1., 1.);
+    auto t = BRepPrimAPI_MakeBox(origin, 1., 1., 1.);
     auto tool = Shape(t);
 
     /***********************************************
@@ -537,15 +538,15 @@ TEST(Test_naming_choosing_code, split_edge)
     */
 
     // let a be any edge of the face
-    auto edges_candidates = face.select_subshapes(is_edge);
-    ASSERT_TRUE(edges_candidates.size() > 0);
-    Shape const& a = edges_candidates[0];
+    auto a_candidates = face.select_subshapes(is_edge);
+    ASSERT_TRUE(a_candidates.size() > 0);
+    auto a = a_candidates[0];
 
     // let alpha and beta be the two vertices of edge a
     auto vertices = a.select_subshapes(is_vertex);
     ASSERT_EQ(vertices.size(), 2);
-    Shape const& alpha = vertices[0];
-    Shape const& beta = vertices[1];
+    Shape alpha = vertices[0];
+    Shape beta = vertices[1];
 
     // let b be the edge that is adjacent to a at beta
     auto b_candidates = face.select_subshapes(
@@ -554,7 +555,7 @@ TEST(Test_naming_choosing_code, split_edge)
         has_subshape(beta)
     );
     ASSERT_EQ(b_candidates.size(), 1);
-    Shape const b = b_candidates[0];
+    Shape b = b_candidates[0];
 
     // let d be the edge that is adjacent to a at alpha
     auto d_candidates = face.select_subshapes(
@@ -563,7 +564,7 @@ TEST(Test_naming_choosing_code, split_edge)
         has_subshape(beta)
     );
     ASSERT_EQ(d_candidates.size(), 1);
-    Shape const d = d_candidates[0];
+    Shape d = d_candidates[0];
 
     {
         auto test_alpha = BRep_Tool::Pnt(TopoDS::Vertex(alpha));
@@ -589,18 +590,22 @@ TEST(Test_naming_choosing_code, split_edge)
 
     /* modeling intent:
 
-       Always choose the edge that is a descendent of a. 
-       If this is not unique, choose the edge of that is a descendent of a and
-       closest to alpha.
-
-       Challenge formulate predicate only with history- and topological predicates
-       for our specific parametric model
-    */ 
+       edge1:
+       Always choose the edge that is a descendent of a and shares a vertex with alpha
+       If this does not exist, just choose the edge that is a descendent of a
+     */
 
     auto m = face_cut.filter(is_edge && is_descendent_of(a));
     auto n = m.filter(has_subshape(alpha));
     auto edge1 = n.is_empty()? m : n;
+    ASSERT_EQ(edge1.get_children().size(), 1);
 
+    /*
+       edge2:
+       Always choose the edge that is a descendent of b and has a common vertex 
+       with edge1. If this does not exist, choose the edge that has a common vertex
+       with edge1 and is not a descendent of d
+    */ 
     auto has_common_vertex_with = [](Shape const& other) {
         return has_subshape_that(is_vertex && is_subshape_of(other)) &&
                !is_same(other);
@@ -613,17 +618,25 @@ TEST(Test_naming_choosing_code, split_edge)
     );
     auto q = p.filter(is_descendent_of(b));
     auto edge2 = q.is_empty() ? p : q;
+    ASSERT_EQ(edge2.get_children().size(), 1);
 
-    // we could just sweep edge1 and edge2 seperately or make a compound out of them, 
-    // but just for fun lets use a filter again
     auto edges = face_cut.filter(is_same(edge1) || is_same(edge2));
+    ASSERT_EQ(edge2.get_children().size(), 2);
 
-    auto result = BRepPrimAPI_MakePrism(edges, gp_Vec(0., 0., -2.));
+    //TODO: ASSERTIONS AND PARAMETRIZATIONS
 
-    BRepTools::Write(tool, "tool.brep");
-    BRepTools::Write(edge1, "edge1.brep");
-    BRepTools::Write(edge2, "edge2.brep");
-    BRepTools::Write(edges, "edges.brep");
-    BRepTools::Write(face_cut, "face_cut.brep");
-    BRepTools::Write(result, "result.brep");
 }
+
+void PrintTo(gp_Pnt const& point, std::ostream* os) {
+    *os << "(" << point.X() << ", " << point.Y() << ", " << point.Z() << ")";
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    MeenyMinyMoe,
+    PredicateFilter,
+    testing::Values(
+        gp_Pnt(-0.5, -0.5, -0.5), // cuts away alpha, trims a and d 
+        gp_Pnt(-0.5,  0.5, -0.5), // trims only a
+        gp_Pnt(-0.5,  1.5, -0.5)  // cuts away beta, trims a and b
+    )
+);
