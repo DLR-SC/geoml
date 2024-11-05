@@ -151,6 +151,12 @@ public:
         return stop;
     }
 
+    GEOML_API_EXPORT auto const begin() const;
+    GEOML_API_EXPORT auto begin();
+    GEOML_API_EXPORT auto const end() const;
+    GEOML_API_EXPORT Shape const& operator[](int i) const;
+    GEOML_API_EXPORT Shape& operator[](int i);
+    GEOML_API_EXPORT size_t size() const;
     GEOML_API_EXPORT bool is_empty() const;
 
     // The following are convenience functions that can be used

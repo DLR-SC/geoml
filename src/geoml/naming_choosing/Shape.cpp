@@ -24,7 +24,44 @@ std::vector<Shape> const& Shape::get_children() const
     return m_data->children;
 }
 
-GEOML_API_EXPORT bool Shape::is_empty() const
+auto const Shape::begin() const 
+{
+    return m_data->children.begin();
+}
+
+auto Shape::begin() 
+{
+    return m_data->children.begin();
+}
+
+auto const Shape::end() const
+{
+    return m_data->children.end();
+}
+
+
+Shape const& Shape::operator[](int i) const 
+{
+    return m_data->children[i];
+}
+
+Shape& Shape::operator[](int i) 
+{
+    return m_data->children[i];
+}
+
+size_t Shape::size() const
+{
+    if (m_data->shape.IsNull()) {
+        return 0;
+    }
+    if (m_data->shape.ShapeType() == TopAbs_COMPOUND) {
+        return m_data->children.size();
+    }
+    return 1;
+}
+
+bool Shape::is_empty() const
 {
     return m_data->children.size() == 0;
 }

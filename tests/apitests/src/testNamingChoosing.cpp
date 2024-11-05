@@ -549,22 +549,20 @@ TEST_P(PredicateFilter, split_edge_modeling_intent)
     Shape beta = vertices[1];
 
     // let b be the edge that is adjacent to a at beta
-    auto b_candidates = face.select_subshapes(
+    auto b = face.filter(
         is_edge &&
         !is_same(a) &&
         has_subshape(beta)
     );
-    ASSERT_EQ(b_candidates.size(), 1);
-    Shape b = b_candidates[0];
+    ASSERT_EQ(b.size(), 1);
 
     // let d be the edge that is adjacent to a at alpha
-    auto d_candidates = face.select_subshapes(
+    auto d = face.filter(
         is_edge &&
         !is_same(a) &&
         has_subshape(beta)
     );
-    ASSERT_EQ(d_candidates.size(), 1);
-    Shape d = d_candidates[0];
+    ASSERT_EQ(d.size(), 1);
 
     {
         auto test_alpha = BRep_Tool::Pnt(TopoDS::Vertex(alpha));
@@ -598,7 +596,8 @@ TEST_P(PredicateFilter, split_edge_modeling_intent)
     auto m = face_cut.filter(is_edge && is_descendent_of(a));
     auto n = m.filter(has_subshape(alpha));
     auto edge1 = n.is_empty()? m : n;
-    ASSERT_EQ(edge1.get_children().size(), 1);
+    EXPECT_EQ(edge1.size(), 1);
+    EXPECT_EQ(TopoDS_Shape(edge1).ShapeType(), TopAbs_EDGE);
 
     /*
        edge2:
@@ -618,10 +617,12 @@ TEST_P(PredicateFilter, split_edge_modeling_intent)
     );
     auto q = p.filter(is_descendent_of(b));
     auto edge2 = q.is_empty() ? p : q;
-    ASSERT_EQ(edge2.get_children().size(), 1);
+    EXPECT_EQ(edge2.size(), 1);
+    EXPECT_EQ(TopoDS_Shape(edge2).ShapeType(), TopAbs_EDGE);
 
     auto edges = face_cut.filter(is_same(edge1) || is_same(edge2));
-    ASSERT_EQ(edge2.get_children().size(), 2);
+    EXPECT_EQ(edges.size(), 2);
+    EXPECT_EQ(TopoDS_Shape(edges).ShapeType(), TopAbs_COMPOUND);
 
     //TODO: ASSERTIONS AND PARAMETRIZATIONS
 
