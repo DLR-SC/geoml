@@ -560,7 +560,7 @@ TEST_P(PredicateFilter, split_edge_modeling_intent)
     auto d = face.filter(
         is_edge &&
         !is_same(a) &&
-        has_subshape(beta)
+        has_subshape(alpha)
     );
     ASSERT_EQ(d.size(), 1);
 
@@ -594,7 +594,7 @@ TEST_P(PredicateFilter, split_edge_modeling_intent)
      */
 
     auto m = face_cut.filter(is_edge && is_descendent_of(a));
-    auto n = m.filter(has_subshape(alpha));
+    auto n = m.filter(is_edge && has_subshape(alpha));
     auto edge1 = n.is_empty()? m : n;
     EXPECT_EQ(edge1.size(), 1);
     EXPECT_EQ(TopoDS_Shape(edge1).ShapeType(), TopAbs_EDGE);
@@ -624,20 +624,28 @@ TEST_P(PredicateFilter, split_edge_modeling_intent)
     EXPECT_EQ(edges.size(), 2);
     EXPECT_EQ(TopoDS_Shape(edges).ShapeType(), TopAbs_COMPOUND);
 
-    //TODO: ASSERTIONS AND PARAMETRIZATIONS
+    //TODO: ASSERTIONS
 
 }
 
+// help GTest print gp_Pnt instances in console output
 void PrintTo(gp_Pnt const& point, std::ostream* os) {
     *os << "(" << point.X() << ", " << point.Y() << ", " << point.Z() << ")";
 }
 
 INSTANTIATE_TEST_SUITE_P(
-    MeenyMinyMoe,
+    TopologyChangingParameters,
     PredicateFilter,
     testing::Values(
-        gp_Pnt(-0.5, -0.5, -0.5), // cuts away alpha, trims a and d 
-        gp_Pnt(-0.5,  0.5, -0.5), // trims only a
-        gp_Pnt(-0.5,  1.5, -0.5)  // cuts away beta, trims a and b
+        gp_Pnt( 0.5,  0.5, -0.5), // 0: cuts hole into face without intersecting edges or vertices
+        gp_Pnt(-0.5, -0.5, -0.5), // 1: cuts away alpha, trims a and d 
+        gp_Pnt(-0.5,  0.5, -0.5), // 2: trims only a
+        gp_Pnt(-0.5,  1.5, -0.5), // 3: cuts away beta, trims a and b
+        gp_Pnt( 0.5,  1.5, -0.5), // 4: trims only b
+        gp_Pnt( 1.5,  1.5, -0.5), // 5: cuts away gamma, trims b and c
+        gp_Pnt( 1.5,  0.5, -0.5), // 6: trims only c
+        gp_Pnt( 1.5, -0.5, -0.5), // 7: cuts away delta, trims c and d
+        gp_Pnt( 0.5, -0.5, -0.5), // 8: trims only d
+        gp_Pnt(-2.0, -2.0, -0.5)  // 9: doesn't intersect face at all
     )
 );
