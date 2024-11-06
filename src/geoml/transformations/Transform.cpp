@@ -36,7 +36,7 @@ Transform::Transform(Transform&& other) = default;
 Transform& Transform::operator=(Transform&& other) = default; 
 
 
-void Transform::PreMultiply(const Transform& aTrans){
+void Transform::pre_multiply(const Transform& aTrans){
     pImpl->PreMultiply(*(aTrans.pImpl));
 }
 
@@ -44,23 +44,23 @@ Transform operator*(const Transform &a, const Transform &b)
 {
     Transform result; 
     result = b;
-    result.PreMultiply(a);
+    result.pre_multiply(a);
     return result;
 }
 
-TopoDS_Shape Transform::Apply_Transform(const TopoDS_Shape& shape) const {
+TopoDS_Shape Transform::operator()(const TopoDS_Shape& shape) const {
     return pImpl->Transform(shape);
 }
 
-gp_Pnt Transform::Apply_Transform(const gp_Pnt& point) const {
+gp_Pnt Transform::operator()(const gp_Pnt& point) const {
     return pImpl->Transform(point);
 }
 
-Handle(Geom_Surface) Transform::Apply_Transform(const Handle(Geom_Surface)& surf) const {
+Handle(Geom_Surface) Transform::operator()(const Handle(Geom_Surface)& surf) const {
     return pImpl->Transform(surf);
 }
 
-gp_Vec Transform::Apply_Transform(const gp_Vec& vec) const {
+gp_Vec Transform::operator()(const gp_Vec& vec) const {
     return pImpl->Transform(vec);
 }
 
