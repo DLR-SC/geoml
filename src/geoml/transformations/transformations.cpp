@@ -42,7 +42,7 @@ TopoDS_Compound repeat_shape(TopoDS_Shape const& origin, Transform const& trans,
     a_builder.MakeCompound(result);
     a_builder.Add(result, shape);
     for (int i=1; i < n_repeats; ++i) {
-        shape = trans.Apply_Transform(shape);
+        shape = trans.operator()(shape);
         a_builder.Add(result, shape);
     }
 

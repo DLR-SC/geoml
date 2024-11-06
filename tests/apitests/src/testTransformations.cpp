@@ -86,7 +86,7 @@ TEST(Test_Transform, simple_Transform_test)
 
     geoml::Transform my_trsf_3 = my_trsf_1 * my_trsf_2;
 
-    gp_Pnt moved_pnt = my_trsf_3.Apply_Transform(test_pnt);
+    gp_Pnt moved_pnt = my_trsf_3(test_pnt);
 
     EXPECT_NEAR(moved_pnt.X(), 1., 1e-5);
     EXPECT_NEAR(moved_pnt.Y(), 6.1, 1e-5);
