@@ -13,12 +13,12 @@
 #include "BRepTools.hxx"
 #include <BRepBuilderAPI_MakePolygon.hxx>
 #include <BRepBuilderAPI_MakeFace.hxx>
+#include <BRepBuilderAPI_MakeEdge.hxx>
 #include <BRepPrimAPI_MakePrism.hxx>
 #include <BRepPrimAPI_MakeBox.hxx>
 #include <TopoDS.hxx>
 
-//TODO: experiment_with_naming_choosing_code is a very bad name
-TEST(Test_naming_choosing_code, experiment_with_naming_choosing_code)
+TEST(SelectSubShapes, BooleanCutCheckNumberOfSubShapes)
 {   
     auto box = geoml::create_box(1., 1., 1.);
     auto cylinder_big = geoml::create_cylinder(0.5, 0.5);
@@ -29,7 +29,7 @@ TEST(Test_naming_choosing_code, experiment_with_naming_choosing_code)
     // Get an edge from the box. Selecting first one here.
     auto box_edges = box.select_subshapes(geoml::is_edge);
     
-    EXPECT_EQ(box_edges.size(), 24);
+    EXPECT_EQ(box_edges.size(), 12);
 
     auto const& edge_in = box_edges.front();
 
@@ -39,7 +39,7 @@ TEST(Test_naming_choosing_code, experiment_with_naming_choosing_code)
         geoml::is_descendent_of(edge_in)  // created from edge_in thru any number of operations
     );
 
-    EXPECT_EQ(result_edges.size(), 2);
+    EXPECT_EQ(result_edges.size(), 1);
 
     // Get a face from the cylinder. Selecting first one here.
     auto cyl_faces = cylinder_big.select_subshapes([](geoml::Shape const& s){ return s.is_type(TopAbs_FACE); });
@@ -65,128 +65,118 @@ TEST(Test_naming_choosing_code, experiment_with_naming_choosing_code)
 
 }
 
-//TODO: experiment_with_naming_choosing_code is a very bad name
-TEST(Test_naming_choosing_code, example_rectangle_triangles)
+class RectangularFace : public testing::Test {
+
+    /*
+        Create a rectangular face
+
+        Vertices: alpha, beta, gamma, delta
+        edges: a,b,c,d 
+
+          delta    c   gamma 
+                +----+
+                |    |
+             d  |    |  b
+                +----+
+          alpha    a   beta 
+    */
+
+public:
+    void SetUp() override {
+        using namespace geoml;
+
+        // construct a swept face from the edge a connecting alpha and beta
+        auto alpha_v = BRepBuilderAPI_MakeVertex(gp_Pnt(0., 0., 0.));
+        auto beta_v = BRepBuilderAPI_MakeVertex(gp_Pnt(4., 0., 0.));
+        auto a_e = BRepBuilderAPI_MakeEdge(alpha_v, beta_v);
+        face = BRepPrimAPI_MakePrism(a_e, gp_Vec(0., 4., 0.)).Shape();
+
+        // extract vertices and edges
+        alpha = face.filter(is_vertex && is_same(alpha_v));
+        beta = face.filter(is_vertex && is_same(beta_v));    
+        a = face.filter(is_edge && is_same(a_e));
+
+        b = face.filter(is_edge && !is_same(a) && has_subshape(beta));
+        d = face.filter(is_edge && !is_same(a) && has_subshape(alpha));
+    
+        gamma = b.filter(is_vertex && !is_same(beta));
+        delta = d.filter(is_vertex && !is_same(alpha));
+
+        c = face.filter(is_edge && has_subshape(gamma) && has_subshape(delta));
+        
+        ASSERT_EQ(alpha.size(), 1);
+        ASSERT_EQ(TopoDS_Shape(alpha).ShapeType(), TopAbs_VERTEX);
+        ASSERT_EQ(beta.size(), 1); 
+        ASSERT_EQ(TopoDS_Shape(beta).ShapeType(), TopAbs_VERTEX);
+        ASSERT_EQ(gamma.size(), 1); 
+        ASSERT_EQ(TopoDS_Shape(gamma).ShapeType(), TopAbs_VERTEX);
+        ASSERT_EQ(delta.size(), 1); 
+        ASSERT_EQ(TopoDS_Shape(delta).ShapeType(), TopAbs_VERTEX);
+
+        ASSERT_EQ(a.size(), 1); 
+        ASSERT_EQ(TopoDS_Shape(a).ShapeType(), TopAbs_EDGE);
+        ASSERT_EQ(b.size(), 1);
+        ASSERT_EQ(TopoDS_Shape(b).ShapeType(), TopAbs_EDGE);
+        ASSERT_EQ(c.size(), 1);
+        ASSERT_EQ(TopoDS_Shape(c).ShapeType(), TopAbs_EDGE);
+        ASSERT_EQ(d.size(), 1);
+        ASSERT_EQ(TopoDS_Shape(d).ShapeType(), TopAbs_EDGE);
+    }
+
+protected:
+    // vertices
+    geoml::Shape alpha;
+    geoml::Shape beta;
+    geoml::Shape gamma;
+    geoml::Shape delta;
+
+    // relevant edges (don't care about c)
+    geoml::Shape a;
+    geoml::Shape b;
+    geoml::Shape c;
+    geoml::Shape d;
+
+    // the face
+    geoml::Shape face;
+};
+
+namespace {
+
+    geoml::Shape make_tool(double design_parameter) {
+        // create a triangular surface
+        gp_Pnt p1(5.0 - design_parameter, -1.0, 0.0); 
+        gp_Pnt p2(7.0 - design_parameter, -1.0, 0.0); 
+        gp_Pnt p3(6.0 - design_parameter, 1.0, 0.0); 
+
+        // create a polygon from these points
+        BRepBuilderAPI_MakePolygon polygon;
+        polygon.Add(p1);
+        polygon.Add(p2);
+        polygon.Add(p3);
+        polygon.Close(); 
+
+        // create a face from the polygon
+        TopoDS_Face triangle_face = BRepBuilderAPI_MakeFace(polygon.Wire());
+
+        return triangle_face;
+    }
+
+} // anonymous namespace
+
+
+TEST_F(RectangularFace, example_rectangle_triangles)
 {   
-    // create a rectangular surface
+    using namespace geoml;
 
-    // control points
-    gp_Pnt p_00(0.0, 2.0, 0.0);
-    gp_Pnt p_10(0.0, 0.0, 0.0);
-    gp_Pnt p_01(4.0, 2.0, 0.0);
-    gp_Pnt p_11(4.0, 0.0, 0.0);
-
-    geoml::Array2d<gp_Pnt> control_points (2,2);
-
-    control_points.setValue(0, 0, p_00);
-    control_points.setValue(1, 0, p_10);
-    control_points.setValue(0, 1, p_01);
-    control_points.setValue(1, 1, p_11);
-
-    geoml::Array2d<Standard_Real> weights (2,2);
-
-    weights.setValue(0, 0, 1.);
-    weights.setValue(1, 0, 1.);
-    weights.setValue(0, 1, 1.);
-    weights.setValue(1, 1, 1.);
-
-    std::vector<Standard_Real> U_knots;
-
-    U_knots.push_back(0.0);
-    U_knots.push_back(1.0);
-
-    std::vector<Standard_Real> V_knots;
-
-    V_knots.push_back(0.0);
-    V_knots.push_back(1.0);
-
-    std::vector<int> U_mults;
-
-    U_mults.push_back(2);
-    U_mults.push_back(2);
-
-    std::vector<int> V_mults;
-
-    V_mults.push_back(2);
-    V_mults.push_back(2);
-
-    int U_degree = 1;
-    int V_degree = 1;
-
-    Handle(Geom_BSplineSurface) srf = geoml::nurbs_surface(control_points, weights, U_knots, V_knots, U_mults, V_mults, U_degree, V_degree);
-
-    geoml::Shape rectangular_srf (geoml::SurfaceToFace(srf,1e-5));
-
-    // define a design parameter for translating a triangle
-    Standard_Real d (3.0);
-
-    // create a triangular surface
-    gp_Pnt p1(5.0 - d, -1.0, 0.0); 
-    gp_Pnt p2(7.0 - d, -1.0, 0.0); 
-    gp_Pnt p3(6.0 - d, 1.0, 0.0); 
-
-    // create a polygon from these points
-    BRepBuilderAPI_MakePolygon polygon;
-    polygon.Add(p1);
-    polygon.Add(p2);
-    polygon.Add(p3);
-    polygon.Close(); 
-
-    // create a face from the polygon
-    TopoDS_Face triangle_face = BRepBuilderAPI_MakeFace(polygon.Wire());
-
-    geoml::Shape triangular_srf (triangle_face);
-
-    // define a second design parameter for translating a triangle
-    Standard_Real d_2 (5.0);
-
-    // create a second triangular surface
-    gp_Pnt p1_2(5.0 - d_2, -1.0, 0.0); 
-    gp_Pnt p2_2(7.0 - d_2, -1.0, 0.0); 
-    gp_Pnt p3_2(6.0 - d_2, .8, 0.0); 
-
-    // create a polygon from these points
-    BRepBuilderAPI_MakePolygon polygon_2;
-    polygon_2.Add(p1_2);
-    polygon_2.Add(p2_2);
-    polygon_2.Add(p3_2);
-    polygon_2.Close(); 
-
-    // create a face from the polygon
-    TopoDS_Face triangle_face_2 = BRepBuilderAPI_MakeFace(polygon_2.Wire());
-
-    geoml::Shape triangular_srf_2(triangle_face_2);
+    geoml::Shape triangular_srf = make_tool(3.);
+    geoml::Shape triangular_srf_2 = make_tool(5.);
 
     // perform the modelling steps
-    geoml::Shape cut_result = rectangular_srf - triangular_srf;
+    geoml::Shape cut_result = face - triangular_srf;
     geoml::Shape cut_result_2 = cut_result - triangular_srf_2; 
 
-    // Select edges from the rectangular_srf.
-    auto rectangular_srf_edges = rectangular_srf.select_subshapes([](geoml::Shape const& s){ return s.is_type(TopAbs_EDGE); });
-
-    EXPECT_EQ(rectangular_srf_edges.size(), 4);
-
-    auto const&  X = rectangular_srf_edges.at(2); // "pick" edge
-    auto const&  Y = rectangular_srf_edges.at(0); // "pick" edge
-    auto const&  Z = rectangular_srf_edges.at(1); // "pick" edge
-    auto const&  W = rectangular_srf_edges.at(3); // "pick" edge
-
-    // Select vertices from the rectangular_srf.
-    auto rectangular_srf_vertices = rectangular_srf.select_subshapes([](geoml::Shape const& s){ return s.is_type(TopAbs_VERTEX); });
-   
-    EXPECT_EQ(rectangular_srf_vertices.size(), 8);
-
-    auto const&  V1 = rectangular_srf_vertices.at(3); // "pick" vertex
-    auto const&  V2 = rectangular_srf_vertices.at(0); // "pick" vertex
-    auto const&  V3 = rectangular_srf_vertices.at(1); // "pick" vertex
-    auto const&  V4 = rectangular_srf_vertices.at(2); // "pick" vertex
-    auto const&  V5 = rectangular_srf_vertices.at(4); // "pick" vertex
-    auto const&  V6 = rectangular_srf_vertices.at(5); // "pick" vertex
-    auto const&  V7 = rectangular_srf_vertices.at(6); // "pick" vertex
-    auto const&  V8 = rectangular_srf_vertices.at(7); // "pick" vertex
-
     // Select edges from the triangular_srf. 
-    auto triangular_srf_edges = triangular_srf.select_subshapes([](geoml::Shape const& s){ return s.is_type(TopAbs_EDGE); });
+    auto triangular_srf_edges = triangular_srf.select_subshapes(is_edge);
 
     EXPECT_EQ(triangular_srf_edges.size(), 3);
 
@@ -194,48 +184,42 @@ TEST(Test_naming_choosing_code, example_rectangle_triangles)
     auto const&  B = triangular_srf_edges.at(1); // "pick" edge
     auto const&  A = triangular_srf_edges.at(2); // "pick" edge
 
-    // Get edges in result that originate from edge X and have a vertex that originates from V1
-    auto cut_result_edges_X_V1 = cut_result.select_subshapes([&](geoml::Shape const& s){
-        return  s.is_type(TopAbs_EDGE) &&               
-                s.is_descendent_of(X) &&
-                s.has_subshape_that(is_descendent_of(V1, 1));       
-    });
-
-    EXPECT_EQ(cut_result_edges_X_V1.size(), 1);
-
-    if(cut_result_edges_X_V1.size() == 1) {
-    auto const& result_X_V1 = cut_result_edges_X_V1.at(0); // there is only one entry in the std::vector
-    }
-
-    // Get edges in result that originate from edge X or from A or B
-    auto cut_result_edges_X_A_B = cut_result.select_subshapes(
-        geoml::is_edge &&               
-        ( geoml::is_descendent_of(X) || 
-          geoml::is_descendent_of(A) ||
-          geoml::is_descendent_of(B)    )   
+    // Get edges in result that originate from edge a and have a vertex that originates from alpha
+    auto cut_result_edges_a_alpha = cut_result.select_subshapes(
+        is_edge && 
+        is_descendent_of(a) && 
+        has_subshape_that(is_descendent_of(alpha))
     );
 
-    EXPECT_EQ(cut_result_edges_X_A_B.size(), 4);
+    EXPECT_EQ(cut_result_edges_a_alpha.size(), 1);
+
+    // Get edges in result that originate from edge a or an edge in triangular_srf
+    auto cut_result_edges_a_or_tool = cut_result.select_subshapes(
+        is_edge &&               
+        ( is_descendent_of(a) || 
+          is_descendent_of_subshape_in(triangular_srf) )
+    );
+
+    EXPECT_EQ(cut_result_edges_a_or_tool.size(), 4);
 
     // test choosing after two modelling steps:
 
-    // Get edges in result that originate from edge X and have a vertex originating from V1 or originates from A:
-    auto cut_result_2_edges_X_V1_A = cut_result_2.select_subshapes(
-        (geoml::is_edge && geoml::is_descendent_of(X) && geoml::has_subshape_that(geoml::is_descendent_of(V1, 1)) ) || 
-        geoml::is_descendent_of(A)
+    // Get edges in result that originate from edge a and have a vertex originating from alpha or originates from B:
+    auto cut_result_2_edges_a_alpha_B = cut_result_2.select_subshapes(
+        (is_edge && is_descendent_of(a) && has_subshape_that(is_descendent_of(alpha)) ) || 
+        is_descendent_of(B)
     );
 
 
-    EXPECT_EQ(cut_result_2_edges_X_V1_A.size(), 2);
+    EXPECT_EQ(cut_result_2_edges_a_alpha_B.size(), 2);
 
     // test horizontal tags:
 
     // define criterion_2
-    std::function<bool(geoml::Shape const&)> criterion_2 = [&](geoml::Shape const& s){
-        return s.is_type(TopAbs_EDGE) &&  
-               s.is_descendent_of(X) &&      
-               !(s.has_subshape_that(is_descendent_of(V1,1))); 
-    }; 
+    auto criterion_2 = 
+        is_edge &&
+        is_descendent_of(a) &&
+        !has_subshape_that(is_descendent_of(alpha));
 
     // define tag 
     std::string tag_2 ("tag_2");
@@ -244,146 +228,34 @@ TEST(Test_naming_choosing_code, example_rectangle_triangles)
     cut_result.add_meta_tag_to_subshapes(criterion_2, tag_2);
 
     // Select edges in cut_result carrying tag_2
-    auto cut_result_edges_tag_2 = cut_result.select_subshapes(geoml::has_tag(tag_2));
+    auto cut_result_edges_tag_2 = cut_result.select_subshapes(has_tag(tag_2));
 
     EXPECT_EQ(cut_result_edges_tag_2.size(), 1);
 
     // test tag tracks:
     
     // define criterion_1
-    std::function<bool(geoml::Shape const&)> criterion_1 = [&](geoml::Shape const& s){
-        return s.is_type(TopAbs_EDGE) &&               
-             ( s.is_descendent_of(A) ||
-               s.is_descendent_of(B) ); 
-    };
+    auto criterion_1 = is_edge && ( is_descendent_of(A) || is_descendent_of(B));
 
     std::string tag_1 = "persistent name 1";
 
     int remainingSteps_1 = 2;
 
     // define tag_track_1
-    geoml::TagTrack tag_track_1(tag_1, criterion_1, remainingSteps_1);
+    TagTrack tag_track_1(tag_1, criterion_1, remainingSteps_1);
 
     // get edges in cut_result carrying tag_1
-    auto cut_result_edges_tag_1 = cut_result.select_subshapes(geoml::has_tag(tag_track_1.m_tag));
+    auto cut_result_edges_tag_1 = cut_result.select_subshapes(has_tag(tag_track_1.m_tag));
 
     EXPECT_EQ(cut_result_edges_tag_1.size(), 0);
 }
 
-TEST(Test_naming_choosing_code, test_tag_tracks_with_operations)
+TEST_F(RectangularFace, test_tag_tracks_with_operations)
 {   
-    // create a rectangular surface
+    using namespace geoml;
 
-    // control points
-    gp_Pnt p_00(0.0, 2.0, 0.0);
-    gp_Pnt p_10(0.0, 0.0, 0.0);
-    gp_Pnt p_01(4.0, 2.0, 0.0);
-    gp_Pnt p_11(4.0, 0.0, 0.0);
-
-    geoml::Array2d<gp_Pnt> control_points (2,2);
-
-    control_points.setValue(0, 0, p_00);
-    control_points.setValue(1, 0, p_10);
-    control_points.setValue(0, 1, p_01);
-    control_points.setValue(1, 1, p_11);
-
-    geoml::Array2d<Standard_Real> weights (2,2);
-
-    weights.setValue(0, 0, 1.);
-    weights.setValue(1, 0, 1.);
-    weights.setValue(0, 1, 1.);
-    weights.setValue(1, 1, 1.);
-
-    std::vector<Standard_Real> U_knots;
-
-    U_knots.push_back(0.0);
-    U_knots.push_back(1.0);
-
-    std::vector<Standard_Real> V_knots;
-
-    V_knots.push_back(0.0);
-    V_knots.push_back(1.0);
-
-    std::vector<int> U_mults;
-
-    U_mults.push_back(2);
-    U_mults.push_back(2);
-
-    std::vector<int> V_mults;
-
-    V_mults.push_back(2);
-    V_mults.push_back(2);
-
-    int U_degree = 1;
-    int V_degree = 1;
-
-    Handle(Geom_BSplineSurface) srf = geoml::nurbs_surface(control_points, weights, U_knots, V_knots, U_mults, V_mults, U_degree, V_degree);
-
-    geoml::Shape rectangular_srf (geoml::SurfaceToFace(srf,1e-5));
-
-    // define a design parameter for translating a triangle
-    Standard_Real d (3.0);
-
-    // create a triangular surface
-    gp_Pnt p1(5.0 - d, -1.0, 0.0); 
-    gp_Pnt p2(7.0 - d, -1.0, 0.0); 
-    gp_Pnt p3(6.0 - d, 1.0, 0.0); 
-
-    // create a polygon from these points
-    BRepBuilderAPI_MakePolygon polygon;
-    polygon.Add(p1);
-    polygon.Add(p2);
-    polygon.Add(p3);
-    polygon.Close(); 
-
-    // create a face from the polygon
-    TopoDS_Face triangle_face = BRepBuilderAPI_MakeFace(polygon.Wire());
-
-    geoml::Shape triangular_srf (triangle_face);
-
-    // define a second design parameter for translating a triangle
-    Standard_Real d_2 (5.0);
-
-    // create a second triangular surface
-    gp_Pnt p1_2(5.0 - d_2, -1.0, 0.0); 
-    gp_Pnt p2_2(7.0 - d_2, -1.0, 0.0); 
-    gp_Pnt p3_2(6.0 - d_2, .8, 0.0); 
-
-    // create a polygon from these points
-    BRepBuilderAPI_MakePolygon polygon_2;
-    polygon_2.Add(p1_2);
-    polygon_2.Add(p2_2);
-    polygon_2.Add(p3_2);
-    polygon_2.Close(); 
-
-    // create a face from the polygon
-    TopoDS_Face triangle_face_2 = BRepBuilderAPI_MakeFace(polygon_2.Wire());
-
-    geoml::Shape triangular_srf_2(triangle_face_2);
-
-    // Select edges from the rectangular_srf.
-    auto rectangular_srf_edges = rectangular_srf.select_subshapes([](geoml::Shape const& s){ return s.is_type(TopAbs_EDGE); });
-
-    EXPECT_EQ(rectangular_srf_edges.size(), 4);
-
-    auto const&  X = rectangular_srf_edges.at(2); // "pick" edge
-    auto const&  Y = rectangular_srf_edges.at(0); // "pick" edge
-    auto const&  Z = rectangular_srf_edges.at(1); // "pick" edge
-    auto const&  W = rectangular_srf_edges.at(3); // "pick" edge
-
-    // Select vertices from the rectangular_srf.
-    auto rectangular_srf_vertices = rectangular_srf.select_subshapes([](geoml::Shape const& s){ return s.is_type(TopAbs_VERTEX); });
-
-    EXPECT_EQ(rectangular_srf_vertices.size(), 8);
-
-    auto const&  V1 = rectangular_srf_vertices.at(3); // "pick" vertex
-    auto const&  V2 = rectangular_srf_vertices.at(0); // "pick" vertex
-    auto const&  V3 = rectangular_srf_vertices.at(1); // "pick" vertex
-    auto const&  V4 = rectangular_srf_vertices.at(2); // "pick" vertex
-    auto const&  V5 = rectangular_srf_vertices.at(4); // "pick" vertex
-    auto const&  V6 = rectangular_srf_vertices.at(5); // "pick" vertex
-    auto const&  V7 = rectangular_srf_vertices.at(6); // "pick" vertex
-    auto const&  V8 = rectangular_srf_vertices.at(7); // "pick" vertex
+    geoml::Shape triangular_srf = make_tool(3.);
+    geoml::Shape triangular_srf_2 = make_tool(5.);
 
     // Select edges from the triangular_srf. 
     auto triangular_srf_edges = triangular_srf.select_subshapes([](geoml::Shape const& s){ return s.is_type(TopAbs_EDGE); });
@@ -394,31 +266,30 @@ TEST(Test_naming_choosing_code, test_tag_tracks_with_operations)
     auto const&  B = triangular_srf_edges.at(1); // "pick" edge
     auto const&  A = triangular_srf_edges.at(2); // "pick" edge
 
-    // add a tag track to rectangular_srf
-    std::function<bool(geoml::Shape const&)> criterion = [&](geoml::Shape const& s){
-        return s.is_type(TopAbs_EDGE) &&  
-               s.is_descendent_of(X) &&      
-               s.has_subshape_that(is_descendent_of(V1, 1)); 
-    }; 
+    // add a tag track to face
+    auto criterion = 
+        is_edge &&
+        is_descendent_of(a) &&
+        has_subshape_that(is_descendent_of(alpha));
 
     std::string tag = "vertically persistent name";
     int remainingSteps = 2;
 
     geoml::TagTrack tag_track(tag, criterion, remainingSteps);
 
-    rectangular_srf.add_tag_track(tag_track);
+    face.add_tag_track(tag_track);
 
     // apply the tag tracks of rectangular_srf to the Shape itself
-    rectangular_srf.apply_tag_tracks();
+    face.apply_tag_tracks();
 
     // get edges in rectuangular_srf carrying tag "vertically persisten name"
-    auto rectangular_srf_tagged_edges = rectangular_srf.select_subshapes(geoml::has_tag(tag_track.m_tag));
+    auto rectangular_srf_tagged_edges = face.select_subshapes(geoml::has_tag(tag_track.m_tag));
 
-    EXPECT_EQ(rectangular_srf.select_subshapes(criterion).size(), 1);
+    EXPECT_EQ(face.select_subshapes(criterion).size(), 1);
     EXPECT_EQ(rectangular_srf_tagged_edges.size(), 1);
 
     // perform first modelling operation
-    geoml::Shape cut_result = rectangular_srf - triangular_srf;
+    geoml::Shape cut_result = face - triangular_srf;
 
     // get edges in cut_result carrying tag "vertically persisten name"
     auto cut_result_tagged_edges = cut_result.select_subshapes(geoml::has_tag(tag_track.m_tag));
@@ -435,151 +306,75 @@ TEST(Test_naming_choosing_code, test_tag_tracks_with_operations)
 
 }
 
-TEST(Test_naming_choosing_code, test_shape_predicates)
+TEST_F(RectangularFace, test_shape_predicates)
 {   
-    // create a rectangular surface
-
-    // control points
-    gp_Pnt p_00(0.0, 2.0, 0.0);
-    gp_Pnt p_10(0.0, 0.0, 0.0);
-    gp_Pnt p_01(4.0, 2.0, 0.0);
-    gp_Pnt p_11(4.0, 0.0, 0.0);
-
-    geoml::Array2d<gp_Pnt> control_points (2,2);
-
-    control_points.setValue(0, 0, p_00);
-    control_points.setValue(1, 0, p_10);
-    control_points.setValue(0, 1, p_01);
-    control_points.setValue(1, 1, p_11);
-
-    geoml::Array2d<Standard_Real> weights (2,2);
-
-    weights.setValue(0, 0, 1.);
-    weights.setValue(1, 0, 1.);
-    weights.setValue(0, 1, 1.);
-    weights.setValue(1, 1, 1.);
-
-    std::vector<Standard_Real> U_knots;
-
-    U_knots.push_back(0.0);
-    U_knots.push_back(1.0);
-
-    std::vector<Standard_Real> V_knots;
-
-    V_knots.push_back(0.0);
-    V_knots.push_back(1.0);
-
-    std::vector<int> U_mults;
-
-    U_mults.push_back(2);
-    U_mults.push_back(2);
-
-    std::vector<int> V_mults;
-
-    V_mults.push_back(2);
-    V_mults.push_back(2);
-
-    int U_degree = 1;
-    int V_degree = 1;
-
-    Handle(Geom_BSplineSurface) srf = geoml::nurbs_surface(control_points, weights, U_knots, V_knots, U_mults, V_mults, U_degree, V_degree);
-
-    geoml::Shape rectangular_srf (geoml::SurfaceToFace(srf,1e-5));
-
     // define a predicate
-    geoml::ShapePredicate pred = [&](geoml::Shape const& s){
-        return s.is_type(TopAbs_EDGE);   
-    }; 
+    geoml::ShapePredicate pred = geoml::is_edge;
 
     // get edges in rectuangular_srf 
-    auto rectangular_srf_edges = rectangular_srf.select_subshapes(pred);
+    auto rectangular_srf_edges = face.select_subshapes(pred);
 
     EXPECT_EQ(rectangular_srf_edges.size(), 4);
 
-    rectangular_srf.add_meta_tag_to_subshapes(pred, "edge_tag");
+    face.add_meta_tag_to_subshapes(pred, "edge_tag");
 
-    auto rectangular_srf_edges_with_tag = rectangular_srf.select_subshapes(geoml::has_tag("edge_tag"));    
+    auto rectangular_srf_edges_with_tag = face.select_subshapes(geoml::has_tag("edge_tag"));    
 
     EXPECT_EQ(rectangular_srf_edges_with_tag.size(), 4);
 }
 
-class PredicateFilter : public testing::TestWithParam<gp_Pnt> {};
+
+struct PredicateFilter
+ : public RectangularFace
+ , public testing::WithParamInterface<std::string> 
+{
+public:
+    void SetUp() override
+    {
+        RectangularFace::SetUp();
+
+        auto alpha_p = BRep_Tool::Pnt(TopoDS::Vertex(alpha)).Coord() - gp_Pnt(0.5, 0.5, 0.5).Coord();
+        auto beta_p = BRep_Tool::Pnt(TopoDS::Vertex(beta)).Coord() - gp_Pnt(0.5, 0.5, 0.5).Coord();
+        auto gamma_p = BRep_Tool::Pnt(TopoDS::Vertex(gamma)).Coord() - gp_Pnt(0.5, 0.5, 0.5).Coord();
+        auto delta_p = BRep_Tool::Pnt(TopoDS::Vertex(delta)).Coord() - gp_Pnt(0.5, 0.5, 0.5).Coord();
+
+        auto a_p = 0.5*(alpha_p + beta_p);
+        auto b_p = 0.5*(beta_p + gamma_p);
+        auto c_p = 0.5*(gamma_p + delta_p);
+        auto d_p = 0.5*(delta_p + alpha_p);
+
+        tool_origin = {
+            {"alpha"  , alpha_p         }, // tool cuts away alpha
+            {"beta"   , beta_p          }, // tool cuts away beta
+            {"gamma"  , gamma_p         }, // tool cuts away gamma
+            {"delta"  , delta_p         }, // tool cuts away delta
+            {"a"      , a_p             }, // tool splits a
+            {"b"      , b_p             }, // tool splits b
+            {"c"      , c_p             }, // tool splits c
+            {"d"      , d_p             }, // tool splits d
+            {"inside" , 0.5*(a_p + c_p) }, // tool splits no edge but cuts a hole in face
+            {"outside", 100*gamma_p     }  // tool doesn't cut face at alll
+        };
+    }
+
+    geoml::Shape create_tool(std::string const& s) {
+        return BRepPrimAPI_MakeBox(tool_origin[s], 1., 1., 1.).Shape();
+    }
+
+private:
+
+    std::unordered_map<std::string, gp_Pnt> tool_origin;
+
+};
+
+
+
 TEST_P(PredicateFilter, split_edge_modeling_intent)
 {
     using namespace geoml;
 
-    /****************************
-     * create a face and a tool *
-     ****************************/
-
-    auto origin = GetParam(); // gp_Pnt(-0.5, -0.5, -0.5)
-
-    auto v = BRepBuilderAPI_MakeVertex(gp_Pnt(0., 0., 0.));
-    auto e = BRepPrimAPI_MakePrism(v, gp_Vec(2., 0., 0.));
-    auto f = BRepPrimAPI_MakePrism(e, gp_Vec(0., 2., 0.));
-    auto face = Shape(f);
-
-    auto t = BRepPrimAPI_MakeBox(origin, 1., 1., 1.);
-    auto tool = Shape(t);
-
-    /***********************************************
-     * extract some edges and vertices of the face *
-     ***********************************************/
-
-    /*
-       Vertices: alpha, beta, gamma, delta. (only interested in alpha, beta)
-       edges: a,b,c,d (only interested in a,b,d)
-
-             +----+
-             |    |
-          d  |    |  b
-             +----+
-       alpha    a   beta 
-    */
-
-    // let a be any edge of the face
-    auto a_candidates = face.select_subshapes(is_edge);
-    ASSERT_TRUE(a_candidates.size() > 0);
-    auto a = a_candidates[0];
-
-    // let alpha and beta be the two vertices of edge a
-    auto vertices = a.select_subshapes(is_vertex);
-    ASSERT_EQ(vertices.size(), 2);
-    Shape alpha = vertices[0];
-    Shape beta = vertices[1];
-
-    // let b be the edge that is adjacent to a at beta
-    auto b = face.filter(
-        is_edge &&
-        !is_same(a) &&
-        has_subshape(beta)
-    );
-    ASSERT_EQ(b.size(), 1);
-
-    // let d be the edge that is adjacent to a at alpha
-    auto d = face.filter(
-        is_edge &&
-        !is_same(a) &&
-        has_subshape(alpha)
-    );
-    ASSERT_EQ(d.size(), 1);
-
-    {
-        auto test_alpha = BRep_Tool::Pnt(TopoDS::Vertex(alpha));
-        EXPECT_NEAR(test_alpha.X(), 0., 1e-14);
-        EXPECT_NEAR(test_alpha.Y(), 0., 1e-14);
-        EXPECT_NEAR(test_alpha.Z(), 0., 1e-14);
-
-        auto test_beta = BRep_Tool::Pnt(TopoDS::Vertex(beta));
-        EXPECT_NEAR(test_beta.X(), 0., 1e-14);
-        EXPECT_NEAR(test_beta.Y(), 2., 1e-14);
-        EXPECT_NEAR(test_beta.Z(), 0., 1e-14);
-    }
-
-    /******************************
-     * cut the face with the tool *
-     ******************************/
-
+    auto design_parameter = GetParam();
+    auto tool = create_tool(design_parameter);
     auto face_cut = face - tool;
 
     /*********************************
@@ -620,32 +415,80 @@ TEST_P(PredicateFilter, split_edge_modeling_intent)
     EXPECT_EQ(edge2.size(), 1);
     EXPECT_EQ(TopoDS_Shape(edge2).ShapeType(), TopAbs_EDGE);
 
-    auto edges = face_cut.filter(is_same(edge1) || is_same(edge2));
-    EXPECT_EQ(edges.size(), 2);
-    EXPECT_EQ(TopoDS_Shape(edges).ShapeType(), TopAbs_COMPOUND);
+    /************************************************************************
+     * Assert that the edge selection really corresponds to modeling intent *
+     ************************************************************************/
 
-    //TODO: ASSERTIONS
+    // In every case, edge1 and edge2 should share a vertex.
+    // Let v1 and v2 be the indices of edge1 and v2 and v3 be the indices of edge2
+    auto v1 = face_cut.filter(is_vertex && is_subshape_of(edge1) && !is_subshape_of(edge2));
+    EXPECT_EQ(v1.size(), 1);
+    EXPECT_EQ(TopoDS_Shape(v1).ShapeType(), TopAbs_VERTEX);
+    auto v1_p = BRep_Tool::Pnt(TopoDS::Vertex(v1));
+
+    auto v2 = face_cut.filter(is_vertex && is_subshape_of(edge1) && is_subshape_of(edge2));
+    EXPECT_EQ(v2.size(), 1);
+    EXPECT_EQ(TopoDS_Shape(v2).ShapeType(), TopAbs_VERTEX);
+    auto v2_p = BRep_Tool::Pnt(TopoDS::Vertex(v2));
+
+    auto v3 = face_cut.filter(is_vertex && !is_subshape_of(edge1) && is_subshape_of(edge2));
+    EXPECT_EQ(v3.size(), 1);
+    EXPECT_EQ(TopoDS_Shape(v2).ShapeType(), TopAbs_VERTEX);
+    auto v3_p = BRep_Tool::Pnt(TopoDS::Vertex(v3));
+
+    auto alpha_p = BRep_Tool::Pnt(TopoDS::Vertex(alpha));
+    auto beta_p = BRep_Tool::Pnt(TopoDS::Vertex(beta));
+    auto gamma_p = BRep_Tool::Pnt(TopoDS::Vertex(gamma));
+
+    if (design_parameter == "alpha") {
+        // EXPECT_TRUE(v1_p.SquareDistance(gp_Pnt(X,X,X)) < 1e-8);
+        EXPECT_TRUE(v2_p.SquareDistance(beta_p) < 1e-8);
+        EXPECT_TRUE(v3_p.SquareDistance(gamma_p) < 1e-8);
+    };
+
+    if (design_parameter == "beta") {
+        EXPECT_TRUE(v1_p.SquareDistance(alpha_p) < 1e-8);
+        // EXPECT_TRUE(v2_p.SquareDistance(gp_Pnt(X,X,X)) < 1e-8);
+        // EXPECT_TRUE(v3_p.SquareDistance(gp_Pnt(X,X,X)) < 1e-8);
+    };
+
+    if (design_parameter == "gamma") {
+        EXPECT_TRUE(v1_p.SquareDistance(alpha_p) < 1e-8);
+        EXPECT_TRUE(v2_p.SquareDistance(beta_p) < 1e-8);
+        // EXPECT_TRUE(v3_p.SquareDistance(gp_Pnt(X,X,X)) < 1e-8);
+    };
+
+    if (
+        design_parameter == "delta" || 
+        design_parameter == "c" || 
+        design_parameter == "d" || 
+        design_parameter == "inside" || 
+        design_parameter == "outside"
+    ) {
+        EXPECT_TRUE(v1_p.SquareDistance(alpha_p) < 1e-8);
+        EXPECT_TRUE(v2_p.SquareDistance(beta_p) < 1e-8);
+        EXPECT_TRUE(v3_p.SquareDistance(gamma_p) < 1e-8);
+    };
+
+    if (design_parameter == "a") {
+        EXPECT_TRUE(v1_p.SquareDistance(alpha_p) < 1e-8);
+        // EXPECT_TRUE(v2_p.SquareDistance(gp_Pnt(X,X,X)) < 1e-8);
+        // EXPECT_TRUE(v3_p.SquareDistance(gp_Pnt(X,X,X)) < 1e-8);
+    }
+
+    if (design_parameter == "b") {
+        EXPECT_TRUE(v1_p.SquareDistance(alpha_p) < 1e-8);
+        EXPECT_TRUE(v2_p.SquareDistance(beta_p) < 1e-8);
+        // EXPECT_TRUE(v3_p.SquareDistance(gp_Pnt(X,X,X)) < 1e-8);
+    }
 
 }
 
-// help GTest print gp_Pnt instances in console output
-void PrintTo(gp_Pnt const& point, std::ostream* os) {
-    *os << "(" << point.X() << ", " << point.Y() << ", " << point.Z() << ")";
-}
 
 INSTANTIATE_TEST_SUITE_P(
     TopologyChangingParameters,
     PredicateFilter,
     testing::Values(
-        gp_Pnt( 0.5,  0.5, -0.5), // 0: cuts hole into face without intersecting edges or vertices
-        gp_Pnt(-0.5, -0.5, -0.5), // 1: cuts away alpha, trims a and d 
-        gp_Pnt(-0.5,  0.5, -0.5), // 2: trims only a
-        gp_Pnt(-0.5,  1.5, -0.5), // 3: cuts away beta, trims a and b
-        gp_Pnt( 0.5,  1.5, -0.5), // 4: trims only b
-        gp_Pnt( 1.5,  1.5, -0.5), // 5: cuts away gamma, trims b and c
-        gp_Pnt( 1.5,  0.5, -0.5), // 6: trims only c
-        gp_Pnt( 1.5, -0.5, -0.5), // 7: cuts away delta, trims c and d
-        gp_Pnt( 0.5, -0.5, -0.5), // 8: trims only d
-        gp_Pnt(-2.0, -2.0, -0.5)  // 9: doesn't intersect face at all
+        "alpha", "beta", "gamma", "delta", "a", "b", "c", "d", "inside", "outside"
     )
 );
