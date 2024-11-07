@@ -44,6 +44,7 @@
 
 #include <GeomConvert_CompCurveToBSplineCurve.hxx>
 #include <LocalAnalysis_SurfaceContinuity.hxx>
+#include <BRepBuilderAPI_Sewing.hxx>
 
 #include "STEPControl_Writer.hxx"
 
@@ -964,12 +965,276 @@ for(Standard_Integer i = 1; i <= number_of_testing_points; ++i)
     std::cout << "G1Angle: " << continuity_check.G1Angle() << std::endl;
 }
 
+// test sewing nose and miggle fuselage with different parametrizations
+
+BRepBuilderAPI_Sewing sew;
+
+TopoDS_Face nose_face = BRepBuilderAPI_MakeFace(nose_surface, Precision::Confusion());
+TopoDS_Face middle_fuselage_face = BRepBuilderAPI_MakeFace(middle_fuselage, Precision::Confusion());
+
+sew.Add(nose_face);
+sew.Add(middle_fuselage_face);
+
+sew.Perform();
+
+TopoDS_Shape resulting_shape = sew.SewedShape();
+
+std::cout << "Result of Sewing (number of degenerated shapes: " << sew.NbDegeneratedShapes() << std::endl;
+
+filename = "sewed_nose_and_middle_fuselage.brep";
+BRepTools::Write(resulting_shape, filename.c_str());
+
+TopExp_Explorer face_explorer(resulting_shape, TopAbs_FACE);
+
+Standard_Integer face_counter = 0;
+
+while(face_explorer.More())
+{
+    TopoDS_Face aFace = TopoDS::Face(face_explorer.Current());
+    Handle(Geom_Surface) aSurface = BRep_Tool::Surface(aFace); 
+
+    if(aSurface->DynamicType() == STANDARD_TYPE(Geom_BezierSurface))
+    {
+        std::cout << "Bezier Surface found, face_counter = " << face_counter << std::endl; 
+        Handle(Geom_BezierSurface) aBezierSurface = Handle(Geom_BezierSurface)::DownCast(aSurface);
+
+        std::cout << "Number of U poles: " << aBezierSurface->NbUPoles() << " U degree: " << aBezierSurface->UDegree() << std::endl;
+        std::cout << "Number of V poles: " << aBezierSurface->NbVPoles() << " V degree: " << aBezierSurface->VDegree() << std::endl;
+    }
+    else if(aSurface->DynamicType() == STANDARD_TYPE(Geom_BSplineSurface))
+    {
+        std::cout << "BSpline Surface found, face_counter = " << face_counter << std::endl; 
+        Handle(Geom_BSplineSurface) aBSplineSurface = Handle(Geom_BSplineSurface)::DownCast(aSurface);
+
+        std::cout << "Number of U poles: " << aBSplineSurface->NbUPoles() << " U degree: " << aBSplineSurface->UDegree() << std::endl;
+        std::cout << "Number of V poles: " << aBSplineSurface->NbVPoles() << " V degree: " << aBSplineSurface->VDegree() << std::endl;
+    }
+
+    face_counter++;
+    face_explorer.Next();
+}
+
+} 
+
+TEST(Test_nurbs_surface, bezier_fuselage)
+{  
+
+// design parameters
+
+Standard_Real x_position_of_middle_fuselage_front_profile = -4600.;
+Standard_Real x_position_of_nose_tip = -11800.;
+Standard_Real x_position_of_middle_fuselage_back_profile = 12500.;
+Standard_Real x_position_of_tail_back_profile = 25716.;
+
+Standard_Real x_difference_tail_column_1_2 = 1500.;
+Standard_Real x_difference_tail_column_2_3 = 1500.;
+
+// middle fuselage front profile points
+
+gp_Pnt P_1 (x_position_of_middle_fuselage_front_profile, 0., 1950.);
+gp_Pnt P_2 (x_position_of_middle_fuselage_front_profile, -1076.95526217, 1950.);
+gp_Pnt P_3 (x_position_of_middle_fuselage_front_profile, -1950., 1076.95526217);
+gp_Pnt P_4 (x_position_of_middle_fuselage_front_profile, -1950., 0.);
+gp_Pnt P_5 (x_position_of_middle_fuselage_front_profile, -1950., -1076.95526217);
+gp_Pnt P_6 (x_position_of_middle_fuselage_front_profile, -1076.95526217, -1950.);
+gp_Pnt P_7 (x_position_of_middle_fuselage_front_profile, 0., -1950.);
+
+// points for column 1
+gp_Pnt leading_point (x_position_of_nose_tip, 0., 0.);
+
+// points for column 2
+Standard_Real z_column_2 = 783; // taken from power point slide
+
+Standard_Real z_column_2_difference_ratio = z_column_2 / P_1.Z();
+
+gp_Pnt P_1_column_2 (leading_point.X(), P_1.Y() * z_column_2_difference_ratio, P_1.Z() * z_column_2_difference_ratio);
+gp_Pnt P_2_column_2 (leading_point.X(), P_2.Y() * z_column_2_difference_ratio, P_2.Z() * z_column_2_difference_ratio);
+gp_Pnt P_3_column_2 (leading_point.X(), P_3.Y() * z_column_2_difference_ratio, P_3.Z() * z_column_2_difference_ratio);
+gp_Pnt P_4_column_2 (leading_point.X(), P_4.Y() * z_column_2_difference_ratio, P_4.Z() * z_column_2_difference_ratio);
+gp_Pnt P_5_column_2 (leading_point.X(), P_5.Y() * z_column_2_difference_ratio, P_5.Z() * z_column_2_difference_ratio);
+gp_Pnt P_6_column_2 (leading_point.X(), P_6.Y() * z_column_2_difference_ratio, P_6.Z() * z_column_2_difference_ratio);
+gp_Pnt P_7_column_2 (leading_point.X(), P_7.Y() * z_column_2_difference_ratio, P_7.Z() * z_column_2_difference_ratio);
+
+// points for column 3
+Standard_Real z_column_3 = 1800; // taken from power point slide
+
+Standard_Real z_column_3_difference_ratio = z_column_3 / P_1.Z();
+
+Standard_Real x_column_3 = -9050; // taken from power point slide
+
+gp_Pnt P_1_column_3 (x_column_3, P_1.Y() * z_column_3_difference_ratio, P_1.Z() * z_column_3_difference_ratio);
+gp_Pnt P_2_column_3 (x_column_3, P_2.Y() * z_column_3_difference_ratio, P_2.Z() * z_column_3_difference_ratio);
+gp_Pnt P_3_column_3 (x_column_3, P_3.Y() * z_column_3_difference_ratio, P_3.Z() * z_column_3_difference_ratio);
+gp_Pnt P_4_column_3 (x_column_3, P_4.Y() * z_column_3_difference_ratio, P_4.Z() * z_column_3_difference_ratio);
+gp_Pnt P_5_column_3 (x_column_3, P_5.Y() * z_column_3_difference_ratio, P_5.Z() * z_column_3_difference_ratio);
+gp_Pnt P_6_column_3 (x_column_3, P_6.Y() * z_column_3_difference_ratio, P_6.Z() * z_column_3_difference_ratio);
+gp_Pnt P_7_column_3 (x_column_3, P_7.Y() * z_column_3_difference_ratio, P_7.Z() * z_column_3_difference_ratio);
+
+// points for column 4
+Standard_Real x_column_4 = -7480; // taken from power point slide
+
+gp_Pnt P_1_column_4 (x_column_4, P_1.Y(), P_1.Z());
+gp_Pnt P_2_column_4 (x_column_4, P_2.Y(), P_2.Z());
+gp_Pnt P_3_column_4 (x_column_4, P_3.Y(), P_3.Z());
+gp_Pnt P_4_column_4 (x_column_4, P_4.Y(), P_4.Z());
+gp_Pnt P_5_column_4 (x_column_4, P_5.Y(), P_5.Z());
+gp_Pnt P_6_column_4 (x_column_4, P_6.Y(), P_6.Z());
+gp_Pnt P_7_column_4 (x_column_4, P_7.Y(), P_7.Z());
+
+// create nose part as Bezier surface
+TColgp_Array2OfPnt nose_surface_control_points (1,7,1,5);
+
+for(int i = 1; i <= nose_surface_control_points.NbRows(); ++i)
+{
+    nose_surface_control_points.SetValue(i, 1, leading_point);
+}
+
+nose_surface_control_points.SetValue(1, 2, P_1_column_2);
+nose_surface_control_points.SetValue(2, 2, P_2_column_2);
+nose_surface_control_points.SetValue(3, 2, P_3_column_2);
+nose_surface_control_points.SetValue(4, 2, P_4_column_2);
+nose_surface_control_points.SetValue(5, 2, P_5_column_2);
+nose_surface_control_points.SetValue(6, 2, P_6_column_2);
+nose_surface_control_points.SetValue(7, 2, P_7_column_2);
+
+nose_surface_control_points.SetValue(1, 3, P_1_column_3);
+nose_surface_control_points.SetValue(2, 3, P_2_column_3);
+nose_surface_control_points.SetValue(3, 3, P_3_column_3);
+nose_surface_control_points.SetValue(4, 3, P_4_column_3);
+nose_surface_control_points.SetValue(5, 3, P_5_column_3);
+nose_surface_control_points.SetValue(6, 3, P_6_column_3);
+nose_surface_control_points.SetValue(7, 3, P_7_column_3);
+
+nose_surface_control_points.SetValue(1, 4, P_1_column_4);
+nose_surface_control_points.SetValue(2, 4, P_2_column_4);
+nose_surface_control_points.SetValue(3, 4, P_3_column_4);
+nose_surface_control_points.SetValue(4, 4, P_4_column_4);
+nose_surface_control_points.SetValue(5, 4, P_5_column_4);
+nose_surface_control_points.SetValue(6, 4, P_6_column_4);
+nose_surface_control_points.SetValue(7, 4, P_7_column_4);
+
+nose_surface_control_points.SetValue(1, 5, P_1);
+nose_surface_control_points.SetValue(2, 5, P_2);
+nose_surface_control_points.SetValue(3, 5, P_3);
+nose_surface_control_points.SetValue(4, 5, P_4);
+nose_surface_control_points.SetValue(5, 5, P_5);
+nose_surface_control_points.SetValue(6, 5, P_6);
+nose_surface_control_points.SetValue(7, 5, P_7);
+
+Handle(Geom_BezierSurface) nose_surface = new Geom_BezierSurface(nose_surface_control_points); 
+
+std::string filename = "Bezier_nose_surface.brep";
+BRepTools::Write(BRepBuilderAPI_MakeFace(nose_surface, Precision::Confusion()), filename.c_str());
+
+// middle fuselage
+
+// middle fuselage back profile points
+
+gp_Pnt P_back_1 (x_position_of_middle_fuselage_back_profile, P_1.Y(), P_1.Z());
+gp_Pnt P_back_2 (x_position_of_middle_fuselage_back_profile, P_2.Y(), P_2.Z());
+gp_Pnt P_back_3 (x_position_of_middle_fuselage_back_profile, P_3.Y(), P_3.Z());
+gp_Pnt P_back_4 (x_position_of_middle_fuselage_back_profile, P_4.Y(), P_4.Z());
+gp_Pnt P_back_5 (x_position_of_middle_fuselage_back_profile, P_5.Y(), P_5.Z());
+gp_Pnt P_back_6 (x_position_of_middle_fuselage_back_profile, P_6.Y(), P_6.Z());
+gp_Pnt P_back_7 (x_position_of_middle_fuselage_back_profile, P_7.Y(), P_7.Z());
+
+// create middle part as Bezier surface
+TColgp_Array2OfPnt middle_fuselage_surface_control_points (1,7,1,2);
+
+middle_fuselage_surface_control_points.SetValue(1, 1, P_1);
+middle_fuselage_surface_control_points.SetValue(2, 1, P_2);
+middle_fuselage_surface_control_points.SetValue(3, 1, P_3);
+middle_fuselage_surface_control_points.SetValue(4, 1, P_4);
+middle_fuselage_surface_control_points.SetValue(5, 1, P_5);
+middle_fuselage_surface_control_points.SetValue(6, 1, P_6);
+middle_fuselage_surface_control_points.SetValue(7, 1, P_7);
+
+middle_fuselage_surface_control_points.SetValue(1, 2, P_back_1);
+middle_fuselage_surface_control_points.SetValue(2, 2, P_back_2);
+middle_fuselage_surface_control_points.SetValue(3, 2, P_back_3);
+middle_fuselage_surface_control_points.SetValue(4, 2, P_back_4);
+middle_fuselage_surface_control_points.SetValue(5, 2, P_back_5);
+middle_fuselage_surface_control_points.SetValue(6, 2, P_back_6);
+middle_fuselage_surface_control_points.SetValue(7, 2, P_back_7);
+
+
+Handle(Geom_BezierSurface) middle_fuselage_surface = new Geom_BezierSurface(middle_fuselage_surface_control_points); 
+
+filename = "Bezier_middle_fuselage_surface.brep";
+BRepTools::Write(BRepBuilderAPI_MakeFace(middle_fuselage_surface, Precision::Confusion()), filename.c_str());
+
+// tail part
+
+// tail part profile points
+
+gp_Pnt P_1_tail_column_2 (P_back_1.X() + x_difference_tail_column_1_2, P_1.Y(), P_1.Z());
+gp_Pnt P_2_tail_column_2 (P_back_2.X() + x_difference_tail_column_1_2, P_2.Y(), P_2.Z());
+gp_Pnt P_3_tail_column_2 (P_back_3.X() + x_difference_tail_column_1_2, P_3.Y(), P_3.Z());
+gp_Pnt P_4_tail_column_2 (P_back_4.X() + x_difference_tail_column_1_2, P_4.Y(), P_4.Z());
+gp_Pnt P_5_tail_column_2 (P_back_5.X() + x_difference_tail_column_1_2, P_5.Y(), P_5.Z());
+gp_Pnt P_6_tail_column_2 (P_back_6.X() + x_difference_tail_column_1_2, P_6.Y(), P_6.Z());
+gp_Pnt P_7_tail_column_2 (P_back_7.X() + x_difference_tail_column_1_2, P_7.Y(), P_7.Z());
+
+gp_Pnt P_1_tail_column_3 (P_1_tail_column_2.X() + x_difference_tail_column_2_3, P_1.Y(), P_1.Z());
+gp_Pnt P_2_tail_column_3 (P_2_tail_column_2.X() + x_difference_tail_column_2_3, P_2.Y(), P_2.Z());
+gp_Pnt P_3_tail_column_3 (P_3_tail_column_2.X() + x_difference_tail_column_2_3, P_3.Y(), P_3.Z());
+gp_Pnt P_4_tail_column_3 (P_4_tail_column_2.X() + x_difference_tail_column_2_3, P_4.Y(), P_4.Z());
+gp_Pnt P_5_tail_column_3 (P_5_tail_column_2.X() + x_difference_tail_column_2_3, P_5.Y(), P_5.Z());
+gp_Pnt P_6_tail_column_3 (P_6_tail_column_2.X() + x_difference_tail_column_2_3, P_6.Y(), P_6.Z());
+gp_Pnt P_7_tail_column_3 (P_7_tail_column_2.X() + x_difference_tail_column_2_3, P_7.Y(), P_7.Z());
+
+Standard_Real tail_z_column_4_difference_ratio = (P_1.Z() - 1200.)  / (P_1.Z() - P_7.Z()); // as in power point slides
+Standard_Real tail_z_column_4_translation = P_1.Z() - P_1.Z() * tail_z_column_4_difference_ratio;
+
+gp_Pnt P_1_tail_column_4 (x_position_of_tail_back_profile, P_1.Y() * tail_z_column_4_difference_ratio, P_1.Z() * tail_z_column_4_difference_ratio + tail_z_column_4_translation);
+gp_Pnt P_2_tail_column_4 (x_position_of_tail_back_profile, P_2.Y() * tail_z_column_4_difference_ratio, P_2.Z() * tail_z_column_4_difference_ratio + tail_z_column_4_translation);
+gp_Pnt P_3_tail_column_4 (x_position_of_tail_back_profile, P_3.Y() * tail_z_column_4_difference_ratio, P_3.Z() * tail_z_column_4_difference_ratio + tail_z_column_4_translation);
+gp_Pnt P_4_tail_column_4 (x_position_of_tail_back_profile, P_4.Y() * tail_z_column_4_difference_ratio, P_4.Z() * tail_z_column_4_difference_ratio + tail_z_column_4_translation);
+gp_Pnt P_5_tail_column_4 (x_position_of_tail_back_profile, P_5.Y() * tail_z_column_4_difference_ratio, P_5.Z() * tail_z_column_4_difference_ratio + tail_z_column_4_translation);
+gp_Pnt P_6_tail_column_4 (x_position_of_tail_back_profile, P_6.Y() * tail_z_column_4_difference_ratio, P_6.Z() * tail_z_column_4_difference_ratio + tail_z_column_4_translation);
+gp_Pnt P_7_tail_column_4 (x_position_of_tail_back_profile, P_7.Y() * tail_z_column_4_difference_ratio, P_7.Z() * tail_z_column_4_difference_ratio + tail_z_column_4_translation);
+
+// create tail part as Bezier surface
+TColgp_Array2OfPnt tail_part_surface_control_points (1,7,1,4);
+
+tail_part_surface_control_points.SetValue(1, 1, P_back_1);
+tail_part_surface_control_points.SetValue(2, 1, P_back_2);
+tail_part_surface_control_points.SetValue(3, 1, P_back_3);
+tail_part_surface_control_points.SetValue(4, 1, P_back_4);
+tail_part_surface_control_points.SetValue(5, 1, P_back_5);
+tail_part_surface_control_points.SetValue(6, 1, P_back_6);
+tail_part_surface_control_points.SetValue(7, 1, P_back_7);
+
+tail_part_surface_control_points.SetValue(1, 2, P_1_tail_column_2);
+tail_part_surface_control_points.SetValue(2, 2, P_2_tail_column_2);
+tail_part_surface_control_points.SetValue(3, 2, P_3_tail_column_2);
+tail_part_surface_control_points.SetValue(4, 2, P_4_tail_column_2);
+tail_part_surface_control_points.SetValue(5, 2, P_5_tail_column_2);
+tail_part_surface_control_points.SetValue(6, 2, P_6_tail_column_2);
+tail_part_surface_control_points.SetValue(7, 2, P_7_tail_column_2);
+
+tail_part_surface_control_points.SetValue(1, 3, P_1_tail_column_3);
+tail_part_surface_control_points.SetValue(2, 3, P_2_tail_column_3);
+tail_part_surface_control_points.SetValue(3, 3, P_3_tail_column_3);
+tail_part_surface_control_points.SetValue(4, 3, P_4_tail_column_3);
+tail_part_surface_control_points.SetValue(5, 3, P_5_tail_column_3);
+tail_part_surface_control_points.SetValue(6, 3, P_6_tail_column_3);
+tail_part_surface_control_points.SetValue(7, 3, P_7_tail_column_3);
+
+tail_part_surface_control_points.SetValue(1, 4, P_1_tail_column_4);
+tail_part_surface_control_points.SetValue(2, 4, P_2_tail_column_4);
+tail_part_surface_control_points.SetValue(3, 4, P_3_tail_column_4);
+tail_part_surface_control_points.SetValue(4, 4, P_4_tail_column_4);
+tail_part_surface_control_points.SetValue(5, 4, P_5_tail_column_4);
+tail_part_surface_control_points.SetValue(6, 4, P_6_tail_column_4);
+tail_part_surface_control_points.SetValue(7, 4, P_7_tail_column_4);
+
+
+Handle(Geom_BezierSurface) tail_part_surface = new Geom_BezierSurface(tail_part_surface_control_points); 
+
+filename = "Bezier_tail_part_surface.brep";
+BRepTools::Write(BRepBuilderAPI_MakeFace(tail_part_surface, Precision::Confusion()), filename.c_str());
 
 
 
-
-
-
-
-
-}                         
+}
