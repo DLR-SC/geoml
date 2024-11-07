@@ -29,13 +29,6 @@ Transform& Transform::operator=(const Transform& other) {
     return *this;
 }
 
-// move constructor
-Transform::Transform(Transform&& other) = default;
-
-// move assignment operator
-Transform& Transform::operator=(Transform&& other) = default; 
-
-
 void Transform::pre_multiply(const Transform& aTrans){
     pImpl->PreMultiply(*(aTrans.pImpl));
 }

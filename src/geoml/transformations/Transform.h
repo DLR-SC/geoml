@@ -39,9 +39,9 @@ public:
 
     GEOML_API_EXPORT Transform& operator=(const Transform& other); // Copy assignment operator
 
-    GEOML_API_EXPORT Transform(Transform&& other); // Move constructor
+    GEOML_API_EXPORT Transform(Transform&& other) = default; // Move constructor
 
-    GEOML_API_EXPORT Transform& operator=(Transform&& other); // Move assignment operator
+    GEOML_API_EXPORT Transform& operator=(Transform&& other) = default; // Move assignment operator
 
 
     GEOML_API_EXPORT void pre_multiply(const Transform& aTrans);
