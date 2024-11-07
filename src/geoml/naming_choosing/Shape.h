@@ -2,10 +2,12 @@
 
 #include "geoml/geoml.h"
 
+#include <limits>
 #include <vector>
 #include <memory>
 #include <string>
 #include <functional>
+#include <unordered_set>
 
 #include <TopoDS_Shape.hxx>
 #include <TopoDS_Iterator.hxx>
@@ -36,6 +38,38 @@ struct TagTrack {
     int m_remainingSteps;
 };
 
+// forward declarations
+class Shape;
+
+namespace details {
+
+template <typename Pred>
+class FindVisitor;
+
+template <typename Pred>
+class FindIfVisitor;
+
+/**
+ * @brief The ShapeHasher returns a hash for a shape that is in line with 
+ * TopoDS_Shape::IsSame. The latter returns true, if the two input shapes 
+ * share the same underlying TopoDS_TShape and have the same location. 
+ * Therefor ShapeHasher returns a combination of the TopoDS_TShape address
+ * and the hash of the location. This way ShapeHasher(a) == ShapeHasher(b)
+ * if and only if TopoDS_Shape(a).IsSame(b), modulo hash collisions
+ * 
+ */
+struct ShapeHasher {
+std::size_t operator()(Shape const& s) const;
+};
+
+struct ShapeIsSame {
+bool operator()(Shape const& l, Shape const& r) const;
+};
+
+using ShapeContainer = std::unordered_set<Shape, ShapeHasher, ShapeIsSame>;
+
+} // namespace details
+
 /**
  * @brief The Shape class is a wrapper around TopoDS_Shape, that stores
  *  - its subshapes (the Shape itself is not included in its subshapes!)
@@ -64,9 +98,9 @@ public:
     template <typename Pred>
     std::vector<Shape> select_subshapes(Pred&& f) const
     {
-        auto v = FindVisitor<Pred>(std::forward<Pred>(f));
+        auto v = details::FindVisitor<Pred>(std::forward<Pred>(f));
         accept_topology_visitor(v);
-        return v.results;
+        return std::vector<Shape>(v.results.begin(), v.results.end());
     }
 
     template <typename Pred>
@@ -178,75 +212,12 @@ public:
 
     template <typename Pred>
     bool has_subshape_that(Pred&& pred) const {
-        auto v = FindIfVisitor<Pred>(std::forward<Pred>(pred));
+        auto v = details::FindIfVisitor<Pred>(std::forward<Pred>(pred));
         accept_topology_visitor(v);
         return v.found;
     }
 
 private:
-
-    /**
-     * @brief The FindIfVisitor class is a convenience visitor to
-     * be used with Shape::accept_xxx_visitor to find shapes in the 
-     * history graph or topology graph. It returns true if a shape 
-     * is found matching the predicate
-     */
-    template <typename Pred>
-    class FindIfVisitor
-    {
-    public:
-        FindIfVisitor(Pred&& f, int max_depth = std::numeric_limits<int>::max())
-            : found(false)
-            , m_f(std::forward<Pred>(f))
-            , m_max_depth(max_depth)
-        {}
-
-        bool visit(Shape const& shape, int depth) {
-            if (depth > m_max_depth) {
-                return true;
-            }
-            found = m_f(shape);
-            return m_f(shape);
-        }
-
-        bool found;
-
-    private:
-        Pred m_f;
-        int m_max_depth;
-    };
-
-    /**
-     * @brief The FindVisitor class is a convenience visitor to
-     * be used with Shape::accept_xxx_visitor to find shapes in the 
-     * history graph or topology graph. It returns a vector of all shapes
-     * satisfying the predicate
-     */
-    template <typename Pred>
-    class FindVisitor
-    {
-    public:
-        FindVisitor(Pred&& f, int max_depth = std::numeric_limits<int>::max())
-            : m_f(std::forward<Pred>(f))
-            , m_max_depth(max_depth)
-        {}
-
-        bool visit(Shape const& shape, int depth) {
-            if (depth > m_max_depth) {
-                return true;
-            }
-            if (m_f(shape)) {
-                results.push_back(shape);
-            }
-            return false;
-        }
-
-        std::vector<Shape> results;
-
-    private:
-        Pred m_f;
-        int m_max_depth;
-    };
 
     // The data of a Shape is stored in a shared_ptr to make sure
     // it is a lightweight wrapper around shared memory
@@ -276,6 +247,73 @@ private:
     std::shared_ptr<Data> m_data;
 
 };
+
+namespace details {
+
+/**
+ * @brief The FindIfVisitor class is a convenience visitor to
+ * be used with Shape::accept_xxx_visitor to find shapes in the 
+ * history graph or topology graph. It returns true if a shape 
+ * is found matching the predicate
+ */
+template <typename Pred>
+class FindIfVisitor
+{
+public:
+    FindIfVisitor(Pred&& f, int max_depth = std::numeric_limits<int>::max())
+        : found(false)
+        , m_f(std::forward<Pred>(f))
+        , m_max_depth(max_depth)
+    {}
+
+    bool visit(Shape const& shape, int depth) {
+        if (depth > m_max_depth) {
+            return true;
+        }
+        found = m_f(shape);
+        return m_f(shape);
+    }
+
+    bool found;
+
+private:
+    Pred m_f;
+    int m_max_depth;
+};
+
+/**
+ * @brief The FindVisitor class is a convenience visitor to
+ * be used with Shape::accept_xxx_visitor to find shapes in the 
+ * history graph or topology graph. It returns a vector of all shapes
+ * satisfying the predicate
+ */
+template <typename Pred>
+class FindVisitor
+{
+public:
+    FindVisitor(Pred&& f, int max_depth = std::numeric_limits<int>::max())
+        : m_f(std::forward<Pred>(f))
+        , m_max_depth(max_depth)
+    {}
+
+    bool visit(Shape const& shape, int depth) {
+        if (depth > m_max_depth) {
+            return true;
+        }
+        if (m_f(shape)) {
+            results.insert(shape);
+        }
+        return false;
+    }
+
+    ShapeContainer results;
+
+private:
+    Pred m_f;
+    int m_max_depth;
+};
+
+} // namespace details
 
 template <typename Pred>
 void add_persistent_meta_tag_to_subshapes(const Shape &input, Pred&& f, const std::string &tag)

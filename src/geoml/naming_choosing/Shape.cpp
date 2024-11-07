@@ -7,6 +7,26 @@
 
 namespace geoml {
 
+namespace details {
+
+std::size_t ShapeHasher::operator()(Shape const& s) const
+{
+    // Use the address of TShape and the hash of the Location
+    TopoDS_Shape occt_shape = s;
+    const void* tShapePtr = occt_shape.TShape().get();
+    std::size_t tShapeHash = std::hash<const void*>{}(tShapePtr);
+    std::size_t locationHash = occt_shape.Location().HashCode(std::numeric_limits<int>::max());
+    return tShapeHash ^ (locationHash << 1); // Combine with a left shift
+}
+
+bool ShapeIsSame::operator()(Shape const& l, Shape const& r) const
+{
+    return l.is_same(r);
+}
+
+} // namespace details 
+
+
 Shape::Shape(TopoDS_Shape const& theShape)
     : m_data(std::make_shared<Data>(theShape))
 {}
@@ -94,7 +114,7 @@ bool Shape::is_same(TopoDS_Shape const& other) const
 
 bool Shape::has_subshape(Shape const& shape) const
 {
-    auto v = FindIfVisitor([=](Shape const& other){ return other.is_same(shape); });
+    auto v = details::FindIfVisitor([=](Shape const& other){ return other.is_same(shape); });
     accept_topology_visitor(v);
     return v.found;
 }
@@ -141,7 +161,7 @@ bool Shape::is_descendent_of_subshape_in(Shape const& other, int max_depth) cons
 
 bool Shape::is_descendent_of(Shape const& other, int max_depth) const
 {
-    FindIfVisitor v(
+    details::FindIfVisitor v(
         [&](Shape const& shape){ return shape.is_same(other); },
         max_depth
         );
