@@ -3,6 +3,8 @@
 
 #include <BRep_Builder.hxx>
 
+#include <algorithm>
+
 
 namespace geoml{
 
@@ -25,11 +27,9 @@ std::vector<gp_Pnt> translate(std::vector<gp_Pnt> const& origin, gp_Vec const& d
     auto t = Transformation(direction*factor);
 
     std::vector<gp_Pnt> transformed_points;
-    transformed_points.reserve(origin.size());
+    transformed_points.resize(origin.size());
 
-    for(gp_Pnt p: origin){
-        transformed_points.push_back(t.Transform(p));
-    }
+    std::transform(origin.begin(), origin.end(), transformed_points.begin(), [&t](gp_Pnt p){ return t.Transform(p); } );
 
     return transformed_points;
 }
