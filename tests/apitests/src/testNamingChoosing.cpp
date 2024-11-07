@@ -441,21 +441,21 @@ TEST_P(PredicateFilter, split_edge_modeling_intent)
     auto gamma_p = BRep_Tool::Pnt(TopoDS::Vertex(gamma));
 
     if (design_parameter == "alpha") {
-        // EXPECT_TRUE(v1_p.SquareDistance(gp_Pnt(X,X,X)) < 1e-8);
+        EXPECT_TRUE(v1_p.SquareDistance(gp_Pnt(alpha_p.X() + 0.5, 0., 0.)) < 1e-8);
         EXPECT_TRUE(v2_p.SquareDistance(beta_p) < 1e-8);
         EXPECT_TRUE(v3_p.SquareDistance(gamma_p) < 1e-8);
     };
 
     if (design_parameter == "beta") {
         EXPECT_TRUE(v1_p.SquareDistance(alpha_p) < 1e-8);
-        // EXPECT_TRUE(v2_p.SquareDistance(gp_Pnt(X,X,X)) < 1e-8);
-        // EXPECT_TRUE(v3_p.SquareDistance(gp_Pnt(X,X,X)) < 1e-8);
+        EXPECT_TRUE(v2_p.SquareDistance(gp_Pnt(beta_p.X() - 0.5, 0., 0.)) < 1e-8);
+        EXPECT_TRUE(v3_p.SquareDistance(gp_Pnt(beta_p.X() - 0.5, beta_p.Y() + 0.5, 0.)) < 1e-8);
     };
 
     if (design_parameter == "gamma") {
         EXPECT_TRUE(v1_p.SquareDistance(alpha_p) < 1e-8);
         EXPECT_TRUE(v2_p.SquareDistance(beta_p) < 1e-8);
-        // EXPECT_TRUE(v3_p.SquareDistance(gp_Pnt(X,X,X)) < 1e-8);
+        EXPECT_TRUE(v3_p.SquareDistance(gp_Pnt(gamma_p.X(),gamma_p.Y() - 0.5, 0.)) < 1e-8);
     };
 
     if (
@@ -472,14 +472,14 @@ TEST_P(PredicateFilter, split_edge_modeling_intent)
 
     if (design_parameter == "a") {
         EXPECT_TRUE(v1_p.SquareDistance(alpha_p) < 1e-8);
-        // EXPECT_TRUE(v2_p.SquareDistance(gp_Pnt(X,X,X)) < 1e-8);
-        // EXPECT_TRUE(v3_p.SquareDistance(gp_Pnt(X,X,X)) < 1e-8);
+        EXPECT_TRUE(v2_p.SquareDistance(gp_Pnt(alpha_p.X() + 1.5, 0., 0.)) < 1e-8);
+        EXPECT_TRUE(v3_p.SquareDistance(gp_Pnt(alpha_p.X() + 1.5, alpha_p.Y() + 0.5, 0.)) < 1e-8);
     }
 
     if (design_parameter == "b") {
         EXPECT_TRUE(v1_p.SquareDistance(alpha_p) < 1e-8);
         EXPECT_TRUE(v2_p.SquareDistance(beta_p) < 1e-8);
-        // EXPECT_TRUE(v3_p.SquareDistance(gp_Pnt(X,X,X)) < 1e-8);
+        EXPECT_TRUE(v3_p.SquareDistance(gp_Pnt(beta_p.X(), beta_p.Y() + 1.5, 0.)) < 1e-8);
     }
 
 }
