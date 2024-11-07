@@ -25,6 +25,7 @@ std::vector<gp_Pnt> translate(std::vector<gp_Pnt> const& origin, gp_Vec const& d
     auto t = Transformation(direction*factor);
 
     std::vector<gp_Pnt> transformed_points;
+    transformed_points.reserve(origin.size());
 
     for(gp_Pnt p: origin){
         transformed_points.push_back(t.Transform(p));
