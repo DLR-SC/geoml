@@ -115,4 +115,25 @@ TEST(Test_repeat_shapes, repeat_a_point)
     }
 
     EXPECT_EQ(vertexCount, 3);
+
+    TopExp_Explorer explorer (result, TopAbs_VERTEX);
+
+    while (explorer.More()) 
+    {
+        const TopoDS_Vertex& vertex = TopoDS::Vertex(explorer.Current());
+
+        gp_Pnt point = BRep_Tool::Pnt(vertex); 
+
+        EXPECT_NEAR(point.X(), test_pnt.X(), 1e-5);
+        EXPECT_NEAR(point.Y(), test_pnt.Y(), 1e-5);
+        EXPECT_NEAR(point.Z(), test_pnt.Z(), 1e-5);
+
+        test_pnt.Translate(trsf_vec); 
+
+        explorer.Next();
+    }
+
+    
 }
+
+
