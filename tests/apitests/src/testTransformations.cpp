@@ -132,7 +132,6 @@ TEST(Test_repeat_shapes, repeat_a_point)
 
         explorer.Next();
     }
-
     
 }
 
