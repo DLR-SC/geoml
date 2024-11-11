@@ -28,6 +28,10 @@
 #include <TColgp_Array2OfPnt.hxx>
 #include <Geom_BezierCurve.hxx>
 #include <Geom_BezierSurface.hxx>
+#include <Geom_TrimmedCurve.hxx>
+#include <GC_MakeSegment.hxx>
+#include <TopoDS_Wire.hxx>
+#include <BRepBuilderAPI_MakeWire.hxx>
 
 #include <filesystem>
 
@@ -1235,6 +1239,79 @@ Handle(Geom_BezierSurface) tail_part_surface = new Geom_BezierSurface(tail_part_
 filename = "Bezier_tail_part_surface.brep";
 BRepTools::Write(BRepBuilderAPI_MakeFace(tail_part_surface, Precision::Confusion()), filename.c_str());
 
+// close tail part
 
+TColgp_Array1OfPnt closed_tail_curve_1_control_points (1, 7);
+
+closed_tail_curve_1_control_points.SetValue(1, P_1_tail_column_4);
+closed_tail_curve_1_control_points.SetValue(2, P_2_tail_column_4);
+closed_tail_curve_1_control_points.SetValue(3, P_3_tail_column_4);
+closed_tail_curve_1_control_points.SetValue(4, P_4_tail_column_4);
+closed_tail_curve_1_control_points.SetValue(5, P_5_tail_column_4);
+closed_tail_curve_1_control_points.SetValue(6, P_6_tail_column_4);
+closed_tail_curve_1_control_points.SetValue(7, P_7_tail_column_4);
+
+Handle(Geom_BezierCurve) closed_tail_curve_1 = new Geom_BezierCurve(closed_tail_curve_1_control_points);
+Handle(Geom_TrimmedCurve) closed_tail_curve_2 = GC_MakeSegment(P_7_tail_column_4, P_1_tail_column_4);
+
+TopoDS_Edge closed_tail_edge_1 = BRepBuilderAPI_MakeEdge(closed_tail_curve_1); 
+TopoDS_Edge closed_tail_edge_2 = BRepBuilderAPI_MakeEdge(closed_tail_curve_2); 
+
+TopoDS_Wire closed_tail_wire = BRepBuilderAPI_MakeWire(closed_tail_edge_1, closed_tail_edge_2); 
+
+TopoDS_Face closed_tail_face = BRepBuilderAPI_MakeFace(closed_tail_wire);
+
+Handle(Geom_Surface) closed_tail_surface = BRep_Tool::Surface(closed_tail_face); 
+
+if(closed_tail_surface->DynamicType() == STANDARD_TYPE(Geom_BezierSurface))
+{
+    std::cout << "Bezier Surface found" << std::endl; 
+    Handle(Geom_BezierSurface) aBezierSurface = Handle(Geom_BezierSurface)::DownCast(closed_tail_surface);
+
+    std::cout << "Number of U poles: " << aBezierSurface->NbUPoles() << " U degree: " << aBezierSurface->UDegree() << std::endl;
+    std::cout << "Number of V poles: " << aBezierSurface->NbVPoles() << " V degree: " << aBezierSurface->VDegree() << std::endl;
+}
+else if(closed_tail_surface->DynamicType() == STANDARD_TYPE(Geom_BSplineSurface))
+{
+    std::cout << "BSpline Surface found" << std::endl; 
+    Handle(Geom_BSplineSurface) aBSplineSurface = Handle(Geom_BSplineSurface)::DownCast(closed_tail_surface);
+
+    std::cout << "Number of U poles: " << aBSplineSurface->NbUPoles() << " U degree: " << aBSplineSurface->UDegree() << std::endl;
+    std::cout << "Number of V poles: " << aBSplineSurface->NbVPoles() << " V degree: " << aBSplineSurface->VDegree() << std::endl;
+}
+else if(closed_tail_surface->DynamicType() == STANDARD_TYPE(Geom_Plane))
+{
+    std::cout << "Plane found" << std::endl; 
+    Handle(Geom_Plane) aPlaneSurface = Handle(Geom_Plane)::DownCast(closed_tail_surface);
+}
+
+// sewing of three faces
+
+BRepBuilderAPI_Sewing sew;
+
+TopoDS_Face nose_face = BRepBuilderAPI_MakeFace(nose_surface, Precision::Confusion());
+TopoDS_Face middle_fuselage_face = BRepBuilderAPI_MakeFace(middle_fuselage_surface, Precision::Confusion());
+TopoDS_Face tail_part_face = BRepBuilderAPI_MakeFace(tail_part_surface, Precision::Confusion());
+
+sew.Add(nose_face);
+sew.Add(middle_fuselage_face);
+sew.Add(tail_part_face);
+sew.Add(closed_tail_face);
+
+sew.Perform();
+
+TopoDS_Shape resulting_shape = sew.SewedShape();
+
+std::cout << "Result of Sewing (number of degenerated shapes: " << sew.NbDegeneratedShapes() << std::endl;
+
+filename = "Bezier_fuselage_geometry_complete.brep";
+BRepTools::Write(resulting_shape, filename.c_str());
+
+// write to step file
+STEPControl_Writer writer;
+writer.Transfer(resulting_shape, STEPControl_AsIs);
+
+filename = "Bezier_fuselage_geometry_complete.stp";
+writer.Write(filename.c_str());
 
 }
