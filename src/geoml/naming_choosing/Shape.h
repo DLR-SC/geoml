@@ -1,14 +1,18 @@
 #pragma once
 
 #include "geoml/geoml.h"
+#include "geoml/error.h"
 
 #include <limits>
+#include <stdexcept>
 #include <vector>
 #include <memory>
 #include <string>
 #include <functional>
 #include <unordered_set>
 
+#include <TopoDS_Compound.hxx>
+#include <BRep_Builder.hxx>
 #include <TopoDS_Shape.hxx>
 #include <TopoDS_Iterator.hxx>
 
@@ -93,28 +97,38 @@ public:
 
     GEOML_API_EXPORT std::vector<Shape>& get_children();
 
-    GEOML_API_EXPORT std::vector<Shape> get_subshapes() const;
+    GEOML_API_EXPORT Shape get_subshapes() const;
 
     template <typename Pred>
-    std::vector<Shape> select_subshapes(Pred&& f) const
+    Shape select_subshapes(Pred&& f, int max_depth = std::numeric_limits<int>::max()) const
     {
-        auto v = details::FindVisitor<Pred>(std::forward<Pred>(f));
+        auto v = details::FindVisitor<Pred>(std::forward<Pred>(f), max_depth);
         accept_topology_visitor(v);
-        return std::vector<Shape>(v.results.begin(), v.results.end());
+
+        TopoDS_Compound compound;
+        BRep_Builder builder;
+        builder.MakeCompound(compound);
+        for (auto const& s : v.results) {
+            builder.Add(compound, s);
+        }
+        return compound;
     }
 
     template <typename Pred>
     Shape filter(Pred&& f) const
     {
-        return vector_of_shape_to_shape(select_subshapes(f));
+        auto pred = [=](Shape const& s) { return f(s) && !is_same(*this); };
+        return select_subshapes(pred, 1);
     }
 
+    GEOML_API_EXPORT Shape unique_element() const;
+
+    GEOML_API_EXPORT Shape unique_element_or(Shape const& other) const;
 
     template <typename Pred>
     void add_meta_tag_to_subshapes(Pred&& f, std::string const& input_tag) // this function can only add a tag to a subshape of the shape and not the shape itself
     {    
-        std::vector<Shape> selection = this->select_subshapes(f);
-
+        Shape selection = this->select_subshapes(f);
         for (auto& selected_shape : selection)
         {
             selected_shape.add_meta_tag(input_tag);
@@ -185,17 +199,20 @@ public:
         return stop;
     }
 
-    GEOML_API_EXPORT auto const begin() const;
-    GEOML_API_EXPORT auto begin();
-    GEOML_API_EXPORT auto const end() const;
+    using iterator = std::vector<Shape>::iterator;
+    using const_iterator = std::vector<Shape>::const_iterator;
+    GEOML_API_EXPORT const_iterator begin() const;
+    GEOML_API_EXPORT iterator begin();
+    GEOML_API_EXPORT const_iterator end() const;
+    GEOML_API_EXPORT iterator const end();
     GEOML_API_EXPORT Shape const& operator[](int i) const;
     GEOML_API_EXPORT Shape& operator[](int i);
     GEOML_API_EXPORT size_t size() const;
-    GEOML_API_EXPORT bool is_empty() const;
 
     // The following are convenience functions that can be used
     // as predicates when selecting subshapes
 
+    GEOML_API_EXPORT bool is_empty() const;
     GEOML_API_EXPORT bool is_type(TopAbs_ShapeEnum shape_type) const;
     GEOML_API_EXPORT bool is_same(Shape const& other) const;
     GEOML_API_EXPORT bool is_same(TopoDS_Shape const& other) const; //IMPORTANT! This is the predicate used to check if two shapes match. Not sure if it is the best choice.
@@ -239,10 +256,6 @@ private:
         std::vector<std::string> persistent_meta_tags;
         std::vector<TagTrack> tag_tracks; 
     };
-
-    //TODO: Could be static. Or moved to commonfunctions.
-    GEOML_API_EXPORT Shape vector_of_shape_to_shape(std::vector<Shape> const& shapes) const;
-
 
     std::shared_ptr<Data> m_data;
 

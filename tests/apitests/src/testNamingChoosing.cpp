@@ -31,7 +31,7 @@ TEST(SelectSubShapes, BooleanCutCheckNumberOfSubShapes)
     
     EXPECT_EQ(box_edges.size(), 12);
 
-    auto const& edge_in = box_edges.front();
+    auto const& edge_in = box_edges[0];
 
     // Get edges in result that originate from the edge selected in box
     auto result_edges = result.select_subshapes(
@@ -50,7 +50,7 @@ TEST(SelectSubShapes, BooleanCutCheckNumberOfSubShapes)
 
     // Get face in result that originate from the face selected in cylinder
     auto result_faces = result.select_subshapes([&](geoml::Shape const& s){
-        return  s.is_type(TopAbs_FACE) &&               // any edge,
+        return  s.is_type(TopAbs_FACE) &&               // any face,
                s.is_descendent_of(face_in);            // created from edge_in thru any number of operations
     });
 
@@ -92,17 +92,17 @@ public:
         face = BRepPrimAPI_MakePrism(a_e, gp_Vec(0., 4., 0.)).Shape();
 
         // extract vertices and edges
-        alpha = face.filter(is_vertex && is_same(alpha_v));
-        beta = face.filter(is_vertex && is_same(beta_v));    
-        a = face.filter(is_edge && is_same(a_e));
+        alpha = face.select_subshapes(is_vertex && is_same(alpha_v)).unique_element();
+        beta = face.select_subshapes(is_vertex && is_same(beta_v)).unique_element();    
+        a = face.select_subshapes(is_edge && is_same(a_e)).unique_element();
 
-        b = face.filter(is_edge && !is_same(a) && has_subshape(beta));
-        d = face.filter(is_edge && !is_same(a) && has_subshape(alpha));
+        b = face.select_subshapes(is_edge && !is_same(a) && has_subshape(beta)).unique_element();
+        d = face.select_subshapes(is_edge && !is_same(a) && has_subshape(alpha)).unique_element();
     
-        gamma = b.filter(is_vertex && !is_same(beta));
-        delta = d.filter(is_vertex && !is_same(alpha));
+        gamma = b.select_subshapes(is_vertex && !is_same(beta)).unique_element();
+        delta = d.select_subshapes(is_vertex && !is_same(alpha)).unique_element();
 
-        c = face.filter(is_edge && has_subshape(gamma) && has_subshape(delta));
+        c = face.select_subshapes(is_edge && has_subshape(gamma) && has_subshape(delta)).unique_element();
         
         ASSERT_EQ(alpha.size(), 1);
         ASSERT_EQ(TopoDS_Shape(alpha).ShapeType(), TopAbs_VERTEX);
@@ -130,7 +130,7 @@ protected:
     geoml::Shape gamma;
     geoml::Shape delta;
 
-    // relevant edges (don't care about c)
+    // relevant edges
     geoml::Shape a;
     geoml::Shape b;
     geoml::Shape c;
@@ -180,9 +180,9 @@ TEST_F(RectangularFace, example_rectangle_triangles)
 
     EXPECT_EQ(triangular_srf_edges.size(), 3);
 
-    auto const&  C = triangular_srf_edges.at(0); // "pick" edge
-    auto const&  B = triangular_srf_edges.at(1); // "pick" edge
-    auto const&  A = triangular_srf_edges.at(2); // "pick" edge
+    auto const&  C = triangular_srf_edges[0]; // "pick" edge
+    auto const&  B = triangular_srf_edges[1]; // "pick" edge
+    auto const&  A = triangular_srf_edges[2]; // "pick" edge
 
     // Get edges in result that originate from edge a and have a vertex that originates from alpha
     auto cut_result_edges_a_alpha = cut_result.select_subshapes(
@@ -262,9 +262,9 @@ TEST_F(RectangularFace, test_tag_tracks_with_operations)
 
     EXPECT_EQ(triangular_srf_edges .size(), 3);
 
-    auto const&  C = triangular_srf_edges.at(0); // "pick" edge
-    auto const&  B = triangular_srf_edges.at(1); // "pick" edge
-    auto const&  A = triangular_srf_edges.at(2); // "pick" edge
+    auto const&  C = triangular_srf_edges[0]; // "pick" edge
+    auto const&  B = triangular_srf_edges[1]; // "pick" edge
+    auto const&  A = triangular_srf_edges[2]; // "pick" edge
 
     // add a tag track to face
     auto criterion = 
@@ -388,9 +388,9 @@ TEST_P(PredicateFilter, split_edge_modeling_intent)
        If this does not exist, just choose the edge that is a descendent of a
      */
 
-    auto m = face_cut.filter(is_edge && is_descendent_of(a));
-    auto n = m.filter(is_edge && has_subshape(alpha));
-    auto edge1 = n.is_empty()? m : n;
+    auto m = face_cut.select_subshapes(is_edge && is_descendent_of(a));
+    auto n = m.select_subshapes(is_edge && has_subshape(alpha));
+    auto edge1 = (n.is_empty()? m : n).unique_element();
     EXPECT_EQ(edge1.size(), 1);
     EXPECT_EQ(TopoDS_Shape(edge1).ShapeType(), TopAbs_EDGE);
 
@@ -405,13 +405,13 @@ TEST_P(PredicateFilter, split_edge_modeling_intent)
                !is_same(other);
     };
 
-    auto p = face_cut.filter(
+    auto p = face_cut.select_subshapes(
         is_edge && 
         has_common_vertex_with(edge1) &&
         !is_descendent_of(d)
     );
-    auto q = p.filter(is_descendent_of(b));
-    auto edge2 = q.is_empty() ? p : q;
+    auto q = p.select_subshapes(is_descendent_of(b));
+    auto edge2 = (q.is_empty()? p : q).unique_element();
     EXPECT_EQ(edge2.size(), 1);
     EXPECT_EQ(TopoDS_Shape(edge2).ShapeType(), TopAbs_EDGE);
 
@@ -421,17 +421,17 @@ TEST_P(PredicateFilter, split_edge_modeling_intent)
 
     // In every case, edge1 and edge2 should share a vertex.
     // Let v1 and v2 be the indices of edge1 and v2 and v3 be the indices of edge2
-    auto v1 = face_cut.filter(is_vertex && is_subshape_of(edge1) && !is_subshape_of(edge2));
+    auto v1 = face_cut.select_subshapes(is_vertex && is_subshape_of(edge1) && !is_subshape_of(edge2)).unique_element();
     EXPECT_EQ(v1.size(), 1);
     EXPECT_EQ(TopoDS_Shape(v1).ShapeType(), TopAbs_VERTEX);
     auto v1_p = BRep_Tool::Pnt(TopoDS::Vertex(v1));
 
-    auto v2 = face_cut.filter(is_vertex && is_subshape_of(edge1) && is_subshape_of(edge2));
+    auto v2 = face_cut.select_subshapes(is_vertex && is_subshape_of(edge1) && is_subshape_of(edge2)).unique_element();
     EXPECT_EQ(v2.size(), 1);
     EXPECT_EQ(TopoDS_Shape(v2).ShapeType(), TopAbs_VERTEX);
     auto v2_p = BRep_Tool::Pnt(TopoDS::Vertex(v2));
 
-    auto v3 = face_cut.filter(is_vertex && !is_subshape_of(edge1) && is_subshape_of(edge2));
+    auto v3 = face_cut.select_subshapes(is_vertex && !is_subshape_of(edge1) && is_subshape_of(edge2)).unique_element();
     EXPECT_EQ(v3.size(), 1);
     EXPECT_EQ(TopoDS_Shape(v2).ShapeType(), TopAbs_VERTEX);
     auto v3_p = BRep_Tool::Pnt(TopoDS::Vertex(v3));

@@ -1,9 +1,10 @@
 #include "Shape.h"
 
-#include "topology/MakeCompound_Operation.h"
+
 #include <TopExp_Explorer.hxx>
 
 #include <algorithm>
+#include <string>
 
 namespace geoml {
 
@@ -44,17 +45,22 @@ std::vector<Shape> const& Shape::get_children() const
     return m_data->children;
 }
 
-auto const Shape::begin() const 
+Shape::const_iterator Shape::begin() const 
 {
     return m_data->children.begin();
 }
 
-auto Shape::begin() 
+Shape::iterator Shape::begin() 
 {
     return m_data->children.begin();
 }
 
-auto const Shape::end() const
+Shape::const_iterator Shape::end() const
+{
+    return m_data->children.end();
+}
+
+Shape::iterator const Shape::end()
 {
     return m_data->children.end();
 }
@@ -91,9 +97,29 @@ std::vector<Shape>& Shape::get_children()
     return m_data->children;
 }
 
-GEOML_API_EXPORT std::vector<Shape> Shape::get_subshapes() const
+Shape Shape::get_subshapes() const
 {
     return select_subshapes([](auto&&){ return true; });
+}
+
+Shape Shape::unique_element() const 
+{
+    if (m_data->shape.ShapeType() != TopAbs_COMPOUND) {
+        throw Error("unique_element: The shape is not a compound.");
+    }
+    if (m_data->children.size() != 1) {
+        throw Error(std::string("unique_element only works for shapes with exactly one child. This shape has ") + std::to_string(m_data->children.size()) + " children.");
+    }
+
+    return m_data->children[0];
+}
+
+Shape Shape::unique_element_or(Shape const& other) const 
+{
+    if (m_data->shape.ShapeType() == TopAbs_COMPOUND && m_data->children.size() == 1) {
+        return m_data->children[0];
+    }
+    return other;
 }
 
 bool Shape::is_type(TopAbs_ShapeEnum shape_type) const
@@ -215,21 +241,6 @@ void Shape::apply_tag_tracks()
             }
         }
     }
-}
-
-Shape Shape::vector_of_shape_to_shape(std::vector<Shape> const& shapes) const
-{
-    if (shapes.size() == 0) {
-            // return an empty shape
-            return Shape();
-    }
-
-    if (shapes.size() == 1) {
-        return shapes[0];
-    }
-
-    MakeCompound_Operation op(shapes);
-    return op.value();
 }
 
 
