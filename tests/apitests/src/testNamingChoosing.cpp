@@ -324,7 +324,7 @@ TEST_F(RectangularFace, test_shape_predicates)
 }
 
 
-struct PredicateFilter
+struct PredicateSelection
  : public RectangularFace
  , public testing::WithParamInterface<std::string> 
 {
@@ -369,7 +369,7 @@ private:
 
 
 
-TEST_P(PredicateFilter, split_edge_modeling_intent)
+TEST_P(PredicateSelection, split_edge_modeling_intent)
 {
     using namespace geoml;
 
@@ -389,7 +389,7 @@ TEST_P(PredicateFilter, split_edge_modeling_intent)
      */
 
     auto m = face_cut.select_subshapes(is_edge && is_descendent_of(a));
-    auto n = m.select_subshapes(is_edge && has_subshape(alpha));
+    auto n = m.filter(has_subshape(alpha));
     auto edge1 = (n.is_empty()? m : n).unique_element();
     EXPECT_EQ(edge1.size(), 1);
     EXPECT_EQ(TopoDS_Shape(edge1).ShapeType(), TopAbs_EDGE);
@@ -487,7 +487,7 @@ TEST_P(PredicateFilter, split_edge_modeling_intent)
 
 INSTANTIATE_TEST_SUITE_P(
     TopologyChangingParameters,
-    PredicateFilter,
+    PredicateSelection,
     testing::Values(
         "alpha", "beta", "gamma", "delta", "a", "b", "c", "d", "inside", "outside"
     )
