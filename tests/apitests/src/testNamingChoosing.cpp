@@ -20,14 +20,15 @@
 
 TEST(SelectSubShapes, BooleanCutCheckNumberOfSubShapes)
 {   
-    auto box = geoml::create_box(1., 1., 1.);
-    auto cylinder_big = geoml::create_cylinder(0.5, 0.5);
-    auto cylinder_small = geoml::create_cylinder(0.25, 0.75);
+    using namespace geoml;
+    auto box = create_box(1., 1., 1.);
+    auto cylinder_big = create_cylinder(0.5, 0.5);
+    auto cylinder_small = create_cylinder(0.25, 0.75);
 
     auto result = box - cylinder_big - cylinder_small;
 
     // Get an edge from the box. Selecting first one here.
-    auto box_edges = box.select_subshapes(geoml::is_edge);
+    auto box_edges = box.select_subshapes(is_edge);
     
     EXPECT_EQ(box_edges.size(), 12);
 
@@ -35,31 +36,31 @@ TEST(SelectSubShapes, BooleanCutCheckNumberOfSubShapes)
 
     // Get edges in result that originate from the edge selected in box
     auto result_edges = result.select_subshapes(
-        geoml::is_edge &&                 // any edge,
-        geoml::is_descendent_of(edge_in)  // created from edge_in thru any number of operations
+        is_edge &&                 // any edge,
+        is_descendent_of(edge_in)  // created from edge_in thru any number of operations
     );
 
     EXPECT_EQ(result_edges.size(), 1);
 
     // Get a face from the cylinder. Selecting first one here.
-    auto cyl_faces = cylinder_big.select_subshapes([](geoml::Shape const& s){ return s.is_type(TopAbs_FACE); });
+    auto cyl_faces = cylinder_big.select_subshapes(is_face);
 
     EXPECT_EQ(cyl_faces.size(), 3);
 
-    auto const& face_in = cyl_faces[1];
+    auto face_in = cyl_faces[1];
 
     // Get face in result that originate from the face selected in cylinder
-    auto result_faces = result.select_subshapes([&](geoml::Shape const& s){
-        return  s.is_type(TopAbs_FACE) &&               // any face,
-               s.is_descendent_of(face_in);            // created from edge_in thru any number of operations
-    });
+    auto result_faces = result.select_subshapes(
+        is_face && is_descendent_of(face_in)
+    );
 
     EXPECT_EQ(result_faces.size(), 1);
 
     // Get all faces in result that originate from any subshape contained in the two cylinders
-    auto result_faces_from_cylinders = result.select_subshapes([&](geoml::Shape const& s){
-        return s.is_type(TopAbs_FACE) && (s.is_descendent_of_subshape_in(cylinder_small) || s.is_descendent_of_subshape_in(cylinder_big) );
-    });
+    auto result_faces_from_cylinders = result.select_subshapes(
+        is_face && 
+        (is_descendent_of_subshape_in(cylinder_small) || is_descendent_of_subshape_in(cylinder_big) )
+    );
 
     EXPECT_EQ(result_faces_from_cylinders.size(), 4);
 
@@ -410,7 +411,7 @@ TEST_P(PredicateSelection, split_edge_modeling_intent)
         has_common_vertex_with(edge1) &&
         !is_descendent_of(d)
     );
-    auto q = p.select_subshapes(is_descendent_of(b));
+    auto q = p.filter(is_descendent_of(b));
     auto edge2 = (q.is_empty()? p : q).unique_element();
     EXPECT_EQ(edge2.size(), 1);
     EXPECT_EQ(TopoDS_Shape(edge2).ShapeType(), TopAbs_EDGE);

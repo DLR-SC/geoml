@@ -111,13 +111,18 @@ public:
         for (auto const& s : v.results) {
             builder.Add(compound, s);
         }
-        return compound;
+        Shape result = compound;
+
+        // overwrite children to make sure, the data is retained
+        result.m_data->children = std::vector<Shape>(v.results.begin(), v.results.end());
+
+        return result;
     }
 
     template <typename Pred>
     Shape filter(Pred&& f) const
     {
-        auto pred = [=](Shape const& s) { return f(s) && !is_same(*this); };
+        auto pred = [=](Shape const& s) { return !s.is_same(*this) && f(s); };
         return select_subshapes(pred, 1);
     }
 
@@ -151,6 +156,7 @@ public:
      * visitor to implement
      *
      *    bool Visitor::visit(Shape const& s, int depth)
+     *    int Visitor::max_depth() const
      *
      *
      * that returns true, if the exploration is to be stopped
@@ -159,10 +165,10 @@ public:
      * @param v
      */
     template <typename Visitor>
-    bool accept_history_visitor(Visitor&& v, int depth=0) const
+    bool accept_history_visitor(Visitor& v, int depth=0) const
     {
         bool stop = v.visit(*this, depth);
-        if (!stop) {
+        if (!stop && depth < v.max_depth()) {
             for(auto const& origin : m_data->origins) {
                 if(origin.accept_history_visitor(v, depth+1)) {
                     return true;
@@ -178,6 +184,7 @@ public:
      * visitor to implement
      *
      *    bool Visitor::visit(Shape const& s, int depth)
+     *    int Visitor::max_depth() const
      *
      *
      * that returns true, if the exploration is to be stopped
@@ -186,12 +193,12 @@ public:
      * @param v
      */
     template <typename Visitor>
-    bool accept_topology_visitor(Visitor&& v, int depth=0) const
+    bool accept_topology_visitor(Visitor& v, int depth=0) const
     {
         bool stop = v.visit(*this, depth);
-        if (!stop) {
+        if (!stop && depth < v.max_depth()) {
             for(auto const& child : m_data->children) {
-                if(child.accept_topology_visitor(v, depth+1)) {
+                if (child.accept_topology_visitor(v, depth+1)) {
                     return true;
                 }
             }
@@ -280,11 +287,14 @@ public:
     {}
 
     bool visit(Shape const& shape, int depth) {
-        if (depth > m_max_depth) {
-            return true;
+        if (depth <= m_max_depth) {
+            found = m_f(shape);
         }
-        found = m_f(shape);
-        return m_f(shape);
+        return found;
+    }
+
+    int max_depth() const {
+        return m_max_depth;
     }
 
     bool found;
@@ -310,13 +320,14 @@ public:
     {}
 
     bool visit(Shape const& shape, int depth) {
-        if (depth > m_max_depth) {
-            return true;
-        }
-        if (m_f(shape)) {
+        if (depth <= max_depth() && m_f(shape)) {
             results.insert(shape);
         }
         return false;
+    }
+
+    int max_depth() const {
+        return m_max_depth;
     }
 
     ShapeContainer results;

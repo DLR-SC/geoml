@@ -89,7 +89,7 @@ size_t Shape::size() const
 
 bool Shape::is_empty() const
 {
-    return m_data->shape.IsNull();
+    return m_data->shape.IsNull() || m_data->children.size() == 0;
 }
 
 std::vector<Shape>& Shape::get_children()
@@ -140,9 +140,7 @@ bool Shape::is_same(TopoDS_Shape const& other) const
 
 bool Shape::has_subshape(Shape const& shape) const
 {
-    auto v = details::FindIfVisitor([=](Shape const& other){ return other.is_same(shape); });
-    accept_topology_visitor(v);
-    return v.found;
+    return has_subshape_that([=](Shape const& s) { return s.is_same(shape); });
 }
 
 bool Shape::has_origin() const
