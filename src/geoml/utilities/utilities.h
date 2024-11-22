@@ -44,4 +44,6 @@ GEOML_API_EXPORT std::vector<gp_Pnt>
 extract_control_point_vector_in_V_direction (const Handle(Geom_BSplineSurface) &b_spline_surface, int i);
 
 
+
+
 } // namespace geoml

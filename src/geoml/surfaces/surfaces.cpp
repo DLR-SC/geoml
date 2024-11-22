@@ -1,5 +1,5 @@
-#include "surfaces/modeling.h"
-#include "geoml/curves/modeling.h"
+#include "surfaces/surfaces.h"
+#include "geoml/curves/curves.h"
 #include "geoml/data_structures/conversions.h"
 
 #include "geometry/curve-networks/InterpolateCurveNetwork.h"
