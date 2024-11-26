@@ -1,7 +1,7 @@
 #pragma once
 
 /**
- * @brief geoml/curves/modeling.h includes functions to create and modify curves
+ * @brief geoml/curves/curves.h includes functions to create and modify curves
  */
 #include <geoml/geoml.h>
 

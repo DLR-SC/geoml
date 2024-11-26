@@ -1,4 +1,4 @@
-#include "geoml/utility/utility.h"
+#include "geoml/utilities/utilities.h"
 #include "geoml/data_structures/conversions.h"
 
 

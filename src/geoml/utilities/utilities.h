@@ -1,7 +1,7 @@
 #pragma once
 
 /**
- * @brief geoml/utility/utility.h includes a collection of functions that are helpful for geometry modeling
+ * @brief geoml/utilities/utilities.h includes a collection of functions that are helpful for geometry modeling
  */
 
 #include <geoml/geoml.h>
@@ -42,6 +42,8 @@ extract_control_point_vector_in_U_direction (const Handle(Geom_BSplineSurface) &
  */
 GEOML_API_EXPORT std::vector<gp_Pnt>  
 extract_control_point_vector_in_V_direction (const Handle(Geom_BSplineSurface) &b_spline_surface, int i);
+
+
 
 
 } // namespace geoml

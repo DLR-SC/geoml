@@ -1,4 +1,4 @@
-#include <geoml/curves/modeling.h>
+#include <geoml/curves/curves.h>
 #include "geometry/BSplineAlgorithms.h"
 
 #include <gtest/gtest.h>

@@ -1,10 +1,16 @@
-#include <geoml/surfaces/modeling.h>
-#include "geoml/utility/utility.h"
+#include <geoml/surfaces/surfaces.h>
+#include "geoml/utilities/utilities.h"
 #include <geoml/data_structures/Array2d.h>
 
 #include <gtest/gtest.h>
 
 #include <gp_Pnt.hxx>
+#include <BRepBuilderAPI_MakeVertex.hxx>
+#include <TopoDS_Vertex.hxx>
+#include <TopExp_Explorer.hxx>
+#include <TopAbs_ShapeEnum.hxx>
+
+#include <iostream>
 
 
 TEST(Test_extract_control_points_from_surface, extract_control_points_from_surface)

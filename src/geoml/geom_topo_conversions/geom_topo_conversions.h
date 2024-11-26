@@ -1,7 +1,7 @@
 #pragma once
 
 /**
- * @brief geoml/geom_topo/modeling.h includes functions to convert between OCCT's geometry and topology data types
+ * @brief geoml/geom_topo_conversions/geom_topo_conversions.h includes functions to convert between OCCT's geometry and topology data types
  */
 #include <geoml/geoml.h>
 
