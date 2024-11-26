@@ -49,6 +49,7 @@
 #include <GeomConvert_CompCurveToBSplineCurve.hxx>
 #include <LocalAnalysis_SurfaceContinuity.hxx>
 #include <BRepBuilderAPI_Sewing.hxx>
+#include "geometry/CCSTCurveBuilder.h"
 
 #include "STEPControl_Writer.hxx"
 
@@ -1313,5 +1314,40 @@ writer.Transfer(resulting_shape, STEPControl_AsIs);
 
 filename = "Bezier_fuselage_geometry_complete.stp";
 writer.Write(filename.c_str());
+
+// now define a CST parametrization
+
+Standard_Real N_1 = 0.5;
+Standard_Real N_2 = 1.0;
+
+std::vector<Standard_Real> upper_cst_b {0.11809019, 0.18951797, 0.20255648};
+Standard_Real relative_te_thickness = 0.005;
+
+geoml::CCSTCurveBuilder upper_cst_curve_builder (N_1, N_2, upper_cst_b, relative_te_thickness / 2);
+
+Handle(Geom_BSplineCurve) upper_cst = upper_cst_curve_builder.Curve();
+
+BRepBuilderAPI_MakeEdge upper_cst_edge_builder (upper_cst);
+
+TopoDS_Edge upper_cst_edge = upper_cst_edge_builder.Edge();
+
+filename = "upper_cst_edge.brep";
+BRepTools::Write(upper_cst_edge, filename.c_str());
+
+std::vector<Standard_Real> lower_cst_b {-0.11809019, -0.23641964, 0.03463958};
+
+geoml::CCSTCurveBuilder lower_cst_curve_builder (N_1, N_2, lower_cst_b, -1 * (relative_te_thickness / 2));
+
+Handle(Geom_BSplineCurve) lower_cst = lower_cst_curve_builder.Curve();
+
+BRepBuilderAPI_MakeEdge lower_cst_edge_builder (lower_cst);
+
+TopoDS_Edge lower_cst_edge = lower_cst_edge_builder.Edge();
+
+filename = "lower_cst_edge.brep";
+BRepTools::Write(lower_cst_edge, filename.c_str());
+
+
+
 
 }
