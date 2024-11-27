@@ -12,9 +12,6 @@
 #include <TopAbs_ShapeEnum.hxx>
 #include <TopoDS.hxx>
 
-#include <iostream>
-
-
 
 TEST(Test_translate, simple_translate_gp_Pnt_test)
 {    
@@ -143,7 +140,9 @@ TEST(Test_scale_vector, simple_scaling_of_a_vector)
 
     gp_Vec scaled_vec = geoml::scale_vector(my_vec, 4.);
 
-    std::cout << "Scaled vector: X = " << scaled_vec.X() <<", Y = " << scaled_vec.Y() << ", Z = " << scaled_vec.Z() << std::endl;
+    EXPECT_NEAR(scaled_vec.X(), 4., 1e-5);
+    EXPECT_NEAR(scaled_vec.Y(), 8., 1e-5);
+    EXPECT_NEAR(scaled_vec.Z(), 12., 1e-5);
     
 }
 
