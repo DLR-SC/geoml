@@ -50,4 +50,10 @@ TopoDS_Compound repeat_shape(TopoDS_Shape const& origin, Transform const& trans,
     return result;
 }
 
+gp_Vec scale_vector (const gp_Vec &vector , double factor)
+{
+    return vector.Multiplied(factor);
+}
+
+
 } // namespace geoml

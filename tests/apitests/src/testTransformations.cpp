@@ -12,6 +12,8 @@
 #include <TopAbs_ShapeEnum.hxx>
 #include <TopoDS.hxx>
 
+#include <iostream>
+
 
 
 TEST(Test_translate, simple_translate_gp_Pnt_test)
@@ -132,6 +134,16 @@ TEST(Test_repeat_shapes, repeat_a_point)
 
         explorer.Next();
     }
+    
+}
+
+TEST(Test_scale_vector, simple_scaling_of_a_vector)
+{  
+    gp_Vec my_vec (1., 2., 3.);
+
+    gp_Vec scaled_vec = geoml::scale_vector(my_vec, 4.);
+
+    std::cout << "Scaled vector: X = " << scaled_vec.X() <<", Y = " << scaled_vec.Y() << ", Z = " << scaled_vec.Z() << std::endl;
     
 }
 

@@ -62,6 +62,14 @@ GEOML_API_EXPORT std::vector<gp_Pnt> translate(std::vector<gp_Pnt> const& origin
  */
 GEOML_API_EXPORT TopoDS_Compound repeat_shape(TopoDS_Shape const& origin, Transform const& trans, int n_repeats);
 
+/**
+ * @brief Scale a vector 
+ *
+ * @param vector The vector to scale
+ * @param factor  The scale factor 
+ */
+GEOML_API_EXPORT gp_Vec scale_vector (const gp_Vec &vector , double factor);
+
 
 
 } // namespace geoml
