@@ -54,5 +54,16 @@ extract_control_point_vector_in_V_direction (const Handle(Geom_BSplineSurface) &
 GEOML_API_EXPORT TopoDS_Shape
 make_fillet (const TopoDS_Shape &solid_shape , const std::vector<int> &edge_indices, double radius);
 
+/**
+ * @brief Add a fillet to an edge 
+ *
+ * @param solid_shape The solid with the edge to be filleted
+ * @param edge_index The index of the edge to fillet
+ * @param radius The radius of the fillet    
+ */
+GEOML_API_EXPORT TopoDS_Shape
+make_fillet (const TopoDS_Shape &solid_shape , int edge_index, double radius);
+
+
 
 } // namespace geoml

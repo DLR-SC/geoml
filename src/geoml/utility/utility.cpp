@@ -59,5 +59,12 @@ TopoDS_Shape make_fillet (const TopoDS_Shape &solid_shape , const std::vector<in
     return MF.Shape();      
 }
 
+TopoDS_Shape make_fillet (const TopoDS_Shape &solid_shape , int edge_index, double radius)
+{
+    std::vector<int> index {edge_index};
+    return make_fillet(solid_shape, index, radius);
+}
+
+
 
 } // namespace geoml
