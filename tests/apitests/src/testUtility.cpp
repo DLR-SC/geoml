@@ -11,9 +11,7 @@
 
 #include <vector>
 
-#include "STEPControl_Writer.hxx"
-#include <string>
-#include <iostream>
+
 
 
 TEST(Test_extract_control_points_from_surface, extract_control_points_from_surface)
