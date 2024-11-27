@@ -1,6 +1,13 @@
 #include "geoml/utility/utility.h"
 #include "geoml/data_structures/conversions.h"
 
+#include <BRepFilletAPI_MakeFillet.hxx>
+#include <TopTools_IndexedMapOfShape.hxx>
+#include <TopExp.hxx>
+#include <TopAbs.hxx>
+#include <TopoDS_Edge.hxx>
+#include <TopoDS.hxx>
+
 
 namespace geoml{
 
@@ -35,6 +42,21 @@ std::vector<gp_Pnt> extract_control_point_vector_in_V_direction (const Handle(Ge
 
     return vec;    
 
+}
+
+TopoDS_Shape make_fillet (const TopoDS_Shape &solid_shape , const std::vector<int> &edge_indices, double radius)
+{
+    BRepFilletAPI_MakeFillet MF (solid_shape);
+
+    TopTools_IndexedMapOfShape edgeMap;
+    TopExp::MapShapes(solid_shape, TopAbs_EDGE, edgeMap);
+
+    for (int i: edge_indices)
+    {
+         MF.Add(radius, TopoDS::Edge(edgeMap(i)));  
+    }
+
+    return MF.Shape();      
 }
 
 
