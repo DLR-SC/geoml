@@ -45,11 +45,15 @@
 #include <Geom_Plane.hxx>
 #include <GeomAPI_IntCS.hxx>
 #include <ShapeAnalysis_Surface.hxx>
+#include <gp_Trsf.hxx>
 
 #include <GeomConvert_CompCurveToBSplineCurve.hxx>
 #include <LocalAnalysis_SurfaceContinuity.hxx>
 #include <BRepBuilderAPI_Sewing.hxx>
 #include "geometry/CCSTCurveBuilder.h"
+#include <gp_Ax1.hxx>
+#include <BRepBuilderAPI_Transform.hxx>
+#include <gp.hxx>
 
 #include "STEPControl_Writer.hxx"
 
@@ -1347,7 +1351,60 @@ TopoDS_Edge lower_cst_edge = lower_cst_edge_builder.Edge();
 filename = "lower_cst_edge.brep";
 BRepTools::Write(lower_cst_edge, filename.c_str());
 
+// closing trailing edge
 
+Standard_Real last_parameter_upper_cst = upper_cst->LastParameter();
+Standard_Real last_parameter_lower_cst = lower_cst->LastParameter();
+
+gp_Pnt trailing_edge_upper_point;
+gp_Pnt trailing_edge_lower_point;
+
+upper_cst->D0(last_parameter_upper_cst, trailing_edge_upper_point);
+lower_cst->D0(last_parameter_lower_cst, trailing_edge_lower_point);
+
+Handle(Geom_TrimmedCurve) trailing_edge_curve = GC_MakeSegment(trailing_edge_upper_point, trailing_edge_lower_point); 
+
+TopoDS_Edge trailing_edge = BRepBuilderAPI_MakeEdge(trailing_edge_curve);
+
+TopoDS_Wire wing_airfoil_base_wire = BRepBuilderAPI_MakeWire(upper_cst_edge, trailing_edge, lower_cst_edge);
+
+filename = "wing_airfoil_base_wire.brep";
+BRepTools::Write(wing_airfoil_base_wire, filename.c_str());
+
+// rotate the wing airfoli base wire around the x-axis
+
+gp_Pnt leading_edge_wing_base_profile (0., 0., 0.);
+
+gp_Trsf gp_transform_ox; 
+
+gp_transform_ox.SetRotation(gp::OX(), M_PI/2);
+
+BRepBuilderAPI_Transform transform_ox (wing_airfoil_base_wire, gp_transform_ox, Standard_True);
+
+TopoDS_Shape wing_airfoil_base_wire_xz = transform_ox.Shape();
+
+gp_Trsf gp_transform_scale_base;
+
+gp_transform_scale_base.SetScale(leading_edge_wing_base_profile, 6567.896);
+
+BRepBuilderAPI_Transform transform_scale (wing_airfoil_base_wire_xz, gp_transform_scale_base, Standard_True);
+
+TopoDS_Shape wing_airfoil_base_wire_xz_scaled = transform_scale.Shape();
+
+filename = "wing_airfoil_base_wire_xz_scaled.brep";
+BRepTools::Write(wing_airfoil_base_wire_xz_scaled, filename.c_str());
+
+
+
+
+
+
+
+//gp_GTrsf gTrsf_airfoil_base_wire_inner (gp_Mat(scale_x, 0, 0, 0, scale_y, 0, 0, 0, scale_z), gp_XYZ(move_x, 0., move_z));
+
+// BRepBuilderAPI_GTransform gTransform_airfoil_base_wire (wing_airfoil_base_wire, gTrsf, true);
+
+// TopoDS_Shape tail_profile_shape = gTransform.Shape();
 
 
 }
