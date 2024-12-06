@@ -1394,6 +1394,40 @@ TopoDS_Shape wing_airfoil_base_wire_xz_scaled = transform_scale.Shape();
 filename = "wing_airfoil_base_wire_xz_scaled.brep";
 BRepTools::Write(wing_airfoil_base_wire_xz_scaled, filename.c_str());
 
+// construct tip wire
+
+gp_Trsf gp_transform_scale_tip;
+
+gp_transform_scale_tip.SetScale(leading_edge_wing_base_profile, 1313.579);
+
+BRepBuilderAPI_Transform transform_scale_tip (wing_airfoil_base_wire_xz, gp_transform_scale_tip, Standard_True);
+
+TopoDS_Shape wing_airfoil_tip_wire_xz_scaled = transform_scale_tip.Shape();
+
+filename = "wing_airfoil_tip_wire_xz_scaled.brep";
+BRepTools::Write(wing_airfoil_tip_wire_xz_scaled, filename.c_str());
+
+// translation vector
+
+Standard_Real translation_angle = 27.5;
+
+Standard_Real translation_z = 0;
+Standard_Real translation_y = 16748.134;
+Standard_Real translation_x = translation_y * std::tan(translation_angle * M_PI / 180);
+
+gp_Vec translation_vec (translation_x, translation_y, translation_z);
+
+gp_Trsf gp_transform_translate_tip;
+
+gp_transform_translate_tip.SetTranslation(translation_vec);
+
+BRepBuilderAPI_Transform transform_translate_tip (wing_airfoil_tip_wire_xz_scaled, gp_transform_translate_tip, Standard_True);
+
+TopoDS_Shape wing_airfoil_tip_wire_xz_scaled_and_translated = transform_translate_tip.Shape();
+
+filename = "wing_airfoil_tip_wire_xz_scaled_and_translated.brep";
+BRepTools::Write(wing_airfoil_tip_wire_xz_scaled_and_translated, filename.c_str());
+
 
 
 
