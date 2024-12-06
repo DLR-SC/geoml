@@ -54,6 +54,7 @@
 #include <gp_Ax1.hxx>
 #include <BRepBuilderAPI_Transform.hxx>
 #include <gp.hxx>
+#include <BRepOffsetAPI_ThruSections.hxx>
 
 #include "STEPControl_Writer.hxx"
 
@@ -1041,11 +1042,11 @@ Standard_Real x_difference_tail_column_2_3 = 1500.;
 // middle fuselage front profile points
 
 gp_Pnt P_1 (x_position_of_middle_fuselage_front_profile, 0., 1950.);
-gp_Pnt P_2 (x_position_of_middle_fuselage_front_profile, -1076.95526217, 1950.);
-gp_Pnt P_3 (x_position_of_middle_fuselage_front_profile, -1950., 1076.95526217);
-gp_Pnt P_4 (x_position_of_middle_fuselage_front_profile, -1950., 0.);
-gp_Pnt P_5 (x_position_of_middle_fuselage_front_profile, -1950., -1076.95526217);
-gp_Pnt P_6 (x_position_of_middle_fuselage_front_profile, -1076.95526217, -1950.);
+gp_Pnt P_2 (x_position_of_middle_fuselage_front_profile, 1076.95526217, 1950.);
+gp_Pnt P_3 (x_position_of_middle_fuselage_front_profile, 1950., 1076.95526217);
+gp_Pnt P_4 (x_position_of_middle_fuselage_front_profile, 1950., 0.);
+gp_Pnt P_5 (x_position_of_middle_fuselage_front_profile, 1950., -1076.95526217);
+gp_Pnt P_6 (x_position_of_middle_fuselage_front_profile, 1076.95526217, -1950.);
 gp_Pnt P_7 (x_position_of_middle_fuselage_front_profile, 0., -1950.);
 
 // points for column 1
@@ -1427,6 +1428,52 @@ TopoDS_Shape wing_airfoil_tip_wire_xz_scaled_and_translated = transform_translat
 
 filename = "wing_airfoil_tip_wire_xz_scaled_and_translated.brep";
 BRepTools::Write(wing_airfoil_tip_wire_xz_scaled_and_translated, filename.c_str());
+
+// create wing surface
+
+BRepOffsetAPI_ThruSections loft_generator (Standard_False, Standard_True);
+
+TopoDS_Wire tip_wire = TopoDS::Wire(wing_airfoil_tip_wire_xz_scaled_and_translated);
+
+loft_generator.AddWire(TopoDS::Wire(wing_airfoil_base_wire_xz_scaled));
+loft_generator.AddWire(tip_wire);
+
+loft_generator.Build();
+
+TopoDS_Shape wing_shape = loft_generator.Shape();
+
+filename = "wing_shape.brep";
+BRepTools::Write(wing_shape, filename.c_str());
+
+// create wing cap
+
+TopoDS_Face wing_cap = BRepBuilderAPI_MakeFace(tip_wire, Standard_True);
+
+filename = "wing_cap.brep";
+BRepTools::Write(wing_cap, filename.c_str());
+
+// sewing wing surface and wing cap
+
+BRepBuilderAPI_Sewing wing_sew;
+
+TopExp_Explorer wing_face_explorer(wing_shape, TopAbs_FACE);
+
+while(wing_face_explorer.More())
+{
+    TopoDS_Face aFace = TopoDS::Face(wing_face_explorer.Current());
+    wing_sew.Add(aFace);
+    wing_face_explorer.Next();
+}
+
+wing_sew.Add(wing_cap);
+
+wing_sew.Perform();
+
+TopoDS_Shape sewed_wing_shape = wing_sew.SewedShape();
+
+
+
+
 
 
 
