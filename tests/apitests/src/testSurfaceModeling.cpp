@@ -16,6 +16,7 @@
 #include <gp_Pnt2d.hxx>
 
 #include <TopoDS_Shape.hxx>
+#include <TopoDS_Shell.hxx>
 #include <TopoDS_Compound.hxx>
 #include <TopoDS_Vertex.hxx>
 #include <TopExp.hxx>
@@ -55,6 +56,7 @@
 #include <BRepBuilderAPI_Transform.hxx>
 #include <gp.hxx>
 #include <BRepOffsetAPI_ThruSections.hxx>
+#include <BRepAlgoAPI_Cut.hxx>
 
 #include "STEPControl_Writer.hxx"
 
@@ -1306,18 +1308,18 @@ sew.Add(closed_tail_face);
 
 sew.Perform();
 
-TopoDS_Shape resulting_shape = sew.SewedShape();
+TopoDS_Shape bezier_fuselage_complete = sew.SewedShape();
 
 std::cout << "Result of Sewing (number of degenerated shapes: " << sew.NbDegeneratedShapes() << std::endl;
 
-filename = "Bezier_fuselage_geometry_complete.brep";
-BRepTools::Write(resulting_shape, filename.c_str());
+filename = "bezier_fuselage_complete.brep";
+BRepTools::Write(bezier_fuselage_complete, filename.c_str());
 
 // write to step file
 STEPControl_Writer writer;
-writer.Transfer(resulting_shape, STEPControl_AsIs);
+writer.Transfer(bezier_fuselage_complete, STEPControl_AsIs);
 
-filename = "Bezier_fuselage_geometry_complete.stp";
+filename = "bezier_fuselage_complete.stp";
 writer.Write(filename.c_str());
 
 // now define a CST parametrization
@@ -1471,21 +1473,131 @@ wing_sew.Perform();
 
 TopoDS_Shape sewed_wing_shape = wing_sew.SewedShape();
 
+// cut fuselage shape with wing
 
+BRepAlgoAPI_Cut cut_fuselage_with_wing (bezier_fuselage_complete, sewed_wing_shape);
 
+TopoDS_Shape cut_fuselage = cut_fuselage_with_wing.Shape();
 
+TopExp_Explorer shell_explorer(cut_fuselage, TopAbs_SHELL);
 
+std::vector<TopoDS_Face> fuselage_faces_needed_for_sewing;
 
+while(shell_explorer.More())
+{
+    TopoDS_Shell current_shell = TopoDS::Shell(shell_explorer.Current());
+    
+    std::cout << "at least one fuselage shell is there" << std::endl;
 
+    TopExp_Explorer inner_face_explorer(current_shell, TopAbs_FACE);
 
+    Standard_Integer inner_face_counter = 1;
 
+    while(inner_face_explorer.More())
+    {
+        TopoDS_Face current_face = TopoDS::Face(inner_face_explorer.Current());
+        
+        std::cout << "Inner face counter value for fuselage shell: " << inner_face_counter << std::endl;
 
+        if (inner_face_counter != 4)
+        {
+            fuselage_faces_needed_for_sewing.push_back(current_face);
+        }
 
-//gp_GTrsf gTrsf_airfoil_base_wire_inner (gp_Mat(scale_x, 0, 0, 0, scale_y, 0, 0, 0, scale_z), gp_XYZ(move_x, 0., move_z));
+        inner_face_counter++;
 
-// BRepBuilderAPI_GTransform gTransform_airfoil_base_wire (wing_airfoil_base_wire, gTrsf, true);
+        inner_face_explorer.Next();
+    }
 
-// TopoDS_Shape tail_profile_shape = gTransform.Shape();
+    shell_explorer.Next();
+}
+
+filename = "cut_fuselage.brep";
+BRepTools::Write(cut_fuselage, filename.c_str());
+
+// cut wing shape with fuselage
+
+BRepAlgoAPI_Cut cut_wing_with_fuselage (sewed_wing_shape, bezier_fuselage_complete);
+
+TopoDS_Shape cut_wing = cut_wing_with_fuselage.Shape();
+
+TopExp_Explorer cut_wing_shell_explorer(cut_wing, TopAbs_SHELL);
+
+std::vector<TopoDS_Face> wing_faces_needed_for_sewing;
+
+while(cut_wing_shell_explorer.More())
+{
+    TopoDS_Shell current_shell = TopoDS::Shell(cut_wing_shell_explorer.Current());
+    
+    std::cout << "at least one wing shell is there" << std::endl;
+
+    TopExp_Explorer inner_face_explorer(current_shell, TopAbs_FACE);
+
+    Standard_Integer inner_face_counter = 1;
+
+    while(inner_face_explorer.More())
+    {
+        TopoDS_Face current_face = TopoDS::Face(inner_face_explorer.Current());
+        
+        std::cout << "Inner face counter value for wing shell: " << inner_face_counter << std::endl;
+
+        if ((inner_face_counter != 4) && (inner_face_counter != 1) && (inner_face_counter != 2))
+        {
+            wing_faces_needed_for_sewing.push_back(current_face);
+        }
+
+        inner_face_counter++;
+
+        inner_face_explorer.Next();
+    }
+
+    cut_wing_shell_explorer.Next();
+}
+
+// this commented out code was used for debugging to find out which faces we need for the final shape
+
+// TopExp_Explorer face_explorer_cut_wing(cut_wing, TopAbs_FACE);
+
+// Standard_Integer counter_cut_wing = 1;
+
+// while(face_explorer_cut_wing.More())
+// {
+//     TopoDS_Face current_face = TopoDS::Face(face_explorer_cut_wing.Current());
+//     filename = "cut_wing" + std::to_string(counter_cut_wing) + ".brep";
+//     BRepTools::Write(current_face, filename.c_str());
+
+//     std::cout << filename << std::endl;
+
+//     counter_cut_wing++;
+
+//     face_explorer_cut_wing.Next();
+// }
+
+BRepBuilderAPI_Sewing sew_fuselage_and_wing_faces;
+
+for(const TopoDS_Face& current_face : fuselage_faces_needed_for_sewing)
+{
+    sew_fuselage_and_wing_faces.Add(current_face);
+}
+
+for(const TopoDS_Face& current_face : wing_faces_needed_for_sewing)
+{
+    sew_fuselage_and_wing_faces.Add(current_face);
+}
+
+sew_fuselage_and_wing_faces.Perform();
+
+TopoDS_Shape resulting_fuselage_wing_shape = sew_fuselage_and_wing_faces.SewedShape();
+
+filename = "resulting_fuselage_wing_shape.brep";
+BRepTools::Write(resulting_fuselage_wing_shape, filename.c_str());
+
+// write to step file
+STEPControl_Writer writer_for_resulting_shape;
+writer_for_resulting_shape.Transfer(resulting_fuselage_wing_shape, STEPControl_AsIs);
+
+filename = "resulting_fuselage_wing_shape.stp";
+writer_for_resulting_shape.Write(filename.c_str());
 
 
 }
