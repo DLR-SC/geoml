@@ -177,7 +177,11 @@ public:
         }
         Shape result{compound};
 
-        // overwrite children to make sure, the data is retained
+        // In the Shape constructor, new Shape instances are added as children
+        // from the TopoDS_Shape instances stored in the compound. These do not 
+        // yet have any historical data associated to them. To retain the historical
+        // modeling connections, we have to overwrite the children vector with the 
+        // result shapes from the visitor.
         result.m_data->children = std::vector<Shape>(v.results.begin(), v.results.end());
 
         return result;
