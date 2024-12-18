@@ -124,18 +124,18 @@ public:
     GEOML_API_EXPORT operator TopoDS_Shape() const;
 
     /**
-     * @brief returns the direct topological children of the shape
+     * @brief returns the direct topological subshapes of the shape
      * 
-     * @return std::vector<Shape> the direct topological children of the shape
+     * @return std::vector<Shape> the direct topological subshapes of the shape
      */
-    GEOML_API_EXPORT std::vector<Shape> const& get_children() const;
+    GEOML_API_EXPORT std::vector<Shape> const& direct_subshapes() const;
 
     /**
-     * @brief returns the direct topological children of the shape
+     * @brief returns the direct topological subshapes of the shape
      * 
-     * @return std::vector<Shape> the direct topological children of the shape
+     * @return std::vector<Shape> the direct topological subshapes of the shape
      */
-    GEOML_API_EXPORT std::vector<Shape>& get_children();
+    GEOML_API_EXPORT std::vector<Shape>& direct_subshapes();
 
     /**
      * @brief returns all subshapes of the shape. 

@@ -40,7 +40,7 @@ Shape::operator TopoDS_Shape() const {
     return m_data->shape;
 }
 
-std::vector<Shape> const& Shape::get_children() const
+std::vector<Shape> const& Shape::direct_subshapes() const
 {
     return m_data->children;
 }
@@ -97,7 +97,7 @@ bool Shape::is_empty() const
     return size() == 0;
 }
 
-std::vector<Shape>& Shape::get_children()
+std::vector<Shape>& Shape::direct_subshapes()
 {
     return m_data->children;
 }
