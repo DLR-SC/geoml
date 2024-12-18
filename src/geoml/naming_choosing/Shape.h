@@ -381,10 +381,22 @@ public:
     // as predicates when selecting subshapes
 
     /**
-     * @brief returns true if the wrapped TopoDS_Shape is null or if there
-     * are no direct children. Returns false otherwise.
+     * @brief returns true if there are no direct topological children.
+     * Returns false otherwise.
+     *
+     * The term "empty" here refers to the container of children, 
+     * For example, a compound is empty if it does not contain any 
+     * shapes. But for consistency, a vertex is also considered 
+     * empty, as it doesn't have any direct topological children.
+     *
      */
     GEOML_API_EXPORT bool is_empty() const;
+
+    /**
+     * @brief returns true if the wrapped TopoDS_Shape is null.
+     * Returns false otherwise.
+     */
+    GEOML_API_EXPORT bool is_null() const;
     
     /**
      * @brief returns true, if the type of the wrapped TopoDS_Shape is the 

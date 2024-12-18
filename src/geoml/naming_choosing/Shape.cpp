@@ -87,9 +87,14 @@ size_t Shape::size() const
     return 1;
 }
 
+bool Shape::is_null() const
+{
+    return m_data->shape.IsNull();
+}
+
 bool Shape::is_empty() const
 {
-    return m_data->shape.IsNull() || m_data->children.size() == 0;
+    return size() == 0;
 }
 
 std::vector<Shape>& Shape::get_children()
