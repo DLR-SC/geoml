@@ -175,7 +175,7 @@ public:
         for (auto const& s : v.results) {
             builder.Add(compound, s);
         }
-        Shape result = compound;
+        Shape result{compound};
 
         // overwrite children to make sure, the data is retained
         result.m_data->children = std::vector<Shape>(v.results.begin(), v.results.end());
