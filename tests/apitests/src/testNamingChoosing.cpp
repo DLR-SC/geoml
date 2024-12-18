@@ -436,7 +436,7 @@ TEST_P(PredicateSelection, split_edge_modeling_intent)
      ************************************************************************/
 
     // In every case, edge1 and edge2 should share a vertex.
-    // Let v1 and v2 be the indices of edge1 and v2 and v3 be the indices of edge2
+    // Let v1 and v2 be the vertices of edge1 and v2 and v3 be the vertices of edge2
     auto v1 = face_cut.select_subshapes(is_vertex && is_subshape_of(edge1) && !is_subshape_of(edge2)).unique_element();
     EXPECT_EQ(v1.size(), 1);
     EXPECT_EQ(TopoDS_Shape(v1).ShapeType(), TopAbs_VERTEX);
