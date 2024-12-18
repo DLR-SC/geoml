@@ -665,7 +665,7 @@ private:
 template <typename Pred>
 void add_persistent_meta_tag_to_subshapes(const Shape &input, Pred&& f, const std::string &tag)
 {
-    std::vector<Shape> selection = input.select_subshapes(f);
+    auto selection = input.select_subshapes(f);
     for (auto& selected_shape : selection)
     {
         selected_shape.add_meta_tag(tag);

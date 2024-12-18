@@ -18,6 +18,21 @@
 #include <BRepPrimAPI_MakeBox.hxx>
 #include <TopoDS.hxx>
 
+TEST(Shape, add_persistent_meta_tag_to_subshapes)
+{
+    using namespace geoml;
+    auto box = create_box(1., 1., 1.);
+    add_persistent_meta_tag_to_subshapes(box, is_vertex, "vertex");
+    auto not_vertices = box.select_subshapes(!is_vertex);
+    for (auto const& f : not_vertices) {
+        ASSERT_FALSE(f.has_tag("vertex"));
+    }
+    auto vertices = box.select_subshapes(is_vertex);
+    for (auto const& f : vertices) {
+        ASSERT_TRUE(f.has_tag("vertex"));
+    }
+}
+
 TEST(SelectSubShapes, BooleanCutCheckNumberOfSubShapes)
 {   
     using namespace geoml;
