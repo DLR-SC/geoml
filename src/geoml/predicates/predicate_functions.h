@@ -29,15 +29,6 @@ GEOML_API_EXPORT ShapePredicate operator&&(ShapePredicate const& l, ShapePredica
  * @param l First ShapePredicate
  * @param r Second ShapePredicate
  */
-GEOML_API_EXPORT ShapePredicate OR(ShapePredicate const& l, ShapePredicate const& r);
-
-/**
- * @brief Returns the ShapePredicate representing the disjunction of the two input ShapePredicates
- * 
- * 
- * @param l First ShapePredicate
- * @param r Second ShapePredicate
- */
 GEOML_API_EXPORT ShapePredicate operator||(ShapePredicate const& l, ShapePredicate const& r);
 
 GEOML_API_EXPORT ShapePredicate operator!(ShapePredicate const& pred);
