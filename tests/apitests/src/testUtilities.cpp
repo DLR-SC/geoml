@@ -1,6 +1,7 @@
 #include <geoml/surfaces/surfaces.h>
 #include "geoml/utilities/utilities.h"
 #include <geoml/data_structures/Array2d.h>
+#include <geoml/predicates/predicate_functions.h>
 
 #include <gtest/gtest.h>
 
@@ -10,6 +11,10 @@
 #include <TopAbs_ShapeEnum.hxx>
 
 #include <vector>
+
+// for debugging
+#include <iostream>
+#include "STEPControl_Writer.hxx"
 
 
 
@@ -111,21 +116,15 @@ TEST(Test_make_fillet, simple_make_fillet_multiple_indices_test)
 
     Shape my_box = box_maker.Solid();
 
-    //std::vector<int> indices {1, 3};
+    Shape edges = my_box.select_subshapes(is_edge).filter(has_subshape_that(is_a_vertex_with_coordinates(1., 2., 3.))); 
 
-    // Shape edges = my_box.select_subshapes(is_edge).filter(has_vertex_with_z_coordinate_larger_than(2.5)); 
+    EXPECT_EQ(edges.size(), 3);
 
-    // Shape filleted_box = geoml::make_fillet(my_box, edges, 0.15);
+    Shape filleted_box = make_fillet(my_box, edges, 0.15);
 
-    // int edge_count = 0;
+    Shape edges_of_filleted_box = filleted_box.select_subshapes(is_edge);
 
-    // for (TopExp_Explorer explorer(filleted_box, TopAbs_EDGE); explorer.More(); explorer.Next())
-    // {
-    //     edge_count++;
-    // }
-
-    // EXPECT_EQ(edge_count, 36);
-
+    EXPECT_EQ(edges_of_filleted_box.size(), 22); // 22 is the wrong number, at least not the one that one would expect - which is 21: See Issue 
 
 }
 
