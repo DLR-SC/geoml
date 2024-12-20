@@ -1,7 +1,7 @@
 #pragma once
 
 /**
- * @brief geoml/utility/utility.h includes a collection of functions that are helpful for geometry modeling
+ * @brief geoml/utilities/utilities.h includes a collection of functions that are helpful for geometry modeling
  */
 
 #include <geoml/geoml.h>
@@ -63,6 +63,8 @@ make_fillet (const TopoDS_Shape &solid_shape , const std::vector<int> &edge_indi
  */
 GEOML_API_EXPORT TopoDS_Shape
 make_fillet (const TopoDS_Shape &solid_shape , int edge_index, double radius);
+
+
 
 
 

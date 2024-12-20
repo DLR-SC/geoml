@@ -1,4 +1,4 @@
-#include "curves/modeling.h"
+#include "curves/curves.h"
 #include <Geom_BSplineCurve.hxx>
 #include "geometry/PointsToBSplineInterpolation.h"
 #include "common/CommonFunctions.h"

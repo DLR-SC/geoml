@@ -9,7 +9,7 @@ namespace geoml{
 Shape boolean_subtract (Shape const& shape, Shape const& cutting_tool)
 {
     BRepAlgoAPI_Cut cutter(shape, cutting_tool);
-    auto operation = BRepBuilderAPI_MakeShape_Operation(&cutter, {&shape,&cutting_tool});
+    auto operation = BRepBuilderAPI_MakeShape_Operation(&cutter, {shape, cutting_tool});
     return operation.value();
 }
 

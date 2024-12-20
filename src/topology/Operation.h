@@ -1,6 +1,6 @@
 #pragma once
 
-#include "geoml/naming_choosing/Shape.hpp"
+#include "geoml/naming_choosing/Shape.h"
 #include <vector>
 
 namespace geoml {
@@ -21,7 +21,7 @@ template <typename Derived>
 class Operation
 {
 public:
-    Operation(std::vector<Shape const*> const& inputs) // check if Shape const* is the right choice for this purpose (see the respective Issue)
+    Operation(std::vector<Shape> const& inputs) 
         : m_inputs(inputs)
     {};
 
@@ -38,11 +38,11 @@ public:
 
 protected:
 
-    static void add_origin(std::shared_ptr<Shape> output, std::shared_ptr<Shape> const input){
-        output->m_origins.push_back({input});
+    static void add_origin(Shape& output, Shape const& input){
+        output.m_data->origins.push_back(input);
     }
 
-    std::vector<Shape const*> m_inputs; // Lifetime issue: Operation may not outlive the inputs!
+    std::vector<Shape> const m_inputs;
 
 private:
 
@@ -51,7 +51,7 @@ private:
         // collect tag tracks of input Shapes and add them to the result Shape
         for(auto const &shape : m_inputs)
         {
-            for (auto const &input_tag_track : shape->get_tag_tracks())
+            for (auto const &input_tag_track : shape.get_tag_tracks())
             {
                 result.add_tag_track(input_tag_track);
             }
@@ -61,11 +61,12 @@ private:
         result.apply_tag_tracks();
 
         // delete the "worn out" Tag tracks and reduce the remaining step number of the remaining tag tracks by one
-        for (auto it = result.m_tag_tracks.begin(); it != result.m_tag_tracks.end();)
+        auto& tag_tracks = result.get_tag_tracks();
+        for (auto it = tag_tracks.begin(); it != tag_tracks.end();)
         {
             if (it->m_remainingSteps <= 1)
             {
-                it = result.m_tag_tracks.erase(it);
+                it = tag_tracks.erase(it);
             } else {
                 it->m_remainingSteps--;
                 ++it;

@@ -1,5 +1,5 @@
-#include <geoml/surfaces/modeling.h>
-#include "geoml/utility/utility.h"
+#include <geoml/surfaces/surfaces.h>
+#include "geoml/utilities/utilities.h"
 #include <geoml/data_structures/Array2d.h>
 
 #include <gtest/gtest.h>

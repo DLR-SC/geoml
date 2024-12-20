@@ -1,4 +1,4 @@
-#include "geom_topo/modeling.h"
+#include "geom_topo_conversions/geom_topo_conversions.h"
 
 #include <BRepBuilderAPI_MakeFace.hxx>
 #include <BRepBuilderAPI_MakeEdge.hxx>
