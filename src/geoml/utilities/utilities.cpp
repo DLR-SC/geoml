@@ -44,27 +44,17 @@ std::vector<gp_Pnt> extract_control_point_vector_in_V_direction (const Handle(Ge
 
 }
 
-TopoDS_Shape make_fillet (const TopoDS_Shape &solid_shape , const std::vector<int> &edge_indices, double radius)
+Shape make_fillet (Shape const& solid , Shape const& edges, Standard_Real radius)
 {
-    BRepFilletAPI_MakeFillet MF (solid_shape);
+    BRepFilletAPI_MakeFillet MF (solid);
 
-    TopTools_IndexedMapOfShape edgeMap;
-    TopExp::MapShapes(solid_shape, TopAbs_EDGE, edgeMap);
-
-    for (int i: edge_indices)
+    for (int i = 0; i< edges.size(); i++)
     {
-         MF.Add(radius, TopoDS::Edge(edgeMap(i)));  
+        TopoDS_Edge temp_edge = TopoDS::Edge(edges[i]);
+        MF.Add(radius, temp_edge);  
     }
 
     return MF.Shape();      
 }
-
-TopoDS_Shape make_fillet (const TopoDS_Shape &solid_shape , int edge_index, double radius)
-{
-    std::vector<int> index {edge_index};
-    return make_fillet(solid_shape, index, radius);
-}
-
-
 
 } // namespace geoml

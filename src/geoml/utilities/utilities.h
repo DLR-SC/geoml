@@ -7,6 +7,7 @@
 #include <geoml/geoml.h>
 
 #include "geoml/data_structures/Array2d.h"
+#include "geoml/naming_choosing/Shape.h"
 
 #include <Geom_BSplineSurface.hxx>
 #include <gp_Pnt.hxx>
@@ -45,27 +46,12 @@ GEOML_API_EXPORT std::vector<gp_Pnt>
 extract_control_point_vector_in_V_direction (const Handle(Geom_BSplineSurface) &b_spline_surface, int i);
 
 /**
- * @brief Add fillets to an edge 
+ * @brief Add fillets to the edges of a solid
  *
- * @param solid_shape The solid with the edge to be filleted
- * @param edge_indices The indices of the edges to fillet
+ * @param solid The solid 
+ * @param edges The edges of the solid to fillet
  * @param radius The radius of the fillet    
  */
-GEOML_API_EXPORT TopoDS_Shape
-make_fillet (const TopoDS_Shape &solid_shape , const std::vector<int> &edge_indices, double radius);
-
-/**
- * @brief Add a fillet to an edge 
- *
- * @param solid_shape The solid with the edge to be filleted
- * @param edge_index The index of the edge to fillet
- * @param radius The radius of the fillet    
- */
-GEOML_API_EXPORT TopoDS_Shape
-make_fillet (const TopoDS_Shape &solid_shape , int edge_index, double radius);
-
-
-
-
+GEOML_API_EXPORT Shape make_fillet (Shape const& solid , Shape const& edges, Standard_Real radius);
 
 } // namespace geoml

@@ -41,6 +41,7 @@ inline ShapePredicate const is_face = [](Shape const& s){ return s.is_type(TopAb
 inline ShapePredicate const is_solid = [](Shape const& s){ return s.is_type(TopAbs_SOLID); };
 inline ShapePredicate const has_origin = [](Shape const& s){ return s.has_origin(); };
 
+
 // some free functions returning shape predicates
 GEOML_API_EXPORT ShapePredicate has_tag(std::string const& tag);
 GEOML_API_EXPORT ShapePredicate is_type(TopAbs_ShapeEnum shape_type);
@@ -55,6 +56,9 @@ GEOML_API_EXPORT ShapePredicate is_modified_descendent_of_subshape_in(Shape cons
 GEOML_API_EXPORT ShapePredicate is_descendent_of_subshape_in(Shape const& other, int max_depth=std::numeric_limits<int>::max());
 GEOML_API_EXPORT ShapePredicate is_descendent_of(Shape const& other, int max_depth=std::numeric_limits<int>::max());
 GEOML_API_EXPORT ShapePredicate has_subshape_that(ShapePredicate const& pred);
+
+//some free functions returning geometric criteria (shape predicates)
+GEOML_API_EXPORT ShapePredicate is_a_vertex_with_coordinates(Standard_Real x, Standard_Real y, Standard_Real z);
 
 
 } // namespace geoml

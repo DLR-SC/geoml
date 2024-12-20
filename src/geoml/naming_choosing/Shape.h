@@ -16,6 +16,7 @@
 #include <TopoDS_Shape.hxx>
 #include <TopoDS_Iterator.hxx>
 
+
 namespace geoml {
 
 // forward declaration
@@ -192,7 +193,7 @@ public:
      * that satisfy a certain predicate. In contrast to select_subshapes, 
      * this function does not recurse to the subshape's subshapes.
      * 
-     * @tparam Pred The predicate function taking a const referende to a Shape
+     * @tparam Pred The predicate function taking a const reference to a Shape
      *              and returning a Boolean
      * @param f The predicate function
      * @return Shape A Shape wrapping a topological unconnected TopoDS_Compound of subshapes
@@ -363,14 +364,14 @@ public:
     GEOML_API_EXPORT iterator const end();
     
     /**
-     * @brief retrieve the i-th direct topological child
+     * @brief retrieve the i-th direct topological child - (indexation starting from 0)
      * 
      * @param i the index of the topological child
      */
     GEOML_API_EXPORT Shape const& operator[](int i) const;
     
     /**
-     * @brief retrieve the i-th direct topological child
+     * @brief retrieve the i-th direct topological child - (indexation starting from 0)
      * 
      * @param i the index of the topological child
      */
