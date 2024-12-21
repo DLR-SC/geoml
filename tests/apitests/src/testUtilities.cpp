@@ -124,7 +124,7 @@ TEST(Test_make_fillet, simple_make_fillet_multiple_indices_test)
 
     Shape edges_of_filleted_box = filleted_box.select_subshapes(is_edge);
 
-    EXPECT_EQ(edges_of_filleted_box.size(), 22); // 22 is the wrong number, at least not the one that one would expect - which is 21: See Issue 
+    EXPECT_EQ(edges_of_filleted_box.size(), 22); // 22 is the wrong number, at least not the one that one would expect - which is 21: See Issue #32
 
 }
 
