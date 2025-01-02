@@ -87,18 +87,4 @@ ShapePredicate has_subshape_that(ShapePredicate const& pred)
     return [=](geoml::Shape const& s){ return s.has_subshape_that(pred); };
 }
 
-ShapePredicate is_a_vertex_with_coordinates(Standard_Real x, Standard_Real y, Standard_Real z)
-{
-    return [=](Shape const& s){ 
-        if (s.is_type(TopAbs_VERTEX))
-        {
-            TopoDS_Vertex vert = TopoDS::Vertex(s);
-            gp_Pnt vert_point = BRep_Tool::Pnt(vert);
-
-            return (vert_point.X() == x && vert_point.Y() == y && vert_point.Z() == z);
-        }
-
-        return false; };
-}
-
 } // namespace geoml

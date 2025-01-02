@@ -9,8 +9,12 @@
 #include <BRepPrimAPI_MakeBox.hxx>
 #include <TopExp_Explorer.hxx>
 #include <TopAbs_ShapeEnum.hxx>
+#include "TopoDS.hxx"
+#include <BRepExtrema_DistShapeShape.hxx>
+#include <BRepBuilderAPI_MakeVertex.hxx>
 
 #include <vector>
+#include <cmath>
 
 // for debugging
 #include <iostream>
@@ -104,6 +108,15 @@ EXPECT_NEAR(geoml::extract_control_point_vector_in_U_direction(test_surface,1).a
 
 }
 
+geoml::ShapePredicate is_near_ref_point(gp_Pnt ref_point, double tolerance)
+{
+    return [=](geoml::Shape const& s){ 
+        TopoDS_Vertex vert = TopoDS::Vertex(s);
+        gp_Pnt vert_point = BRep_Tool::Pnt(vert);
+
+        return vert_point.SquareDistance(ref_point) < tolerance; };
+}
+
 TEST(Test_make_fillet, simple_make_fillet_multiple_indices_test)
 {  
     using namespace geoml;
@@ -116,15 +129,41 @@ TEST(Test_make_fillet, simple_make_fillet_multiple_indices_test)
 
     Shape my_box = box_maker.Solid();
 
-    Shape edges = my_box.select_subshapes(is_edge).filter(has_subshape_that(is_a_vertex_with_coordinates(1., 2., 3.))); 
+    gp_Pnt ref_point (1., 2. , 3.);
+
+    Shape edges = my_box.select_subshapes(is_edge).filter(has_subshape_that(is_vertex && is_near_ref_point(ref_point, 1e-5))); 
 
     EXPECT_EQ(edges.size(), 3);
 
     Shape filleted_box = make_fillet(my_box, edges, 0.15);
 
-    Shape edges_of_filleted_box = filleted_box.select_subshapes(is_edge);
+    gp_Pnt sample_point_1 (0.937, 1.937, 2.937);
+    gp_Pnt sample_point_2 (0.956, 0.000, 2.956);
+    gp_Pnt sample_point_3 (0.000, 1.956, 2.956);
 
-    EXPECT_EQ(edges_of_filleted_box.size(), 22); // 22 is the wrong number, at least not the one that one would expect - which is 21: See Issue #32
+    BRepBuilderAPI_MakeVertex vertex_builder_1 (sample_point_1);
+    BRepBuilderAPI_MakeVertex vertex_builder_2 (sample_point_2);
+    BRepBuilderAPI_MakeVertex vertex_builder_3 (sample_point_3);
+
+    TopoDS_Vertex sample_vertex_1 = vertex_builder_1.Vertex();
+    TopoDS_Vertex sample_vertex_2 = vertex_builder_2.Vertex();
+    TopoDS_Vertex sample_vertex_3 = vertex_builder_3.Vertex();
+
+    BRepExtrema_DistShapeShape dist_tool_1 (filleted_box, sample_vertex_1);
+    dist_tool_1.Perform();
+    Standard_Real sample_distance_1 = dist_tool_1.Value();
+
+    BRepExtrema_DistShapeShape dist_tool_2 (filleted_box, sample_vertex_2);
+    dist_tool_2.Perform();
+    Standard_Real sample_distance_2 = dist_tool_2.Value();
+
+    BRepExtrema_DistShapeShape dist_tool_3 (filleted_box, sample_vertex_3);
+    dist_tool_3.Perform();
+    Standard_Real sample_distance_3 = dist_tool_3.Value();
+
+    EXPECT_TRUE(sample_distance_1 < 1e-3);
+    EXPECT_TRUE(sample_distance_2 < 1e-3);
+    EXPECT_TRUE(sample_distance_3 < 1e-3);
 
 }
 
