@@ -121,7 +121,6 @@ TEST(Test_make_fillet, simple_make_fillet_multiple_indices_test)
 {  
     using namespace geoml;
 
-// create a box  
     gp_Pnt corner_1 (0.0, 0.0, 0.0); 
     gp_Pnt corner_2 (1.0, 2.0, 3.0); 
 
@@ -166,29 +165,3 @@ TEST(Test_make_fillet, simple_make_fillet_multiple_indices_test)
     EXPECT_TRUE(sample_distance_3 < 1e-3);
 
 }
-
-// TEST(Test_make_fillet, simple_make_fillet_single_index_test)
-// {  
-// // create a box  
-//     gp_Pnt corner_1 (0.0, 0.0, 0.0); 
-//     gp_Pnt corner_2 (1.0, 2.0, 3.0); 
-
-//     BRepPrimAPI_MakeBox box_maker (corner_1, corner_2);
-
-//     TopoDS_Solid my_box = box_maker.Solid();
-
-//     int index = 1;
-
-//     TopoDS_Shape filleted_box = geoml::make_fillet(my_box, index, 0.2);
-
-//     int edge_count = 0;
-
-//     for (TopExp_Explorer explorer(filleted_box, TopAbs_EDGE); explorer.More(); explorer.Next())
-//     {
-//         edge_count++;
-//     }
-
-//     EXPECT_EQ(edge_count, 30);
-
-
-// }
