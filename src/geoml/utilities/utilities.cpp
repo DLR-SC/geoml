@@ -7,7 +7,7 @@
 #include <TopAbs.hxx>
 #include <TopoDS_Edge.hxx>
 #include <TopoDS.hxx>
-
+#include <stdexcept>
 
 namespace geoml{
 
@@ -50,6 +50,10 @@ Shape make_fillet (Shape const& solid , Shape const& edges, Standard_Real radius
 
     for (int i = 0; i< edges.size(); i++)
     {
+        if (!edges[i].is_type(TopAbs_EDGE))
+        {
+            throw std::invalid_argument("A direct subshape of the second argument is not a TopoDS_EDGE");
+        }
         TopoDS_Edge temp_edge = TopoDS::Edge(edges[i]);
         MF.Add(radius, temp_edge);  
     }

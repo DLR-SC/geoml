@@ -15,9 +15,9 @@
 
 #include <vector>
 #include <cmath>
+#include <iostream>
 
 // for debugging
-#include <iostream>
 #include "STEPControl_Writer.hxx"
 
 
@@ -130,11 +130,13 @@ TEST(Test_make_fillet, simple_make_fillet_multiple_indices_test)
 
     gp_Pnt ref_point (1., 2. , 3.);
 
-    Shape edges = my_box.select_subshapes(is_edge).filter(has_subshape_that(is_vertex && is_near_ref_point(ref_point, 1e-5))); 
+    Shape edges_1 = my_box.select_subshapes(is_edge).filter(has_subshape_that(is_vertex && is_near_ref_point(ref_point, 1e-5))); 
 
-    EXPECT_EQ(edges.size(), 3);
+    EXPECT_EQ(edges_1.size(), 3);
 
-    Shape filleted_box = make_fillet(my_box, edges, 0.15);
+    EXPECT_NO_THROW({ Shape filleted_box = make_fillet(my_box, edges_1, 0.15); });
+
+    Shape filleted_box = make_fillet(my_box, edges_1, 0.15);
 
     gp_Pnt sample_point_1 (0.937, 1.937, 2.937);
     gp_Pnt sample_point_2 (0.956, 0.000, 2.956);
@@ -159,9 +161,13 @@ TEST(Test_make_fillet, simple_make_fillet_multiple_indices_test)
     BRepExtrema_DistShapeShape dist_tool_3 (filleted_box, sample_vertex_3);
     dist_tool_3.Perform();
     Standard_Real sample_distance_3 = dist_tool_3.Value();
-
+ 
     EXPECT_TRUE(sample_distance_1 < 1e-3);
     EXPECT_TRUE(sample_distance_2 < 1e-3);
     EXPECT_TRUE(sample_distance_3 < 1e-3);
+
+    Shape edges_2 = my_box.select_subshapes(is_face).filter(has_subshape_that(is_vertex && is_near_ref_point(ref_point, 1e-5))); 
+
+    EXPECT_THROW({ Shape filleted_box = make_fillet(my_box, edges_2, 0.15); }, std::invalid_argument);
 
 }
