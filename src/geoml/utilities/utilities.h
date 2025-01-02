@@ -49,7 +49,7 @@ extract_control_point_vector_in_V_direction (const Handle(Geom_BSplineSurface) &
  * @brief Add fillets to the edges of a solid
  *
  * @param solid The solid 
- * @param edges The edges of the solid to fillet
+ * @param edges The edges of the solid to fillet. If one direct subshape is not a TopoDS_EDGE, an std::invalid_argument exception is thrown
  * @param radius The radius of the fillet    
  */
 GEOML_API_EXPORT Shape make_fillet (Shape const& solid , Shape const& edges, Standard_Real radius);
