@@ -117,7 +117,7 @@ geoml::ShapePredicate is_near_ref_point(gp_Pnt ref_point, double tolerance)
         return vert_point.SquareDistance(ref_point) < tolerance; };
 }
 
-TEST(Test_make_fillet, simple_make_fillet_multiple_indices_test)
+TEST(Test_make_fillet, simple_make_fillet_test)
 {  
     using namespace geoml;
 
