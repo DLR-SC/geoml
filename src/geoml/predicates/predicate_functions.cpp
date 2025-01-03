@@ -24,7 +24,7 @@ ShapePredicate operator||(ShapePredicate const& l, ShapePredicate const& r)
 
 ShapePredicate make_predicate_has_tag(std::string const& tag)
 {
-    return [&](geoml::Shape const& s){ return s.has_tag(tag); };
+    return [=](geoml::Shape const& s){ return s.has_tag(tag); };
 }
 
 ShapePredicate make_predicate_has_subshape_that_is_child_of(Shape const &shape)
@@ -54,27 +54,27 @@ ShapePredicate make_predicate_has_origin()
 
 ShapePredicate make_predicate_is_unmodified_descendent_of(Shape const& other, int max_depth)
 {
-    return [&](geoml::Shape const& s){ return s.is_unmodified_descendent_of(other, max_depth); };
+    return [max_depth,&other](geoml::Shape const& s){ return s.is_unmodified_descendent_of(other, max_depth); };
 }
 
 ShapePredicate make_predicate_is_unmodified_descendent_of_subshape_in(Shape const& other, int max_depth)
 {
-    return [&](geoml::Shape const& s){ return s.is_unmodified_descendent_of_subshape_in(other, max_depth); };
+    return [max_depth,&other](geoml::Shape const& s){ return s.is_unmodified_descendent_of_subshape_in(other, max_depth); };
 }
 
 ShapePredicate make_predicate_is_modified_descendent_of(Shape const& other, int max_depth)
 {
-    return [&](geoml::Shape const& s){ return s.is_modified_descendent_of(other, max_depth); };
+    return [max_depth,&other](geoml::Shape const& s){ return s.is_modified_descendent_of(other, max_depth); };
 }
 
 ShapePredicate make_predicate_is_modified_descendent_of_subshape_in(Shape const& other, int max_depth)
 {
-    return [&](geoml::Shape const& s){ return s.is_modified_descendent_of_subshape_in(other, max_depth); };
+    return [max_depth,&other](geoml::Shape const& s){ return s.is_modified_descendent_of_subshape_in(other, max_depth); };
 }
 
 ShapePredicate make_predicate_is_descendent_of_subshape_in(Shape const& other, int max_depth)
 {
-    return [&](geoml::Shape const& s){ return s.is_descendent_of_subshape_in(other, max_depth); };
+    return [max_depth,&other](geoml::Shape const& s){ return s.is_descendent_of_subshape_in(other, max_depth); };
 }
 
 ShapePredicate make_predicate_is_child_of_subshape_in(Shape const& other)
@@ -84,7 +84,7 @@ ShapePredicate make_predicate_is_child_of_subshape_in(Shape const& other)
 
 ShapePredicate make_predicate_is_descendent_of(Shape const& other, int max_depth)
 {
-    return [&](geoml::Shape const& s){ return s.is_descendent_of(other, max_depth); };
+    return [max_depth,&other](geoml::Shape const& s){ return s.is_descendent_of(other, max_depth); };
 }
 
 ShapePredicate make_predicate_is_child_of(Shape const& other)
@@ -96,6 +96,17 @@ ShapePredicate make_predicate_is_type(TopAbs_ShapeEnum shape_type)
 {
     return [=](geoml::Shape const& s){ return s.is_type(shape_type); };
 }
+
+ShapePredicate make_predicate_has_subshape_with(ShapePredicate const& f)
+{
+    return [=](geoml::Shape const& s){ return s.has_subshape_with(f); };
+}
+
+ShapePredicate make_predicate_has_descendent_with(ShapePredicate const& f)
+{
+    return [=](geoml::Shape const& s){ return s.has_subshape_with(f); };
+}
+
 
 
 } // namespace geoml

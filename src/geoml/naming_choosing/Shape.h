@@ -141,6 +141,23 @@ public:
     GEOML_API_EXPORT bool is_child_of(Shape const& other) const;
     GEOML_API_EXPORT bool has_subshape_that_is_child_of(Shape const &shape) const;
     GEOML_API_EXPORT bool has_tag(std::string const& tag) const;
+    
+    template <typename Pred>
+    bool has_subshape_with(Pred&& f) const
+    {
+        return select_subshapes(f).size() > 0;
+    }
+    
+    template <typename Pred>
+    bool has_descendent_with(Pred&& f, int max_depth=std::numeric_limits<int>::max()) const
+    {
+        FindIfVisitor v(
+            [&](Shape const& shape){ return f(shape); },
+            max_depth
+        );
+        accept(v);
+        return v.found;
+    }
 
 private:
 
@@ -173,7 +190,7 @@ private:
         int m_max_depth;
     };
 
-	//TODO: Could be static. Or moved to commonfunctions.
+    //TODO: Could be static. Or moved to commonfunctions.
     GEOML_API_EXPORT Shape vector_of_shape_to_shape(std::vector<std::shared_ptr<Shape>> const& shapes) const;
 
     TopoDS_Shape m_shape;
