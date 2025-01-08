@@ -11,7 +11,6 @@ namespace geoml {
  *
  *   Shape perform() const
  *   void map_subshapes(Shape& result) const
- *   std::string id() const
  *
  * The first function performs the operation and returns the result. The second function maps
  * the result's subshapes to the inputs' subshapes by setting the result's subshapes' origin.
@@ -27,9 +26,9 @@ public:
 
     virtual ~Operation() = default;
 
-    Shape value() const {
-        Shape ret = static_cast<Derived const&>(*this).perform();
-        static_cast<Derived const&>(*this).map_subshapes(ret);
+    Shape value() {
+        Shape ret = static_cast<Derived&>(*this).perform();
+        static_cast<Derived&>(*this).map_subshapes(ret);
         
         merge_and_apply_tag_tracks(ret);
 

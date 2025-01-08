@@ -41,6 +41,7 @@
 #include "PNamedShape.h"
 #include "ProjectPointOnCurveAtAngle.h"
 #include "BSplineAlgorithms.h"
+#include "Splitter.h"
 
 #include "Geom_Curve.hxx"
 #include "Geom_Surface.hxx"
@@ -101,7 +102,6 @@
 #include <BRep_Tool.hxx>
 #include <gp_Pln.hxx>
 #include <gp_Pnt.hxx>
-#include <GEOMAlgo_Splitter.hxx>
 #include <ShapeFix_Wire.hxx>
 #include <TopTools_ListIteratorOfListOfShape.hxx>
 #include <Standard_Version.hxx>
@@ -1388,60 +1388,8 @@ TopoDS_Shape CutShapes(const TopoDS_Shape& shape1, const TopoDS_Shape& shape2)
 
 TopoDS_Shape SplitShape(const TopoDS_Shape& src, const TopoDS_Shape& tool)
 {
-#if OCC_VERSION_HEX >= VERSION_HEX_CODE(6,9,0)
-    double fuzzyValue = Precision::Confusion();
-    const int c_tries = 3;
-#endif
-
-    for (int i = 0;; i++) {
-        GEOMAlgo_Splitter splitter;
-        splitter.AddArgument(src);
-        splitter.AddTool(tool);
-#if OCC_VERSION_HEX >= VERSION_HEX_CODE(6,9,0)
-        splitter.SetFuzzyValue(fuzzyValue);
-#endif
-        try {
-            splitter.Perform();
-        }
-        catch (const Standard_Failure& f) {
-            std::stringstream ss;
-            ss << "ERROR: splitting of shapes failed: " << f.GetMessageString();
-            LOG(ERROR) << ss.str();
-            throw geoml::Error(ss.str());
-        }
-
-#if OCC_VERSION_HEX >= VERSION_HEX_CODE(7,2,0)
-        if (splitter.HasErrors()) {
-            if (i < c_tries - 1) {
-                fuzzyValue *= 10;
-                LOG(WARNING) << "SplitShape failed, retrying with fuzzyValue: " << fuzzyValue;
-                continue;
-            }
-
-            std::ostringstream oss;
-            splitter.GetReport()->Dump(oss);
-            LOG(ERROR) << "unable to split passed shapes: " << oss.str();
-            throw geoml::Error("unable to split passed shapes: " + oss.str());
-        }
-#elif OCC_VERSION_HEX >= VERSION_HEX_CODE(6,9,0)
-        if (splitter.ErrorStatus() != 0) {
-            if (i < c_tries - 1) {
-                fuzzyValue *= 10;
-                LOG(WARNING) << "SplitShape failed, retrying with fuzzyValue: " << fuzzyValue;
-                continue;
-            }
-
-            LOG(ERROR) << "unable to split passed shapes!";
-            throw geoml::Error("unable to split passed shapes!");
-        }
-#else
-        if (splitter.ErrorStatus() != 0) {
-            LOG(ERROR) << "unable to split passed shapes!";
-            throw geoml::Error("unable to split passed shapes!");
-        }
-#endif
-        return splitter.Shape();
-    }
+    geoml::Splitter splitter(src, tool);
+    return splitter.value();
 }
 
 void FindAllConnectedEdges(const TopoDS_Edge& edge, TopTools_ListOfShape& edgeList, TopTools_ListOfShape& targetList)

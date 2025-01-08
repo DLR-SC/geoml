@@ -1,6 +1,4 @@
-#include "BRepBuilderAPI_MakeShape_Operation.hpp"
-#include "BRepAlgoAPI_Cut.hxx"
-#include "BRepAlgoAPI_Fuse.hxx"
+#include "BRepBuilderAPI_MakeShape_Operation.h"
 
 namespace geoml {
 
@@ -12,10 +10,9 @@ BRepBuilderAPI_MakeShape_Operation::BRepBuilderAPI_MakeShape_Operation(
       m_algo(algo)
 {}
 
-Shape BRepBuilderAPI_MakeShape_Operation::perform() const
+Shape BRepBuilderAPI_MakeShape_Operation::perform()
 {
     return m_algo->Shape();
-
 }
 
 void BRepBuilderAPI_MakeShape_Operation::map_subshapes(Shape& result) const

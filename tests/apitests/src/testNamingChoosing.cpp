@@ -3,7 +3,7 @@
 #include <geoml/data_structures/Array2d.h>
 #include <geoml/geom_topo_conversions/geom_topo_conversions.h>
 #include <geoml/primitives/modeling.hpp>
-#include <geoml/boolean_ops/modeling.hpp>
+#include <geoml/boolean_ops/modeling.h>
 #include <geoml/predicates/predicate_functions.h>
 
 #include <gtest/gtest.h>

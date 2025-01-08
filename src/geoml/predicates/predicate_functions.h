@@ -38,6 +38,7 @@ GEOML_API_EXPORT ShapePredicate operator!(ShapePredicate const& pred);
 inline ShapePredicate const is_vertex = [](Shape const& s){ return s.is_type(TopAbs_VERTEX); };
 inline ShapePredicate const is_edge = [](Shape const& s){ return s.is_type(TopAbs_EDGE); };
 inline ShapePredicate const is_face = [](Shape const& s){ return s.is_type(TopAbs_FACE); };
+inline ShapePredicate const is_shell = [](Shape const& s){ return s.is_type(TopAbs_SHELL); };
 inline ShapePredicate const is_solid = [](Shape const& s){ return s.is_type(TopAbs_SOLID); };
 inline ShapePredicate const has_origin = [](Shape const& s){ return s.has_origin(); };
 
