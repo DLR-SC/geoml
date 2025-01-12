@@ -306,6 +306,8 @@ TEST(Test_interpolate_points_to_b_spline_curve, interpolation_custom_parameters)
     EXPECT_NEAR(test_point.X(), 1.0, 1e-5);
     EXPECT_NEAR(test_point.Y(), 0.0, 1e-5);
     EXPECT_NEAR(test_point.Z(), 0.0, 1e-5);
+
 }
+
 
 
