@@ -1,4 +1,5 @@
 #include <geoml/curves/curves.h>
+#include <geoml/curves/BlendCurve.h>
 #include "geometry/BSplineAlgorithms.h"
 
 #include <gtest/gtest.h>
