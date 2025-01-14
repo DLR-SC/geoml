@@ -1,7 +1,7 @@
-/*
+/* 
 * Copyright (C) 2025 German Aerospace Center (DLR/SC)
 *
-* Created: 2025-01-10 Anton Reiswich <Anton.Reiswich@dlr.de>
+* Created: 2025-01-13 Anton Reiswich <Anton.Reiswich@dlr.de>
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -18,10 +18,14 @@
 
 #pragma once
 
-enum class Continuity
+namespace geoml
+{
+
+enum class GContinuity
 {
     G0 = 0, 
     G1,
     G2
 };
 
+} // namespace geoml

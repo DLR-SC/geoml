@@ -21,63 +21,92 @@
 #pragma once
 
 #include <geoml/geoml.h>  
-#include "geoml/error.h"
-
-#include <cmath>
 
 #include "geometry/Continuity.h"
+#include "data_structures/conversions.h"
+#include "geom_topo_conversions/geom_topo_conversions.h"
 
-#include <BRep_Tool.hxx>
+#include <TColgp_Array1OfPnt.hxx>
+
+#include <TopoDS_Edge.hxx>
+#include <Geom_Curve.hxx>
+#include <gp_Vec.hxx>
+#include <Geom_BezierCurve.hxx>
+
+#include <vector>
 
 namespace geoml 
 {
 
-class BlendCurveConnection
+struct BlendCurveConnection
 {
-    Continuity ct = Continuity::G1;
-
-    BlendCurveConnection(TopoDS_Edge const& edge, gp_Pnt const& near_connection_point, Continuity continuity, Standard_Real form_factor_1, Standard_Real form_factor_2, bool outward_direction = true)
-    : m_near_connection_point(near_connection_point)
-    , m_continuity(continuity)
-    , m_beta0(form_factor_1)
-    , m_beta1(form_factor_2)
-    , m_outward_direction(outward_direction)
-    {
-	    m_curve = BRep_Tool::Curve(edge, m_curve_first_param, m_curve_last_param); 
-	    compute_blend_parameter();
-    } 
+    BlendCurveConnection(TopoDS_Edge const& edge, gp_Pnt const& near_connection_point, GContinuity continuity, Standard_Real form_factor_1, Standard_Real form_factor_2, bool outward_direction = true);
 
     Handle(Geom_Curve) m_curve; // in der aktuellen Implementierung werden Geom_BSpline curves verwendet.
     gp_Pnt m_near_connection_point;
-    Continuity m_continuity;
-    Standard_Real m_beta0;
-    Standard_Real m_beta1;
+    GContinuity m_continuity;
+    Standard_Real m_form_factor_1;
+    Standard_Real m_form_factor_2;
     bool m_outward_direction;
     Standard_Real m_curve_first_param;
     Standard_Real m_curve_last_param;
     Standard_Real m_curve_blend_param;
 
 private:
-    void compute_blend_parameter()
-    {
-        Standard_Real distance_first_point_on_curve_to_near_connection_point = m_curve->Value(m_curve_first_param).SquareDistance(m_near_connection_point);  
+    void compute_blend_parameter();
+};
 
-	    Standard_Real distance_last_point_on_curve_to_near_connection_point = m_curve->Value(m_curve_last_param).SquareDistance(m_near_connection_point);
+class BlendCurve
+{
+public:
+    
+    BlendCurve(BlendCurveConnection const& start, BlendCurveConnection const& end);
 
-    	if (std::abs(distance_first_point_on_curve_to_near_connection_point - distance_last_point_on_curve_to_near_connection_point) < 1e-5)
-    	{ 
-	        throw geoml::Error("near_connection_point has the same distance to both vertices of the edge");
-        }
-        else if (distance_first_point_on_curve_to_near_connection_point < distance_last_point_on_curve_to_near_connection_point)
-        {
-            m_curve_blend_param = m_curve_first_param;
-        }
-        else 
-        {
-            m_curve_blend_param = m_curve_last_param;
-        }
-    }
+    TopoDS_Edge blend_curve();
+
+private:
+
+    void compute_blend_points_and_derivatives_of_start_and_end_curve();
+
+    gp_Pnt compute_first_control_point_at_start();
+    gp_Pnt compute_second_control_point_at_start();
+    gp_Pnt compute_third_control_point_at_start();
+
+    gp_Pnt compute_first_control_point_at_end();
+    gp_Pnt compute_second_control_point_at_end();
+    gp_Pnt compute_third_control_point_at_end();
+
+    gp_Pnt get_i_th_control_point(unsigned int i, GContinuity contin_start, GContinuity contin_end);
+
+    std::vector<gp_Pnt> control_points_blend_curve();
+
+
+    BlendCurveConnection m_start;
+    BlendCurveConnection m_end;
+    
+    std::vector<gp_Pnt> m_control_point_vector;
+    
+    Handle(Geom_Curve) m_oriented_start_curve;
+    Handle(Geom_Curve) m_oriented_end_curve;
+    
+    Standard_Real m_blend_parameter_oriented_start_curve;
+    Standard_Real m_blend_parameter_oriented_end_curve;
+
+    gp_Pnt m_blend_point_start;
+    gp_Pnt m_blend_point_end;
+
+    gp_Vec m_first_derivative_oriented_start_curve;
+    gp_Vec m_second_derivative_oriented_start_curve;
+    
+    gp_Vec m_first_derivative_oriented_end_curve;
+    gp_Vec m_second_derivative_oriented_end_curve;
 
 };
+
+TopoDS_Edge blend_curve(BlendCurveConnection const& start, BlendCurveConnection const& end)
+{
+    BlendCurve my_blend_curve (start, end);
+    return my_blend_curve.blend_curve();
+}
 
 } // namespace geoml
