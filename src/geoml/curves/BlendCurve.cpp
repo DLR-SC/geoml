@@ -8,7 +8,7 @@
 
 namespace geoml{
 
-BlendCurveConnection::BlendCurveConnection(TopoDS_Edge const& edge, gp_Pnt const& near_connection_point, GContinuity continuity, Standard_Real form_factor_1, Standard_Real form_factor_2, bool outward_direction)
+BlendCurveConnection::BlendCurveConnection(TopoDS_Edge const& edge, gp_Pnt const& near_connection_point, GContinuity continuity, bool outward_direction, Standard_Real form_factor_1, Standard_Real form_factor_2)
 : m_near_connection_point(near_connection_point)
 , m_continuity(continuity)
 , m_form_factor_1(form_factor_1)
@@ -247,6 +247,10 @@ gp_Pnt BlendCurve::get_i_th_control_point(unsigned int i, GContinuity contin_sta
         else if(i==5) 
             return compute_first_control_point_at_end();
     }
+    else
+    {
+        throw geoml::Error("Wrong arguments for GContinuity.", GENERIC_ERROR);
+    }
 }
 
 std::vector<gp_Pnt> BlendCurve::control_points_blend_curve()
@@ -270,6 +274,12 @@ TopoDS_Edge BlendCurve::blend_curve()
     Handle(Geom_BezierCurve) bezier_curve = new Geom_BezierCurve(cp_tcol);
 
     return CurveToEdge(bezier_curve);
+}
+
+TopoDS_Edge blend_curve(BlendCurveConnection const& start, BlendCurveConnection const& end)
+{
+    BlendCurve my_blend_curve (start, end);
+    return my_blend_curve.blend_curve();
 }
 
 } // namespace geoml

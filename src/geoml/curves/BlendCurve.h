@@ -23,8 +23,8 @@
 #include <geoml/geoml.h>  
 
 #include "geometry/Continuity.h"
-#include "data_structures/conversions.h"
-#include "geom_topo_conversions/geom_topo_conversions.h"
+#include "geoml/data_structures/conversions.h"
+#include "geoml/geom_topo_conversions/geom_topo_conversions.h"
 
 #include <TColgp_Array1OfPnt.hxx>
 
@@ -40,7 +40,7 @@ namespace geoml
 
 struct BlendCurveConnection
 {
-    BlendCurveConnection(TopoDS_Edge const& edge, gp_Pnt const& near_connection_point, GContinuity continuity, Standard_Real form_factor_1, Standard_Real form_factor_2, bool outward_direction = true);
+    BlendCurveConnection(TopoDS_Edge const& edge, gp_Pnt const& near_connection_point, GContinuity continuity, bool outward_direction = true, Standard_Real form_factor_1 = 1., Standard_Real form_factor_2 = 1.);
 
     Handle(Geom_Curve) m_curve; // in der aktuellen Implementierung werden Geom_BSpline curves verwendet.
     gp_Pnt m_near_connection_point;
@@ -103,10 +103,6 @@ private:
 
 };
 
-TopoDS_Edge blend_curve(BlendCurveConnection const& start, BlendCurveConnection const& end)
-{
-    BlendCurve my_blend_curve (start, end);
-    return my_blend_curve.blend_curve();
-}
+TopoDS_Edge blend_curve(BlendCurveConnection const& start, BlendCurveConnection const& end);
 
 } // namespace geoml

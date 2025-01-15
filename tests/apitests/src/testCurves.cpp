@@ -1,16 +1,24 @@
 #include <geoml/curves/curves.h>
 #include <geoml/curves/BlendCurve.h>
 #include "geometry/BSplineAlgorithms.h"
+#include "geoml/data_structures/conversions.h"
+#include "geometry/Continuity.h"
 
 #include <gtest/gtest.h>
 
 #include <gp_Pnt.hxx>
 #include <Geom_BSplineCurve.hxx>
 #include <Geom_Curve.hxx>
+#include <Geom_BezierCurve.hxx>
 #include "BRepBuilderAPI_MakeEdge.hxx"
 #include <TopoDS_Shape.hxx>
 #include <GeomAdaptor_Curve.hxx>
 #include <GCPnts_AbscissaPoint.hxx>
+
+// debugging
+#include "STEPControl_Writer.hxx"
+#include <iostream>
+#include <string>
 
 TEST(Test_nurbs_curve, closed_unclamped_nurbs_curve)
 {    
@@ -307,6 +315,38 @@ TEST(Test_interpolate_points_to_b_spline_curve, interpolation_custom_parameters)
     EXPECT_NEAR(test_point.X(), 1.0, 1e-5);
     EXPECT_NEAR(test_point.Y(), 0.0, 1e-5);
     EXPECT_NEAR(test_point.Z(), 0.0, 1e-5);
+
+}
+
+TEST(Test_blend_curve, blend_curve_test)
+{
+    // define two curves, that are supposed to be connected via a blend curve
+
+    gp_Pnt cp_start_1 (0.,0.,0.);
+    gp_Pnt cp_start_2 (2.,0.,0.);
+    gp_Pnt cp_start_3 (2.,2.,0.);
+
+    gp_Pnt cp_end_1 (4.,4.,0.);
+    gp_Pnt cp_end_2 (0.,6.,0.);
+    gp_Pnt cp_end_3 (5.,6.,0.);
+
+    std::vector<gp_Pnt> contorl_points_start_curve{cp_start_1, cp_start_2, cp_start_3};
+    std::vector<gp_Pnt> contorl_points_end_curve{cp_end_1, cp_end_2, cp_end_3};
+
+    Handle(Geom_Curve) start_curve = new Geom_BezierCurve(geoml::StdVector_to_TCol(contorl_points_start_curve));
+    Handle(Geom_Curve) end_curve = new Geom_BezierCurve(geoml::StdVector_to_TCol(contorl_points_end_curve));
+
+    geoml::BlendCurveConnection start_connection (geoml::CurveToEdge(start_curve), cp_start_3, geoml::GContinuity::G0);
+    geoml::BlendCurveConnection end_connection (geoml::CurveToEdge(end_curve), cp_end_1, geoml::GContinuity::G0);
+
+    TopoDS_Edge resulting_blend_curve = geoml::blend_curve(start_connection, end_connection);
+
+    // write to step file
+    STEPControl_Writer writer;
+    writer.Transfer(resulting_blend_curve, STEPControl_AsIs);
+
+    std::string filename = "resulting_blend_curve.stp";
+    writer.Write(filename.c_str());
 
 }
 
