@@ -6,13 +6,14 @@
 
 #include <BRep_Tool.hxx>
 
+
 namespace geoml{
 
-BlendCurveConnection::BlendCurveConnection(TopoDS_Edge const& edge, gp_Pnt const& near_connection_point, GContinuity continuity, bool outward_direction, Standard_Real form_factor_1, Standard_Real form_factor_2)
+BlendCurveConnection::BlendCurveConnection(TopoDS_Edge const& edge, gp_Pnt const& near_connection_point, GContinuity continuity, bool outward_direction, Standard_Real beta, Standard_Real gamma)
 : m_near_connection_point(near_connection_point)
 , m_continuity(continuity)
-, m_form_factor_1(form_factor_1)
-, m_form_factor_2(form_factor_2)
+, m_beta(beta)
+, m_gamma(gamma)
 , m_outward_direction(outward_direction)
 {
     m_curve = BRep_Tool::Curve(edge, m_curve_first_param, m_curve_last_param); 
@@ -43,68 +44,37 @@ BlendCurve::BlendCurve(BlendCurveConnection const& start, BlendCurveConnection c
     : m_start(start)
     , m_end(end)
 { 
-    if (m_start.m_outward_direction == true)
-    { 
-        if (m_start.m_curve_blend_param == m_start.m_curve_last_param)
-        {   
-            m_oriented_start_curve = m_start.m_curve;
-            m_blend_parameter_oriented_start_curve = m_start.m_curve_blend_param;
-        }
-        if (m_start.m_curve_blend_param == m_start.m_curve_first_param)
-        {
-            m_oriented_start_curve = m_start.m_curve -> Reversed();
-            m_blend_parameter_oriented_start_curve = m_start.m_curve -> ReversedParameter(m_start.m_curve_blend_param);
-        }
-    }
-    else
-    {
-        if (m_start.m_curve_blend_param == m_start.m_curve_last_param)
-        {
-            m_oriented_start_curve = m_start.m_curve -> Reversed();
-            m_blend_parameter_oriented_start_curve = m_start.m_curve -> ReversedParameter(m_start.m_curve_blend_param);
-        }
-        if (m_start.m_curve_blend_param == m_start.m_curve_first_param)
-        {
-            m_oriented_start_curve = m_start.m_curve;   
-            m_blend_parameter_oriented_start_curve = m_start.m_curve_blend_param;
-        }
-    }
-
-    if (m_end.m_outward_direction == true )
-    { 
-        if (m_end.m_curve_blend_param == m_end.m_curve_first_param)
-        {
-            m_oriented_end_curve = m_end.m_curve;
-            m_blend_parameter_oriented_end_curve = m_end.m_curve_blend_param;
-        }
-        if (m_end.m_curve_blend_param == m_end.m_curve_last_param)
-        {
-            m_oriented_end_curve = m_end.m_curve -> Reversed();
-            m_blend_parameter_oriented_end_curve = m_start.m_curve -> ReversedParameter(m_start.m_curve_blend_param);
-        }
-    }
-    else
-    {
-        if (m_end.m_curve_blend_param == m_end.m_curve_first_param)
-        {
-            m_oriented_end_curve = m_end.m_curve -> Reversed();
-            m_blend_parameter_oriented_end_curve = m_start.m_curve -> ReversedParameter(m_start.m_curve_blend_param);
-        }
-        if (m_end.m_curve_blend_param == m_end.m_curve_last_param)
-        {
-            m_oriented_end_curve = m_end.m_curve;  
-            m_blend_parameter_oriented_end_curve = m_end.m_curve_blend_param;
-        }
-    }
-
     compute_blend_points_and_derivatives_of_start_and_end_curve();
-
 }
 
 void BlendCurve::compute_blend_points_and_derivatives_of_start_and_end_curve()
 {
-    m_oriented_start_curve->D2(m_blend_parameter_oriented_start_curve, m_blend_point_start, m_first_derivative_oriented_start_curve, m_second_derivative_oriented_start_curve);
-    m_oriented_end_curve->D2(m_blend_parameter_oriented_end_curve, m_blend_point_end, m_first_derivative_oriented_end_curve, m_second_derivative_oriented_end_curve);
+    m_start.m_curve->D2(m_start.m_curve_blend_param, m_blend_point_start, m_first_derivative_start_curve, m_second_derivative_start_curve);
+    m_end.m_curve->D2(m_end.m_curve_blend_param, m_blend_point_end, m_first_derivative_end_curve, m_second_derivative_end_curve);
+}
+
+gp_Pnt BlendCurve::formula_for_second_control_point_in_parameter_direction(gp_Pnt first_point, Standard_Real beta, gp_Vec first_derivative)
+{
+    return first_point.Translated(beta / 3 * first_derivative);
+}
+
+gp_Pnt BlendCurve::formula_for_second_control_point_against_parameter_direction(gp_Pnt first_point, Standard_Real beta, gp_Vec first_derivative)
+{
+    return first_point.Translated(beta / 3 * (-first_derivative));
+}
+
+gp_Pnt BlendCurve::formula_for_third_control_point_in_parameter_direction(gp_Pnt first_point, Standard_Real beta, Standard_Real gamma, gp_Vec first_derivative, gp_Vec second_derivative)
+{
+    return first_point.Translated(pow(beta, 2)/6 * second_derivative 
+        - pow(beta, 2) / (6 * pow(first_derivative.Magnitude(), 2)) * second_derivative.Dot(first_derivative) * first_derivative 
+        + 2 / 3 * gamma * beta * first_derivative);
+}
+
+gp_Pnt BlendCurve::formula_for_third_control_point_against_parameter_direction(gp_Pnt first_point, Standard_Real beta, Standard_Real gamma, gp_Vec first_derivative, gp_Vec second_derivative)
+{
+    return first_point.Translated(pow(beta, 2)/6 * second_derivative 
+        - pow(beta, 2) / (6 * pow(first_derivative.Magnitude(), 2)) * second_derivative.Dot(first_derivative) * first_derivative 
+        - 2 / 3 * gamma * beta * first_derivative);
 }
 
 gp_Pnt BlendCurve::compute_first_control_point_at_start()
@@ -114,13 +84,61 @@ gp_Pnt BlendCurve::compute_first_control_point_at_start()
 
 gp_Pnt BlendCurve::compute_second_control_point_at_start()
 {
-    return m_blend_point_start.Translated(m_start.m_form_factor_1 / 3 * m_first_derivative_oriented_start_curve); 
+    if(m_start.m_outward_direction)
+    {
+        if(std::abs(m_start.m_curve_blend_param - m_start.m_curve_last_param) < 1e-5)
+        {
+            return m_blend_point_start.Translated(m_start.m_form_factor_1 / 3 * m_first_derivative_start_curve); 
+            //return formula_for_second_control_point_in_parameter_direction(m_blend_point_start, m_start.m_beta, m_first_derivative_start_curve); 
+        }
+        else if(std::abs(m_start.m_curve_blend_param - m_start.m_curve_first_param) < 1e-5)
+        {    
+            return m_blend_point_start.Translated(m_start.m_form_factor_1 / 3 * (-m_first_derivative_start_curve));
+        }
+
+    } else {
+
+        if(std::abs(m_start.m_curve_blend_param - m_start.m_curve_last_param) < 1e-5)
+        {
+            return m_blend_point_start.Translated(m_start.m_form_factor_1 / 3 * (-m_first_derivative_start_curve));
+        }
+        else if(std::abs(m_start.m_curve_blend_param - m_start.m_curve_first_param) < 1e-5)
+        {    
+            return m_blend_point_start.Translated(m_start.m_form_factor_1 / 3 * m_first_derivative_start_curve); 
+        }
+        
+    }
 }
 
 gp_Pnt BlendCurve::compute_third_control_point_at_start()
 {
-    gp_Vec trans_vec = m_start.m_form_factor_1 / 6 * m_second_derivative_oriented_start_curve + (m_start.m_form_factor_2 / 6 + 2 / 3 * m_start.m_form_factor_1) * m_first_derivative_oriented_start_curve;
-    return m_blend_point_start.Translated(trans_vec);
+    if(m_start.m_outward_direction)
+    {
+        if(std::abs(m_start.m_curve_blend_param - m_start.m_curve_last_param) < 1e-5)
+        {
+            gp_Vec trans_vec = pow(m_start.m_form_factor_1, 2) / 6 * m_second_derivative_start_curve + (m_start.m_form_factor_2 / 6 + 2 / 3 * m_start.m_form_factor_1) * m_first_derivative_start_curve;
+            return m_blend_point_start.Translated(trans_vec);
+        }
+        else if(std::abs(m_start.m_curve_blend_param - m_start.m_curve_first_param) < 1e-5)
+        {    
+            gp_Vec trans_vec = pow(m_start.m_form_factor_1, 2) / 6 * m_second_derivative_start_curve + (m_start.m_form_factor_2 / 6 + 2 / 3 * m_start.m_form_factor_1) * (-m_first_derivative_start_curve);
+            return m_blend_point_start.Translated(trans_vec); 
+        }
+
+    } else {
+
+        if(std::abs(m_start.m_curve_blend_param - m_start.m_curve_last_param) < 1e-5)
+        {
+            gp_Vec trans_vec = pow(m_start.m_form_factor_1, 2) / 6 * m_second_derivative_start_curve + (m_start.m_form_factor_2 / 6 + 2 / 3 * m_start.m_form_factor_1) * (-m_first_derivative_start_curve);
+            return m_blend_point_start.Translated(trans_vec); 
+        }
+        else if(std::abs(m_start.m_curve_blend_param - m_start.m_curve_first_param) < 1e-5)
+        {    
+            gp_Vec trans_vec = pow(m_start.m_form_factor_1, 2) / 6 * m_second_derivative_start_curve + (m_start.m_form_factor_2 / 6 + 2 / 3 * m_start.m_form_factor_1) * m_first_derivative_start_curve;
+            return m_blend_point_start.Translated(trans_vec); 
+        }
+        
+    }   
 }
 
 gp_Pnt BlendCurve::compute_first_control_point_at_end()
@@ -130,13 +148,60 @@ gp_Pnt BlendCurve::compute_first_control_point_at_end()
 
 gp_Pnt BlendCurve::compute_second_control_point_at_end()
 {
-    return m_blend_point_end.Translated(m_end.m_form_factor_1 / 3 * (-m_first_derivative_oriented_end_curve));
+    if(m_end.m_outward_direction)
+    {
+        if(std::abs(m_end.m_curve_blend_param - m_end.m_curve_first_param) < 1e-5)
+        {
+            return m_blend_point_end.Translated(m_end.m_form_factor_1 / 3 * (-m_first_derivative_end_curve));
+        }
+        else if(std::abs(m_end.m_curve_blend_param - m_end.m_curve_last_param) < 1e-5)
+        {    
+            return m_blend_point_end.Translated(m_end.m_form_factor_1 / 3 * m_first_derivative_end_curve);
+        }
+
+    } else {
+
+        if(std::abs(m_end.m_curve_blend_param - m_end.m_curve_first_param) < 1e-5)
+        {
+            return m_blend_point_end.Translated(m_end.m_form_factor_1 / 3 * m_first_derivative_end_curve);
+        }
+        else if(std::abs(m_end.m_curve_blend_param - m_end.m_curve_last_param) < 1e-5)
+        {    
+            return m_blend_point_end.Translated(m_end.m_form_factor_1 / 3 * (-m_first_derivative_end_curve));
+        }
+        
+    }
 }
 
 gp_Pnt BlendCurve::compute_third_control_point_at_end()
 {
-    gp_Vec trans_vec = m_end.m_form_factor_1 / 6 * m_second_derivative_oriented_end_curve + (m_end.m_form_factor_2 / 6 + 2 / 3 * m_end.m_form_factor_1) * (-m_first_derivative_oriented_end_curve);
-    return m_blend_point_end.Translated(trans_vec);
+    if(m_end.m_outward_direction)
+    {
+        if(std::abs(m_end.m_curve_blend_param - m_end.m_curve_first_param) < 1e-5)
+        {
+            gp_Vec trans_vec = pow(m_end.m_form_factor_1, 2) / 6 * m_second_derivative_end_curve + (m_end.m_form_factor_2 / 6 + 2 / 3 * m_end.m_form_factor_1) * (-m_first_derivative_end_curve);
+            return m_blend_point_end.Translated(trans_vec);
+        }
+        else if(std::abs(m_end.m_curve_blend_param - m_end.m_curve_last_param) < 1e-5)
+        {    
+            gp_Vec trans_vec = pow(m_end.m_form_factor_1, 2) / 6 * m_second_derivative_end_curve + (m_end.m_form_factor_2 / 6 + 2 / 3 * m_end.m_form_factor_1) * m_first_derivative_end_curve;
+            return m_blend_point_end.Translated(trans_vec);
+        }
+
+    } else {
+
+        if(std::abs(m_end.m_curve_blend_param - m_end.m_curve_first_param) < 1e-5)
+        {
+            gp_Vec trans_vec = pow(m_end.m_form_factor_1, 2) / 6 * m_second_derivative_end_curve + (m_end.m_form_factor_2 / 6 + 2 / 3 * m_end.m_form_factor_1) * m_first_derivative_end_curve;
+            return m_blend_point_end.Translated(trans_vec);
+        }
+        else if(std::abs(m_end.m_curve_blend_param - m_end.m_curve_last_param) < 1e-5)
+        {    
+            gp_Vec trans_vec = pow(m_end.m_form_factor_1, 2) / 6 * m_second_derivative_end_curve + (m_end.m_form_factor_2 / 6 + 2 / 3 * m_end.m_form_factor_1) * (-m_first_derivative_end_curve);
+            return m_blend_point_end.Translated(trans_vec);
+        }
+        
+    }
 }
 
 gp_Pnt BlendCurve::get_i_th_control_point(unsigned int i, GContinuity contin_start, GContinuity contin_end)
@@ -154,6 +219,7 @@ gp_Pnt BlendCurve::get_i_th_control_point(unsigned int i, GContinuity contin_sta
             return compute_first_control_point_at_start();
 	    else if(i==1) 
             return compute_first_control_point_at_end();
+            
 	}
     else if(contin_start == GContinuity::G1 && contin_end == GContinuity::G0)
     {

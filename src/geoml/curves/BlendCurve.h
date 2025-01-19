@@ -40,13 +40,13 @@ namespace geoml
 
 struct BlendCurveConnection
 {
-    BlendCurveConnection(TopoDS_Edge const& edge, gp_Pnt const& near_connection_point, GContinuity continuity, bool outward_direction = true, Standard_Real form_factor_1 = 1., Standard_Real form_factor_2 = 1.);
+    BlendCurveConnection(TopoDS_Edge const& edge, gp_Pnt const& near_connection_point, GContinuity continuity, bool outward_direction = true, Standard_Real beta = 1., Standard_Real gamma = 1.);
 
-    Handle(Geom_Curve) m_curve; // in der aktuellen Implementierung werden Geom_BSpline curves verwendet.
+    Handle(Geom_Curve) m_curve;
     gp_Pnt m_near_connection_point;
     GContinuity m_continuity;
-    Standard_Real m_form_factor_1;
-    Standard_Real m_form_factor_2;
+    Standard_Real m_beta;
+    Standard_Real m_gamma;
     bool m_outward_direction;
     Standard_Real m_curve_first_param;
     Standard_Real m_curve_last_param;
@@ -68,12 +68,20 @@ private:
 
     void compute_blend_points_and_derivatives_of_start_and_end_curve();
 
-    gp_Pnt compute_first_control_point_at_start();
-    gp_Pnt compute_second_control_point_at_start();
-    gp_Pnt compute_third_control_point_at_start();
+    gp_Pnt formula_for_second_control_point_in_parameter_direction(gp_Pnt first_point, Standard_Real beta, gp_Vec first_derivative);
+    gp_Pnt formula_for_second_control_point_against_parameter_direction(gp_Pnt first_point, Standard_Real beta, gp_Vec first_derivative);
 
+    gp_Pnt formula_for_third_control_point_in_parameter_direction(gp_Pnt first_point, Standard_Real beta, Standard_Real gamma, gp_Vec first_derivative, gp_Vec second_derivative);
+    gp_Pnt formula_for_third_control_point_against_parameter_direction(gp_Pnt first_point, Standard_Real beta, Standard_Real gamma, gp_Vec first_derivative, gp_Vec second_derivative);
+
+
+    gp_Pnt compute_first_control_point_at_start();
     gp_Pnt compute_first_control_point_at_end();
+    
+    gp_Pnt compute_second_control_point_at_start();
     gp_Pnt compute_second_control_point_at_end();
+
+    gp_Pnt compute_third_control_point_at_start();
     gp_Pnt compute_third_control_point_at_end();
 
     gp_Pnt get_i_th_control_point(unsigned int i, GContinuity contin_start, GContinuity contin_end);
@@ -85,21 +93,15 @@ private:
     BlendCurveConnection m_end;
     
     std::vector<gp_Pnt> m_control_point_vector;
-    
-    Handle(Geom_Curve) m_oriented_start_curve;
-    Handle(Geom_Curve) m_oriented_end_curve;
-    
-    Standard_Real m_blend_parameter_oriented_start_curve;
-    Standard_Real m_blend_parameter_oriented_end_curve;
 
     gp_Pnt m_blend_point_start;
     gp_Pnt m_blend_point_end;
 
-    gp_Vec m_first_derivative_oriented_start_curve;
-    gp_Vec m_second_derivative_oriented_start_curve;
+    gp_Vec m_first_derivative_start_curve;
+    gp_Vec m_second_derivative_start_curve;
     
-    gp_Vec m_first_derivative_oriented_end_curve;
-    gp_Vec m_second_derivative_oriented_end_curve;
+    gp_Vec m_first_derivative_end_curve;
+    gp_Vec m_second_derivative_end_curve;
 
 };
 
