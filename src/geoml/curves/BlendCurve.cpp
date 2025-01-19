@@ -87,24 +87,23 @@ gp_Pnt BlendCurve::compute_second_control_point_at_start()
     if(m_start.m_outward_direction)
     {
         if(std::abs(m_start.m_curve_blend_param - m_start.m_curve_last_param) < 1e-5)
-        {
-            return m_blend_point_start.Translated(m_start.m_form_factor_1 / 3 * m_first_derivative_start_curve); 
-            //return formula_for_second_control_point_in_parameter_direction(m_blend_point_start, m_start.m_beta, m_first_derivative_start_curve); 
+        {        
+            return formula_for_second_control_point_in_parameter_direction(m_blend_point_start, m_start.m_beta, m_first_derivative_start_curve); 
         }
         else if(std::abs(m_start.m_curve_blend_param - m_start.m_curve_first_param) < 1e-5)
         {    
-            return m_blend_point_start.Translated(m_start.m_form_factor_1 / 3 * (-m_first_derivative_start_curve));
+            return formula_for_second_control_point_against_parameter_direction(m_blend_point_start, m_start.m_beta, m_first_derivative_start_curve);
         }
 
     } else {
 
         if(std::abs(m_start.m_curve_blend_param - m_start.m_curve_last_param) < 1e-5)
         {
-            return m_blend_point_start.Translated(m_start.m_form_factor_1 / 3 * (-m_first_derivative_start_curve));
+            return formula_for_second_control_point_against_parameter_direction(m_blend_point_start, m_start.m_beta, m_first_derivative_start_curve);
         }
         else if(std::abs(m_start.m_curve_blend_param - m_start.m_curve_first_param) < 1e-5)
         {    
-            return m_blend_point_start.Translated(m_start.m_form_factor_1 / 3 * m_first_derivative_start_curve); 
+            return formula_for_second_control_point_in_parameter_direction(m_blend_point_start, m_start.m_beta, m_first_derivative_start_curve); 
         }
         
     }
@@ -116,26 +115,22 @@ gp_Pnt BlendCurve::compute_third_control_point_at_start()
     {
         if(std::abs(m_start.m_curve_blend_param - m_start.m_curve_last_param) < 1e-5)
         {
-            gp_Vec trans_vec = pow(m_start.m_form_factor_1, 2) / 6 * m_second_derivative_start_curve + (m_start.m_form_factor_2 / 6 + 2 / 3 * m_start.m_form_factor_1) * m_first_derivative_start_curve;
-            return m_blend_point_start.Translated(trans_vec);
+            return formula_for_third_control_point_in_parameter_direction(m_blend_point_start, m_start.m_beta, m_start.m_gamma, m_first_derivative_start_curve, m_second_derivative_start_curve);
         }
         else if(std::abs(m_start.m_curve_blend_param - m_start.m_curve_first_param) < 1e-5)
         {    
-            gp_Vec trans_vec = pow(m_start.m_form_factor_1, 2) / 6 * m_second_derivative_start_curve + (m_start.m_form_factor_2 / 6 + 2 / 3 * m_start.m_form_factor_1) * (-m_first_derivative_start_curve);
-            return m_blend_point_start.Translated(trans_vec); 
+            return formula_for_third_control_point_against_parameter_direction(m_blend_point_start, m_start.m_beta, m_start.m_gamma, m_first_derivative_start_curve, m_second_derivative_start_curve);
         }
 
     } else {
 
         if(std::abs(m_start.m_curve_blend_param - m_start.m_curve_last_param) < 1e-5)
         {
-            gp_Vec trans_vec = pow(m_start.m_form_factor_1, 2) / 6 * m_second_derivative_start_curve + (m_start.m_form_factor_2 / 6 + 2 / 3 * m_start.m_form_factor_1) * (-m_first_derivative_start_curve);
-            return m_blend_point_start.Translated(trans_vec); 
+            return formula_for_third_control_point_against_parameter_direction(m_blend_point_start, m_start.m_beta, m_start.m_gamma, m_first_derivative_start_curve, m_second_derivative_start_curve);
         }
         else if(std::abs(m_start.m_curve_blend_param - m_start.m_curve_first_param) < 1e-5)
         {    
-            gp_Vec trans_vec = pow(m_start.m_form_factor_1, 2) / 6 * m_second_derivative_start_curve + (m_start.m_form_factor_2 / 6 + 2 / 3 * m_start.m_form_factor_1) * m_first_derivative_start_curve;
-            return m_blend_point_start.Translated(trans_vec); 
+            return formula_for_third_control_point_in_parameter_direction(m_blend_point_start, m_start.m_beta, m_start.m_gamma, m_first_derivative_start_curve, m_second_derivative_start_curve);
         }
         
     }   
@@ -152,22 +147,22 @@ gp_Pnt BlendCurve::compute_second_control_point_at_end()
     {
         if(std::abs(m_end.m_curve_blend_param - m_end.m_curve_first_param) < 1e-5)
         {
-            return m_blend_point_end.Translated(m_end.m_form_factor_1 / 3 * (-m_first_derivative_end_curve));
+            return formula_for_second_control_point_against_parameter_direction(m_blend_point_end, m_end.m_beta, m_first_derivative_end_curve); 
         }
         else if(std::abs(m_end.m_curve_blend_param - m_end.m_curve_last_param) < 1e-5)
         {    
-            return m_blend_point_end.Translated(m_end.m_form_factor_1 / 3 * m_first_derivative_end_curve);
+            return formula_for_second_control_point_in_parameter_direction(m_blend_point_end, m_end.m_beta, m_first_derivative_end_curve); 
         }
 
     } else {
 
         if(std::abs(m_end.m_curve_blend_param - m_end.m_curve_first_param) < 1e-5)
         {
-            return m_blend_point_end.Translated(m_end.m_form_factor_1 / 3 * m_first_derivative_end_curve);
+            return formula_for_second_control_point_in_parameter_direction(m_blend_point_end, m_end.m_beta, m_first_derivative_end_curve);
         }
         else if(std::abs(m_end.m_curve_blend_param - m_end.m_curve_last_param) < 1e-5)
         {    
-            return m_blend_point_end.Translated(m_end.m_form_factor_1 / 3 * (-m_first_derivative_end_curve));
+            return formula_for_second_control_point_against_parameter_direction(m_blend_point_end, m_end.m_beta, m_first_derivative_end_curve);
         }
         
     }
@@ -179,26 +174,22 @@ gp_Pnt BlendCurve::compute_third_control_point_at_end()
     {
         if(std::abs(m_end.m_curve_blend_param - m_end.m_curve_first_param) < 1e-5)
         {
-            gp_Vec trans_vec = pow(m_end.m_form_factor_1, 2) / 6 * m_second_derivative_end_curve + (m_end.m_form_factor_2 / 6 + 2 / 3 * m_end.m_form_factor_1) * (-m_first_derivative_end_curve);
-            return m_blend_point_end.Translated(trans_vec);
+            return formula_for_third_control_point_against_parameter_direction(m_blend_point_end, m_end.m_beta, m_end.m_gamma, m_first_derivative_end_curve, m_second_derivative_end_curve);
         }
         else if(std::abs(m_end.m_curve_blend_param - m_end.m_curve_last_param) < 1e-5)
         {    
-            gp_Vec trans_vec = pow(m_end.m_form_factor_1, 2) / 6 * m_second_derivative_end_curve + (m_end.m_form_factor_2 / 6 + 2 / 3 * m_end.m_form_factor_1) * m_first_derivative_end_curve;
-            return m_blend_point_end.Translated(trans_vec);
+            return formula_for_third_control_point_in_parameter_direction(m_blend_point_end, m_end.m_beta, m_end.m_gamma, m_first_derivative_end_curve, m_second_derivative_end_curve);
         }
 
     } else {
 
         if(std::abs(m_end.m_curve_blend_param - m_end.m_curve_first_param) < 1e-5)
         {
-            gp_Vec trans_vec = pow(m_end.m_form_factor_1, 2) / 6 * m_second_derivative_end_curve + (m_end.m_form_factor_2 / 6 + 2 / 3 * m_end.m_form_factor_1) * m_first_derivative_end_curve;
-            return m_blend_point_end.Translated(trans_vec);
+            return formula_for_third_control_point_in_parameter_direction(m_blend_point_end, m_end.m_beta, m_end.m_gamma, m_first_derivative_end_curve, m_second_derivative_end_curve);
         }
         else if(std::abs(m_end.m_curve_blend_param - m_end.m_curve_last_param) < 1e-5)
         {    
-            gp_Vec trans_vec = pow(m_end.m_form_factor_1, 2) / 6 * m_second_derivative_end_curve + (m_end.m_form_factor_2 / 6 + 2 / 3 * m_end.m_form_factor_1) * (-m_first_derivative_end_curve);
-            return m_blend_point_end.Translated(trans_vec);
+            return formula_for_third_control_point_against_parameter_direction(m_blend_point_end, m_end.m_beta, m_end.m_gamma, m_first_derivative_end_curve, m_second_derivative_end_curve);
         }
         
     }
