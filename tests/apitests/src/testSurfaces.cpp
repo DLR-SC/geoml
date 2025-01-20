@@ -2,6 +2,8 @@
 #include <geoml/curves/curves.h>
 #include <geoml/geom_topo_conversions/geom_topo_conversions.h>
 #include <geoml/data_structures/Array2d.h>
+#include "geoml/data_structures/conversions.h"
+#include <geoml/curves/BlendCurve.h>
 
 #include <gtest/gtest.h>
 
@@ -11,8 +13,7 @@
 #include <BRepBuilderAPI_MakeFace.hxx>
 #include "GProp_GProps.hxx"
 #include "BRepGProp.hxx"
-
-
+#include <Geom_BezierCurve.hxx>
 #include <TopoDS_Shape.hxx>
 #include <TopoDS_Vertex.hxx>
 #include <TopExp.hxx>
@@ -23,6 +24,11 @@
 #include <gp_Vec.hxx>
 
 #include <filesystem>
+
+// debugging
+#include "STEPControl_Writer.hxx"
+#include <iostream>
+#include <string>
 
 namespace apitests
 {
@@ -435,5 +441,35 @@ TEST(Test_face_from_4_points, simple_face_from_4_points_test)
     EXPECT_NEAR(corner_points.at(7).Y(), 2., 1e-5);
     EXPECT_NEAR(corner_points.at(7).Z(), 1., 1e-5);
 
+}
 
+TEST(Try_Wing_Tip, wing_tip_first_try)
+{
+    // define two curves, that are supposed to be connected via a blend curve
+
+    gp_Pnt cp_start_1 (0.,0.,0.);
+    gp_Pnt cp_start_2 (2.,0.,0.);
+    gp_Pnt cp_start_3 (2.,2.,0.);
+
+    gp_Pnt cp_end_1 (4.,4.,0.);
+    gp_Pnt cp_end_2 (0.,6.,0.);
+    gp_Pnt cp_end_3 (5.,6.,0.);
+
+    std::vector<gp_Pnt> control_points_start_curve{cp_start_1, cp_start_2, cp_start_3}; 
+    std::vector<gp_Pnt> control_points_end_curve{cp_end_1, cp_end_2, cp_end_3};
+
+    Handle(Geom_Curve) start_curve = new Geom_BezierCurve(geoml::StdVector_to_TCol(control_points_start_curve));
+    Handle(Geom_Curve) end_curve = new Geom_BezierCurve(geoml::StdVector_to_TCol(control_points_end_curve));
+
+    geoml::BlendCurveConnection start_connection (geoml::CurveToEdge(start_curve), cp_start_3, geoml::GContinuity::G2, false);
+    geoml::BlendCurveConnection end_connection (geoml::CurveToEdge(end_curve), cp_end_1, geoml::GContinuity::G2, true, 1);
+
+    TopoDS_Edge resulting_blend_curve = geoml::blend_curve(start_connection, end_connection);
+
+    // write to step file
+    STEPControl_Writer writer;
+    writer.Transfer(resulting_blend_curve, STEPControl_AsIs);
+
+    std::string filename = "wing_tip_blend_curve_test.stp";
+    writer.Write(filename.c_str());
 }
