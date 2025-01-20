@@ -330,14 +330,14 @@ TEST(Test_blend_curve, blend_curve_test)
     gp_Pnt cp_end_2 (0.,6.,0.);
     gp_Pnt cp_end_3 (5.,6.,0.);
 
-    std::vector<gp_Pnt> contorl_points_start_curve{cp_start_1, cp_start_2, cp_start_3}; 
-    std::vector<gp_Pnt> contorl_points_end_curve{cp_end_1, cp_end_2, cp_end_3};
+    std::vector<gp_Pnt> control_points_start_curve{cp_start_1, cp_start_2, cp_start_3}; 
+    std::vector<gp_Pnt> control_points_end_curve{cp_end_1, cp_end_2, cp_end_3};
 
-    Handle(Geom_Curve) start_curve = new Geom_BezierCurve(geoml::StdVector_to_TCol(contorl_points_start_curve));
-    Handle(Geom_Curve) end_curve = new Geom_BezierCurve(geoml::StdVector_to_TCol(contorl_points_end_curve));
+    Handle(Geom_Curve) start_curve = new Geom_BezierCurve(geoml::StdVector_to_TCol(control_points_start_curve));
+    Handle(Geom_Curve) end_curve = new Geom_BezierCurve(geoml::StdVector_to_TCol(control_points_end_curve));
 
-    geoml::BlendCurveConnection start_connection (geoml::CurveToEdge(start_curve), cp_start_1, geoml::GContinuity::G2);
-    geoml::BlendCurveConnection end_connection (geoml::CurveToEdge(end_curve), cp_end_1, geoml::GContinuity::G0);
+    geoml::BlendCurveConnection start_connection (geoml::CurveToEdge(start_curve), cp_start_3, geoml::GContinuity::G2, false);
+    geoml::BlendCurveConnection end_connection (geoml::CurveToEdge(end_curve), cp_end_1, geoml::GContinuity::G2, true, 1);
 
     TopoDS_Edge resulting_blend_curve = geoml::blend_curve(start_connection, end_connection);
 

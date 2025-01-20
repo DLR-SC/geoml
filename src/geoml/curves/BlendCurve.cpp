@@ -55,26 +55,26 @@ void BlendCurve::compute_blend_points_and_derivatives_of_start_and_end_curve()
 
 gp_Pnt BlendCurve::formula_for_second_control_point_in_parameter_direction(gp_Pnt first_point, Standard_Real beta, gp_Vec first_derivative)
 {
-    return first_point.Translated(beta / 3 * first_derivative);
+    return first_point.Translated(beta / 3. * first_derivative);
 }
 
 gp_Pnt BlendCurve::formula_for_second_control_point_against_parameter_direction(gp_Pnt first_point, Standard_Real beta, gp_Vec first_derivative)
 {
-    return first_point.Translated(beta / 3 * (-first_derivative));
+    return first_point.Translated(beta / 3. * (-first_derivative));
 }
 
 gp_Pnt BlendCurve::formula_for_third_control_point_in_parameter_direction(gp_Pnt first_point, Standard_Real beta, Standard_Real gamma, gp_Vec first_derivative, gp_Vec second_derivative)
 {
-    return first_point.Translated(pow(beta, 2)/6 * second_derivative 
-        - pow(beta, 2) / (6 * pow(first_derivative.Magnitude(), 2)) * second_derivative.Dot(first_derivative) * first_derivative 
-        + 2 / 3 * gamma * beta * first_derivative);
+    return first_point.Translated(pow(beta, 2.)/6. * ( second_derivative 
+        - 1. / first_derivative.SquareMagnitude() * second_derivative.Dot(first_derivative) * first_derivative ) 
+        + 2. / 3. * gamma * beta * first_derivative);
 }
 
 gp_Pnt BlendCurve::formula_for_third_control_point_against_parameter_direction(gp_Pnt first_point, Standard_Real beta, Standard_Real gamma, gp_Vec first_derivative, gp_Vec second_derivative)
 {
-    return first_point.Translated(pow(beta, 2)/6 * second_derivative 
-        - pow(beta, 2) / (6 * pow(first_derivative.Magnitude(), 2)) * second_derivative.Dot(first_derivative) * first_derivative 
-        - 2 / 3 * gamma * beta * first_derivative);
+    return first_point.Translated(pow(beta, 2.)/6. * ( second_derivative 
+        - 1. / first_derivative.SquareMagnitude() * second_derivative.Dot(first_derivative) * first_derivative ) 
+        - 2. / 3. * gamma * beta * first_derivative);
 }
 
 gp_Pnt BlendCurve::compute_first_control_point_at_start()
