@@ -336,8 +336,8 @@ TEST(Test_blend_curve, blend_curve_test)
     Handle(Geom_Curve) start_curve = new Geom_BezierCurve(geoml::StdVector_to_TCol(control_points_start_curve));
     Handle(Geom_Curve) end_curve = new Geom_BezierCurve(geoml::StdVector_to_TCol(control_points_end_curve));
 
-    geoml::BlendCurveConnection start_connection (geoml::CurveToEdge(start_curve), cp_start_3, geoml::GContinuity::G2, false);
-    geoml::BlendCurveConnection end_connection (geoml::CurveToEdge(end_curve), cp_end_1, geoml::GContinuity::G2, true, 1);
+    geoml::BlendCurveConnection start_connection (geoml::CurveToEdge(start_curve), cp_start_3, geoml::GContinuity::G2);
+    geoml::BlendCurveConnection end_connection (geoml::CurveToEdge(end_curve), cp_end_1, geoml::GContinuity::G2);
 
     TopoDS_Edge resulting_blend_curve = geoml::blend_curve(start_connection, end_connection);
 
