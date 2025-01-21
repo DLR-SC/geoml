@@ -48,53 +48,43 @@ BlendCurve::BlendCurve(BlendCurveConnection const& start, BlendCurveConnection c
     , m_end(end)
 { 
     compute_blend_points_and_derivatives_of_start_and_end_curve();
+    m_degree = static_cast<int>(m_start.m_continuity) + static_cast<int>(m_end.m_continuity) + 1;
 }
 
 void BlendCurve::compute_blend_points_and_derivatives_of_start_and_end_curve()
 {
     m_start.m_curve->D2(m_start.m_curve_blend_param, m_blend_point_start, m_first_derivative_start_curve, m_second_derivative_start_curve);
     m_end.m_curve->D2(m_end.m_curve_blend_param, m_blend_point_end, m_first_derivative_end_curve, m_second_derivative_end_curve);
-
-    std::cout << "second derivative end curve: " << "X: " << m_second_derivative_end_curve.X() << "Y: " << m_second_derivative_end_curve.Y() << "Z: " << m_second_derivative_end_curve.Z() << std::endl; 
 }
 
 gp_Pnt BlendCurve::formula_for_second_control_point_in_parameter_direction(gp_Pnt first_point, Standard_Real beta, gp_Vec first_derivative)
 {
-    return first_point.Translated(beta / 3. * first_derivative);
+    return first_point.Translated(beta / m_degree * first_derivative);
 }
 
 gp_Pnt BlendCurve::formula_for_second_control_point_against_parameter_direction(gp_Pnt first_point, Standard_Real beta, gp_Vec first_derivative)
 {
-    return first_point.Translated(beta / 3. * (-first_derivative));
+    return formula_for_second_control_point_in_parameter_direction(first_point, beta, -first_derivative);
 }
 
 gp_Pnt BlendCurve::formula_for_third_control_point_in_parameter_direction(gp_Pnt first_point, Standard_Real beta, Standard_Real gamma, gp_Vec first_derivative, gp_Vec second_derivative)
 {
-    // return first_point.Translated(pow(beta, 2.)/6. * ( second_derivative 
-    //     - 1. / first_derivative.SquareMagnitude() * second_derivative.Dot(first_derivative) * first_derivative ) 
-    //     + 2. / 3. * gamma * beta * first_derivative);
-    gp_Vec displacement_vector = (beta*beta/6.) *  second_derivative;
+    gp_Vec displacement_vector = (beta*beta/(m_degree * (m_degree - 1))) *  second_derivative;
+
     Standard_Real scalar_product_displ_vec_first_derivative = displacement_vector.X() * first_derivative.X() + displacement_vector.Y() * first_derivative.Y() + displacement_vector.Z() * first_derivative.Z(); 
     Standard_Real magnitude_first_derivative = first_derivative.X() * first_derivative.X() + first_derivative.Y() * first_derivative.Y() + first_derivative.Z() * first_derivative.Z();
+   
     gp_Vec h1 = displacement_vector - scalar_product_displ_vec_first_derivative*first_derivative / magnitude_first_derivative;
-    gp_Vec h2 = 2.*(gamma*beta*first_derivative)/3.;
-    return first_point.Translated(h1 + h2);
+    gp_Vec h2 = 2.*(gamma*beta*first_derivative) / m_degree;
 
+    return first_point.Translated(h1 + h2);
 }
 
 gp_Pnt BlendCurve::formula_for_third_control_point_against_parameter_direction(gp_Pnt first_point, Standard_Real beta, Standard_Real gamma, gp_Vec first_derivative, gp_Vec second_derivative)
 {
-    // return first_point.Translated(pow(beta, 2.)/6. * ( second_derivative 
-    //     - 1. / first_derivative.SquareMagnitude() * second_derivative.Dot(first_derivative) * first_derivative ) 
-    //     - 2. / 3. * gamma * beta * first_derivative);
-    gp_Vec displacement_vector = (beta*beta/6.) *  second_derivative;
-    Standard_Real scalar_product_displ_vec_first_derivative = displacement_vector.X() * first_derivative.X() + displacement_vector.Y() * first_derivative.Y() + displacement_vector.Z() * first_derivative.Z(); 
-    Standard_Real magnitude_first_derivative = first_derivative.X() * first_derivative.X() + first_derivative.Y() * first_derivative.Y() + first_derivative.Z() * first_derivative.Z();
-    gp_Vec h1 = displacement_vector - scalar_product_displ_vec_first_derivative*first_derivative / magnitude_first_derivative;
-    gp_Vec h2 = 2.*(gamma*beta*first_derivative)/3.;
-    return first_point.Translated(h1 - h2);
+    return formula_for_third_control_point_in_parameter_direction(first_point, beta, -gamma, first_derivative, second_derivative);
 }
-
+  
 gp_Pnt BlendCurve::compute_first_control_point_at_start()
 {
     return m_blend_point_start;
@@ -215,7 +205,7 @@ gp_Pnt BlendCurve::compute_third_control_point_at_end()
 
 gp_Pnt BlendCurve::get_i_th_control_point(unsigned int i, GContinuity contin_start, GContinuity contin_end)
 {
-    int number_of_control_points = static_cast<int>(contin_start) + static_cast<int>(contin_end) + 2;
+    int number_of_control_points = m_degree + 1;
 
     if(i >= number_of_control_points)
     {
