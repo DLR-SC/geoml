@@ -19,7 +19,6 @@
 #ifndef CCSTCURVEBUILDER_H
 #define CCSTCURVEBUILDER_H
 
-#include "geoml_internal.h"
 #include <geoml/geoml.h>
 
 
