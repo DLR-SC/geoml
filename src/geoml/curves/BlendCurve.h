@@ -38,9 +38,17 @@
 namespace geoml 
 {
 
+/**
+ * @brief The BlendCurveConnection struct contains the relevant information a blend curve needs to 
+ * to connect to a given curve.
+ *
+ * It contains the curve to be blended, the required continuity, the beta and gamma factor to control the shape of the
+ * blend curve, a toggle whether or not the blend curve should be inward or outward facing relative to the curve to blend, 
+ * and the parameters of the curves start and end point, as well as the parameter of the blend point.
+ */
 struct BlendCurveConnection
 {
-    BlendCurveConnection(TopoDS_Edge const& edge, gp_Pnt const& near_connection_point, GContinuity continuity, bool outward_direction = true, Standard_Real beta = 1., Standard_Real gamma = 1.);
+    GEOML_API_EXPORT BlendCurveConnection(TopoDS_Edge const& edge, gp_Pnt const& near_connection_point, GContinuity continuity, bool outward_direction = true, Standard_Real beta = 1., Standard_Real gamma = 1.);
 
     Handle(Geom_Curve) m_curve;
     gp_Pnt m_near_connection_point;
@@ -53,40 +61,54 @@ struct BlendCurveConnection
     Standard_Real m_curve_blend_param;
 
 private:
-    void compute_blend_parameter();
+    GEOML_API_EXPORT void compute_blend_parameter();
 };
 
+/**
+ * @brief The class BlendCurve takes two BlendCurveConnections and computes the blend curve according to the given specifications.
+ *
+ * Its public API exposes a method that reutrns the required blend curve.
+ */
 class BlendCurve
 {
 public:
     
-    BlendCurve(BlendCurveConnection const& start, BlendCurveConnection const& end);
+    /**
+     * @brief Constructs a BlendCurve object from two BlendCurveConnections.
+     * 
+     * @param start The BlendCurveConnection specifying the start of the blend curve
+     * @param end The BlendCurveConnection specifying the end of the blend curve
+     */
+    GEOML_API_EXPORT BlendCurve(BlendCurveConnection const& start, BlendCurveConnection const& end);
 
-    TopoDS_Edge blend_curve();
+    /**
+     * @brief Returns the blend curve satisfying the required boundary conditions.
+     */
+    GEOML_API_EXPORT TopoDS_Edge blend_curve();
 
 private:
 
-    void compute_blend_points_and_derivatives_of_start_and_end_curve();
+    GEOML_API_EXPORT void compute_blend_points_and_derivatives_of_start_and_end_curve();
 
-    gp_Pnt formula_for_second_control_point_in_parameter_direction(gp_Pnt first_point, Standard_Real beta, gp_Vec first_derivative);
-    gp_Pnt formula_for_second_control_point_against_parameter_direction(gp_Pnt first_point, Standard_Real beta, gp_Vec first_derivative);
+    GEOML_API_EXPORT gp_Pnt formula_for_second_control_point_in_parameter_direction(gp_Pnt first_point, Standard_Real beta, gp_Vec first_derivative);
+    GEOML_API_EXPORT gp_Pnt formula_for_second_control_point_against_parameter_direction(gp_Pnt first_point, Standard_Real beta, gp_Vec first_derivative);
 
-    gp_Pnt formula_for_third_control_point_in_parameter_direction(gp_Pnt first_point, Standard_Real beta, Standard_Real gamma, gp_Vec first_derivative, gp_Vec second_derivative);
-    gp_Pnt formula_for_third_control_point_against_parameter_direction(gp_Pnt first_point, Standard_Real beta, Standard_Real gamma, gp_Vec first_derivative, gp_Vec second_derivative);
+    GEOML_API_EXPORT gp_Pnt formula_for_third_control_point_in_parameter_direction(gp_Pnt first_point, Standard_Real beta, Standard_Real gamma, gp_Vec first_derivative, gp_Vec second_derivative);
+    GEOML_API_EXPORT gp_Pnt formula_for_third_control_point_against_parameter_direction(gp_Pnt first_point, Standard_Real beta, Standard_Real gamma, gp_Vec first_derivative, gp_Vec second_derivative);
 
 
-    gp_Pnt compute_first_control_point_at_start();
-    gp_Pnt compute_first_control_point_at_end();
+    GEOML_API_EXPORT gp_Pnt compute_first_control_point_at_start();
+    GEOML_API_EXPORT gp_Pnt compute_first_control_point_at_end();
     
-    gp_Pnt compute_second_control_point_at_start();
-    gp_Pnt compute_second_control_point_at_end();
+    GEOML_API_EXPORT gp_Pnt compute_second_control_point_at_start();
+    GEOML_API_EXPORT gp_Pnt compute_second_control_point_at_end();
 
-    gp_Pnt compute_third_control_point_at_start();
-    gp_Pnt compute_third_control_point_at_end();
+    GEOML_API_EXPORT gp_Pnt compute_third_control_point_at_start();
+    GEOML_API_EXPORT gp_Pnt compute_third_control_point_at_end();
 
-    gp_Pnt get_i_th_control_point(unsigned int i, GContinuity contin_start, GContinuity contin_end);
+    GEOML_API_EXPORT gp_Pnt get_i_th_control_point(unsigned int i, GContinuity contin_start, GContinuity contin_end);
 
-    std::vector<gp_Pnt> control_points_blend_curve();
+    GEOML_API_EXPORT std::vector<gp_Pnt> control_points_blend_curve();
 
 
     BlendCurveConnection m_start;
@@ -107,6 +129,10 @@ private:
 
 };
 
-TopoDS_Edge blend_curve(BlendCurveConnection const& start, BlendCurveConnection const& end);
+/**
+ * @brief The free function blend curve returns a blend curve according to the specifications in the BlendCurveConnections of 
+ * its arguments.
+ */
+GEOML_API_EXPORT TopoDS_Edge blend_curve(BlendCurveConnection const& start, BlendCurveConnection const& end);
 
 } // namespace geoml

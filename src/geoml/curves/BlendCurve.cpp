@@ -2,13 +2,9 @@
 
 #include "geoml/error.h"
 
-#include <cmath>
-
 #include <BRep_Tool.hxx>
 
-// for debugging
-#include <iostream>
-
+#include <cmath>
 
 namespace geoml{
 
