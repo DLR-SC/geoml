@@ -3,6 +3,7 @@
 #include "geometry/BSplineAlgorithms.h"
 #include "geoml/data_structures/conversions.h"
 #include "geometry/Continuity.h"
+#include "geoml/geom_topo_conversions/geom_topo_conversions.h"
 
 #include <gtest/gtest.h>
 
