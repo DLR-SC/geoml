@@ -19,7 +19,8 @@
 #ifndef CCSTCURVEBUILDER_H
 #define CCSTCURVEBUILDER_H
 
-#include "geoml/geoml_internal.h"
+#include "geoml_internal.h"
+#include <geoml/geoml.h>
 
 
 #include <vector>
@@ -35,19 +36,38 @@ namespace geoml
 class CCSTCurveBuilder
 {
 public:
-    GEOML_EXPORT CCSTCurveBuilder(double N1, double N2, const std::vector<double>& B, double T);
+
+    /**
+     * @brief The Algorithm enum gives a choice of the method.
+     *
+     * Piecewise_Chebychev_Approximation subdivides the curve into
+     * segments, where each segment is approximated using a Chebychev polynomials.
+     * The final result is the C1 concatenation of these polynomials to a B-Spline
+     *
+     * GeomAPI_PointsToBSpline uses OCCT's internal approximation algorithm to create
+     * a B-Spline that approximates a CST Curve.
+     */
+    enum class Algorithm {
+        Piecewise_Chebychev_Approximation = 0,
+        GeomAPI_PointsToBSpline
+    };
+
+    GEOML_API_EXPORT CCSTCurveBuilder(double N1, double N2, const std::vector<double>& B, double T, Algorithm method=Algorithm::Piecewise_Chebychev_Approximation);
 
     // returns parameters of cst curve
-    GEOML_EXPORT double N1() const;
-    GEOML_EXPORT double N2() const;
-    GEOML_EXPORT std::vector<double> B() const;
-    GEOML_EXPORT double T() const;
+    GEOML_API_EXPORT double N1() const;
+    GEOML_API_EXPORT double N2() const;
+    GEOML_API_EXPORT std::vector<double> B() const;
+    GEOML_API_EXPORT double T() const;
 
-    GEOML_EXPORT Handle(Geom_BSplineCurve) Curve();
+    GEOML_API_EXPORT Handle(Geom_BSplineCurve) Curve();
 
 private:
     double _n1, _n2, _t;
     std::vector<double> _b;
+    int _degree;
+    double _tol;
+    Algorithm _algo;
 };
 
 } // namespace geoml
