@@ -69,12 +69,12 @@ gp_Pnt BlendCurve::formula_for_second_control_point_against_parameter_direction(
 
 gp_Pnt BlendCurve::formula_for_third_control_point_in_parameter_direction(gp_Pnt first_point, Standard_Real beta, Standard_Real gamma, gp_Vec first_derivative, gp_Vec second_derivative)
 {
-    gp_Vec displacement_vector = (beta * beta * m_degree /(m_degree - 1)) *  second_derivative;
+    gp_Vec displacement_vector = (beta * beta * m_degree /(m_degree - 1)) * second_derivative;
 
-    Standard_Real scalar_product_displ_vec_first_derivative = displacement_vector.X() * first_derivative.X() + displacement_vector.Y() * first_derivative.Y() + displacement_vector.Z() * first_derivative.Z(); 
-    Standard_Real magnitude_first_derivative = first_derivative.X() * first_derivative.X() + first_derivative.Y() * first_derivative.Y() + first_derivative.Z() * first_derivative.Z();
+    Standard_Real scalar_product_displ_vec_first_derivative = displacement_vector.Dot(first_derivative); 
+    Standard_Real square_magnitude_first_derivative = first_derivative.Dot(first_derivative);
    
-    gp_Vec h1 = displacement_vector - scalar_product_displ_vec_first_derivative*first_derivative / magnitude_first_derivative;
+    gp_Vec h1 = displacement_vector - scalar_product_displ_vec_first_derivative*first_derivative / square_magnitude_first_derivative;
     gp_Vec h2 = 2.*(gamma*beta*first_derivative);
 
     return first_point.Translated(h1 + h2);
