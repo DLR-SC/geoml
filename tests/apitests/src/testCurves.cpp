@@ -327,26 +327,97 @@ TEST(Test_blend_curve, blend_curve_test)
     gp_Pnt cp_start_3 (2.,2.,0.);
 
     gp_Pnt cp_end_1 (4.,4.,0.);
-    gp_Pnt cp_end_2 (0.,6.,0.);
-    gp_Pnt cp_end_3 (5.,6.,0.);
+    gp_Pnt cp_end_2 (6.,4.,0.);
+    gp_Pnt cp_end_3 (6.,6.,0.);
 
-    std::vector<gp_Pnt> control_points_start_curve{cp_start_1, cp_start_2, cp_start_3}; 
+    std::vector<gp_Pnt> control_points_start_curve{cp_start_1, cp_start_2, cp_start_3};
     std::vector<gp_Pnt> control_points_end_curve{cp_end_1, cp_end_2, cp_end_3};
 
     Handle(Geom_Curve) start_curve = new Geom_BezierCurve(geoml::StdVector_to_TCol(control_points_start_curve));
     Handle(Geom_Curve) end_curve = new Geom_BezierCurve(geoml::StdVector_to_TCol(control_points_end_curve));
 
-    geoml::BlendCurveConnection start_connection (geoml::CurveToEdge(start_curve), cp_start_3, geoml::GContinuity::G2);
-    geoml::BlendCurveConnection end_connection (geoml::CurveToEdge(end_curve), cp_end_1, geoml::GContinuity::G1);
+    geoml::BlendCurveConnection start_connection_1 (geoml::CurveToEdge(start_curve), cp_start_3, geoml::GContinuity::G2);
+    geoml::BlendCurveConnection end_connection_1 (geoml::CurveToEdge(end_curve), cp_end_1, geoml::GContinuity::G1);
 
-    TopoDS_Edge resulting_blend_curve = geoml::blend_curve(start_connection, end_connection);
+    geoml::BlendCurveConnection start_connection_2 (geoml::CurveToEdge(start_curve), cp_start_3, geoml::GContinuity::G1);
+    geoml::BlendCurveConnection end_connection_2 (geoml::CurveToEdge(end_curve), cp_end_1, geoml::GContinuity::G0);
+
+    geoml::BlendCurveConnection start_connection_3 (geoml::CurveToEdge(start_curve), cp_start_3, geoml::GContinuity::G0);
+    geoml::BlendCurveConnection end_connection_3 (geoml::CurveToEdge(end_curve), cp_end_1, geoml::GContinuity::G1);
+
+    geoml::BlendCurveConnection start_connection_4 (geoml::CurveToEdge(start_curve), cp_start_3, geoml::GContinuity::G2);
+    geoml::BlendCurveConnection end_connection_4 (geoml::CurveToEdge(end_curve), cp_end_1, geoml::GContinuity::G0);
+
+    geoml::BlendCurveConnection start_connection_5 (geoml::CurveToEdge(start_curve), cp_start_3, geoml::GContinuity::G0);
+    geoml::BlendCurveConnection end_connection_5 (geoml::CurveToEdge(end_curve), cp_end_1, geoml::GContinuity::G2);
+
+    geoml::BlendCurveConnection start_connection_6 (geoml::CurveToEdge(start_curve), cp_start_3, geoml::GContinuity::G2);
+    geoml::BlendCurveConnection end_connection_6 (geoml::CurveToEdge(end_curve), cp_end_1, geoml::GContinuity::G1);
+
+    geoml::BlendCurveConnection start_connection_7 (geoml::CurveToEdge(start_curve), cp_start_3, geoml::GContinuity::G1);
+    geoml::BlendCurveConnection end_connection_7 (geoml::CurveToEdge(end_curve), cp_end_1, geoml::GContinuity::G2);
+
+    geoml::BlendCurveConnection start_connection_8 (geoml::CurveToEdge(start_curve), cp_start_3, geoml::GContinuity::G2);
+    geoml::BlendCurveConnection end_connection_8 (geoml::CurveToEdge(end_curve), cp_end_1, geoml::GContinuity::G2);
+
+    geoml::BlendCurveConnection start_connection_9 (geoml::CurveToEdge(start_curve), cp_start_3, geoml::GContinuity::G1, false);
+    geoml::BlendCurveConnection end_connection_9 (geoml::CurveToEdge(end_curve), cp_end_1, geoml::GContinuity::G0);
+
+    geoml::BlendCurveConnection start_connection_10 (geoml::CurveToEdge(start_curve), cp_start_3, geoml::GContinuity::G0);
+    geoml::BlendCurveConnection end_connection_10 (geoml::CurveToEdge(end_curve), cp_end_1, geoml::GContinuity::G1, false);
+
+    geoml::BlendCurveConnection start_connection_11 (geoml::CurveToEdge(start_curve), cp_start_3, geoml::GContinuity::G2, false);
+    geoml::BlendCurveConnection end_connection_11 (geoml::CurveToEdge(end_curve), cp_end_1, geoml::GContinuity::G0);
+
+    geoml::BlendCurveConnection start_connection_12 (geoml::CurveToEdge(start_curve), cp_start_3, geoml::GContinuity::G0);
+    geoml::BlendCurveConnection end_connection_12 (geoml::CurveToEdge(end_curve), cp_end_1, geoml::GContinuity::G2, false);
+
+    geoml::BlendCurveConnection start_connection_13 (geoml::CurveToEdge(start_curve), cp_start_3, geoml::GContinuity::G2, false);
+    geoml::BlendCurveConnection end_connection_13 (geoml::CurveToEdge(end_curve), cp_end_1, geoml::GContinuity::G2, false);
+
+    geoml::BlendCurveConnection start_connection_14 (geoml::CurveToEdge(start_curve), cp_start_3, geoml::GContinuity::G1, true, 0.5);
+    geoml::BlendCurveConnection end_connection_14 (geoml::CurveToEdge(end_curve), cp_end_1, geoml::GContinuity::G0);
+
+    geoml::BlendCurveConnection start_connection_15 (geoml::CurveToEdge(start_curve), cp_start_3, geoml::GContinuity::G0);
+    geoml::BlendCurveConnection end_connection_15 (geoml::CurveToEdge(end_curve), cp_end_1, geoml::GContinuity::G1, true, 0.5);
+
+    geoml::BlendCurveConnection start_connection_16 (geoml::CurveToEdge(start_curve), cp_start_3, geoml::GContinuity::G2, true, 0.5, 2.);
+    geoml::BlendCurveConnection end_connection_16 (geoml::CurveToEdge(end_curve), cp_end_1, geoml::GContinuity::G0);
+
+    geoml::BlendCurveConnection start_connection_17 (geoml::CurveToEdge(start_curve), cp_start_3, geoml::GContinuity::G0);
+    geoml::BlendCurveConnection end_connection_17 (geoml::CurveToEdge(end_curve), cp_end_1, geoml::GContinuity::G2, true, 0.5, 2.);
+
+    geoml::BlendCurveConnection start_connection_18 (geoml::CurveToEdge(start_curve), cp_start_3, geoml::GContinuity::G2, true, 0.25);
+    geoml::BlendCurveConnection end_connection_18 (geoml::CurveToEdge(end_curve), cp_end_1, geoml::GContinuity::G2, true, 1., 2.);
+
+
+    TopoDS_Edge resulting_blend_curve_1 = geoml::blend_curve(start_connection_1, end_connection_1);
+    TopoDS_Edge resulting_blend_curve_2 = geoml::blend_curve(start_connection_2, end_connection_2);
+    TopoDS_Edge resulting_blend_curve_3 = geoml::blend_curve(start_connection_3, end_connection_3);
+    TopoDS_Edge resulting_blend_curve_4 = geoml::blend_curve(start_connection_4, end_connection_4);
+    TopoDS_Edge resulting_blend_curve_5 = geoml::blend_curve(start_connection_5, end_connection_5);
+    TopoDS_Edge resulting_blend_curve_6 = geoml::blend_curve(start_connection_6, end_connection_6);
+    TopoDS_Edge resulting_blend_curve_7 = geoml::blend_curve(start_connection_7, end_connection_7);
+    TopoDS_Edge resulting_blend_curve_8 = geoml::blend_curve(start_connection_8, end_connection_8);
+    TopoDS_Edge resulting_blend_curve_9 = geoml::blend_curve(start_connection_9, end_connection_9);
+    TopoDS_Edge resulting_blend_curve_10 = geoml::blend_curve(start_connection_10, end_connection_10);
+    TopoDS_Edge resulting_blend_curve_11 = geoml::blend_curve(start_connection_11, end_connection_11);
+    TopoDS_Edge resulting_blend_curve_12 = geoml::blend_curve(start_connection_12, end_connection_12);
+    TopoDS_Edge resulting_blend_curve_13 = geoml::blend_curve(start_connection_13, end_connection_13);
+    TopoDS_Edge resulting_blend_curve_14 = geoml::blend_curve(start_connection_14, end_connection_14);
+    TopoDS_Edge resulting_blend_curve_15 = geoml::blend_curve(start_connection_15, end_connection_15);
+    TopoDS_Edge resulting_blend_curve_16 = geoml::blend_curve(start_connection_16, end_connection_16);
+    TopoDS_Edge resulting_blend_curve_17 = geoml::blend_curve(start_connection_17, end_connection_17);
+    TopoDS_Edge resulting_blend_curve_18 = geoml::blend_curve(start_connection_18, end_connection_18);
+
+
 
     // write to step file
-    STEPControl_Writer writer;
-    writer.Transfer(resulting_blend_curve, STEPControl_AsIs);
+    STEPControl_Writer writer_1;
+    writer_1.Transfer(resulting_blend_curve_1, STEPControl_AsIs);
+    std::string filename = "resulting_blend_curve_1.stp";
+    writer_1.Write(filename.c_str());
 
-    std::string filename = "resulting_blend_curve.stp";
-    writer.Write(filename.c_str());
 
 }
 
