@@ -16,11 +16,6 @@
 #include <GeomAdaptor_Curve.hxx>
 #include <GCPnts_AbscissaPoint.hxx>
 
-// debugging
-#include "STEPControl_Writer.hxx"
-#include <iostream>
-#include <string>
-
 TEST(Test_nurbs_curve, closed_unclamped_nurbs_curve)
 {    
 
@@ -456,12 +451,6 @@ TEST(Test_blend_curve, blend_curve_test)
     Handle(Geom_BezierCurve) bezier_curve_16 = Handle(Geom_BezierCurve)::DownCast(curve_16);
     Handle(Geom_BezierCurve) bezier_curve_17 = Handle(Geom_BezierCurve)::DownCast(curve_17);
     Handle(Geom_BezierCurve) bezier_curve_18 = Handle(Geom_BezierCurve)::DownCast(curve_18);
-
-    // write to step file
-    STEPControl_Writer writer;
-    writer.Transfer(resulting_blend_curve_18, STEPControl_AsIs);
-    std::string filename = "resulting_blend_curve_18.stp";
-    writer.Write(filename.c_str());
 
     // compute derivatives of start_curve and end_curve
     Standard_Real first_parameter_start_curve = start_curve->FirstParameter();
