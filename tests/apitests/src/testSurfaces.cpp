@@ -11,10 +11,11 @@
 #include <BRepBuilderAPI_MakeFace.hxx>
 #include "GProp_GProps.hxx"
 #include "BRepGProp.hxx"
-
+#include "BRepTools.hxx" 
 
 #include <TopoDS_Shape.hxx>
 #include <TopoDS_Vertex.hxx>
+#include <TopoDS_Face.hxx>
 #include <TopExp.hxx>
 #include <TopExp_Explorer.hxx>
 #include <TopoDS.hxx>
@@ -23,6 +24,12 @@
 #include <gp_Vec.hxx>
 
 #include <filesystem>
+
+#include <STEPControl_Reader.hxx>
+#include <string>
+
+// for debugging 
+#include <iostream>
 
 namespace apitests
 {
@@ -434,6 +441,5 @@ TEST(Test_face_from_4_points, simple_face_from_4_points_test)
     EXPECT_NEAR(corner_points.at(7).X(), 0., 1e-5);
     EXPECT_NEAR(corner_points.at(7).Y(), 2., 1e-5);
     EXPECT_NEAR(corner_points.at(7).Z(), 1., 1e-5);
-
-
 }
+
