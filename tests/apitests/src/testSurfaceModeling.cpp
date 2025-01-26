@@ -1367,7 +1367,9 @@ STEPControl_Writer writer_for_cst_curves_lower;
 writer_for_cst_curves_lower.Transfer(lower_cst_edge, STEPControl_AsIs);
 
 filename = "lower_cst_edge.stp";
-writer_for_cst_curves_lower.Write(filename.c_str());
+writer_for_cst_curves_lower.Write(filename.c_str()); 
+
+
 
 // closing trailing edge
 
