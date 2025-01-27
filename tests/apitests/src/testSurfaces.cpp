@@ -23,6 +23,7 @@
 #include <TopoDS_Edge.hxx>
 #include <gp_Pnt.hxx>
 #include <gp_Vec.hxx>
+#include <gp_Dir.hxx>
 #include <Geom_TrimmedCurve.hxx>
 #include <GC_MakeSegment.hxx>
 #include <BRepBuilderAPI_MakeEdge.hxx>
@@ -32,6 +33,7 @@
 #include <BRepBuilderAPI_Sewing.hxx>
 #include <TColgp_Array1OfPnt.hxx>
 #include <Geom_BezierCurve.hxx>
+#include <Geom_Plane.hxx>
 
 #include "STEPControl_Writer.hxx"
 
@@ -700,8 +702,10 @@ Standard_Real last_parameter_leading_curve_upper = leading_curve_upper->LastPara
 Standard_Real LE_relative_start_parameter = 0.97;
 Standard_Real LE_reference_point_parameter_upper = (last_parameter_leading_curve_upper - first_parameter_leading_curve_upper) * LE_relative_start_parameter;
 
-gp_Pnt LE_reference_point = leading_curve_upper->Value(LE_reference_point_parameter_upper);
+gp_Pnt LE_reference_point;
+gp_Vec LE_derivative_in_reference_point;
 
+leading_curve_upper->D1(LE_reference_point_parameter_upper, LE_reference_point, LE_derivative_in_reference_point);
 
 Standard_Real last_parameter_trailing_curve_upper = trailing_curve_upper->LastParameter();
 
@@ -779,12 +783,28 @@ isocurve_control_points.SetValue(2, isocurve_outer_point);
 Handle(Geom_BezierCurve) isocurve_curve = new Geom_BezierCurve(isocurve_control_points);
 TopoDS_Edge isocurve_edge = geoml::CurveToEdge(isocurve_curve);
 
-// write to step file
-STEPControl_Writer writer_isocurve_edge;
-writer_isocurve_edge.Transfer(isocurve_edge, STEPControl_AsIs);
 
-filename = "isocurve_edge.stp";
-writer_isocurve_edge.Write(filename.c_str()); 
+
+
+
+
+
+// gp_Dir orth_direction_plane = ...;
+
+//LE_reference_point (705)
+
+
+
+
+
+
+
+// // write to step file
+// STEPControl_Writer writer_isocurve_edge;
+// writer_isocurve_edge.Transfer(isocurve_edge, STEPControl_AsIs);
+
+// filename = "isocurve_edge.stp";
+// writer_isocurve_edge.Write(filename.c_str()); 
 
 
 
