@@ -1322,7 +1322,10 @@ writer.Transfer(bezier_fuselage_complete, STEPControl_AsIs);
 filename = "bezier_fuselage_complete.stp";
 writer.Write(filename.c_str());
 
+
 // now define a CST parametrization
+
+/* original CST parametrisation
 
 Standard_Real N_1 = 0.5;
 Standard_Real N_2 = 1.0;
@@ -1333,6 +1336,17 @@ Standard_Real relative_te_thickness = 0.005;
 geoml::CCSTCurveBuilder upper_cst_curve_builder (N_1, N_2, upper_cst_b, relative_te_thickness / 2, geoml::CCSTCurveBuilder::Algorithm::GeomAPI_PointsToBSpline);
 
 Handle(Geom_BSplineCurve) upper_cst = upper_cst_curve_builder.Curve();
+*/
+
+TColgp_Array1OfPnt upper_bezier_cp(1,5);
+
+upper_bezier_cp.SetValue(1, gp_Pnt (0., 0., 0.));
+upper_bezier_cp.SetValue(2, gp_Pnt (0., 51.504, 0.));
+upper_bezier_cp.SetValue(3, gp_Pnt (500., 101.719, 0.));
+upper_bezier_cp.SetValue(4, gp_Pnt (750., 46.011, 0.));
+upper_bezier_cp.SetValue(5, gp_Pnt (1000., 2.5, 0.));
+
+Handle(Geom_BezierCurve) upper_cst = new Geom_BezierCurve(upper_bezier_cp);
 
 BRepBuilderAPI_MakeEdge upper_cst_edge_builder (upper_cst);
 
@@ -1348,12 +1362,25 @@ writer_for_cst_curves.Transfer(upper_cst_edge, STEPControl_AsIs);
 filename = "upper_cst_edge.stp";
 writer_for_cst_curves.Write(filename.c_str());
 
+/* original CST parametrisation
 
 std::vector<Standard_Real> lower_cst_b {-0.11809019, -0.23641964, 0.03463958};
 
 geoml::CCSTCurveBuilder lower_cst_curve_builder (N_1, N_2, lower_cst_b, -1 * (relative_te_thickness / 2), geoml::CCSTCurveBuilder::Algorithm::GeomAPI_PointsToBSpline);
 
 Handle(Geom_BSplineCurve) lower_cst = lower_cst_curve_builder.Curve();
+*/
+
+TColgp_Array1OfPnt lower_bezier_cp(1,6);
+
+lower_bezier_cp.SetValue(1, gp_Pnt (0., 0., 0.));
+lower_bezier_cp.SetValue(2, gp_Pnt (0., -35.263, 0.));
+lower_bezier_cp.SetValue(3, gp_Pnt (250., -90.116, 0.));
+lower_bezier_cp.SetValue(4, gp_Pnt (600., -78.993, 0.));
+lower_bezier_cp.SetValue(5, gp_Pnt (750., 17.085, 0.));
+lower_bezier_cp.SetValue(6, gp_Pnt (1000., -2.5, 0.));
+
+Handle(Geom_BezierCurve) lower_cst = new Geom_BezierCurve(lower_bezier_cp);
 
 BRepBuilderAPI_MakeEdge lower_cst_edge_builder (lower_cst);
 
@@ -1405,7 +1432,7 @@ TopoDS_Shape wing_airfoil_base_wire_xz = transform_ox.Shape();
 
 gp_Trsf gp_transform_scale_base;
 
-gp_transform_scale_base.SetScale(leading_edge_wing_base_profile, 6567.896);
+gp_transform_scale_base.SetScale(leading_edge_wing_base_profile, 6.567896);
 
 BRepBuilderAPI_Transform transform_scale (wing_airfoil_base_wire_xz, gp_transform_scale_base, Standard_True);
 
@@ -1418,7 +1445,7 @@ BRepTools::Write(wing_airfoil_base_wire_xz_scaled, filename.c_str());
 
 gp_Trsf gp_transform_scale_tip;
 
-gp_transform_scale_tip.SetScale(leading_edge_wing_base_profile, 1313.579);
+gp_transform_scale_tip.SetScale(leading_edge_wing_base_profile, 1.313579);
 
 BRepBuilderAPI_Transform transform_scale_tip (wing_airfoil_base_wire_xz, gp_transform_scale_tip, Standard_True);
 
