@@ -34,6 +34,8 @@
 #include <TColgp_Array1OfPnt.hxx>
 #include <Geom_BezierCurve.hxx>
 #include <Geom_Plane.hxx>
+#include <GeomAPI_IntCS.hxx>
+#include <GeomAPI_ProjectPointOnCurve.hxx>
 
 #include "STEPControl_Writer.hxx"
 
@@ -700,7 +702,7 @@ Standard_Real first_parameter_leading_curve_upper = leading_curve_upper->FirstPa
 Standard_Real last_parameter_leading_curve_upper = leading_curve_upper->LastParameter();
 
 Standard_Real LE_relative_start_parameter = 0.97;
-Standard_Real LE_reference_point_parameter_upper = (last_parameter_leading_curve_upper - first_parameter_leading_curve_upper) * LE_relative_start_parameter;
+Standard_Real LE_reference_point_parameter_upper = first_parameter_leading_curve_upper + (last_parameter_leading_curve_upper - first_parameter_leading_curve_upper) * LE_relative_start_parameter;
 
 gp_Pnt LE_reference_point;
 gp_Vec LE_derivative_in_reference_point;
@@ -713,7 +715,6 @@ gp_Pnt TE_reference_point_upper = trailing_curve_upper->Value(last_parameter_tra
 
 
 Standard_Real last_parameter_trailing_curve_lower = trailing_curve_lower->LastParameter();
-
 gp_Pnt TE_reference_point_lower = trailing_curve_lower->Value(last_parameter_trailing_curve_lower);
 
 gp_Pnt TE_reference_point ((TE_reference_point_upper.X() + TE_reference_point_lower.X()) / 2., (TE_reference_point_upper.Y() + TE_reference_point_lower.Y()) / 2., (TE_reference_point_upper.Z() + TE_reference_point_lower.Z()) / 2.);
@@ -732,6 +733,17 @@ TopoDS_Edge TE_reference_edge = geoml::CurveToEdge(TE_reference_curve);
 Handle(Geom_TrimmedCurve) leading_curve_upper_first_trimmed_part = new Geom_TrimmedCurve(leading_curve_upper, first_parameter_leading_curve_upper, LE_reference_point_parameter_upper);
 
 TopoDS_Edge leading_edge_upper_first_trimmed_part = geoml::CurveToEdge(leading_curve_upper_first_trimmed_part);
+
+
+// write to step file
+STEPControl_Writer writer_leading_edge_upper_first_trimmed_part;
+writer_leading_edge_upper_first_trimmed_part.Transfer(leading_edge_upper_first_trimmed_part, STEPControl_AsIs);
+
+filename = "leading_edge_upper_first_trimmed_part.stp";
+writer_leading_edge_upper_first_trimmed_part.Write(filename.c_str()); 
+
+
+
 
 geoml::BlendCurveConnection bend_start_connection_upper_outer (leading_edge_upper_first_trimmed_part, LE_reference_point, geoml::GContinuity::G2, true, 0.015);
 geoml::BlendCurveConnection bend_end_connection_upper_outer (TE_reference_edge, TE_reference_point, geoml::GContinuity::G1, false, 0.5);
@@ -783,32 +795,79 @@ isocurve_control_points.SetValue(2, isocurve_outer_point);
 Handle(Geom_BezierCurve) isocurve_curve = new Geom_BezierCurve(isocurve_control_points);
 TopoDS_Edge isocurve_edge = geoml::CurveToEdge(isocurve_curve);
 
+// orthogonal LE plane
+
+gp_Dir orth_direction_LE_plane (LE_derivative_in_reference_point);
+
+Handle(Geom_Plane) orthogonal_LE_plane = new Geom_Plane(LE_reference_point, orth_direction_LE_plane);
+
+
+
+// intersect orthogonal LE plane with isocurve
+
+GeomAPI_IntCS intersection_isocurve_orthogonal_LE_plane (isocurve_curve, orthogonal_LE_plane);
+
+gp_Pnt intersection_point_isocurve_orthogonal_LE_plane = intersection_isocurve_orthogonal_LE_plane.Point(1);
+
+
+// split isocurve_curve_upper at intersection point
+
+// get parameter for split
+GeomAPI_ProjectPointOnCurve projector_intersection_point_on_isocurve(intersection_point_isocurve_orthogonal_LE_plane, isocurve_curve);
+
+Standard_Real parameter_isocurve_split = projector_intersection_point_on_isocurve.Parameter(1);
+
+Standard_Real first_parameter_isocurve = isocurve_curve->FirstParameter();
+
+Handle(Geom_TrimmedCurve) isocurve_inner_trimmed_part = new Geom_TrimmedCurve(isocurve_curve, first_parameter_isocurve, parameter_isocurve_split);
+
+TopoDS_Edge isocurve_edge_inner_trimmed_part = geoml::CurveToEdge(isocurve_inner_trimmed_part);
+
+
+TColgp_Array1OfPnt TE_reference_curve_middle_control_points(1,2);
+TE_reference_curve_middle_control_points.SetValue(1, TE_reference_point_inner);
+TE_reference_curve_middle_control_points.SetValue(2, TE_reference_point);
+
+Handle(Geom_BezierCurve) TE_reference_curve_middle = new Geom_BezierCurve(TE_reference_curve_middle_control_points);
+TopoDS_Edge TE_reference_edge_middle = geoml::CurveToEdge(TE_reference_curve_middle);
+
+Standard_Real first_parameter_TE_reference_curve_middle = TE_reference_curve_middle->FirstParameter();
+Standard_Real last_parameter_TE_reference_curve_middle = TE_reference_curve_middle->LastParameter();
+
+Standard_Real relative_parameter_TE_reference_curve_middle = 0.997;
+Standard_Real TE_reference_parameter = first_parameter_TE_reference_curve_middle + (last_parameter_TE_reference_curve_middle - first_parameter_TE_reference_curve_middle) * relative_parameter_TE_reference_curve_middle;
+
+
+gp_Pnt TE_reference_point_inside = TE_reference_curve_middle->Value(TE_reference_parameter);
+
+std::cout << "X: " << TE_reference_point_inside.X() << "Y: " << TE_reference_point_inside.Y() << "Z: " << TE_reference_point_inside.Z() << std::endl;
+
+gp_Pnt end_point_for_reference_line_for_inner_bend (10445., 16700., 0.);
+
+TColgp_Array1OfPnt reference_line_for_inner_bend_control_points(1,2);
+reference_line_for_inner_bend_control_points.SetValue(1, TE_reference_point_inside);
+reference_line_for_inner_bend_control_points.SetValue(2, end_point_for_reference_line_for_inner_bend);
+
+Handle(Geom_BezierCurve) reference_line_for_inner_bend = new Geom_BezierCurve(reference_line_for_inner_bend_control_points);
+TopoDS_Edge reference_edge_for_inner_bend = geoml::CurveToEdge(reference_line_for_inner_bend);
 
 
 
 
 
+geoml::BlendCurveConnection bend_inner_start_connection_ (isocurve_edge_inner_trimmed_part, intersection_point_isocurve_orthogonal_LE_plane, geoml::GContinuity::G2, true, 0.011);
+geoml::BlendCurveConnection bend_inner_end_connection (reference_edge_for_inner_bend, TE_reference_point_inside, geoml::GContinuity::G1, true, 1.5);
 
-// gp_Dir orth_direction_plane = ...;
-
-//LE_reference_point (705)
-
-
+TopoDS_Edge blend_edge_inner_bend = geoml::blend_curve(bend_inner_start_connection_, bend_inner_end_connection);
 
 
 
 
+// write to step file
+STEPControl_Writer writer_blend_edge_inner_bend;
+writer_blend_edge_inner_bend.Transfer(blend_edge_inner_bend, STEPControl_AsIs);
 
-// // write to step file
-// STEPControl_Writer writer_isocurve_edge;
-// writer_isocurve_edge.Transfer(isocurve_edge, STEPControl_AsIs);
-
-// filename = "isocurve_edge.stp";
-// writer_isocurve_edge.Write(filename.c_str()); 
-
-
-
-
-
+filename = "blend_edge_inner_bend.stp";
+writer_blend_edge_inner_bend.Write(filename.c_str()); 
 
 }
