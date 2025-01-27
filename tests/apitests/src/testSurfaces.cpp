@@ -1,5 +1,6 @@
 #include <geoml/surfaces/surfaces.h>
 #include <geoml/curves/curves.h>
+#include <geoml/curves/BlendCurve.h>
 #include <geoml/geom_topo_conversions/geom_topo_conversions.h>
 #include <geoml/data_structures/Array2d.h>
 
@@ -22,10 +23,20 @@
 #include <TopoDS_Edge.hxx>
 #include <gp_Pnt.hxx>
 #include <gp_Vec.hxx>
+#include <Geom_TrimmedCurve.hxx>
+#include <GC_MakeSegment.hxx>
+#include <BRepBuilderAPI_MakeEdge.hxx>
+#include <BRepBuilderAPI_MakeWire.hxx>
+#include <BRepBuilderAPI_Transform.hxx>
+#include <BRepOffsetAPI_ThruSections.hxx>
+#include <BRepBuilderAPI_Sewing.hxx>
+#include <TColgp_Array1OfPnt.hxx>
+#include <Geom_BezierCurve.hxx>
+
+#include "STEPControl_Writer.hxx"
 
 #include <filesystem>
 
-#include <STEPControl_Reader.hxx>
 #include <string>
 
 // for debugging 
@@ -443,3 +454,341 @@ TEST(Test_face_from_4_points, simple_face_from_4_points_test)
     EXPECT_NEAR(corner_points.at(7).Z(), 1., 1e-5);
 }
 
+TEST(Wing_tip, wing_tip_modelling)
+{
+// now define approximations of CST curves
+
+// upper curve
+
+gp_Pnt P_1_upper (0., 0., 0.);
+gp_Pnt P_2_upper (0., 0.01143, 0.);
+gp_Pnt P_3_upper (0.05032, 0.03167, 0.);
+gp_Pnt P_4_upper (0.19040, 0.05659, 0.);
+gp_Pnt P_5_upper (0.42957, 0.07027, 0.);
+gp_Pnt P_6_upper (0.65534, 0.05882, 0.);
+gp_Pnt P_7_upper (0.86221, 0.02922, 0.);
+gp_Pnt P_8_upper (1., 0.0025, 0.);
+
+std::vector<gp_Pnt> control_points_upper {P_1_upper, P_2_upper, P_3_upper, P_4_upper, P_5_upper, P_6_upper, P_7_upper, P_8_upper};
+
+Standard_Integer degree_upper = 4;
+std::vector<Standard_Real> weights_upper (8,1.0);
+
+// knots: note: as the number of knots (m+1), the number of control points (n+1) and the degree p
+// are related by m = n + p +1, the number of knots has to be 13 in this case.
+std::vector<Standard_Real> knots_upper{0.0, 1.0, 2.0, 3.0, 4.0};
+std::vector<int> mults_upper{5, 1, 1, 1, 5};
+
+Handle(Geom_BSplineCurve) upper_cst = geoml::nurbs_curve(control_points_upper, weights_upper, knots_upper, mults_upper, degree_upper);
+
+TopoDS_Edge upper_cst_edge = geoml::CurveToEdge(upper_cst);
+
+// write to brep file
+std::string filename = "upper_cst_edge_approx.brep";
+BRepTools::Write(upper_cst_edge, filename.c_str());
+
+// write to step file
+STEPControl_Writer writer_for_cst_curve_upper;
+writer_for_cst_curve_upper.Transfer(upper_cst_edge, STEPControl_AsIs);
+
+filename = "upper_cst_edge_approx.stp";
+writer_for_cst_curve_upper.Write(filename.c_str());
+
+// lower curve
+
+gp_Pnt P_1_lower (0., 0., 0.);
+gp_Pnt P_2_lower (0., -0.01149, 0.);
+gp_Pnt P_3_lower (0.05032, -0.03195, 0.);
+gp_Pnt P_4_lower (0.19040, -0.062226, 0.);
+gp_Pnt P_5_lower (0.42957, -0.06356, 0.);
+gp_Pnt P_6_lower (0.65534, -0.03086, 0.);
+gp_Pnt P_7_lower (0.86221, -0.002578, 0.);
+gp_Pnt P_8_lower (0.94566, -0.001034, 0.);
+gp_Pnt P_9_lower (1., -0.0025, 0.);
+
+std::vector<gp_Pnt> control_points_lower {P_1_lower, P_2_lower, P_3_lower, P_4_lower, P_5_lower, P_6_lower, P_7_lower, P_8_lower, P_9_lower};
+
+Standard_Integer degree_lower = 4;
+std::vector<Standard_Real> weights_lower (9,1.0);
+
+// knots: note: as the number of knots (m+1), the number of control points (n+1) and the degree p
+// are related by m = n + p +1, the number of knots has to be 14 in this case.
+std::vector<Standard_Real> knots_lower{0.0, 1.0, 2.0, 3.0, 4.0, 5.0};
+std::vector<int> mults_lower{5, 1, 1, 1, 1, 5};
+
+Handle(Geom_BSplineCurve) lower_cst = geoml::nurbs_curve(control_points_lower, weights_lower, knots_lower, mults_lower, degree_lower);
+
+TopoDS_Edge lower_cst_edge = geoml::CurveToEdge(lower_cst);
+
+// write to brep file
+filename = "lower_cst_edge_approx.brep";
+BRepTools::Write(lower_cst_edge, filename.c_str());
+
+// write to step file
+STEPControl_Writer writer_for_cst_curve_lower;
+writer_for_cst_curve_lower.Transfer(lower_cst_edge, STEPControl_AsIs);
+
+filename = "lower_cst_edge_approx.stp";
+writer_for_cst_curve_lower.Write(filename.c_str()); 
+
+// closing trailing edge
+
+Standard_Real last_parameter_upper_cst = upper_cst->LastParameter();
+Standard_Real last_parameter_lower_cst = lower_cst->LastParameter();
+
+gp_Pnt trailing_edge_upper_point;
+gp_Pnt trailing_edge_lower_point;
+
+upper_cst->D0(last_parameter_upper_cst, trailing_edge_upper_point);
+lower_cst->D0(last_parameter_lower_cst, trailing_edge_lower_point);
+
+Handle(Geom_TrimmedCurve) trailing_edge_curve = GC_MakeSegment(trailing_edge_upper_point, trailing_edge_lower_point); 
+
+TopoDS_Edge trailing_edge = BRepBuilderAPI_MakeEdge(trailing_edge_curve);
+
+TopoDS_Wire wing_airfoil_base_wire = BRepBuilderAPI_MakeWire(upper_cst_edge, trailing_edge, lower_cst_edge);
+
+filename = "wing_airfoil_base_wire_approx.brep";
+BRepTools::Write(wing_airfoil_base_wire, filename.c_str());
+
+// write to step file
+STEPControl_Writer writer_for_wing_airfoil_base_wire_approx;
+writer_for_wing_airfoil_base_wire_approx.Transfer(wing_airfoil_base_wire, STEPControl_AsIs);
+
+filename = "wing_airfoil_base_wire_approx.stp";
+writer_for_wing_airfoil_base_wire_approx.Write(filename.c_str()); 
+
+// rotate the wing airfoli base wire around the x-axis
+
+gp_Pnt leading_edge_wing_base_profile (0., 0., 0.);
+
+gp_Trsf gp_transform_ox; 
+
+gp_transform_ox.SetRotation(gp::OX(), M_PI/2);
+
+BRepBuilderAPI_Transform transform_ox (wing_airfoil_base_wire, gp_transform_ox, Standard_True);
+
+TopoDS_Shape wing_airfoil_base_wire_xz = transform_ox.Shape();
+
+gp_Trsf gp_transform_scale_base;
+
+gp_transform_scale_base.SetScale(leading_edge_wing_base_profile, 6567.896);
+
+BRepBuilderAPI_Transform transform_scale (wing_airfoil_base_wire_xz, gp_transform_scale_base, Standard_True);
+
+TopoDS_Shape wing_airfoil_base_wire_xz_scaled = transform_scale.Shape();
+
+filename = "wing_airfoil_base_wire_xz_scaled.brep";
+BRepTools::Write(wing_airfoil_base_wire_xz_scaled, filename.c_str());
+
+// construct tip wire
+
+gp_Trsf gp_transform_scale_tip;
+
+gp_transform_scale_tip.SetScale(leading_edge_wing_base_profile, 1313.579);
+
+BRepBuilderAPI_Transform transform_scale_tip (wing_airfoil_base_wire_xz, gp_transform_scale_tip, Standard_True);
+
+TopoDS_Shape wing_airfoil_tip_wire_xz_scaled = transform_scale_tip.Shape();
+
+filename = "wing_airfoil_tip_wire_xz_scaled.brep";
+BRepTools::Write(wing_airfoil_tip_wire_xz_scaled, filename.c_str());
+
+// translation vector
+
+Standard_Real translation_angle = 27.5;
+
+Standard_Real translation_z = 0;
+Standard_Real translation_y = 16748.134;
+Standard_Real translation_x = translation_y * std::tan(translation_angle * M_PI / 180);
+
+gp_Vec translation_vec (translation_x, translation_y, translation_z);
+
+gp_Trsf gp_transform_translate_tip;
+
+gp_transform_translate_tip.SetTranslation(translation_vec);
+
+BRepBuilderAPI_Transform transform_translate_tip (wing_airfoil_tip_wire_xz_scaled, gp_transform_translate_tip, Standard_True);
+
+TopoDS_Shape wing_airfoil_tip_wire_xz_scaled_and_translated = transform_translate_tip.Shape();
+
+filename = "wing_airfoil_tip_wire_xz_scaled_and_translated.brep";
+BRepTools::Write(wing_airfoil_tip_wire_xz_scaled_and_translated, filename.c_str());
+
+// create wing surface
+
+BRepOffsetAPI_ThruSections loft_generator (Standard_False, Standard_True);
+
+TopoDS_Wire tip_wire = TopoDS::Wire(wing_airfoil_tip_wire_xz_scaled_and_translated);
+
+loft_generator.AddWire(TopoDS::Wire(wing_airfoil_base_wire_xz_scaled));
+loft_generator.AddWire(tip_wire);
+
+loft_generator.Build();
+
+TopoDS_Shape wing_shape = loft_generator.Shape();
+
+filename = "wing_shape.brep";
+BRepTools::Write(wing_shape, filename.c_str());
+
+// write to step file
+STEPControl_Writer writer_for_wing_wing_shape_approx;
+writer_for_wing_wing_shape_approx.Transfer(wing_shape, STEPControl_AsIs);
+
+filename = "wing_shape_approx.stp";
+writer_for_wing_wing_shape_approx.Write(filename.c_str()); 
+
+/*
+    ////////////////////
+    Wing tip modelling
+    ////////////////////
+*/
+
+TopExp_Explorer Explorer_wing_faces;
+
+std::vector<TopoDS_Face> wing_faces;
+for (Explorer_wing_faces.Init(wing_shape, TopAbs_FACE); Explorer_wing_faces.More(); Explorer_wing_faces.Next()) {
+    TopoDS_Face face = TopoDS::Face(Explorer_wing_faces.Current());
+    wing_faces.push_back(face);
+}
+
+TopoDS_Face upper_face_wing = wing_faces[0];
+TopoDS_Face trailing_face_wing = wing_faces[1];
+TopoDS_Face lower_face_wing = wing_faces[2];
+
+
+TopExp_Explorer Explorer_upper_wing_face;
+
+std::vector<TopoDS_Edge> edges_upper_wing;
+for (Explorer_upper_wing_face.Init(upper_face_wing, TopAbs_EDGE); Explorer_upper_wing_face.More(); Explorer_upper_wing_face.Next()) {
+    TopoDS_Edge edge = TopoDS::Edge(Explorer_upper_wing_face.Current());
+    edges_upper_wing.push_back(edge);
+}
+
+TopoDS_Edge leading_edge_upper = edges_upper_wing[3];
+TopoDS_Edge trailing_edge_upper = edges_upper_wing[1];
+TopoDS_Edge outer_edge_upper = edges_upper_wing[2];
+TopoDS_Edge inner_edge_upper = edges_upper_wing[0];
+
+Handle(Geom_Curve) leading_curve_upper = geoml::EdgeToCurve(leading_edge_upper);
+Handle(Geom_Curve) trailing_curve_upper = geoml::EdgeToCurve(trailing_edge_upper);
+Handle(Geom_Curve) outer_curve_upper = geoml::EdgeToCurve(outer_edge_upper);
+Handle(Geom_Curve) inner_curve_upper = geoml::EdgeToCurve(inner_edge_upper);
+
+TopExp_Explorer Explorer_lower_wing_face;
+
+std::vector<TopoDS_Edge> edges_lower_wing;
+for (Explorer_lower_wing_face.Init(lower_face_wing, TopAbs_EDGE); Explorer_lower_wing_face.More(); Explorer_lower_wing_face.Next()) {
+    TopoDS_Edge edge = TopoDS::Edge(Explorer_lower_wing_face.Current());
+    edges_lower_wing.push_back(edge);
+}
+
+TopoDS_Edge leading_edge_lower = edges_lower_wing[1]; 
+TopoDS_Edge trailing_edge_lower = edges_lower_wing[3];  
+TopoDS_Edge outer_edge_lower = edges_lower_wing[2]; 
+TopoDS_Edge inner_edge_lower = edges_lower_wing[0]; 
+
+Handle(Geom_Curve) leading_curve_lower = geoml::EdgeToCurve(leading_edge_lower);
+Handle(Geom_Curve) trailing_curve_lower = geoml::EdgeToCurve(trailing_edge_lower);
+Handle(Geom_Curve) outer_curve_lower = geoml::EdgeToCurve(outer_edge_lower);
+Handle(Geom_Curve) inner_curve_lower = geoml::EdgeToCurve(inner_edge_lower);
+
+
+Standard_Real first_parameter_leading_curve_upper = leading_curve_upper->FirstParameter();
+Standard_Real last_parameter_leading_curve_upper = leading_curve_upper->LastParameter();
+
+Standard_Real LE_relative_start_parameter = 0.97;
+Standard_Real LE_reference_point_parameter_upper = (last_parameter_leading_curve_upper - first_parameter_leading_curve_upper) * LE_relative_start_parameter;
+
+gp_Pnt LE_reference_point = leading_curve_upper->Value(LE_reference_point_parameter_upper);
+
+
+Standard_Real last_parameter_trailing_curve_upper = trailing_curve_upper->LastParameter();
+
+gp_Pnt TE_reference_point_upper = trailing_curve_upper->Value(last_parameter_trailing_curve_upper);
+
+
+Standard_Real last_parameter_trailing_curve_lower = trailing_curve_lower->LastParameter();
+
+gp_Pnt TE_reference_point_lower = trailing_curve_lower->Value(last_parameter_trailing_curve_lower);
+
+gp_Pnt TE_reference_point ((TE_reference_point_upper.X() + TE_reference_point_lower.X()) / 2., (TE_reference_point_upper.Y() + TE_reference_point_lower.Y()) / 2., (TE_reference_point_upper.Z() + TE_reference_point_lower.Z()) / 2.);
+
+gp_Pnt LE_outer_point = leading_curve_upper->Value(last_parameter_leading_curve_upper);
+
+TColgp_Array1OfPnt TE_reference_line_control_points(1,2);
+TE_reference_line_control_points.SetValue(1, TE_reference_point);
+TE_reference_line_control_points.SetValue(2, LE_outer_point);
+
+Handle(Geom_BezierCurve) TE_reference_curve = new Geom_BezierCurve(TE_reference_line_control_points);
+TopoDS_Edge TE_reference_edge = geoml::CurveToEdge(TE_reference_curve);
+
+
+// split leading_curve_upper at LE_reference_point
+Handle(Geom_TrimmedCurve) leading_curve_upper_first_trimmed_part = new Geom_TrimmedCurve(leading_curve_upper, first_parameter_leading_curve_upper, LE_reference_point_parameter_upper);
+
+TopoDS_Edge leading_edge_upper_first_trimmed_part = geoml::CurveToEdge(leading_curve_upper_first_trimmed_part);
+
+geoml::BlendCurveConnection bend_start_connection_upper_outer (leading_edge_upper_first_trimmed_part, LE_reference_point, geoml::GContinuity::G2, true, 0.015);
+geoml::BlendCurveConnection bend_end_connection_upper_outer (TE_reference_edge, TE_reference_point, geoml::GContinuity::G1, false, 0.5);
+
+TopoDS_Edge blend_edge_upper_outer = geoml::blend_curve(bend_start_connection_upper_outer, bend_end_connection_upper_outer);
+
+
+// write to step file
+STEPControl_Writer writer_blend_edge_upper_outer;
+writer_blend_edge_upper_outer.Transfer(blend_edge_upper_outer, STEPControl_AsIs);
+
+filename = "blend_edge_upper_outer.stp";
+writer_blend_edge_upper_outer.Write(filename.c_str()); 
+
+
+
+
+gp_Pnt LE_inner_point = leading_curve_upper->Value(first_parameter_leading_curve_upper);
+
+
+Standard_Real first_parameter_trailing_curve_upper = trailing_curve_upper->FirstParameter();
+
+gp_Pnt TE_reference_point_upper_inner = trailing_curve_upper->Value(first_parameter_trailing_curve_upper);
+
+
+Standard_Real first_parameter_trailing_curve_lower = trailing_curve_lower->FirstParameter();
+
+gp_Pnt TE_reference_point_lower_inner = trailing_curve_lower->Value(first_parameter_trailing_curve_lower);
+
+gp_Pnt TE_reference_point_inner ((TE_reference_point_upper_inner.X() + TE_reference_point_lower_inner.X()) / 2., (TE_reference_point_upper_inner.Y() + TE_reference_point_lower_inner.Y()) / 2., (TE_reference_point_upper_inner.Z() + TE_reference_point_lower_inner.Z()) / 2.);
+
+TColgp_Array1OfPnt TE_reference_line_inner_control_points(1,2);
+TE_reference_line_inner_control_points.SetValue(1, TE_reference_point_inner);
+TE_reference_line_inner_control_points.SetValue(2, LE_inner_point);
+
+Handle(Geom_BezierCurve) TE_reference_curve_inner = new Geom_BezierCurve(TE_reference_line_inner_control_points);
+TopoDS_Edge TE_reference_edge_inner = geoml::CurveToEdge(TE_reference_curve_inner);
+
+
+Standard_Real isoparameter = 0.85;
+
+gp_Pnt isocurve_inner_point = TE_reference_curve_inner->Value(isoparameter);
+gp_Pnt isocurve_outer_point = TE_reference_curve ->Value(isoparameter);
+
+TColgp_Array1OfPnt isocurve_control_points(1,2);
+isocurve_control_points.SetValue(1, isocurve_inner_point);
+isocurve_control_points.SetValue(2, isocurve_outer_point);
+
+Handle(Geom_BezierCurve) isocurve_curve = new Geom_BezierCurve(isocurve_control_points);
+TopoDS_Edge isocurve_edge = geoml::CurveToEdge(isocurve_curve);
+
+// write to step file
+STEPControl_Writer writer_isocurve_edge;
+writer_isocurve_edge.Transfer(isocurve_edge, STEPControl_AsIs);
+
+filename = "isocurve_edge.stp";
+writer_isocurve_edge.Write(filename.c_str()); 
+
+
+
+
+
+
+}
