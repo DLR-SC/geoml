@@ -36,6 +36,12 @@
 #include <Geom_Plane.hxx>
 #include <GeomAPI_IntCS.hxx>
 #include <GeomAPI_ProjectPointOnCurve.hxx>
+#include <BRepProj_Projection.hxx>
+#include <TopoDS_Wire.hxx>
+#include <BRepFeat_SplitShape.hxx>
+#include <GeomAdaptor_Curve.hxx>
+#include <GCPnts_AbscissaPoint.hxx>
+#include <BRepAlgoAPI_Section.hxx>
 
 #include "STEPControl_Writer.hxx"
 
@@ -852,22 +858,294 @@ Handle(Geom_BezierCurve) reference_line_for_inner_bend = new Geom_BezierCurve(re
 TopoDS_Edge reference_edge_for_inner_bend = geoml::CurveToEdge(reference_line_for_inner_bend);
 
 
-
-
-
 geoml::BlendCurveConnection bend_inner_start_connection_ (isocurve_edge_inner_trimmed_part, intersection_point_isocurve_orthogonal_LE_plane, geoml::GContinuity::G2, true, 0.011);
 geoml::BlendCurveConnection bend_inner_end_connection (reference_edge_for_inner_bend, TE_reference_point_inside, geoml::GContinuity::G1, true, 1.5);
 
 TopoDS_Edge blend_edge_inner_bend = geoml::blend_curve(bend_inner_start_connection_, bend_inner_end_connection);
 
 
+TopoDS_Edge frontal_projection_edge = BRepBuilderAPI_MakeEdge(LE_reference_point, intersection_point_isocurve_orthogonal_LE_plane);
+
+// BRepBuilderAPI_MakeWire wire_builder_frontal_projection_edge;
+// wire_builder_frontal_projection_edge.Add(frontal_projection_edge);
+
+// TopoDS_Wire frontal_projection_wire = wire_builder_frontal_projection_edge.Wire();
+
+
+// BRepBuilderAPI_MakeWire wire_builder_blend_edge_inner_bend;
+// wire_builder_blend_edge_inner_bend.Add(blend_edge_inner_bend);
+
+// TopoDS_Wire blend_wire_inner_bend = wire_builder_blend_edge_inner_bend.Wire();
+
+BRepBuilderAPI_MakeWire wire_builder_wire_to_project;
+wire_builder_wire_to_project.Add(frontal_projection_edge);
+wire_builder_wire_to_project.Add(blend_edge_inner_bend);
+
+TopoDS_Wire wire_to_project = wire_builder_wire_to_project.Wire();
+
+
+// project wire onto upper wing surface
+
+gp_Dir projection_direction (0., 0., 1.);
+
+BRepProj_Projection upper_projection_maker (wire_to_project, upper_face_wing, projection_direction);
+
+TopoDS_Compound upper_projection = upper_projection_maker.Shape();
+
+
+
+BRepFeat_SplitShape splitter_upper_wing(upper_face_wing);
+splitter_upper_wing.Add(upper_projection, upper_face_wing);
+splitter_upper_wing.Build();
+
+TopoDS_Shape trimmed_upper_wing_parts = splitter_upper_wing.Shape();
+
+
+std::vector<TopoDS_Face> trimmed_upper_parts_as_faces;
+
+for (TopoDS_Iterator it(trimmed_upper_wing_parts); it.More(); it.Next()) 
+{
+    const TopoDS_Shape& shape = it.Value();
+
+    if(shape.ShapeType() == TopAbs_FACE)
+    {
+        TopoDS_Face face = TopoDS::Face(shape);
+        trimmed_upper_parts_as_faces.push_back(face);
+    } 
+} 
+
+TopoDS_Face upper_trimmed_face = trimmed_upper_parts_as_faces.at(0);
+
+
+std::vector<TopoDS_Edge> edges_of_upper_trimmed_face;
+
+for (TopExp_Explorer exp(upper_trimmed_face, TopAbs_EDGE); exp.More(); exp.Next()) 
+{    
+    TopoDS_Edge edge = TopoDS::Edge(exp.Current());
+    edges_of_upper_trimmed_face.push_back(edge);
+}
+
+TopoDS_Edge trailing_edge_trimmed = edges_of_upper_trimmed_face.at(1);
+
+
+gp_Vec translation_vector (0., 0., -1.);
+
+gp_Pnt lower_point_of_vertical_reference_curve_TE = TE_reference_point.Translated(translation_vector);
+
+
+Handle(Geom_TrimmedCurve) vertical_reference_curve_TE = GC_MakeSegment(lower_point_of_vertical_reference_curve_TE, TE_reference_point); 
+
+TopoDS_Edge vertical_reference_edge_TE = geoml::CurveToEdge(vertical_reference_curve_TE);
+
+
+geoml::BlendCurveConnection connection_cross_section_5_start (trailing_edge_trimmed, TE_reference_point, geoml::GContinuity::G2, true, 0.0015, 0.9);
+geoml::BlendCurveConnection connection_cross_section_5_end (vertical_reference_edge_TE, TE_reference_point, geoml::GContinuity::G2, true, 1.);
+
+TopoDS_Edge cross_section_5_edge = geoml::blend_curve(connection_cross_section_5_start, connection_cross_section_5_end);
+
+
+
+Handle(Geom_Curve) blend_curve_upper_outer = geoml::EdgeToCurve(blend_edge_upper_outer);
+
+GeomAdaptor_Curve curve_adaptor (blend_curve_upper_outer);
+
+Standard_Real length_blend_curve_upper_outer = GCPnts_AbscissaPoint::Length(curve_adaptor);
+
+std::vector<Standard_Real> distances = {0.25 * length_blend_curve_upper_outer, 0.5 * length_blend_curve_upper_outer, 0.75 * length_blend_curve_upper_outer};
+
+std::vector<Standard_Real> parameters_of_cross_section_points_on_blend_curve_upper_outer;
+
+for (Standard_Real distance : distances)
+{
+    GCPnts_AbscissaPoint calculator_of_point_at_distance (curve_adaptor, distance, blend_curve_upper_outer->FirstParameter());
+    Standard_Real parameter_of_point_at_distance = calculator_of_point_at_distance.Parameter();
+
+    parameters_of_cross_section_points_on_blend_curve_upper_outer.push_back(parameter_of_point_at_distance);
+}
+
+gp_Pnt point_1_on_blend_curve_upper_outer_at_cross_section;
+gp_Vec tangent_at_cross_section_point_1;
+
+blend_curve_upper_outer -> D1(parameters_of_cross_section_points_on_blend_curve_upper_outer.at(0), point_1_on_blend_curve_upper_outer_at_cross_section, tangent_at_cross_section_point_1);
+
+
+gp_Pnt lower_point_of_vertical_reference_curve_1 = point_1_on_blend_curve_upper_outer_at_cross_section.Translated(translation_vector);
+
+
+Handle(Geom_TrimmedCurve) vertical_reference_curve_1 = GC_MakeSegment(lower_point_of_vertical_reference_curve_1, point_1_on_blend_curve_upper_outer_at_cross_section); 
+
+TopoDS_Edge vertical_reference_edge_1 = geoml::CurveToEdge(vertical_reference_curve_1);
+
+
+
+gp_Dir orth_direction_cross_section_1 (tangent_at_cross_section_point_1);
+
+Handle(Geom_Plane) orthogonal_plane_cross_section_1 = new Geom_Plane(point_1_on_blend_curve_upper_outer_at_cross_section, orth_direction_cross_section_1);
+
+
+gp_Pln pln_cross_section_1 = orthogonal_plane_cross_section_1->Pln();
+
+
+BRepAlgoAPI_Section intersection_upper_wing_cross_section_1 (upper_trimmed_face, pln_cross_section_1, Standard_False);
+
+intersection_upper_wing_cross_section_1.ComputePCurveOn1(Standard_True);
+intersection_upper_wing_cross_section_1.Approximation(Standard_True);
+intersection_upper_wing_cross_section_1.Build();
+
+TopoDS_Shape shape_intersection_upper_cross_section_1 = intersection_upper_wing_cross_section_1.Shape();
+
+
+std::vector<TopoDS_Edge> edges_intersection_cross_section_1;
+
+for (TopExp_Explorer explorer(shape_intersection_upper_cross_section_1, TopAbs_EDGE); explorer.More(); explorer.Next()) 
+{
+    TopoDS_Edge edge = TopoDS::Edge(explorer.Current());
+    edges_intersection_cross_section_1.push_back(edge);
+}
+
+TopoDS_Edge edge_intersection_upper_cross_section_1 = edges_intersection_cross_section_1.at(0);
+
+
+geoml::BlendCurveConnection connection_cross_section_1_start (edge_intersection_upper_cross_section_1, point_1_on_blend_curve_upper_outer_at_cross_section, geoml::GContinuity::G2, true, 0.04, 1.);
+geoml::BlendCurveConnection connection_cross_section_1_end (vertical_reference_edge_1, point_1_on_blend_curve_upper_outer_at_cross_section, geoml::GContinuity::G2, true, 20.);
+
+TopoDS_Edge cross_section_1_edge = geoml::blend_curve(connection_cross_section_1_start, connection_cross_section_1_end);
+
+
+
+
+
+gp_Pnt point_2_on_blend_curve_upper_outer_at_cross_section;
+gp_Vec tangent_at_cross_section_point_2;
+
+blend_curve_upper_outer -> D1(parameters_of_cross_section_points_on_blend_curve_upper_outer.at(1), point_2_on_blend_curve_upper_outer_at_cross_section, tangent_at_cross_section_point_2);
+
+
+gp_Pnt lower_point_of_vertical_reference_curve_2 = point_2_on_blend_curve_upper_outer_at_cross_section.Translated(translation_vector);
+
+
+Handle(Geom_TrimmedCurve) vertical_reference_curve_2 = GC_MakeSegment(lower_point_of_vertical_reference_curve_2, point_2_on_blend_curve_upper_outer_at_cross_section); 
+
+TopoDS_Edge vertical_reference_edge_2 = geoml::CurveToEdge(vertical_reference_curve_2);
+
+
+
+gp_Dir orth_direction_cross_section_2 (tangent_at_cross_section_point_2);
+
+Handle(Geom_Plane) orthogonal_plane_cross_section_2 = new Geom_Plane(point_2_on_blend_curve_upper_outer_at_cross_section, orth_direction_cross_section_2);
+
+
+gp_Pln pln_cross_section_2 = orthogonal_plane_cross_section_2->Pln();
+
+
+BRepAlgoAPI_Section intersection_upper_wing_cross_section_2 (upper_trimmed_face, pln_cross_section_2, Standard_False);
+
+intersection_upper_wing_cross_section_2.ComputePCurveOn1(Standard_True);
+intersection_upper_wing_cross_section_2.Approximation(Standard_True);
+intersection_upper_wing_cross_section_2.Build();
+
+TopoDS_Shape shape_intersection_upper_cross_section_2 = intersection_upper_wing_cross_section_2.Shape();
+
+
+std::vector<TopoDS_Edge> edges_intersection_cross_section_2;
+
+for (TopExp_Explorer explorer(shape_intersection_upper_cross_section_2, TopAbs_EDGE); explorer.More(); explorer.Next()) 
+{
+    TopoDS_Edge edge = TopoDS::Edge(explorer.Current());
+    edges_intersection_cross_section_2.push_back(edge);
+}
+
+TopoDS_Edge edge_intersection_upper_cross_section_2 = edges_intersection_cross_section_2.at(0);
+
+
+geoml::BlendCurveConnection connection_cross_section_2_start (edge_intersection_upper_cross_section_2, point_2_on_blend_curve_upper_outer_at_cross_section, geoml::GContinuity::G2, true, 0.02, 1.);
+geoml::BlendCurveConnection connection_cross_section_2_end (vertical_reference_edge_2, point_2_on_blend_curve_upper_outer_at_cross_section, geoml::GContinuity::G2, true, 20.);
+
+TopoDS_Edge cross_section_2_edge = geoml::blend_curve(connection_cross_section_2_start, connection_cross_section_2_end);
+
+
+
+
+
+gp_Pnt point_3_on_blend_curve_upper_outer_at_cross_section;
+gp_Vec tangent_at_cross_section_point_3;
+
+blend_curve_upper_outer -> D1(parameters_of_cross_section_points_on_blend_curve_upper_outer.at(2), point_3_on_blend_curve_upper_outer_at_cross_section, tangent_at_cross_section_point_3);
+
+
+gp_Pnt lower_point_of_vertical_reference_curve_3 = point_3_on_blend_curve_upper_outer_at_cross_section.Translated(translation_vector);
+
+
+Handle(Geom_TrimmedCurve) vertical_reference_curve_3 = GC_MakeSegment(lower_point_of_vertical_reference_curve_3, point_3_on_blend_curve_upper_outer_at_cross_section); 
+
+TopoDS_Edge vertical_reference_edge_3 = geoml::CurveToEdge(vertical_reference_curve_3);
+
+
+
+gp_Dir orth_direction_cross_section_3 (tangent_at_cross_section_point_3);
+
+Handle(Geom_Plane) orthogonal_plane_cross_section_3 = new Geom_Plane(point_3_on_blend_curve_upper_outer_at_cross_section, orth_direction_cross_section_3);
+
+
+gp_Pln pln_cross_section_3 = orthogonal_plane_cross_section_3->Pln();
+
+
+BRepAlgoAPI_Section intersection_upper_wing_cross_section_3 (upper_trimmed_face, pln_cross_section_3, Standard_False);
+
+intersection_upper_wing_cross_section_3.ComputePCurveOn1(Standard_True);
+intersection_upper_wing_cross_section_3.Approximation(Standard_True);
+intersection_upper_wing_cross_section_3.Build();
+
+TopoDS_Shape shape_intersection_upper_cross_section_3 = intersection_upper_wing_cross_section_3.Shape();
+
+
+std::vector<TopoDS_Edge> edges_intersection_cross_section_3;
+
+for (TopExp_Explorer explorer(shape_intersection_upper_cross_section_3, TopAbs_EDGE); explorer.More(); explorer.Next()) 
+{
+    TopoDS_Edge edge = TopoDS::Edge(explorer.Current());
+    edges_intersection_cross_section_3.push_back(edge);
+}
+
+TopoDS_Edge edge_intersection_upper_cross_section_3 = edges_intersection_cross_section_3.at(0);
+
+
+geoml::BlendCurveConnection connection_cross_section_3_start (edge_intersection_upper_cross_section_3, point_3_on_blend_curve_upper_outer_at_cross_section, geoml::GContinuity::G2, true, 0.02, 1.);
+geoml::BlendCurveConnection connection_cross_section_3_end (vertical_reference_edge_3, point_3_on_blend_curve_upper_outer_at_cross_section, geoml::GContinuity::G2, true, 20.);
+
+TopoDS_Edge cross_section_3_edge = geoml::blend_curve(connection_cross_section_3_start, connection_cross_section_3_end);
+
+
+TopoDS_Edge upper_rail_edge = edges_of_upper_trimmed_face.at(2);
+Handle(Geom_Curve) upper_rail_curve = geoml::EdgeToCurve(upper_rail_edge);
+
+Handle(Geom_Curve) blend_crv_upper_outer = geoml::EdgeToCurve(blend_edge_upper_outer);
+
+Handle(Geom_Curve) cross_section_5_curve = geoml::EdgeToCurve(cross_section_5_edge);
+Handle(Geom_Curve) cross_section_3_curve = geoml::EdgeToCurve(cross_section_3_edge);
+Handle(Geom_Curve) cross_section_2_curve = geoml::EdgeToCurve(cross_section_2_edge);
+Handle(Geom_Curve) cross_section_1_curve = geoml::EdgeToCurve(cross_section_1_edge);
+
+TopoDS_Edge cross_section_0_edge = edges_of_upper_trimmed_face.at(3);
+Handle(Geom_Curve) cross_section_0_curve = geoml::EdgeToCurve(cross_section_0_edge);
+
+
+std::vector<Handle(Geom_Curve)> u_curves_upper = {upper_rail_curve, blend_crv_upper_outer};
+std::vector<Handle(Geom_Curve)> v_curves_upper = {cross_section_5_curve, cross_section_3_curve, cross_section_2_curve, cross_section_1_curve, cross_section_0_curve};
+
+
+
+Handle(Geom_BSplineSurface) gordon_surface_upper = geoml::interpolate_curve_network(u_curves_upper, v_curves_upper, 1e-4);
+
+TopoDS_Face gordon_surface_upper_face = geoml:: SurfaceToFace(gordon_surface_upper, 1e-4);
+
 
 
 // write to step file
-STEPControl_Writer writer_blend_edge_inner_bend;
-writer_blend_edge_inner_bend.Transfer(blend_edge_inner_bend, STEPControl_AsIs);
+STEPControl_Writer writer_edge_intersection_upper_cross_section_3;
+writer_edge_intersection_upper_cross_section_3.Transfer(edge_intersection_upper_cross_section_3, STEPControl_AsIs);
 
-filename = "blend_edge_inner_bend.stp";
-writer_blend_edge_inner_bend.Write(filename.c_str()); 
+filename = "edge_intersection_upper_cross_section_3.stp";
+writer_edge_intersection_upper_cross_section_3.Write(filename.c_str()); 
 
 }
