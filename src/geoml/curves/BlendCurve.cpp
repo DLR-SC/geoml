@@ -14,8 +14,8 @@ BlendCurveConnection::BlendCurveConnection(TopoDS_Edge const& edge, gp_Pnt const
 , m_beta(beta)
 , m_gamma(gamma)
 , m_outward_direction(outward_direction)
+, m_curve(BRep_Tool::Curve(edge, m_curve_first_param, m_curve_last_param))
 {
-    m_curve = BRep_Tool::Curve(edge, m_curve_first_param, m_curve_last_param); 
     compute_blend_parameter();
 } 
 
