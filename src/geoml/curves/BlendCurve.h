@@ -39,7 +39,7 @@ namespace geoml
 {
 
 /**
- * @brief The BlendCurveConnection struct contains the relevant information a blend curve needs to 
+ * @brief The BlendCurveConnection class contains the relevant information a blend curve needs to 
  * to connect to a given edge.
  *
  * It contains the edge to be blended, a choice of the vertex of the edge that defines the attachment point of the blend, the required geometric continuity 
@@ -62,8 +62,10 @@ namespace geoml
  *              curve to the start point of the blend curve, measured in tangential direction at the blend curve. This tangential distance is given by
  *              gamma * 2 * beta * distance(second control point of blend, start point of blend).   
  */
-struct BlendCurveConnection
+class BlendCurveConnection
 {
+public:
+
     GEOML_API_EXPORT BlendCurveConnection(TopoDS_Edge const& edge, gp_Pnt const& near_connection_point, GContinuity continuity, bool outward_direction = true, Standard_Real beta = 1., Standard_Real gamma = 1.);
 
     Handle(Geom_Curve) m_curve;
@@ -77,6 +79,7 @@ struct BlendCurveConnection
     Standard_Real m_curve_blend_param;
 
 private:
+
     GEOML_API_EXPORT void compute_blend_parameter();
 };
 
