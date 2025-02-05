@@ -86,7 +86,7 @@ private:
 /**
  * @brief The class BlendCurve takes two BlendCurveConnections and computes the blend curve according to the given specifications.
  *
- * Its public API exposes a method that reutrns the required blend curve.
+ * Its public API exposes a method that returns the required blend curve.
  */
 class BlendCurve
 {
