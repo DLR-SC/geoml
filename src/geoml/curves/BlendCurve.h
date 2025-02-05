@@ -40,11 +40,27 @@ namespace geoml
 
 /**
  * @brief The BlendCurveConnection struct contains the relevant information a blend curve needs to 
- * to connect to a given curve.
+ * to connect to a given edge.
  *
- * It contains the curve to be blended, the required continuity, the beta and gamma factor to control the shape of the
- * blend curve, a toggle whether or not the blend curve should be inward or outward facing relative to the curve to blend, 
- * and the parameters of the curves start and end point, as well as the parameter of the blend point.
+ * It contains the edge to be blended, a choice of the vertex of the edge that defines the attachment point of the blend, the required geometric continuity 
+ * in that point, a toggle whether or not the blend curve should be geometrically inward or outward facing 
+ * relative to the edge to blend, and finally, the beta and gamma factors to control the shape of the blend curve for higher geometric continuities. 
+ * 
+ * @param edge The edge to be blended
+ * @param near_connection_point This point determines which vertex of the edge the blend curve attaches to.  
+ *                              The blend curve attaches to the vertex that is closest to near_connection_point.
+ *                              If both vertices have the same distance from near_connection_point, an error is thrown.
+ * @param continuity The parameter continuity can take the values geoml::GContinuity::G0, geoml::GContinuity::G1 and geoml::GContinuity::G2 and sets the
+ *                   geometric continuity of the blend.
+ * @param outward_direction This parameter only plays a role if the continuity is G1 or higher. If true (default value), the blend curve will be 
+ *                          geometrically directed inside the edge. If false, the blend curve will be
+ *                          geometrically outward directed with respect to the edge. 
+ * @param beta This parameter only plays a role if the continuity is G1 or higher. The parameter beta determines the distance of the second control point
+ *             of the blend curve from the start point of the blend. This distance is given by beta * distance(second control point of blend, start 
+ *             point of blend).
+ * @param gamma The parameter gamma only play a role if the continuity if G2. In this case, it determines the distance of the third control point of the blend
+ *              curve to the start point of the blend curve, measured in tangential direction at the blend curve. This tangential distance is given by
+ *              gamma * 2 * beta * distance(second control point of blend, start point of blend).   
  */
 struct BlendCurveConnection
 {
