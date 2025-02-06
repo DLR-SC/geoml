@@ -109,13 +109,9 @@ private:
 
     GEOML_API_EXPORT void compute_blend_points_and_derivatives_of_start_and_end_curve();
 
-    GEOML_API_EXPORT gp_Pnt formula_for_second_control_point_in_parameter_direction(gp_Pnt first_point, Standard_Real beta, gp_Vec first_derivative);
+    GEOML_API_EXPORT gp_Pnt control_point_2(gp_Pnt first_point, Standard_Real beta, gp_Vec first_derivative);
 
-    GEOML_API_EXPORT gp_Pnt formula_for_second_control_point_against_parameter_direction(gp_Pnt first_point, Standard_Real beta, gp_Vec first_derivative);
-
-    GEOML_API_EXPORT gp_Pnt formula_for_third_control_point_in_parameter_direction(gp_Pnt first_point, Standard_Real beta, Standard_Real gamma, gp_Vec first_derivative, gp_Vec second_derivative);
-    GEOML_API_EXPORT gp_Pnt formula_for_third_control_point_against_parameter_direction(gp_Pnt first_point, Standard_Real beta, Standard_Real gamma, gp_Vec first_derivative, gp_Vec second_derivative);
-
+    GEOML_API_EXPORT gp_Pnt control_point_3(gp_Pnt first_point, Standard_Real beta, Standard_Real gamma, gp_Vec first_derivative, gp_Vec second_derivative);
 
     GEOML_API_EXPORT gp_Pnt compute_first_control_point_at_start();
     GEOML_API_EXPORT gp_Pnt compute_first_control_point_at_end();

@@ -54,17 +54,12 @@ void BlendCurve::compute_blend_points_and_derivatives_of_start_and_end_curve()
     m_end.m_curve->D2(m_end.m_curve_blend_param, m_blend_point_end, m_first_derivative_end_curve, m_second_derivative_end_curve);
 }
 
-gp_Pnt BlendCurve::formula_for_second_control_point_in_parameter_direction(gp_Pnt first_point, Standard_Real beta, gp_Vec first_derivative)
+gp_Pnt BlendCurve::control_point_2(gp_Pnt first_point, Standard_Real beta, gp_Vec first_derivative)
 {
     return first_point.Translated(beta * first_derivative);
 }
 
-gp_Pnt BlendCurve::formula_for_second_control_point_against_parameter_direction(gp_Pnt first_point, Standard_Real beta, gp_Vec first_derivative)
-{
-    return formula_for_second_control_point_in_parameter_direction(first_point, beta, -first_derivative);
-}
-
-gp_Pnt BlendCurve::formula_for_third_control_point_in_parameter_direction(gp_Pnt first_point, Standard_Real beta, Standard_Real gamma, gp_Vec first_derivative, gp_Vec second_derivative)
+gp_Pnt BlendCurve::control_point_3(gp_Pnt first_point, Standard_Real beta, Standard_Real gamma, gp_Vec first_derivative, gp_Vec second_derivative)
 {
     gp_Vec displacement_vector = (beta * beta * m_degree /(m_degree - 1)) * second_derivative;
 
@@ -77,11 +72,6 @@ gp_Pnt BlendCurve::formula_for_third_control_point_in_parameter_direction(gp_Pnt
     return first_point.Translated(h1 + h2);
 }
 
-gp_Pnt BlendCurve::formula_for_third_control_point_against_parameter_direction(gp_Pnt first_point, Standard_Real beta, Standard_Real gamma, gp_Vec first_derivative, gp_Vec second_derivative)
-{
-    return formula_for_third_control_point_in_parameter_direction(first_point, beta, -gamma, first_derivative, second_derivative);
-}
-  
 gp_Pnt BlendCurve::compute_first_control_point_at_start()
 {
     return m_blend_point_start;
@@ -93,11 +83,11 @@ gp_Pnt BlendCurve::compute_second_control_point_at_start()
     {
         if(std::abs(m_start.m_curve_blend_param - m_start.m_curve_last_param) < Precision::PConfusion())
         {        
-            return formula_for_second_control_point_in_parameter_direction(m_blend_point_start, m_start.m_beta, m_first_derivative_start_curve); 
+            return control_point_2(m_blend_point_start, m_start.m_beta, m_first_derivative_start_curve); 
         }
         else if(std::abs(m_start.m_curve_blend_param - m_start.m_curve_first_param) < Precision::PConfusion())
         {    
-            return formula_for_second_control_point_against_parameter_direction(m_blend_point_start, m_start.m_beta, m_first_derivative_start_curve);
+            return control_point_2(m_blend_point_start, m_start.m_beta, -m_first_derivative_start_curve);
         }
         else
         {
@@ -108,11 +98,11 @@ gp_Pnt BlendCurve::compute_second_control_point_at_start()
 
         if(std::abs(m_start.m_curve_blend_param - m_start.m_curve_last_param) < Precision::PConfusion())
         {
-            return formula_for_second_control_point_against_parameter_direction(m_blend_point_start, m_start.m_beta, m_first_derivative_start_curve);
+            return control_point_2(m_blend_point_start, m_start.m_beta, -m_first_derivative_start_curve);
         }
         else if(std::abs(m_start.m_curve_blend_param - m_start.m_curve_first_param) < Precision::PConfusion())
         {    
-            return formula_for_second_control_point_in_parameter_direction(m_blend_point_start, m_start.m_beta, m_first_derivative_start_curve); 
+            return control_point_2(m_blend_point_start, m_start.m_beta, m_first_derivative_start_curve); 
         }
         else
         {
@@ -128,11 +118,11 @@ gp_Pnt BlendCurve::compute_third_control_point_at_start()
     {
         if(std::abs(m_start.m_curve_blend_param - m_start.m_curve_last_param) < Precision::PConfusion())
         {
-            return formula_for_third_control_point_in_parameter_direction(m_blend_point_start, m_start.m_beta, m_start.m_gamma, m_first_derivative_start_curve, m_second_derivative_start_curve);
+            return control_point_3(m_blend_point_start, m_start.m_beta, m_start.m_gamma, m_first_derivative_start_curve, m_second_derivative_start_curve);
         }
         else if(std::abs(m_start.m_curve_blend_param - m_start.m_curve_first_param) < Precision::PConfusion())
         {    
-            return formula_for_third_control_point_against_parameter_direction(m_blend_point_start, m_start.m_beta, m_start.m_gamma, m_first_derivative_start_curve, m_second_derivative_start_curve);
+            return control_point_3(m_blend_point_start, m_start.m_beta, -m_start.m_gamma, m_first_derivative_start_curve, m_second_derivative_start_curve);
         }
         else
         {
@@ -143,11 +133,11 @@ gp_Pnt BlendCurve::compute_third_control_point_at_start()
 
         if(std::abs(m_start.m_curve_blend_param - m_start.m_curve_last_param) < Precision::PConfusion())
         {
-            return formula_for_third_control_point_against_parameter_direction(m_blend_point_start, m_start.m_beta, m_start.m_gamma, m_first_derivative_start_curve, m_second_derivative_start_curve);
+            return control_point_3(m_blend_point_start, m_start.m_beta, -m_start.m_gamma, m_first_derivative_start_curve, m_second_derivative_start_curve);
         }
         else if(std::abs(m_start.m_curve_blend_param - m_start.m_curve_first_param) < Precision::PConfusion())
         {    
-            return formula_for_third_control_point_in_parameter_direction(m_blend_point_start, m_start.m_beta, m_start.m_gamma, m_first_derivative_start_curve, m_second_derivative_start_curve);
+            return control_point_3(m_blend_point_start, m_start.m_beta, m_start.m_gamma, m_first_derivative_start_curve, m_second_derivative_start_curve);
         }
         else
         {
@@ -168,11 +158,11 @@ gp_Pnt BlendCurve::compute_second_control_point_at_end()
     {
         if(std::abs(m_end.m_curve_blend_param - m_end.m_curve_first_param) < Precision::PConfusion())
         {
-            return formula_for_second_control_point_against_parameter_direction(m_blend_point_end, m_end.m_beta, m_first_derivative_end_curve); 
+            return control_point_2(m_blend_point_end, m_end.m_beta, -m_first_derivative_end_curve); 
         }
         else if(std::abs(m_end.m_curve_blend_param - m_end.m_curve_last_param) < Precision::PConfusion())
         {    
-            return formula_for_second_control_point_in_parameter_direction(m_blend_point_end, m_end.m_beta, m_first_derivative_end_curve); 
+            return control_point_2(m_blend_point_end, m_end.m_beta, m_first_derivative_end_curve); 
         }
         else
         {
@@ -183,11 +173,11 @@ gp_Pnt BlendCurve::compute_second_control_point_at_end()
 
         if(std::abs(m_end.m_curve_blend_param - m_end.m_curve_first_param) < Precision::PConfusion())
         {
-            return formula_for_second_control_point_in_parameter_direction(m_blend_point_end, m_end.m_beta, m_first_derivative_end_curve);
+            return control_point_2(m_blend_point_end, m_end.m_beta, m_first_derivative_end_curve);
         }
         else if(std::abs(m_end.m_curve_blend_param - m_end.m_curve_last_param) < Precision::PConfusion())
         {    
-            return formula_for_second_control_point_against_parameter_direction(m_blend_point_end, m_end.m_beta, m_first_derivative_end_curve);
+            return control_point_2(m_blend_point_end, m_end.m_beta, -m_first_derivative_end_curve);
         }
         else
         {
@@ -203,11 +193,11 @@ gp_Pnt BlendCurve::compute_third_control_point_at_end()
     {
         if(std::abs(m_end.m_curve_blend_param - m_end.m_curve_first_param) < Precision::PConfusion())
         {
-            return formula_for_third_control_point_against_parameter_direction(m_blend_point_end, m_end.m_beta, m_end.m_gamma, m_first_derivative_end_curve, m_second_derivative_end_curve);
+            return control_point_3(m_blend_point_end, m_end.m_beta, -m_end.m_gamma, m_first_derivative_end_curve, m_second_derivative_end_curve);
         }
         else if(std::abs(m_end.m_curve_blend_param - m_end.m_curve_last_param) < Precision::PConfusion())
         {    
-            return formula_for_third_control_point_in_parameter_direction(m_blend_point_end, m_end.m_beta, m_end.m_gamma, m_first_derivative_end_curve, m_second_derivative_end_curve);
+            return control_point_3(m_blend_point_end, m_end.m_beta, m_end.m_gamma, m_first_derivative_end_curve, m_second_derivative_end_curve);
         }
         else
         {
@@ -218,11 +208,11 @@ gp_Pnt BlendCurve::compute_third_control_point_at_end()
 
         if(std::abs(m_end.m_curve_blend_param - m_end.m_curve_first_param) < Precision::PConfusion())
         {
-            return formula_for_third_control_point_in_parameter_direction(m_blend_point_end, m_end.m_beta, m_end.m_gamma, m_first_derivative_end_curve, m_second_derivative_end_curve);
+            return control_point_3(m_blend_point_end, m_end.m_beta, m_end.m_gamma, m_first_derivative_end_curve, m_second_derivative_end_curve);
         }
         else if(std::abs(m_end.m_curve_blend_param - m_end.m_curve_last_param) < Precision::PConfusion())
         {    
-            return formula_for_third_control_point_against_parameter_direction(m_blend_point_end, m_end.m_beta, m_end.m_gamma, m_first_derivative_end_curve, m_second_derivative_end_curve);
+            return control_point_3(m_blend_point_end, m_end.m_beta, -m_end.m_gamma, m_first_derivative_end_curve, m_second_derivative_end_curve);
         }
         else
         {
