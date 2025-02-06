@@ -74,36 +74,19 @@ gp_Pnt BlendCurve::control_point_3(gp_Pnt first_point, Standard_Real beta, Stand
 
 gp_Pnt BlendCurve::compute_control_point_2_at_start()
 {
-    if(m_start.m_outward_direction)
+    int sign = m_start.m_outward_direction? 1 : -1;
+
+    if (std::abs (m_start.m_curve_blend_param - m_start.m_curve_last_param) < Precision::PConfusion())
     {
-        if(std::abs(m_start.m_curve_blend_param - m_start.m_curve_last_param) < Precision::PConfusion())
-        {        
-            return control_point_2(m_blend_point_start, m_start.m_beta, m_first_derivative_start_curve); 
-        }
-        else if(std::abs(m_start.m_curve_blend_param - m_start.m_curve_first_param) < Precision::PConfusion())
-        {    
-            return control_point_2(m_blend_point_start, m_start.m_beta, -m_first_derivative_start_curve);
-        }
-        else
-        {
-            throw geoml::Error("tolerance error", MATH_ERROR);
-        }
-
-    } else {
-
-        if(std::abs(m_start.m_curve_blend_param - m_start.m_curve_last_param) < Precision::PConfusion())
-        {
-            return control_point_2(m_blend_point_start, m_start.m_beta, -m_first_derivative_start_curve);
-        }
-        else if(std::abs(m_start.m_curve_blend_param - m_start.m_curve_first_param) < Precision::PConfusion())
-        {    
-            return control_point_2(m_blend_point_start, m_start.m_beta, m_first_derivative_start_curve); 
-        }
-        else
-        {
-            throw geoml::Error("tolerance error", MATH_ERROR);
-        }
-        
+        return control_point_2 (m_blend_point_start, m_start.m_beta, sign * m_first_derivative_start_curve);
+    }
+    else if (std::abs(m_start.m_curve_blend_param - m_start.m_curve_first_param) < Precision::PConfusion())
+    {
+        return control_point_2(m_blend_point_start, m_start.m_beta, -sign * m_first_derivative_start_curve); 
+    }
+    else
+    {
+        throw geoml::Error("Blending parameter must match either the first or the last parameter of the start curve", MATH_ERROR);
     }
 }
 
