@@ -113,11 +113,11 @@ private:
 
     GEOML_API_EXPORT gp_Pnt control_point_3(gp_Pnt first_point, Standard_Real beta, Standard_Real gamma, gp_Vec first_derivative, gp_Vec second_derivative);
     
-    GEOML_API_EXPORT gp_Pnt compute_second_control_point_at_start();
-    GEOML_API_EXPORT gp_Pnt compute_second_control_point_at_end();
+    GEOML_API_EXPORT gp_Pnt compute_control_point_2_at_start();
+    GEOML_API_EXPORT gp_Pnt compute_control_point_2_at_end();
 
-    GEOML_API_EXPORT gp_Pnt compute_third_control_point_at_start();
-    GEOML_API_EXPORT gp_Pnt compute_third_control_point_at_end();
+    GEOML_API_EXPORT gp_Pnt compute_control_point_3_at_start();
+    GEOML_API_EXPORT gp_Pnt compute_control_point_3_at_end();
 
     GEOML_API_EXPORT gp_Pnt get_i_th_control_point(unsigned int i, GContinuity contin_start, GContinuity contin_end);
 
