@@ -54,12 +54,12 @@ void BlendCurve::compute_blend_points_and_derivatives_of_start_and_end_curve()
     m_end.m_curve->D2(m_end.m_curve_blend_param, m_blend_point_end, m_first_derivative_end_curve, m_second_derivative_end_curve);
 }
 
-gp_Pnt BlendCurve::control_point_2(gp_Pnt first_point, Standard_Real beta, gp_Vec first_derivative)
+gp_Pnt BlendCurve::control_point_2_general(gp_Pnt first_point, Standard_Real beta, gp_Vec first_derivative)
 {
     return first_point.Translated(beta * first_derivative);
 }
 
-gp_Pnt BlendCurve::control_point_3(gp_Pnt first_point, Standard_Real beta, Standard_Real gamma, gp_Vec first_derivative, gp_Vec second_derivative)
+gp_Pnt BlendCurve::control_point_3_general(gp_Pnt first_point, Standard_Real beta, Standard_Real gamma, gp_Vec first_derivative, gp_Vec second_derivative)
 {
     gp_Vec displacement_vector = (beta * beta * m_degree /(m_degree - 1)) * second_derivative;
 
@@ -72,17 +72,17 @@ gp_Pnt BlendCurve::control_point_3(gp_Pnt first_point, Standard_Real beta, Stand
     return first_point.Translated(h1 + h2);
 }
 
-gp_Pnt BlendCurve::compute_control_point_2_at_start()
+gp_Pnt BlendCurve::control_point_2_for_side(BlendCurveConnection &side, gp_Pnt &blend_point_side, gp_Vec &first_derivative_side)
 {
-    int sign = m_start.m_outward_direction? 1 : -1;
+    int sign = side.m_outward_direction? 1 : -1;
 
-    if (std::abs (m_start.m_curve_blend_param - m_start.m_curve_last_param) < Precision::PConfusion())
+    if (std::abs (side.m_curve_blend_param - side.m_curve_last_param) < Precision::PConfusion())
     {
-        return control_point_2 (m_blend_point_start, m_start.m_beta, sign * m_first_derivative_start_curve);
+        return control_point_2_general (blend_point_side, side.m_beta, sign * first_derivative_side);
     }
-    else if (std::abs(m_start.m_curve_blend_param - m_start.m_curve_first_param) < Precision::PConfusion())
+    else if (std::abs(side.m_curve_blend_param - side.m_curve_first_param) < Precision::PConfusion())
     {
-        return control_point_2(m_blend_point_start, m_start.m_beta, -sign * m_first_derivative_start_curve); 
+        return control_point_2_general (blend_point_side, side.m_beta, -sign * first_derivative_side); 
     }
     else
     {
@@ -90,109 +90,22 @@ gp_Pnt BlendCurve::compute_control_point_2_at_start()
     }
 }
 
-gp_Pnt BlendCurve::compute_control_point_3_at_start()
+gp_Pnt BlendCurve::control_point_3_for_side(BlendCurveConnection &side, gp_Pnt &blend_point_side, gp_Vec &first_derivative_side, gp_Vec &second_derivative_side)
 {
-    if(m_start.m_outward_direction)
+    int sign = side.m_outward_direction? 1 : -1;
+
+    if (std::abs (side.m_curve_blend_param - side.m_curve_last_param) < Precision::PConfusion())
     {
-        if(std::abs(m_start.m_curve_blend_param - m_start.m_curve_last_param) < Precision::PConfusion())
-        {
-            return control_point_3(m_blend_point_start, m_start.m_beta, m_start.m_gamma, m_first_derivative_start_curve, m_second_derivative_start_curve);
-        }
-        else if(std::abs(m_start.m_curve_blend_param - m_start.m_curve_first_param) < Precision::PConfusion())
-        {    
-            return control_point_3(m_blend_point_start, m_start.m_beta, -m_start.m_gamma, m_first_derivative_start_curve, m_second_derivative_start_curve);
-        }
-        else
-        {
-            throw geoml::Error("tolerance error", MATH_ERROR);
-        }
-
-    } else {
-
-        if(std::abs(m_start.m_curve_blend_param - m_start.m_curve_last_param) < Precision::PConfusion())
-        {
-            return control_point_3(m_blend_point_start, m_start.m_beta, -m_start.m_gamma, m_first_derivative_start_curve, m_second_derivative_start_curve);
-        }
-        else if(std::abs(m_start.m_curve_blend_param - m_start.m_curve_first_param) < Precision::PConfusion())
-        {    
-            return control_point_3(m_blend_point_start, m_start.m_beta, m_start.m_gamma, m_first_derivative_start_curve, m_second_derivative_start_curve);
-        }
-        else
-        {
-            throw geoml::Error("tolerance error", MATH_ERROR);
-        }
-        
-    }   
-}
-
-gp_Pnt BlendCurve::compute_control_point_2_at_end()
-{
-    if(m_end.m_outward_direction)
-    {
-        if(std::abs(m_end.m_curve_blend_param - m_end.m_curve_first_param) < Precision::PConfusion())
-        {
-            return control_point_2(m_blend_point_end, m_end.m_beta, -m_first_derivative_end_curve); 
-        }
-        else if(std::abs(m_end.m_curve_blend_param - m_end.m_curve_last_param) < Precision::PConfusion())
-        {    
-            return control_point_2(m_blend_point_end, m_end.m_beta, m_first_derivative_end_curve); 
-        }
-        else
-        {
-            throw geoml::Error("tolerance error", MATH_ERROR);
-        }
-
-    } else {
-
-        if(std::abs(m_end.m_curve_blend_param - m_end.m_curve_first_param) < Precision::PConfusion())
-        {
-            return control_point_2(m_blend_point_end, m_end.m_beta, m_first_derivative_end_curve);
-        }
-        else if(std::abs(m_end.m_curve_blend_param - m_end.m_curve_last_param) < Precision::PConfusion())
-        {    
-            return control_point_2(m_blend_point_end, m_end.m_beta, -m_first_derivative_end_curve);
-        }
-        else
-        {
-            throw geoml::Error("tolerance error", MATH_ERROR);
-        }
-        
+        return control_point_3_general(blend_point_side, side.m_beta, sign * side.m_gamma, first_derivative_side, second_derivative_side);
     }
-}
-
-gp_Pnt BlendCurve::compute_control_point_3_at_end()
-{
-    if(m_end.m_outward_direction)
+    else if (std::abs(side.m_curve_blend_param - side.m_curve_first_param) < Precision::PConfusion())
     {
-        if(std::abs(m_end.m_curve_blend_param - m_end.m_curve_first_param) < Precision::PConfusion())
-        {
-            return control_point_3(m_blend_point_end, m_end.m_beta, -m_end.m_gamma, m_first_derivative_end_curve, m_second_derivative_end_curve);
-        }
-        else if(std::abs(m_end.m_curve_blend_param - m_end.m_curve_last_param) < Precision::PConfusion())
-        {    
-            return control_point_3(m_blend_point_end, m_end.m_beta, m_end.m_gamma, m_first_derivative_end_curve, m_second_derivative_end_curve);
-        }
-        else
-        {
-            throw geoml::Error("tolerance error", MATH_ERROR);
-        }
-
-    } else {
-
-        if(std::abs(m_end.m_curve_blend_param - m_end.m_curve_first_param) < Precision::PConfusion())
-        {
-            return control_point_3(m_blend_point_end, m_end.m_beta, m_end.m_gamma, m_first_derivative_end_curve, m_second_derivative_end_curve);
-        }
-        else if(std::abs(m_end.m_curve_blend_param - m_end.m_curve_last_param) < Precision::PConfusion())
-        {    
-            return control_point_3(m_blend_point_end, m_end.m_beta, -m_end.m_gamma, m_first_derivative_end_curve, m_second_derivative_end_curve);
-        }
-        else
-        {
-            throw geoml::Error("tolerance error", MATH_ERROR);
-        }
-        
+        return control_point_3_general(blend_point_side, side.m_beta, -sign * side.m_gamma, first_derivative_side, second_derivative_side); 
     }
+    else
+    {
+        throw geoml::Error("Blending parameter must match either the first or the last parameter of the start curve", MATH_ERROR);
+    } 
 }
 
 gp_Pnt BlendCurve::get_i_th_control_point(unsigned int i, GContinuity contin_start, GContinuity contin_end)
@@ -217,7 +130,7 @@ gp_Pnt BlendCurve::get_i_th_control_point(unsigned int i, GContinuity contin_sta
         if (i==0) 
             return m_blend_point_start;
  	    else if(i==1) 
-            return compute_control_point_2_at_start();
+            return control_point_2_for_side (m_start, m_blend_point_start, m_first_derivative_start_curve);
 	    else 
             return m_blend_point_end;
     }
@@ -226,9 +139,9 @@ gp_Pnt BlendCurve::get_i_th_control_point(unsigned int i, GContinuity contin_sta
         if (i==0) 
             return m_blend_point_start;
  	    else if(i==1) 
-            return compute_control_point_2_at_start();
+            return control_point_2_for_side (m_start, m_blend_point_start, m_first_derivative_start_curve);
 	    else if(i==2) 
-            return compute_control_point_3_at_start();
+            return control_point_3_for_side(m_start, m_blend_point_start, m_first_derivative_start_curve, m_second_derivative_start_curve);
         else 
             return m_blend_point_end;
     }
@@ -237,7 +150,7 @@ gp_Pnt BlendCurve::get_i_th_control_point(unsigned int i, GContinuity contin_sta
 	    if (i==0) 
             return m_blend_point_start;
 	    else if(i==1) 
-            return compute_control_point_2_at_end();
+            return control_point_2_for_side (m_end, m_blend_point_end, m_first_derivative_end_curve);
         else 
             return m_blend_point_end;
 	}
@@ -246,9 +159,9 @@ gp_Pnt BlendCurve::get_i_th_control_point(unsigned int i, GContinuity contin_sta
         if (i==0) 
             return m_blend_point_start;
  	    else if(i==1) 
-            return compute_control_point_2_at_start();
+            return control_point_2_for_side (m_start, m_blend_point_start, m_first_derivative_start_curve);
 	    else if(i==2) 
-            return compute_control_point_2_at_end();
+            return control_point_2_for_side (m_end, m_blend_point_end, m_first_derivative_end_curve);
         else 
             return m_blend_point_end;
     }
@@ -257,11 +170,11 @@ gp_Pnt BlendCurve::get_i_th_control_point(unsigned int i, GContinuity contin_sta
         if (i==0) 
             return m_blend_point_start;
  	    else if(i==1) 
-            return compute_control_point_2_at_start();
+            return control_point_2_for_side (m_start, m_blend_point_start, m_first_derivative_start_curve);
 	    else if(i==2) 
-            return compute_control_point_3_at_start();
+            return control_point_3_for_side(m_start, m_blend_point_start, m_first_derivative_start_curve, m_second_derivative_start_curve);
         else if(i==3) 
-            return compute_control_point_2_at_end();
+            return control_point_2_for_side (m_end, m_blend_point_end, m_first_derivative_end_curve);
 	    else
             return m_blend_point_end;
     }
@@ -270,9 +183,9 @@ gp_Pnt BlendCurve::get_i_th_control_point(unsigned int i, GContinuity contin_sta
         if (i==0) 
             return m_blend_point_start;
  	    else if(i==1) 
-            return compute_control_point_3_at_end();
+            return control_point_3_for_side(m_end, m_blend_point_end, m_first_derivative_end_curve, m_second_derivative_end_curve);
 	    else if(i==2) 
-            return compute_control_point_2_at_end();
+            return control_point_2_for_side (m_end, m_blend_point_end, m_first_derivative_end_curve);
         else
             return m_blend_point_end;
     }
@@ -281,11 +194,11 @@ gp_Pnt BlendCurve::get_i_th_control_point(unsigned int i, GContinuity contin_sta
         if (i==0) 
             return m_blend_point_start;
         else if(i==1) 
-            return compute_control_point_2_at_start();
+            return control_point_2_for_side (m_start, m_blend_point_start, m_first_derivative_start_curve);
  	    else if(i==2) 
-            return compute_control_point_3_at_end();
+            return control_point_3_for_side(m_end, m_blend_point_end, m_first_derivative_end_curve, m_second_derivative_end_curve);
 	    else if(i==3) 
-            return compute_control_point_2_at_end();
+            return control_point_2_for_side (m_end, m_blend_point_end, m_first_derivative_end_curve);
         else 
             return m_blend_point_end;
     }
@@ -294,13 +207,13 @@ gp_Pnt BlendCurve::get_i_th_control_point(unsigned int i, GContinuity contin_sta
         if (i==0) 
             return m_blend_point_start;
         else if(i==1) 
-            return compute_control_point_2_at_start();
+            return control_point_2_for_side (m_start, m_blend_point_start, m_first_derivative_start_curve);
         else if(i==2) 
-            return compute_control_point_3_at_start();
+            return control_point_3_for_side(m_start, m_blend_point_start, m_first_derivative_start_curve, m_second_derivative_start_curve);
  	    else if(i==3) 
-            return compute_control_point_3_at_end();
+            return control_point_3_for_side(m_end, m_blend_point_end, m_first_derivative_end_curve, m_second_derivative_end_curve);
 	    else if(i==4) 
-            return compute_control_point_2_at_end();
+            return control_point_2_for_side (m_end, m_blend_point_end, m_first_derivative_end_curve);
         else
             return m_blend_point_end;
     }

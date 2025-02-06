@@ -109,15 +109,13 @@ private:
 
     GEOML_API_EXPORT void compute_blend_points_and_derivatives_of_start_and_end_curve();
 
-    GEOML_API_EXPORT gp_Pnt control_point_2(gp_Pnt first_point, Standard_Real beta, gp_Vec first_derivative);
+    GEOML_API_EXPORT gp_Pnt control_point_2_general(gp_Pnt first_point, Standard_Real beta, gp_Vec first_derivative);
 
-    GEOML_API_EXPORT gp_Pnt control_point_3(gp_Pnt first_point, Standard_Real beta, Standard_Real gamma, gp_Vec first_derivative, gp_Vec second_derivative);
+    GEOML_API_EXPORT gp_Pnt control_point_3_general(gp_Pnt first_point, Standard_Real beta, Standard_Real gamma, gp_Vec first_derivative, gp_Vec second_derivative);
     
-    GEOML_API_EXPORT gp_Pnt compute_control_point_2_at_start();
-    GEOML_API_EXPORT gp_Pnt compute_control_point_2_at_end();
+    GEOML_API_EXPORT gp_Pnt control_point_2_for_side(BlendCurveConnection &side, gp_Pnt &blend_point_side, gp_Vec &first_derivative_side);
 
-    GEOML_API_EXPORT gp_Pnt compute_control_point_3_at_start();
-    GEOML_API_EXPORT gp_Pnt compute_control_point_3_at_end();
+    GEOML_API_EXPORT gp_Pnt control_point_3_for_side(BlendCurveConnection &side, gp_Pnt &blend_point_side, gp_Vec &first_derivative_side, gp_Vec &second_derivative_side);
 
     GEOML_API_EXPORT gp_Pnt get_i_th_control_point(unsigned int i, GContinuity contin_start, GContinuity contin_end);
 
