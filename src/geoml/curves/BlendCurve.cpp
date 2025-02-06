@@ -72,11 +72,6 @@ gp_Pnt BlendCurve::control_point_3(gp_Pnt first_point, Standard_Real beta, Stand
     return first_point.Translated(h1 + h2);
 }
 
-gp_Pnt BlendCurve::compute_first_control_point_at_start()
-{
-    return m_blend_point_start;
-}
-
 gp_Pnt BlendCurve::compute_second_control_point_at_start()
 {
     if(m_start.m_outward_direction)
@@ -145,11 +140,6 @@ gp_Pnt BlendCurve::compute_third_control_point_at_start()
         }
         
     }   
-}
-
-gp_Pnt BlendCurve::compute_first_control_point_at_end()
-{
-    return m_blend_point_end;
 }
 
 gp_Pnt BlendCurve::compute_second_control_point_at_end()
@@ -234,55 +224,55 @@ gp_Pnt BlendCurve::get_i_th_control_point(unsigned int i, GContinuity contin_sta
     if(contin_start == GContinuity::G0 && contin_end == GContinuity::G0)
     {
 	    if(i==0) 
-            return compute_first_control_point_at_start();
+            return m_blend_point_start;
 	    else  
-            return compute_first_control_point_at_end();
+            return m_blend_point_end;
             
 	}
     else if(contin_start == GContinuity::G1 && contin_end == GContinuity::G0)
     {
         if (i==0) 
-            return compute_first_control_point_at_start();
+            return m_blend_point_start;
  	    else if(i==1) 
             return compute_second_control_point_at_start();
 	    else 
-            return compute_first_control_point_at_end();
+            return m_blend_point_end;
     }
 	else if(contin_start == GContinuity::G2 && contin_end == GContinuity::G0)
     {
         if (i==0) 
-            return compute_first_control_point_at_start();
+            return m_blend_point_start;
  	    else if(i==1) 
             return compute_second_control_point_at_start();
 	    else if(i==2) 
             return compute_third_control_point_at_start();
         else 
-            return compute_first_control_point_at_end();
+            return m_blend_point_end;
     }
     else if(contin_start == GContinuity::G0 && contin_end == GContinuity::G1)
     {
 	    if (i==0) 
-            return compute_first_control_point_at_start();
+            return m_blend_point_start;
 	    else if(i==1) 
             return compute_second_control_point_at_end();
         else 
-            return compute_first_control_point_at_end();
+            return m_blend_point_end;
 	}
     else if(contin_start == GContinuity::G1 && contin_end == GContinuity::G1)
     {
         if (i==0) 
-            return compute_first_control_point_at_start();
+            return m_blend_point_start;
  	    else if(i==1) 
             return compute_second_control_point_at_start();
 	    else if(i==2) 
             return compute_second_control_point_at_end();
         else 
-            return compute_first_control_point_at_end();
+            return m_blend_point_end;
     }
 	else if(contin_start == GContinuity::G2 && contin_end == GContinuity::G1)
     {
         if (i==0) 
-            return compute_first_control_point_at_start();
+            return m_blend_point_start;
  	    else if(i==1) 
             return compute_second_control_point_at_start();
 	    else if(i==2) 
@@ -290,23 +280,23 @@ gp_Pnt BlendCurve::get_i_th_control_point(unsigned int i, GContinuity contin_sta
         else if(i==3) 
             return compute_second_control_point_at_end();
 	    else
-            return compute_first_control_point_at_end();
+            return m_blend_point_end;
     }
     else if(contin_start == GContinuity::G0 && contin_end == GContinuity::G2)
     {
         if (i==0) 
-            return compute_first_control_point_at_start();
+            return m_blend_point_start;
  	    else if(i==1) 
             return compute_third_control_point_at_end();
 	    else if(i==2) 
             return compute_second_control_point_at_end();
         else
-            return compute_first_control_point_at_end();
+            return m_blend_point_end;
     }
     else if(contin_start == GContinuity::G1 && contin_end == GContinuity::G2)
     {
         if (i==0) 
-            return compute_first_control_point_at_start();
+            return m_blend_point_start;
         else if(i==1) 
             return compute_second_control_point_at_start();
  	    else if(i==2) 
@@ -314,12 +304,12 @@ gp_Pnt BlendCurve::get_i_th_control_point(unsigned int i, GContinuity contin_sta
 	    else if(i==3) 
             return compute_second_control_point_at_end();
         else 
-            return compute_first_control_point_at_end();
+            return m_blend_point_end;
     }
     else if(contin_start == GContinuity::G2 && contin_end == GContinuity::G2)
     {
         if (i==0) 
-            return compute_first_control_point_at_start();
+            return m_blend_point_start;
         else if(i==1) 
             return compute_second_control_point_at_start();
         else if(i==2) 
@@ -329,7 +319,7 @@ gp_Pnt BlendCurve::get_i_th_control_point(unsigned int i, GContinuity contin_sta
 	    else if(i==4) 
             return compute_second_control_point_at_end();
         else
-            return compute_first_control_point_at_end();
+            return m_blend_point_end;
     }
     else
     {
