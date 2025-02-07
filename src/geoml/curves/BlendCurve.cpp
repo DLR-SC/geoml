@@ -43,9 +43,9 @@ void BlendCurveConnection::compute_blend_parameter()
 BlendCurve::BlendCurve(BlendCurveConnection const& start, BlendCurveConnection const& end)
     : m_start(start)
     , m_end(end)
+    , m_degree(static_cast<int>(m_start.m_continuity) + static_cast<int>(m_end.m_continuity) + 1)
 { 
     compute_blend_points_and_derivatives_of_start_and_end_curve();
-    m_degree = static_cast<int>(m_start.m_continuity) + static_cast<int>(m_end.m_continuity) + 1;
 }
 
 void BlendCurve::compute_blend_points_and_derivatives_of_start_and_end_curve()
