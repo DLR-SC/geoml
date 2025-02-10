@@ -96,6 +96,8 @@ gp_Pnt BlendCurve::control_point_3_for_side(BlendCurveConnection &side, gp_Pnt &
 {
     int sign = side.m_outward_direction? 1 : -1;
 
+    //inneres Lambda für: auto control_point_3 =
+
     if (std::abs (side.m_curve_blend_param - side.m_curve_last_param) < Precision::PConfusion())
     {
         return control_point_3(blend_point_side, side.m_beta, sign * side.m_gamma, first_derivative_side, second_derivative_side);

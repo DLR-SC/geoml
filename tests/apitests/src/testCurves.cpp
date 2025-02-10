@@ -2,7 +2,7 @@
 #include <geoml/curves/BlendCurve.h>
 #include "geometry/BSplineAlgorithms.h"
 #include "geoml/data_structures/conversions.h"
-#include "geometry/Continuity.h"
+#include "geoml/Continuity.h"
 #include "geoml/geom_topo_conversions/geom_topo_conversions.h"
 
 #include <gtest/gtest.h>
@@ -854,4 +854,142 @@ TEST(Test_blend_curve, blend_curve_test)
     EXPECT_NEAR(bezier_curve_18->Pole(5).Y(), first_point_end_curve.Y() - first_derivative_end_curve_at_first_parameter.Y(), 1e-5);
     EXPECT_NEAR(bezier_curve_18->Pole(5).Z(), first_point_end_curve.Z() - first_derivative_end_curve_at_first_parameter.Z(), 1e-5);
 
+}
+
+
+
+TEST(Test_blend_curve, blend_curve_test_1)
+{
+    // define two curves, that are supposed to be connected via a blend curve
+    gp_Pnt cp_start_1 (0.,0.,0.);
+    gp_Pnt cp_start_2 (2.,0.,0.);
+    gp_Pnt cp_start_3 (2.,2.,0.);
+
+    gp_Pnt cp_end_1 (4.,4.,0.);
+    gp_Pnt cp_end_2 (6.,4.,0.);
+    gp_Pnt cp_end_3 (6.,6.,0.);
+
+    std::vector<gp_Pnt> control_points_start_curve{cp_start_1, cp_start_2, cp_start_3};
+    std::vector<gp_Pnt> control_points_end_curve{cp_end_1, cp_end_2, cp_end_3};
+
+    Handle(Geom_Curve) start_curve = new Geom_BezierCurve(geoml::StdVector_to_TCol(control_points_start_curve));
+    Handle(Geom_Curve) end_curve = new Geom_BezierCurve(geoml::StdVector_to_TCol(control_points_end_curve));
+
+    // compute derivatives of start_curve and end_curve
+    Standard_Real first_parameter_start_curve = start_curve->FirstParameter();
+    Standard_Real last_parameter_start_curve = start_curve->LastParameter();
+
+    Standard_Real first_parameter_end_curve = end_curve->FirstParameter();
+    Standard_Real last_parameter_end_curve = end_curve->LastParameter();
+
+    gp_Pnt first_point_start_curve;
+    gp_Pnt last_point_start_curve;
+
+    gp_Vec first_derivative_start_curve_at_first_parameter;
+    gp_Vec first_derivative_start_curve_at_last_parameter;
+
+    gp_Vec second_derivative_start_curve_at_first_parameter;
+    gp_Vec second_derivative_start_curve_at_last_parameter;
+
+    gp_Pnt first_point_end_curve;
+    gp_Pnt last_point_end_curve;
+
+    gp_Vec first_derivative_end_curve_at_first_parameter;
+    gp_Vec first_derivative_end_curve_at_last_parameter;
+
+    gp_Vec second_derivative_end_curve_at_first_parameter;
+    gp_Vec second_derivative_end_curve_at_last_parameter;
+
+    start_curve->D2(first_parameter_start_curve, first_point_start_curve, first_derivative_start_curve_at_first_parameter, second_derivative_start_curve_at_first_parameter);
+    start_curve->D2(last_parameter_start_curve, last_point_start_curve, first_derivative_start_curve_at_last_parameter, second_derivative_start_curve_at_last_parameter);
+
+    end_curve->D2(first_parameter_end_curve, first_point_end_curve, first_derivative_end_curve_at_first_parameter, second_derivative_end_curve_at_first_parameter);
+    end_curve->D2(last_parameter_end_curve, last_point_end_curve, first_derivative_end_curve_at_last_parameter, second_derivative_end_curve_at_last_parameter);
+
+    geoml::BlendCurveConnection start_connection (geoml::CurveToEdge(start_curve), cp_start_3, geoml::GContinuity::G0);
+    geoml::BlendCurveConnection end_connection (geoml::CurveToEdge(end_curve), cp_end_1, geoml::GContinuity::G0);
+
+    TopoDS_Edge resulting_blend_curve = geoml::blend_curve(start_connection, end_connection);
+
+    Handle(Geom_Curve) curve  = geoml::EdgeToCurve(resulting_blend_curve);
+
+    Handle(Geom_BezierCurve) bezier_curve  = Handle(Geom_BezierCurve)::DownCast(curve);
+
+    EXPECT_EQ(bezier_curve->NbPoles(), 2);
+    
+    EXPECT_NEAR(bezier_curve->StartPoint().X(), 2., 1e-5);
+    EXPECT_NEAR(bezier_curve->StartPoint().Y(), 2., 1e-5);
+    EXPECT_NEAR(bezier_curve->StartPoint().Z(), 0., 1e-5);
+
+    EXPECT_NEAR(bezier_curve->EndPoint().X(), 4., 1e-5);
+    EXPECT_NEAR(bezier_curve->EndPoint().Y(), 4., 1e-5);
+    EXPECT_NEAR(bezier_curve->EndPoint().Z(), 0., 1e-5);
+}
+
+TEST(Test_blend_curve, blend_curve_test_2)
+{
+    // define two curves, that are supposed to be connected via a blend curve
+    gp_Pnt cp_start_1 (0.,0.,0.);
+    gp_Pnt cp_start_2 (2.,0.,0.);
+    gp_Pnt cp_start_3 (2.,2.,0.);
+
+    gp_Pnt cp_end_1 (4.,4.,0.);
+    gp_Pnt cp_end_2 (6.,4.,0.);
+    gp_Pnt cp_end_3 (6.,6.,0.);
+
+    std::vector<gp_Pnt> control_points_start_curve{cp_start_1, cp_start_2, cp_start_3};
+    std::vector<gp_Pnt> control_points_end_curve{cp_end_1, cp_end_2, cp_end_3};
+
+    Handle(Geom_Curve) start_curve = new Geom_BezierCurve(geoml::StdVector_to_TCol(control_points_start_curve));
+    Handle(Geom_Curve) end_curve = new Geom_BezierCurve(geoml::StdVector_to_TCol(control_points_end_curve));
+
+    geoml::BlendCurveConnection start_connection_1 (geoml::CurveToEdge(start_curve), cp_start_3, geoml::GContinuity::G0);
+    geoml::BlendCurveConnection end_connection_1 (geoml::CurveToEdge(end_curve), cp_end_1, geoml::GContinuity::G0);
+
+    TopoDS_Edge resulting_blend_curve_1 = geoml::blend_curve(start_connection_1, end_connection_1);
+
+    Handle(Geom_Curve) curve_1  =geoml::EdgeToCurve(resulting_blend_curve_1);
+
+    Handle(Geom_BezierCurve) bezier_curve_1  = Handle(Geom_BezierCurve)::DownCast(curve_1 );
+
+    // compute derivatives of start_curve and end_curve
+    Standard_Real first_parameter_start_curve = start_curve->FirstParameter();
+    Standard_Real last_parameter_start_curve = start_curve->LastParameter();
+
+    Standard_Real first_parameter_end_curve = end_curve->FirstParameter();
+    Standard_Real last_parameter_end_curve = end_curve->LastParameter();
+
+    gp_Pnt first_point_start_curve;
+    gp_Pnt last_point_start_curve;
+
+    gp_Vec first_derivative_start_curve_at_first_parameter;
+    gp_Vec first_derivative_start_curve_at_last_parameter;
+
+    gp_Vec second_derivative_start_curve_at_first_parameter;
+    gp_Vec second_derivative_start_curve_at_last_parameter;
+
+    gp_Pnt first_point_end_curve;
+    gp_Pnt last_point_end_curve;
+
+    gp_Vec first_derivative_end_curve_at_first_parameter;
+    gp_Vec first_derivative_end_curve_at_last_parameter;
+
+    gp_Vec second_derivative_end_curve_at_first_parameter;
+    gp_Vec second_derivative_end_curve_at_last_parameter;
+
+    start_curve->D2(first_parameter_start_curve, first_point_start_curve, first_derivative_start_curve_at_first_parameter, second_derivative_start_curve_at_first_parameter);
+    start_curve->D2(last_parameter_start_curve, last_point_start_curve, first_derivative_start_curve_at_last_parameter, second_derivative_start_curve_at_last_parameter);
+
+    end_curve->D2(first_parameter_end_curve, first_point_end_curve, first_derivative_end_curve_at_first_parameter, second_derivative_end_curve_at_first_parameter);
+    end_curve->D2(last_parameter_end_curve, last_point_end_curve, first_derivative_end_curve_at_last_parameter, second_derivative_end_curve_at_last_parameter);
+
+    EXPECT_EQ(bezier_curve_1->NbPoles(), 2);
+    
+    EXPECT_NEAR(bezier_curve_1->StartPoint().X(), 2., 1e-5);
+    EXPECT_NEAR(bezier_curve_1->StartPoint().Y(), 2., 1e-5);
+    EXPECT_NEAR(bezier_curve_1->StartPoint().Z(), 0., 1e-5);
+
+    EXPECT_NEAR(bezier_curve_1->EndPoint().X(), 4., 1e-5);
+    EXPECT_NEAR(bezier_curve_1->EndPoint().Y(), 4., 1e-5);
+    EXPECT_NEAR(bezier_curve_1->EndPoint().Z(), 0., 1e-5);
 }

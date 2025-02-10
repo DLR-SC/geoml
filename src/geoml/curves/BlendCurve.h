@@ -22,7 +22,7 @@
 
 #include <geoml/geoml.h>  
 
-#include "geometry/Continuity.h"
+#include "geoml/Continuity.h"
 #include "geoml/data_structures/conversions.h"
 #include "geoml/geom_topo_conversions/geom_topo_conversions.h"
 
