@@ -50,10 +50,7 @@ BlendCurve::BlendCurve(BlendCurveConnection const& start, BlendCurveConnection c
     : m_start(start)
     , m_end(end)
     , m_degree(static_cast<int>(m_start.m_continuity) + static_cast<int>(m_end.m_continuity) + 1)
-{ 
-    m_start.m_start = true;
-    m_end.m_start = false;
-}
+    {}
 
 gp_Pnt BlendCurve::control_point_2(BlendCurveConnection &side)
 {
@@ -114,32 +111,11 @@ gp_Pnt BlendCurve::compute_control_point(int index, BlendCurveConnection &side)
     switch (index) 
     {
     case 0:
-        if(side.m_start == true)
-        {
-            return m_start.m_blend_point;
-        }
-        else
-        {
-            return m_end.m_blend_point;
-        }
+        return side.m_blend_point;
     case 1:
-        if(side.m_start == true)
-        {
-            return control_point_2(m_start);
-        }
-        else
-        {
-            return control_point_2(m_end);
-        }
+        return control_point_2(side);
     case 2:
-        if(side.m_start == true)
-        {
-            return control_point_3(m_start);
-        }
-        else
-        {
-            return control_point_3(m_end);
-        }
+        return control_point_3(side);
     default:
         throw geoml::Error("The index is not equal to 0,1 or 2.", INDEX_ERROR);
     }

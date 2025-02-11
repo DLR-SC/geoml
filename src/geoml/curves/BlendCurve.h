@@ -80,7 +80,6 @@ public:
     gp_Pnt m_blend_point;
     gp_Vec m_first_derivative_curve;
     gp_Vec m_second_derivative_curve;
-    bool m_start; // a way to mark whether this connection is at the (parameteric) start of the blend curve (true), or not (false)
 
 private:
 
