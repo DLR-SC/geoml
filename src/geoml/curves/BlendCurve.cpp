@@ -55,25 +55,7 @@ BlendCurve::BlendCurve(BlendCurveConnection const& start, BlendCurveConnection c
     m_end.m_start = false;
 }
 
-gp_Pnt BlendCurve::control_point_2(gp_Pnt first_point, Standard_Real beta, gp_Vec first_derivative)
-{
-    return first_point.Translated(beta * first_derivative);
-}
-
-gp_Pnt BlendCurve::control_point_3(gp_Pnt first_point, Standard_Real beta, Standard_Real gamma, gp_Vec first_derivative, gp_Vec second_derivative)
-{
-    gp_Vec displacement_vector = (beta * beta * m_degree /(m_degree - 1)) * second_derivative;
-
-    Standard_Real scalar_product_displ_vec_first_derivative = displacement_vector.Dot(first_derivative); 
-    Standard_Real square_magnitude_first_derivative = first_derivative.Dot(first_derivative);
-   
-    gp_Vec h1 = displacement_vector - scalar_product_displ_vec_first_derivative*first_derivative / square_magnitude_first_derivative;
-    gp_Vec h2 = 2.*(gamma*beta*first_derivative);
-
-    return first_point.Translated(h1 + h2);
-}
-
-gp_Pnt BlendCurve::control_point_2_for_side(BlendCurveConnection &side)
+gp_Pnt BlendCurve::control_point_2(BlendCurveConnection &side)
 {
     int sign = side.m_outward_direction? 1 : -1;
 
@@ -96,7 +78,7 @@ gp_Pnt BlendCurve::control_point_2_for_side(BlendCurveConnection &side)
     }
 }
 
-gp_Pnt BlendCurve::control_point_3_for_side(BlendCurveConnection &side)
+gp_Pnt BlendCurve::control_point_3(BlendCurveConnection &side)
 {
     int sign = side.m_outward_direction? 1 : -1;
 
@@ -143,20 +125,20 @@ gp_Pnt BlendCurve::compute_control_point(int index, BlendCurveConnection &side)
     case 1:
         if(side.m_start == true)
         {
-            return control_point_2_for_side (m_start);
+            return control_point_2(m_start);
         }
         else
         {
-            return control_point_2_for_side (m_end);
+            return control_point_2(m_end);
         }
     case 2:
         if(side.m_start == true)
         {
-            return control_point_3_for_side(m_start);
+            return control_point_3(m_start);
         }
         else
         {
-            return control_point_3_for_side(m_end);
+            return control_point_3(m_end);
         }
     default:
         throw geoml::Error("The index is not equal to 0,1 or 2.", INDEX_ERROR);

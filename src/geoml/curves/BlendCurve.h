@@ -113,11 +113,8 @@ public:
 
 private:
 
-    GEOML_API_EXPORT gp_Pnt control_point_2(gp_Pnt first_point, Standard_Real beta, gp_Vec first_derivative);
-    GEOML_API_EXPORT gp_Pnt control_point_3(gp_Pnt first_point, Standard_Real beta, Standard_Real gamma, gp_Vec first_derivative, gp_Vec second_derivative);
-    
-    GEOML_API_EXPORT gp_Pnt control_point_2_for_side(BlendCurveConnection &side);
-    GEOML_API_EXPORT gp_Pnt control_point_3_for_side(BlendCurveConnection &side);
+    GEOML_API_EXPORT gp_Pnt control_point_2(BlendCurveConnection &side);
+    GEOML_API_EXPORT gp_Pnt control_point_3(BlendCurveConnection &side);
 
     GEOML_API_EXPORT gp_Pnt compute_control_point(int index, BlendCurveConnection &side);
 
