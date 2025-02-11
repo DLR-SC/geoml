@@ -77,11 +77,16 @@ public:
     Standard_Real m_curve_first_param;
     Standard_Real m_curve_last_param;
     Standard_Real m_curve_blend_param;
-    bool start;
+    gp_Pnt m_blend_point;
+    gp_Vec m_first_derivative_curve;
+    gp_Vec m_second_derivative_curve;
+    bool m_start; // a way to mark whether this connection is at the (parameteric) start of the blend curve (true), or not (false)
 
 private:
 
     GEOML_API_EXPORT void compute_blend_parameter();
+
+    GEOML_API_EXPORT void compute_blend_point_and_derivatives();
 };
 
 /**
@@ -108,18 +113,15 @@ public:
 
 private:
 
-    GEOML_API_EXPORT void compute_blend_points_and_derivatives_of_start_and_end_curve();
-
     GEOML_API_EXPORT gp_Pnt control_point_2(gp_Pnt first_point, Standard_Real beta, gp_Vec first_derivative);
     GEOML_API_EXPORT gp_Pnt control_point_3(gp_Pnt first_point, Standard_Real beta, Standard_Real gamma, gp_Vec first_derivative, gp_Vec second_derivative);
     
-    GEOML_API_EXPORT gp_Pnt control_point_2_for_side(BlendCurveConnection &side, gp_Pnt &blend_point_side, gp_Vec &first_derivative_side);
-    GEOML_API_EXPORT gp_Pnt control_point_3_for_side(BlendCurveConnection &side, gp_Pnt &blend_point_side, gp_Vec &first_derivative_side, gp_Vec &second_derivative_side);
+    GEOML_API_EXPORT gp_Pnt control_point_2_for_side(BlendCurveConnection &side);
+    GEOML_API_EXPORT gp_Pnt control_point_3_for_side(BlendCurveConnection &side);
 
     GEOML_API_EXPORT gp_Pnt compute_control_point(int index, BlendCurveConnection &side);
 
     GEOML_API_EXPORT std::vector<gp_Pnt> control_points_blend_curve();
-
 
     BlendCurveConnection m_start;
     BlendCurveConnection m_end;

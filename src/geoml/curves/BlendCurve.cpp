@@ -18,6 +18,7 @@ BlendCurveConnection::BlendCurveConnection(TopoDS_Edge const& edge, gp_Pnt const
 , m_curve(BRep_Tool::Curve(edge, m_curve_first_param, m_curve_last_param))
 {
     compute_blend_parameter();
+    compute_blend_point_and_derivatives();
 } 
 
 void BlendCurveConnection::compute_blend_parameter()
@@ -40,20 +41,18 @@ void BlendCurveConnection::compute_blend_parameter()
     }
 }
 
+void BlendCurveConnection::compute_blend_point_and_derivatives()
+{
+    m_curve->D2(m_curve_blend_param, m_blend_point, m_first_derivative_curve, m_second_derivative_curve);
+}
+
 BlendCurve::BlendCurve(BlendCurveConnection const& start, BlendCurveConnection const& end)
     : m_start(start)
     , m_end(end)
     , m_degree(static_cast<int>(m_start.m_continuity) + static_cast<int>(m_end.m_continuity) + 1)
 { 
-    compute_blend_points_and_derivatives_of_start_and_end_curve();
-    m_start.start = true;
-    m_end.start = false;
-}
-
-void BlendCurve::compute_blend_points_and_derivatives_of_start_and_end_curve()
-{
-    m_start.m_curve->D2(m_start.m_curve_blend_param, m_blend_point_start, m_first_derivative_start_curve, m_second_derivative_start_curve);
-    m_end.m_curve->D2(m_end.m_curve_blend_param, m_blend_point_end, m_first_derivative_end_curve, m_second_derivative_end_curve);
+    m_start.m_start = true;
+    m_end.m_start = false;
 }
 
 gp_Pnt BlendCurve::control_point_2(gp_Pnt first_point, Standard_Real beta, gp_Vec first_derivative)
@@ -74,17 +73,22 @@ gp_Pnt BlendCurve::control_point_3(gp_Pnt first_point, Standard_Real beta, Stand
     return first_point.Translated(h1 + h2);
 }
 
-gp_Pnt BlendCurve::control_point_2_for_side(BlendCurveConnection &side, gp_Pnt &blend_point_side, gp_Vec &first_derivative_side)
+gp_Pnt BlendCurve::control_point_2_for_side(BlendCurveConnection &side)
 {
     int sign = side.m_outward_direction? 1 : -1;
 
+    auto control_point_2 = [](const gp_Pnt& first_point, Standard_Real beta, const gp_Vec& first_derivative)
+                            {
+                                return first_point.Translated(beta * first_derivative);
+                            };
+
     if (std::abs (side.m_curve_blend_param - side.m_curve_last_param) < Precision::PConfusion())
     {
-        return control_point_2 (blend_point_side, side.m_beta, sign * first_derivative_side);
+        return control_point_2(side.m_blend_point, side.m_beta, sign * side.m_first_derivative_curve);
     }
     else if (std::abs(side.m_curve_blend_param - side.m_curve_first_param) < Precision::PConfusion())
     {
-        return control_point_2 (blend_point_side, side.m_beta, -sign * first_derivative_side); 
+        return control_point_2(side.m_blend_point, side.m_beta, -sign * side.m_first_derivative_curve); 
     }
     else
     {
@@ -92,7 +96,7 @@ gp_Pnt BlendCurve::control_point_2_for_side(BlendCurveConnection &side, gp_Pnt &
     }
 }
 
-gp_Pnt BlendCurve::control_point_3_for_side(BlendCurveConnection &side, gp_Pnt &blend_point_side, gp_Vec &first_derivative_side, gp_Vec &second_derivative_side)
+gp_Pnt BlendCurve::control_point_3_for_side(BlendCurveConnection &side)
 {
     int sign = side.m_outward_direction? 1 : -1;
 
@@ -100,11 +104,11 @@ gp_Pnt BlendCurve::control_point_3_for_side(BlendCurveConnection &side, gp_Pnt &
 
     if (std::abs (side.m_curve_blend_param - side.m_curve_last_param) < Precision::PConfusion())
     {
-        return control_point_3(blend_point_side, side.m_beta, sign * side.m_gamma, first_derivative_side, second_derivative_side);
+        return control_point_3(side.m_blend_point, side.m_beta, sign * side.m_gamma, side.m_first_derivative_curve, side.m_second_derivative_curve);
     }
     else if (std::abs(side.m_curve_blend_param - side.m_curve_first_param) < Precision::PConfusion())
     {
-        return control_point_3(blend_point_side, side.m_beta, -sign * side.m_gamma, first_derivative_side, second_derivative_side); 
+        return control_point_3(side.m_blend_point, side.m_beta, -sign * side.m_gamma, side.m_first_derivative_curve, side.m_second_derivative_curve); 
     }
     else
     {
@@ -117,31 +121,31 @@ gp_Pnt BlendCurve::compute_control_point(int index, BlendCurveConnection &side)
     switch (index) 
     {
     case 0:
-        if(side.start == true)
+        if(side.m_start == true)
         {
-            return m_blend_point_start;
+            return m_start.m_blend_point;
         }
         else
         {
-            return m_blend_point_end;
+            return m_end.m_blend_point;
         }
     case 1:
-        if(side.start == true)
+        if(side.m_start == true)
         {
-            return control_point_2_for_side (m_start, m_blend_point_start, m_first_derivative_start_curve);
+            return control_point_2_for_side (m_start);
         }
         else
         {
-            return control_point_2_for_side (m_end, m_blend_point_end, m_first_derivative_end_curve);
+            return control_point_2_for_side (m_end);
         }
     case 2:
-        if(side.start == true)
+        if(side.m_start == true)
         {
-            return control_point_3_for_side(m_start, m_blend_point_start, m_first_derivative_start_curve, m_second_derivative_start_curve);
+            return control_point_3_for_side(m_start);
         }
         else
         {
-            return control_point_3_for_side(m_end, m_blend_point_end, m_first_derivative_end_curve, m_second_derivative_end_curve);
+            return control_point_3_for_side(m_end);
         }
     default:
         throw geoml::Error("The index is not equal to 0,1 or 2.", INDEX_ERROR);
