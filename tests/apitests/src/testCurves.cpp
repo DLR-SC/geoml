@@ -952,3 +952,549 @@ TEST_F(CurvesToBlend, blend_curve_test_1)
     EXPECT_NEAR(bezier_curve->EndPoint().Z(), 0., 1e-5);
 }
 
+TEST_F(CurvesToBlend, blend_curve_test_2)
+{
+    geoml::BlendCurveConnection start_connection (geoml::CurveToEdge(start_curve), cp_start_3, geoml::GContinuity::G1);
+    geoml::BlendCurveConnection end_connection (geoml::CurveToEdge(end_curve), cp_end_1, geoml::GContinuity::G0);
+
+    TopoDS_Edge resulting_blend_curve = geoml::blend_curve(start_connection, end_connection);
+
+    Handle(Geom_Curve) curve  = geoml::EdgeToCurve(resulting_blend_curve);
+
+    Handle(Geom_BezierCurve) bezier_curve  = Handle(Geom_BezierCurve)::DownCast(curve);
+
+    EXPECT_EQ(bezier_curve->NbPoles(), 3);
+
+    EXPECT_NEAR(bezier_curve->StartPoint().X(), 2., 1e-5);
+    EXPECT_NEAR(bezier_curve->StartPoint().Y(), 2., 1e-5);
+    EXPECT_NEAR(bezier_curve->StartPoint().Z(), 0., 1e-5);
+
+    EXPECT_NEAR(bezier_curve->EndPoint().X(), 4., 1e-5);
+    EXPECT_NEAR(bezier_curve->EndPoint().Y(), 4., 1e-5);
+    EXPECT_NEAR(bezier_curve->EndPoint().Z(), 0., 1e-5);
+
+    EXPECT_NEAR(bezier_curve->Pole(2).X(), last_point_start_curve.X() + first_derivative_start_curve_at_last_parameter.X(), 1e-5);
+    EXPECT_NEAR(bezier_curve->Pole(2).Y(), last_point_start_curve.Y() + first_derivative_start_curve_at_last_parameter.Y(), 1e-5);
+    EXPECT_NEAR(bezier_curve->Pole(2).Z(), last_point_start_curve.Z() + first_derivative_start_curve_at_last_parameter.Z(), 1e-5);
+}
+
+TEST_F(CurvesToBlend, blend_curve_test_3)
+{
+    geoml::BlendCurveConnection start_connection (geoml::CurveToEdge(start_curve), cp_start_3, geoml::GContinuity::G0);
+    geoml::BlendCurveConnection end_connection (geoml::CurveToEdge(end_curve), cp_end_1, geoml::GContinuity::G1);
+
+    TopoDS_Edge resulting_blend_curve = geoml::blend_curve(start_connection, end_connection);
+
+    Handle(Geom_Curve) curve  = geoml::EdgeToCurve(resulting_blend_curve);
+
+    Handle(Geom_BezierCurve) bezier_curve  = Handle(Geom_BezierCurve)::DownCast(curve);
+
+    EXPECT_EQ(bezier_curve->NbPoles(), 3);
+
+    EXPECT_NEAR(bezier_curve->StartPoint().X(), 2., 1e-5);
+    EXPECT_NEAR(bezier_curve->StartPoint().Y(), 2., 1e-5);
+    EXPECT_NEAR(bezier_curve->StartPoint().Z(), 0., 1e-5);
+
+    EXPECT_NEAR(bezier_curve->EndPoint().X(), 4., 1e-5);
+    EXPECT_NEAR(bezier_curve->EndPoint().Y(), 4., 1e-5);
+    EXPECT_NEAR(bezier_curve->EndPoint().Z(), 0., 1e-5);
+
+    EXPECT_NEAR(bezier_curve->Pole(2).X(), first_point_end_curve.X() - first_derivative_end_curve_at_first_parameter.X(), 1e-5);
+    EXPECT_NEAR(bezier_curve->Pole(2).Y(), first_point_end_curve.Y() - first_derivative_end_curve_at_first_parameter.Y(), 1e-5);
+    EXPECT_NEAR(bezier_curve->Pole(2).Z(), first_point_end_curve.Z() - first_derivative_end_curve_at_first_parameter.Z(), 1e-5);
+}
+
+TEST_F(CurvesToBlend, blend_curve_test_4)
+{
+    geoml::BlendCurveConnection start_connection (geoml::CurveToEdge(start_curve), cp_start_3, geoml::GContinuity::G2);
+    geoml::BlendCurveConnection end_connection (geoml::CurveToEdge(end_curve), cp_end_1, geoml::GContinuity::G0);
+
+    TopoDS_Edge resulting_blend_curve = geoml::blend_curve(start_connection, end_connection);
+
+    Handle(Geom_Curve) curve = geoml::EdgeToCurve(resulting_blend_curve);
+
+    Handle(Geom_BezierCurve) bezier_curve = Handle(Geom_BezierCurve)::DownCast(curve);
+
+    EXPECT_EQ(bezier_curve->NbPoles(), 4);
+
+    EXPECT_NEAR(bezier_curve->StartPoint().X(), 2., 1e-5);
+    EXPECT_NEAR(bezier_curve->StartPoint().Y(), 2., 1e-5);
+    EXPECT_NEAR(bezier_curve->StartPoint().Z(), 0., 1e-5);
+
+    EXPECT_NEAR(bezier_curve->EndPoint().X(), 4., 1e-5);
+    EXPECT_NEAR(bezier_curve->EndPoint().Y(), 4., 1e-5);
+    EXPECT_NEAR(bezier_curve->EndPoint().Z(), 0., 1e-5);
+
+    EXPECT_NEAR(bezier_curve->Pole(2).X(), last_point_start_curve.X() + first_derivative_start_curve_at_last_parameter.X(), 1e-5);
+    EXPECT_NEAR(bezier_curve->Pole(2).Y(), last_point_start_curve.Y() + first_derivative_start_curve_at_last_parameter.Y(), 1e-5);
+    EXPECT_NEAR(bezier_curve->Pole(2).Z(), last_point_start_curve.Z() + first_derivative_start_curve_at_last_parameter.Z(), 1e-5);
+
+    gp_Vec d_vec_curve_start = displacement_of_third_control_point(bezier_curve->Degree(), 1., 1., first_derivative_start_curve_at_last_parameter, second_derivative_start_curve_at_last_parameter);
+
+    EXPECT_NEAR(bezier_curve->Pole(3).X(), last_point_start_curve.X() + 2 * first_derivative_start_curve_at_last_parameter.X() + d_vec_curve_start.X(), 1e-5);
+    EXPECT_NEAR(bezier_curve->Pole(3).Y(), last_point_start_curve.Y() + 2 * first_derivative_start_curve_at_last_parameter.Y() + d_vec_curve_start.Y(), 1e-5);
+    EXPECT_NEAR(bezier_curve->Pole(3).Z(), last_point_start_curve.Z() + 2 * first_derivative_start_curve_at_last_parameter.Z() + d_vec_curve_start.Z(), 1e-5);
+}
+
+TEST_F(CurvesToBlend, blend_curve_test_5)
+{
+    geoml::BlendCurveConnection start_connection (geoml::CurveToEdge(start_curve), cp_start_3, geoml::GContinuity::G0);
+    geoml::BlendCurveConnection end_connection (geoml::CurveToEdge(end_curve), cp_end_1, geoml::GContinuity::G2);
+
+    TopoDS_Edge resulting_blend_curve = geoml::blend_curve(start_connection, end_connection);
+
+    Handle(Geom_Curve) curve = geoml::EdgeToCurve(resulting_blend_curve);
+
+    Handle(Geom_BezierCurve) bezier_curve = Handle(Geom_BezierCurve)::DownCast(curve);
+
+    EXPECT_EQ(bezier_curve->NbPoles(), 4);
+
+    EXPECT_NEAR(bezier_curve->StartPoint().X(), 2., 1e-5);
+    EXPECT_NEAR(bezier_curve->StartPoint().Y(), 2., 1e-5);
+    EXPECT_NEAR(bezier_curve->StartPoint().Z(), 0., 1e-5);
+
+    EXPECT_NEAR(bezier_curve->EndPoint().X(), 4., 1e-5);
+    EXPECT_NEAR(bezier_curve->EndPoint().Y(), 4., 1e-5);
+    EXPECT_NEAR(bezier_curve->EndPoint().Z(), 0., 1e-5);
+
+    gp_Vec d_vec_curve_end = displacement_of_third_control_point(bezier_curve->Degree(), 1., 1., first_derivative_end_curve_at_first_parameter, second_derivative_end_curve_at_first_parameter);
+
+    EXPECT_NEAR(bezier_curve->Pole(2).X(), first_point_end_curve.X() - 2 * first_derivative_end_curve_at_first_parameter.X() + d_vec_curve_end.X(), 1e-5);
+    EXPECT_NEAR(bezier_curve->Pole(2).Y(), first_point_end_curve.Y() - 2 * first_derivative_end_curve_at_first_parameter.Y() + d_vec_curve_end.Y(), 1e-5);
+    EXPECT_NEAR(bezier_curve->Pole(2).Z(), first_point_end_curve.Z() - 2 * first_derivative_end_curve_at_first_parameter.Z() + d_vec_curve_end.Z(), 1e-5);
+
+    EXPECT_NEAR(bezier_curve->Pole(3).X(), first_point_end_curve.X() - first_derivative_end_curve_at_first_parameter.X(), 1e-5);
+    EXPECT_NEAR(bezier_curve->Pole(3).Y(), first_point_end_curve.Y() - first_derivative_end_curve_at_first_parameter.Y(), 1e-5);
+    EXPECT_NEAR(bezier_curve->Pole(3).Z(), first_point_end_curve.Z() - first_derivative_end_curve_at_first_parameter.Z(), 1e-5);
+}
+
+TEST_F(CurvesToBlend, blend_curve_test_6)
+{
+    geoml::BlendCurveConnection start_connection (geoml::CurveToEdge(start_curve), cp_start_3, geoml::GContinuity::G2);
+    geoml::BlendCurveConnection end_connection (geoml::CurveToEdge(end_curve), cp_end_1, geoml::GContinuity::G1);
+
+    TopoDS_Edge resulting_blend_curve = geoml::blend_curve(start_connection, end_connection);
+
+    Handle(Geom_Curve) curve = geoml::EdgeToCurve(resulting_blend_curve);
+
+    Handle(Geom_BezierCurve) bezier_curve = Handle(Geom_BezierCurve)::DownCast(curve);
+
+    EXPECT_EQ(bezier_curve->NbPoles(), 5);
+
+    EXPECT_NEAR(bezier_curve->StartPoint().X(), 2., 1e-5);
+    EXPECT_NEAR(bezier_curve->StartPoint().Y(), 2., 1e-5);
+    EXPECT_NEAR(bezier_curve->StartPoint().Z(), 0., 1e-5);
+
+    EXPECT_NEAR(bezier_curve->EndPoint().X(), 4., 1e-5);
+    EXPECT_NEAR(bezier_curve->EndPoint().Y(), 4., 1e-5);
+    EXPECT_NEAR(bezier_curve->EndPoint().Z(), 0., 1e-5);
+
+    EXPECT_NEAR(bezier_curve->Pole(2).X(), last_point_start_curve.X() + first_derivative_start_curve_at_last_parameter.X(), 1e-5);
+    EXPECT_NEAR(bezier_curve->Pole(2).Y(), last_point_start_curve.Y() + first_derivative_start_curve_at_last_parameter.Y(), 1e-5);
+    EXPECT_NEAR(bezier_curve->Pole(2).Z(), last_point_start_curve.Z() + first_derivative_start_curve_at_last_parameter.Z(), 1e-5);
+
+    gp_Vec d_vec_curve_start = displacement_of_third_control_point(bezier_curve->Degree(), 1., 1., first_derivative_start_curve_at_last_parameter, second_derivative_start_curve_at_last_parameter);
+
+    EXPECT_NEAR(bezier_curve->Pole(3).X(), last_point_start_curve.X() + 2 * first_derivative_start_curve_at_last_parameter.X() + d_vec_curve_start.X(), 1e-5);
+    EXPECT_NEAR(bezier_curve->Pole(3).Y(), last_point_start_curve.Y() + 2 * first_derivative_start_curve_at_last_parameter.Y() + d_vec_curve_start.Y(), 1e-5);
+    EXPECT_NEAR(bezier_curve->Pole(3).Z(), last_point_start_curve.Z() + 2 * first_derivative_start_curve_at_last_parameter.Z() + d_vec_curve_start.Z(), 1e-5);
+
+    EXPECT_NEAR(bezier_curve->Pole(4).X(), first_point_end_curve.X() - first_derivative_end_curve_at_first_parameter.X(), 1e-5);
+    EXPECT_NEAR(bezier_curve->Pole(4).Y(), first_point_end_curve.Y() - first_derivative_end_curve_at_first_parameter.Y(), 1e-5);
+    EXPECT_NEAR(bezier_curve->Pole(4).Z(), first_point_end_curve.Z() - first_derivative_end_curve_at_first_parameter.Z(), 1e-5);
+}
+
+TEST_F(CurvesToBlend, blend_curve_test_7)
+{
+    geoml::BlendCurveConnection start_connection (geoml::CurveToEdge(start_curve), cp_start_3, geoml::GContinuity::G1);
+    geoml::BlendCurveConnection end_connection (geoml::CurveToEdge(end_curve), cp_end_1, geoml::GContinuity::G2);
+
+    TopoDS_Edge resulting_blend_curve = geoml::blend_curve(start_connection, end_connection);
+
+    Handle(Geom_Curve) curve = geoml::EdgeToCurve(resulting_blend_curve);
+
+    Handle(Geom_BezierCurve) bezier_curve = Handle(Geom_BezierCurve)::DownCast(curve);
+
+    EXPECT_EQ(bezier_curve->NbPoles(), 5);
+
+    EXPECT_NEAR(bezier_curve->StartPoint().X(), 2., 1e-5);
+    EXPECT_NEAR(bezier_curve->StartPoint().Y(), 2., 1e-5);
+    EXPECT_NEAR(bezier_curve->StartPoint().Z(), 0., 1e-5);
+
+    EXPECT_NEAR(bezier_curve->EndPoint().X(), 4., 1e-5);
+    EXPECT_NEAR(bezier_curve->EndPoint().Y(), 4., 1e-5);
+    EXPECT_NEAR(bezier_curve->EndPoint().Z(), 0., 1e-5);
+
+    EXPECT_NEAR(bezier_curve->Pole(2).X(), last_point_start_curve.X() + first_derivative_start_curve_at_last_parameter.X(), 1e-5);
+    EXPECT_NEAR(bezier_curve->Pole(2).Y(), last_point_start_curve.Y() + first_derivative_start_curve_at_last_parameter.Y(), 1e-5);
+    EXPECT_NEAR(bezier_curve->Pole(2).Z(), last_point_start_curve.Z() + first_derivative_start_curve_at_last_parameter.Z(), 1e-5);
+
+    gp_Vec d_vec_curve_end = displacement_of_third_control_point(bezier_curve->Degree(), 1., 1., first_derivative_end_curve_at_first_parameter, second_derivative_end_curve_at_first_parameter);
+
+    EXPECT_NEAR(bezier_curve->Pole(3).X(), first_point_end_curve.X() - 2 * first_derivative_end_curve_at_first_parameter.X() + d_vec_curve_end.X(), 1e-5);
+    EXPECT_NEAR(bezier_curve->Pole(3).Y(), first_point_end_curve.Y() - 2 * first_derivative_end_curve_at_first_parameter.Y() + d_vec_curve_end.Y(), 1e-5);
+    EXPECT_NEAR(bezier_curve->Pole(3).Z(), first_point_end_curve.Z() - 2 * first_derivative_end_curve_at_first_parameter.Z() + d_vec_curve_end.Z(), 1e-5);
+
+    EXPECT_NEAR(bezier_curve->Pole(4).X(), first_point_end_curve.X() - first_derivative_end_curve_at_first_parameter.X(), 1e-5);
+    EXPECT_NEAR(bezier_curve->Pole(4).Y(), first_point_end_curve.Y() - first_derivative_end_curve_at_first_parameter.Y(), 1e-5);
+    EXPECT_NEAR(bezier_curve->Pole(4).Z(), first_point_end_curve.Z() - first_derivative_end_curve_at_first_parameter.Z(), 1e-5);
+}
+
+TEST_F(CurvesToBlend, blend_curve_test_8)
+{
+    geoml::BlendCurveConnection start_connection (geoml::CurveToEdge(start_curve), cp_start_3, geoml::GContinuity::G2);
+    geoml::BlendCurveConnection end_connection (geoml::CurveToEdge(end_curve), cp_end_1, geoml::GContinuity::G2);
+
+    TopoDS_Edge resulting_blend_curve = geoml::blend_curve(start_connection, end_connection);
+
+    Handle(Geom_Curve) curve = geoml::EdgeToCurve(resulting_blend_curve);
+
+    Handle(Geom_BezierCurve) bezier_curve = Handle(Geom_BezierCurve)::DownCast(curve);
+
+    EXPECT_EQ(bezier_curve->NbPoles(), 6);
+
+    EXPECT_NEAR(bezier_curve->StartPoint().X(), 2., 1e-5);
+    EXPECT_NEAR(bezier_curve->StartPoint().Y(), 2., 1e-5);
+    EXPECT_NEAR(bezier_curve->StartPoint().Z(), 0., 1e-5);
+
+    EXPECT_NEAR(bezier_curve->EndPoint().X(), 4., 1e-5);
+    EXPECT_NEAR(bezier_curve->EndPoint().Y(), 4., 1e-5);
+    EXPECT_NEAR(bezier_curve->EndPoint().Z(), 0., 1e-5);
+
+    EXPECT_NEAR(bezier_curve->Pole(2).X(), last_point_start_curve.X() + first_derivative_start_curve_at_last_parameter.X(), 1e-5);
+    EXPECT_NEAR(bezier_curve->Pole(2).Y(), last_point_start_curve.Y() + first_derivative_start_curve_at_last_parameter.Y(), 1e-5);
+    EXPECT_NEAR(bezier_curve->Pole(2).Z(), last_point_start_curve.Z() + first_derivative_start_curve_at_last_parameter.Z(), 1e-5);
+
+    gp_Vec d_vec_curve_start = displacement_of_third_control_point(bezier_curve->Degree(), 1., 1., first_derivative_start_curve_at_last_parameter, second_derivative_start_curve_at_last_parameter);
+
+    EXPECT_NEAR(bezier_curve->Pole(3).X(), last_point_start_curve.X() + 2 * first_derivative_start_curve_at_last_parameter.X() + d_vec_curve_start.X(), 1e-5);
+    EXPECT_NEAR(bezier_curve->Pole(3).Y(), last_point_start_curve.Y() + 2 * first_derivative_start_curve_at_last_parameter.Y() + d_vec_curve_start.Y(), 1e-5);
+    EXPECT_NEAR(bezier_curve->Pole(3).Z(), last_point_start_curve.Z() + 2 * first_derivative_start_curve_at_last_parameter.Z() + d_vec_curve_start.Z(), 1e-5);
+
+    gp_Vec d_vec_curve_end = displacement_of_third_control_point(bezier_curve->Degree(), 1., 1., first_derivative_end_curve_at_first_parameter, second_derivative_end_curve_at_first_parameter);
+
+    EXPECT_NEAR(bezier_curve->Pole(4).X(), first_point_end_curve.X() - 2 * first_derivative_end_curve_at_first_parameter.X() + d_vec_curve_end.X(), 1e-5);
+    EXPECT_NEAR(bezier_curve->Pole(4).Y(), first_point_end_curve.Y() - 2 * first_derivative_end_curve_at_first_parameter.Y() + d_vec_curve_end.Y(), 1e-5);
+    EXPECT_NEAR(bezier_curve->Pole(4).Z(), first_point_end_curve.Z() - 2 * first_derivative_end_curve_at_first_parameter.Z() + d_vec_curve_end.Z(), 1e-5);
+
+    EXPECT_NEAR(bezier_curve->Pole(5).X(), first_point_end_curve.X() - first_derivative_end_curve_at_first_parameter.X(), 1e-5);
+    EXPECT_NEAR(bezier_curve->Pole(5).Y(), first_point_end_curve.Y() - first_derivative_end_curve_at_first_parameter.Y(), 1e-5);
+    EXPECT_NEAR(bezier_curve->Pole(5).Z(), first_point_end_curve.Z() - first_derivative_end_curve_at_first_parameter.Z(), 1e-5);
+}
+
+TEST_F(CurvesToBlend, blend_curve_test_9)
+{
+    geoml::BlendCurveConnection start_connection (geoml::CurveToEdge(start_curve), cp_start_3, geoml::GContinuity::G1, false);
+    geoml::BlendCurveConnection end_connection (geoml::CurveToEdge(end_curve), cp_end_1, geoml::GContinuity::G0);
+
+    TopoDS_Edge resulting_blend_curve = geoml::blend_curve(start_connection, end_connection);
+
+    Handle(Geom_Curve) curve = geoml::EdgeToCurve(resulting_blend_curve);
+
+    Handle(Geom_BezierCurve) bezier_curve = Handle(Geom_BezierCurve)::DownCast(curve);
+
+    EXPECT_EQ(bezier_curve->NbPoles(), 3);
+
+    EXPECT_NEAR(bezier_curve->StartPoint().X(), 2., 1e-5);
+    EXPECT_NEAR(bezier_curve->StartPoint().Y(), 2., 1e-5);
+    EXPECT_NEAR(bezier_curve->StartPoint().Z(), 0., 1e-5);
+
+    EXPECT_NEAR(bezier_curve->EndPoint().X(), 4., 1e-5);
+    EXPECT_NEAR(bezier_curve->EndPoint().Y(), 4., 1e-5);
+    EXPECT_NEAR(bezier_curve->EndPoint().Z(), 0., 1e-5);
+
+    EXPECT_NEAR(bezier_curve->Pole(2).X(), last_point_start_curve.X() - first_derivative_start_curve_at_last_parameter.X(), 1e-5);
+    EXPECT_NEAR(bezier_curve->Pole(2).Y(), last_point_start_curve.Y() - first_derivative_start_curve_at_last_parameter.Y(), 1e-5);
+    EXPECT_NEAR(bezier_curve->Pole(2).Z(), last_point_start_curve.Z() - first_derivative_start_curve_at_last_parameter.Z(), 1e-5);
+}
+
+TEST_F(CurvesToBlend, blend_curve_test_10)
+{
+    geoml::BlendCurveConnection start_connection (geoml::CurveToEdge(start_curve), cp_start_3, geoml::GContinuity::G0);
+    geoml::BlendCurveConnection end_connection (geoml::CurveToEdge(end_curve), cp_end_1, geoml::GContinuity::G1, false);
+
+    TopoDS_Edge resulting_blend_curve = geoml::blend_curve(start_connection, end_connection);
+
+    Handle(Geom_Curve) curve = geoml::EdgeToCurve(resulting_blend_curve);
+
+    Handle(Geom_BezierCurve) bezier_curve = Handle(Geom_BezierCurve)::DownCast(curve);
+
+    EXPECT_EQ(bezier_curve->NbPoles(), 3);
+
+    EXPECT_NEAR(bezier_curve->StartPoint().X(), 2., 1e-5);
+    EXPECT_NEAR(bezier_curve->StartPoint().Y(), 2., 1e-5);
+    EXPECT_NEAR(bezier_curve->StartPoint().Z(), 0., 1e-5);
+
+    EXPECT_NEAR(bezier_curve->EndPoint().X(), 4., 1e-5);
+    EXPECT_NEAR(bezier_curve->EndPoint().Y(), 4., 1e-5);
+    EXPECT_NEAR(bezier_curve->EndPoint().Z(), 0., 1e-5);
+
+    EXPECT_NEAR(bezier_curve->Pole(2).X(), first_point_end_curve.X() + first_derivative_end_curve_at_first_parameter.X(), 1e-5);
+    EXPECT_NEAR(bezier_curve->Pole(2).Y(), first_point_end_curve.Y() + first_derivative_end_curve_at_first_parameter.Y(), 1e-5);
+    EXPECT_NEAR(bezier_curve->Pole(2).Z(), first_point_end_curve.Z() + first_derivative_end_curve_at_first_parameter.Z(), 1e-5);
+}
+
+TEST_F(CurvesToBlend, blend_curve_test_11)
+{
+    geoml::BlendCurveConnection start_connection (geoml::CurveToEdge(start_curve), cp_start_3, geoml::GContinuity::G2, false);
+    geoml::BlendCurveConnection end_connection (geoml::CurveToEdge(end_curve), cp_end_1, geoml::GContinuity::G0);
+
+    TopoDS_Edge resulting_blend_curve = geoml::blend_curve(start_connection, end_connection);
+
+    Handle(Geom_Curve) curve = geoml::EdgeToCurve(resulting_blend_curve);
+
+    Handle(Geom_BezierCurve) bezier_curve = Handle(Geom_BezierCurve)::DownCast(curve);
+
+    EXPECT_EQ(bezier_curve->NbPoles(), 4);
+
+    EXPECT_NEAR(bezier_curve->StartPoint().X(), 2., 1e-5);
+    EXPECT_NEAR(bezier_curve->StartPoint().Y(), 2., 1e-5);
+    EXPECT_NEAR(bezier_curve->StartPoint().Z(), 0., 1e-5);
+
+    EXPECT_NEAR(bezier_curve->EndPoint().X(), 4., 1e-5);
+    EXPECT_NEAR(bezier_curve->EndPoint().Y(), 4., 1e-5);
+    EXPECT_NEAR(bezier_curve->EndPoint().Z(), 0., 1e-5);
+
+    EXPECT_NEAR(bezier_curve->Pole(2).X(), last_point_start_curve.X() - first_derivative_start_curve_at_last_parameter.X(), 1e-5);
+    EXPECT_NEAR(bezier_curve->Pole(2).Y(), last_point_start_curve.Y() - first_derivative_start_curve_at_last_parameter.Y(), 1e-5);
+    EXPECT_NEAR(bezier_curve->Pole(2).Z(), last_point_start_curve.Z() - first_derivative_start_curve_at_last_parameter.Z(), 1e-5);
+
+    gp_Vec d_vec_curve_start = displacement_of_third_control_point(bezier_curve->Degree(), 1., 1., first_derivative_start_curve_at_last_parameter, second_derivative_start_curve_at_last_parameter);
+
+    EXPECT_NEAR(bezier_curve->Pole(3).X(), last_point_start_curve.X() - 2 * first_derivative_start_curve_at_last_parameter.X() + d_vec_curve_start.X(), 1e-5);
+    EXPECT_NEAR(bezier_curve->Pole(3).Y(), last_point_start_curve.Y() - 2 * first_derivative_start_curve_at_last_parameter.Y() + d_vec_curve_start.Y(), 1e-5);
+    EXPECT_NEAR(bezier_curve->Pole(3).Z(), last_point_start_curve.Z() - 2 * first_derivative_start_curve_at_last_parameter.Z() + d_vec_curve_start.Z(), 1e-5);
+}
+
+TEST_F(CurvesToBlend, blend_curve_test_12)
+{
+    geoml::BlendCurveConnection start_connection (geoml::CurveToEdge(start_curve), cp_start_3, geoml::GContinuity::G0);
+    geoml::BlendCurveConnection end_connection (geoml::CurveToEdge(end_curve), cp_end_1, geoml::GContinuity::G2, false);
+
+    TopoDS_Edge resulting_blend_curve = geoml::blend_curve(start_connection, end_connection);
+
+    Handle(Geom_Curve) curve = geoml::EdgeToCurve(resulting_blend_curve);
+
+    Handle(Geom_BezierCurve) bezier_curve = Handle(Geom_BezierCurve)::DownCast(curve);
+
+    EXPECT_EQ(bezier_curve->NbPoles(), 4);
+
+    EXPECT_NEAR(bezier_curve->StartPoint().X(), 2., 1e-5);
+    EXPECT_NEAR(bezier_curve->StartPoint().Y(), 2., 1e-5);
+    EXPECT_NEAR(bezier_curve->StartPoint().Z(), 0., 1e-5);
+
+    EXPECT_NEAR(bezier_curve->EndPoint().X(), 4., 1e-5);
+    EXPECT_NEAR(bezier_curve->EndPoint().Y(), 4., 1e-5);
+    EXPECT_NEAR(bezier_curve->EndPoint().Z(), 0., 1e-5);
+
+    gp_Vec d_vec_curve_end = displacement_of_third_control_point(bezier_curve->Degree(), 1., 1., first_derivative_end_curve_at_first_parameter, second_derivative_end_curve_at_first_parameter);
+
+    EXPECT_NEAR(bezier_curve->Pole(2).X(), first_point_end_curve.X() + 2 * first_derivative_end_curve_at_first_parameter.X() + d_vec_curve_end.X(), 1e-5);
+    EXPECT_NEAR(bezier_curve->Pole(2).Y(), first_point_end_curve.Y() + 2 * first_derivative_end_curve_at_first_parameter.Y() + d_vec_curve_end.Y(), 1e-5);
+    EXPECT_NEAR(bezier_curve->Pole(2).Z(), first_point_end_curve.Z() + 2 * first_derivative_end_curve_at_first_parameter.Z() + d_vec_curve_end.Z(), 1e-5);
+
+    EXPECT_NEAR(bezier_curve->Pole(3).X(), first_point_end_curve.X() + first_derivative_end_curve_at_first_parameter.X(), 1e-5);
+    EXPECT_NEAR(bezier_curve->Pole(3).Y(), first_point_end_curve.Y() + first_derivative_end_curve_at_first_parameter.Y(), 1e-5);
+    EXPECT_NEAR(bezier_curve->Pole(3).Z(), first_point_end_curve.Z() + first_derivative_end_curve_at_first_parameter.Z(), 1e-5);
+}
+
+TEST_F(CurvesToBlend, blend_curve_test_13)
+{
+    geoml::BlendCurveConnection start_connection (geoml::CurveToEdge(start_curve), cp_start_3, geoml::GContinuity::G2, false);
+    geoml::BlendCurveConnection end_connection (geoml::CurveToEdge(end_curve), cp_end_1, geoml::GContinuity::G2, false);
+
+    TopoDS_Edge resulting_blend_curve = geoml::blend_curve(start_connection, end_connection);
+
+    Handle(Geom_Curve) curve = geoml::EdgeToCurve(resulting_blend_curve);
+
+    Handle(Geom_BezierCurve) bezier_curve = Handle(Geom_BezierCurve)::DownCast(curve);
+
+    EXPECT_EQ(bezier_curve->NbPoles(), 6);
+
+    EXPECT_NEAR(bezier_curve->StartPoint().X(), 2., 1e-5);
+    EXPECT_NEAR(bezier_curve->StartPoint().Y(), 2., 1e-5);
+    EXPECT_NEAR(bezier_curve->StartPoint().Z(), 0., 1e-5);
+
+    EXPECT_NEAR(bezier_curve->EndPoint().X(), 4., 1e-5);
+    EXPECT_NEAR(bezier_curve->EndPoint().Y(), 4., 1e-5);
+    EXPECT_NEAR(bezier_curve->EndPoint().Z(), 0., 1e-5);
+
+    EXPECT_NEAR(bezier_curve->Pole(2).X(), last_point_start_curve.X() - first_derivative_start_curve_at_last_parameter.X(), 1e-5);
+    EXPECT_NEAR(bezier_curve->Pole(2).Y(), last_point_start_curve.Y() - first_derivative_start_curve_at_last_parameter.Y(), 1e-5);
+    EXPECT_NEAR(bezier_curve->Pole(2).Z(), last_point_start_curve.Z() - first_derivative_start_curve_at_last_parameter.Z(), 1e-5);
+
+    gp_Vec d_vec_curve_start = displacement_of_third_control_point(bezier_curve->Degree(), 1., 1., first_derivative_start_curve_at_last_parameter, second_derivative_start_curve_at_last_parameter);
+
+    EXPECT_NEAR(bezier_curve->Pole(3).X(), last_point_start_curve.X() - 2 * first_derivative_start_curve_at_last_parameter.X() + d_vec_curve_start.X(), 1e-5);
+    EXPECT_NEAR(bezier_curve->Pole(3).Y(), last_point_start_curve.Y() - 2 * first_derivative_start_curve_at_last_parameter.Y() + d_vec_curve_start.Y(), 1e-5);
+    EXPECT_NEAR(bezier_curve->Pole(3).Z(), last_point_start_curve.Z() - 2 * first_derivative_start_curve_at_last_parameter.Z() + d_vec_curve_start.Z(), 1e-5);
+
+    gp_Vec d_vec_curve_end = displacement_of_third_control_point(bezier_curve->Degree(), 1., 1., first_derivative_end_curve_at_first_parameter, second_derivative_end_curve_at_first_parameter);
+
+    EXPECT_NEAR(bezier_curve->Pole(4).X(), first_point_end_curve.X() + 2 * first_derivative_end_curve_at_first_parameter.X() + d_vec_curve_end.X(), 1e-5);
+    EXPECT_NEAR(bezier_curve->Pole(4).Y(), first_point_end_curve.Y() + 2 * first_derivative_end_curve_at_first_parameter.Y() + d_vec_curve_end.Y(), 1e-5);
+    EXPECT_NEAR(bezier_curve->Pole(4).Z(), first_point_end_curve.Z() + 2 * first_derivative_end_curve_at_first_parameter.Z() + d_vec_curve_end.Z(), 1e-5);
+
+    EXPECT_NEAR(bezier_curve->Pole(5).X(), first_point_end_curve.X() + first_derivative_end_curve_at_first_parameter.X(), 1e-5);
+    EXPECT_NEAR(bezier_curve->Pole(5).Y(), first_point_end_curve.Y() + first_derivative_end_curve_at_first_parameter.Y(), 1e-5);
+    EXPECT_NEAR(bezier_curve->Pole(5).Z(), first_point_end_curve.Z() + first_derivative_end_curve_at_first_parameter.Z(), 1e-5);
+}
+
+TEST_F(CurvesToBlend, blend_curve_test_14)
+{
+    geoml::BlendCurveConnection start_connection (geoml::CurveToEdge(start_curve), cp_start_3, geoml::GContinuity::G1, true, 0.5);
+    geoml::BlendCurveConnection end_connection (geoml::CurveToEdge(end_curve), cp_end_1, geoml::GContinuity::G0);
+
+    TopoDS_Edge resulting_blend_curve = geoml::blend_curve(start_connection, end_connection);
+
+    Handle(Geom_Curve) curve = geoml::EdgeToCurve(resulting_blend_curve);
+
+    Handle(Geom_BezierCurve) bezier_curve = Handle(Geom_BezierCurve)::DownCast(curve);
+
+    EXPECT_EQ(bezier_curve->NbPoles(), 3);
+
+    EXPECT_NEAR(bezier_curve->StartPoint().X(), 2., 1e-5);
+    EXPECT_NEAR(bezier_curve->StartPoint().Y(), 2., 1e-5);
+    EXPECT_NEAR(bezier_curve->StartPoint().Z(), 0., 1e-5);
+
+    EXPECT_NEAR(bezier_curve->EndPoint().X(), 4., 1e-5);
+    EXPECT_NEAR(bezier_curve->EndPoint().Y(), 4., 1e-5);
+    EXPECT_NEAR(bezier_curve->EndPoint().Z(), 0., 1e-5);
+
+    EXPECT_NEAR(bezier_curve->Pole(2).X(), last_point_start_curve.X() + 0.5 * first_derivative_start_curve_at_last_parameter.X(), 1e-5);
+    EXPECT_NEAR(bezier_curve->Pole(2).Y(), last_point_start_curve.Y() + 0.5 * first_derivative_start_curve_at_last_parameter.Y(), 1e-5);
+    EXPECT_NEAR(bezier_curve->Pole(2).Z(), last_point_start_curve.Z() + 0.5 * first_derivative_start_curve_at_last_parameter.Z(), 1e-5);
+}
+
+TEST_F(CurvesToBlend, blend_curve_test_15)
+{
+    geoml::BlendCurveConnection start_connection (geoml::CurveToEdge(start_curve), cp_start_3, geoml::GContinuity::G0);
+    geoml::BlendCurveConnection end_connection (geoml::CurveToEdge(end_curve), cp_end_1, geoml::GContinuity::G1, true, 0.5);
+
+    TopoDS_Edge resulting_blend_curve = geoml::blend_curve(start_connection, end_connection);
+
+    Handle(Geom_Curve) curve = geoml::EdgeToCurve(resulting_blend_curve);
+
+    Handle(Geom_BezierCurve) bezier_curve = Handle(Geom_BezierCurve)::DownCast(curve);
+
+    EXPECT_EQ(bezier_curve->NbPoles(), 3);
+
+    EXPECT_NEAR(bezier_curve->StartPoint().X(), 2., 1e-5);
+    EXPECT_NEAR(bezier_curve->StartPoint().Y(), 2., 1e-5);
+    EXPECT_NEAR(bezier_curve->StartPoint().Z(), 0., 1e-5);
+
+    EXPECT_NEAR(bezier_curve->EndPoint().X(), 4., 1e-5);
+    EXPECT_NEAR(bezier_curve->EndPoint().Y(), 4., 1e-5);
+    EXPECT_NEAR(bezier_curve->EndPoint().Z(), 0., 1e-5);
+
+    EXPECT_NEAR(bezier_curve->Pole(2).X(), first_point_end_curve.X() - 0.5 * first_derivative_end_curve_at_first_parameter.X(), 1e-5);
+    EXPECT_NEAR(bezier_curve->Pole(2).Y(), first_point_end_curve.Y() - 0.5 * first_derivative_end_curve_at_first_parameter.Y(), 1e-5);
+    EXPECT_NEAR(bezier_curve->Pole(2).Z(), first_point_end_curve.Z() - 0.5 * first_derivative_end_curve_at_first_parameter.Z(), 1e-5);
+}
+
+TEST_F(CurvesToBlend, blend_curve_test_16)
+{
+    geoml::BlendCurveConnection start_connection (geoml::CurveToEdge(start_curve), cp_start_3, geoml::GContinuity::G2, true, 0.5, 2.);
+    geoml::BlendCurveConnection end_connection (geoml::CurveToEdge(end_curve), cp_end_1, geoml::GContinuity::G0);
+
+    TopoDS_Edge resulting_blend_curve = geoml::blend_curve(start_connection, end_connection);
+
+    Handle(Geom_Curve) curve = geoml::EdgeToCurve(resulting_blend_curve);
+
+    Handle(Geom_BezierCurve) bezier_curve = Handle(Geom_BezierCurve)::DownCast(curve);
+
+    EXPECT_EQ(bezier_curve->NbPoles(), 4);
+
+    EXPECT_NEAR(bezier_curve->StartPoint().X(), 2., 1e-5);
+    EXPECT_NEAR(bezier_curve->StartPoint().Y(), 2., 1e-5);
+    EXPECT_NEAR(bezier_curve->StartPoint().Z(), 0., 1e-5);
+
+    EXPECT_NEAR(bezier_curve->EndPoint().X(), 4., 1e-5);
+    EXPECT_NEAR(bezier_curve->EndPoint().Y(), 4., 1e-5);
+    EXPECT_NEAR(bezier_curve->EndPoint().Z(), 0., 1e-5);
+
+    EXPECT_NEAR(bezier_curve->Pole(2).X(), last_point_start_curve.X() + 0.5 * first_derivative_start_curve_at_last_parameter.X(), 1e-5);
+    EXPECT_NEAR(bezier_curve->Pole(2).Y(), last_point_start_curve.Y() + 0.5 * first_derivative_start_curve_at_last_parameter.Y(), 1e-5);
+    EXPECT_NEAR(bezier_curve->Pole(2).Z(), last_point_start_curve.Z() + 0.5 * first_derivative_start_curve_at_last_parameter.Z(), 1e-5);
+
+    gp_Vec d_vec_curve_end = displacement_of_third_control_point(bezier_curve->Degree(), 0.5, 2., first_derivative_start_curve_at_last_parameter, second_derivative_start_curve_at_last_parameter);
+
+    EXPECT_NEAR(bezier_curve->Pole(3).X(), last_point_start_curve.X() + 2 * 0.5 * 2 * first_derivative_start_curve_at_last_parameter.X() + d_vec_curve_end.X(), 1e-5);
+    EXPECT_NEAR(bezier_curve->Pole(3).Y(), last_point_start_curve.Y() + 2 * 0.5 * 2 * first_derivative_start_curve_at_last_parameter.Y() + d_vec_curve_end.Y(), 1e-5);
+    EXPECT_NEAR(bezier_curve->Pole(3).Z(), last_point_start_curve.Z() + 2 * 0.5 * 2 * first_derivative_start_curve_at_last_parameter.Z() + d_vec_curve_end.Z(), 1e-5);
+}
+
+TEST_F(CurvesToBlend, blend_curve_test_17)
+{
+    geoml::BlendCurveConnection start_connection (geoml::CurveToEdge(start_curve), cp_start_3, geoml::GContinuity::G0);
+    geoml::BlendCurveConnection end_connection (geoml::CurveToEdge(end_curve), cp_end_1, geoml::GContinuity::G2, true, 0.5, 2.);
+
+    TopoDS_Edge resulting_blend_curve = geoml::blend_curve(start_connection, end_connection);
+
+    Handle(Geom_Curve) curve = geoml::EdgeToCurve(resulting_blend_curve);
+
+    Handle(Geom_BezierCurve) bezier_curve = Handle(Geom_BezierCurve)::DownCast(curve);
+
+    EXPECT_EQ(bezier_curve->NbPoles(), 4);
+
+    EXPECT_NEAR(bezier_curve->StartPoint().X(), 2., 1e-5);
+    EXPECT_NEAR(bezier_curve->StartPoint().Y(), 2., 1e-5);
+    EXPECT_NEAR(bezier_curve->StartPoint().Z(), 0., 1e-5);
+
+    EXPECT_NEAR(bezier_curve->EndPoint().X(), 4., 1e-5);
+    EXPECT_NEAR(bezier_curve->EndPoint().Y(), 4., 1e-5);
+    EXPECT_NEAR(bezier_curve->EndPoint().Z(), 0., 1e-5);
+
+    gp_Vec d_vec_curve_end = displacement_of_third_control_point(bezier_curve->Degree(), 0.5, 2., first_derivative_end_curve_at_first_parameter, second_derivative_end_curve_at_first_parameter);
+
+    EXPECT_NEAR(bezier_curve->Pole(2).X(), first_point_end_curve.X() - 2 * 0.5 * 2 * first_derivative_end_curve_at_first_parameter.X() + d_vec_curve_end.X(), 1e-5);
+    EXPECT_NEAR(bezier_curve->Pole(2).Y(), first_point_end_curve.Y() - 2 * 0.5 * 2 * first_derivative_end_curve_at_first_parameter.Y() + d_vec_curve_end.Y(), 1e-5);
+    EXPECT_NEAR(bezier_curve->Pole(2).Z(), first_point_end_curve.Z() - 2 * 0.5 * 2 * first_derivative_end_curve_at_first_parameter.Z() + d_vec_curve_end.Z(), 1e-5);
+
+    EXPECT_NEAR(bezier_curve->Pole(3).X(), first_point_end_curve.X() - 0.5 * first_derivative_end_curve_at_first_parameter.X(), 1e-5);
+    EXPECT_NEAR(bezier_curve->Pole(3).Y(), first_point_end_curve.Y() - 0.5 * first_derivative_end_curve_at_first_parameter.Y(), 1e-5);
+    EXPECT_NEAR(bezier_curve->Pole(3).Z(), first_point_end_curve.Z() - 0.5 * first_derivative_end_curve_at_first_parameter.Z(), 1e-5);
+}
+
+TEST_F(CurvesToBlend, blend_curve_test_18)
+{
+    geoml::BlendCurveConnection start_connection(geoml::CurveToEdge(start_curve), cp_start_3, geoml::GContinuity::G2, true, 0.25);
+    geoml::BlendCurveConnection end_connection(geoml::CurveToEdge(end_curve), cp_end_1, geoml::GContinuity::G2, true, 1., 2.);
+
+    TopoDS_Edge resulting_blend_curve = geoml::blend_curve(start_connection, end_connection);
+
+    Handle(Geom_Curve) curve = geoml::EdgeToCurve(resulting_blend_curve);
+
+    Handle(Geom_BezierCurve) bezier_curve = Handle(Geom_BezierCurve)::DownCast(curve);
+
+    EXPECT_EQ(bezier_curve->NbPoles(), 6);
+
+    EXPECT_NEAR(bezier_curve->StartPoint().X(), 2., 1e-5);
+    EXPECT_NEAR(bezier_curve->StartPoint().Y(), 2., 1e-5);
+    EXPECT_NEAR(bezier_curve->StartPoint().Z(), 0., 1e-5);
+
+    EXPECT_NEAR(bezier_curve->EndPoint().X(), 4., 1e-5);
+    EXPECT_NEAR(bezier_curve->EndPoint().Y(), 4., 1e-5);
+    EXPECT_NEAR(bezier_curve->EndPoint().Z(), 0., 1e-5);
+
+    EXPECT_NEAR(bezier_curve->Pole(2).X(), last_point_start_curve.X() + 0.25 * first_derivative_start_curve_at_last_parameter.X(), 1e-5);
+    EXPECT_NEAR(bezier_curve->Pole(2).Y(), last_point_start_curve.Y() + 0.25 * first_derivative_start_curve_at_last_parameter.Y(), 1e-5);
+    EXPECT_NEAR(bezier_curve->Pole(2).Z(), last_point_start_curve.Z() + 0.25 * first_derivative_start_curve_at_last_parameter.Z(), 1e-5);
+
+    gp_Vec d_vec_curve_start = displacement_of_third_control_point(bezier_curve->Degree(), 0.25, 1., first_derivative_start_curve_at_last_parameter, second_derivative_start_curve_at_last_parameter);
+
+    EXPECT_NEAR(bezier_curve->Pole(3).X(), last_point_start_curve.X() + 0.25 * 2 * first_derivative_start_curve_at_last_parameter.X() + d_vec_curve_start.X(), 1e-5);
+    EXPECT_NEAR(bezier_curve->Pole(3).Y(), last_point_start_curve.Y() + 0.25 * 2 * first_derivative_start_curve_at_last_parameter.Y() + d_vec_curve_start.Y(), 1e-5);
+    EXPECT_NEAR(bezier_curve->Pole(3).Z(), last_point_start_curve.Z() + 0.25 * 2 * first_derivative_start_curve_at_last_parameter.Z() + d_vec_curve_start.Z(), 1e-5);
+
+    gp_Vec d_vec_curve_end = displacement_of_third_control_point(bezier_curve->Degree(), 1., 2., first_derivative_end_curve_at_first_parameter, second_derivative_end_curve_at_first_parameter);
+
+    EXPECT_NEAR(bezier_curve->Pole(4).X(), first_point_end_curve.X() - 2 * 2 * first_derivative_end_curve_at_first_parameter.X() + d_vec_curve_end.X(), 1e-5);
+    EXPECT_NEAR(bezier_curve->Pole(4).Y(), first_point_end_curve.Y() - 2 * 2 * first_derivative_end_curve_at_first_parameter.Y() + d_vec_curve_end.Y(), 1e-5);
+    EXPECT_NEAR(bezier_curve->Pole(4).Z(), first_point_end_curve.Z() - 2 * 2 * first_derivative_end_curve_at_first_parameter.Z() + d_vec_curve_end.Z(), 1e-5);
+   
+    EXPECT_NEAR(bezier_curve->Pole(5).X(), first_point_end_curve.X() - first_derivative_end_curve_at_first_parameter.X(), 1e-5);
+    EXPECT_NEAR(bezier_curve->Pole(5).Y(), first_point_end_curve.Y() - first_derivative_end_curve_at_first_parameter.Y(), 1e-5);
+    EXPECT_NEAR(bezier_curve->Pole(5).Z(), first_point_end_curve.Z() - first_derivative_end_curve_at_first_parameter.Z(), 1e-5);
+}
+
