@@ -80,17 +80,17 @@ gp_Pnt BlendCurve::control_point_3(BlendCurveConnection &side)
     int sign = side.m_outward_direction? 1 : -1;
 
     auto control_point_3_formula = [](gp_Pnt first_point, Standard_Real beta, Standard_Real gamma, gp_Vec first_derivative, gp_Vec second_derivative, int degree)
-                        {
-                            gp_Vec displacement_vector = (beta * beta * degree /(degree - 1)) * second_derivative;
+    {
+        gp_Vec displacement_vector = (beta * beta * degree /(degree - 1)) * second_derivative;
 
-                            Standard_Real scalar_product_displ_vec_first_derivative = displacement_vector.Dot(first_derivative); 
-                            Standard_Real square_magnitude_first_derivative = first_derivative.Dot(first_derivative);
+        Standard_Real scalar_product_displ_vec_first_derivative = displacement_vector.Dot(first_derivative); 
+        Standard_Real square_magnitude_first_derivative = first_derivative.Dot(first_derivative);
                         
-                            gp_Vec h1 = displacement_vector - scalar_product_displ_vec_first_derivative*first_derivative / square_magnitude_first_derivative;
-                            gp_Vec h2 = 2.*(gamma*beta*first_derivative);
+        gp_Vec h1 = displacement_vector - scalar_product_displ_vec_first_derivative*first_derivative / square_magnitude_first_derivative;
+        gp_Vec h2 = 2.*(gamma*beta*first_derivative);
 
-                            return first_point.Translated(h1 + h2);
-                        };
+        return first_point.Translated(h1 + h2);
+    };
 
     if (std::abs (side.m_curve_blend_param - side.m_curve_last_param) < Precision::PConfusion())
     {
