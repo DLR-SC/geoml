@@ -113,7 +113,7 @@ geoml::ShapePredicate is_near_ref_point(gp_Pnt ref_point, double tolerance)
         TopoDS_Vertex vert = TopoDS::Vertex(s);
         gp_Pnt vert_point = BRep_Tool::Pnt(vert);
 
-        return vert_point.SquareDistance(ref_point) < tolerance; 
+        return vert_point.SquareDistance(ref_point) < tolerance * tolerance; 
     };
 }
 
