@@ -1,10 +1,5 @@
 #include "predicates/predicate_functions.h"
 
-#include "TopoDS_Vertex.hxx"
-#include "TopoDS.hxx"
-#include <BRep_Tool.hxx>
-#include <gp_Pnt.hxx>
-
 namespace geoml{
 
 ShapePredicate operator&&(ShapePredicate const& l, ShapePredicate const& r)
