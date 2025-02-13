@@ -16,13 +16,13 @@ public:
         BRepBuilderAPI_MakeShape* algo,
         std::vector<Shape> const& inputs
     );
+    virtual ~BRepBuilderAPI_MakeShape_Operation() = default;
 
-    Shape perform() const;
-    void map_subshapes(Shape& result) const;
+    virtual Shape perform();
+    virtual void map_subshapes(Shape& result) const;
 
 private:
     BRepBuilderAPI_MakeShape* m_algo;
-   // std::vector<Shape const*> m_inputs; // Lifetime issue: Operation may not outlive the inputs!
 };
 
 } // namespace geoml

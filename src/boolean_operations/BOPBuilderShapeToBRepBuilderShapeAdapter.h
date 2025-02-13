@@ -22,12 +22,12 @@
 #include <BRepBuilderAPI_MakeShape.hxx>
 #include "geoml_internal.h"
 
-class BOPAlgo_BuilderShape;
+class BRepAlgoAPI_BuilderAlgo ;
 
 class BOPBuilderShapeToBRepBuilderShapeAdapter : public BRepBuilderAPI_MakeShape
 {
 public:
-    GEOML_EXPORT BOPBuilderShapeToBRepBuilderShapeAdapter(BOPAlgo_BuilderShape& adaptee);
+    GEOML_EXPORT BOPBuilderShapeToBRepBuilderShapeAdapter(BRepAlgoAPI_BuilderAlgo & adaptee);
 
     GEOML_EXPORT const TopoDS_Shape& Shape() const;
     GEOML_EXPORT operator TopoDS_Shape() const;
@@ -37,7 +37,7 @@ public:
     GEOML_EXPORT Standard_Boolean IsDeleted(const TopoDS_Shape& S) override;
 
 private:
-    BOPAlgo_BuilderShape& _adaptee;
+    BRepAlgoAPI_BuilderAlgo& _adaptee;
 };
 
 #endif // BOPBUILDERSHAPETOBREPBUILDERSHAPEADAPTER_H

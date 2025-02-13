@@ -19,7 +19,7 @@
 #include "CTrimShape.h"
 
 #include "CBooleanOperTools.h"
-#include "GEOMAlgo_Splitter.hxx"
+#include "BRepAlgoAPI_Splitter.hxx"
 #include "BOPBuilderShapeToBRepBuilderShapeAdapter.h"
 #include "common/CommonFunctions.h"
 #include "geoml/error.h"
@@ -47,6 +47,7 @@
 #include <Geom_Surface.hxx>
 #include <BRepBuilderAPI_MakeShape.hxx>
 #include <BRepBuilderAPI_MakeVertex.hxx>
+#include <Standard_Version.hxx>
 #if OCC_VERSION_HEX < VERSION_HEX_CODE(7,3,0)
 #include <BOPCol_ListOfShape.hxx>
 #endif
@@ -231,11 +232,13 @@ void CTrimShape::Perform()
         }
 
         PrepareFiller();
-        GEOMAlgo_Splitter splitter;
+        BRepAlgoAPI_Splitter splitter(*_dsfiller);
         BOPBuilderShapeToBRepBuilderShapeAdapter splitAdapter(splitter);
-        splitter.AddArgument(_source->Shape());
-        splitter.AddTool(_tool->Shape());
-        splitter.PerformWithFiller(*_dsfiller);
+        TopTools_ListOfShape aLS;
+        aLS.Append(_source->Shape());
+        aLS.Append(_tool->Shape());
+        splitter.SetTools(aLS);
+        splitter.Build();
 
         if (debug) {
             WriteDebugShape(splitter.Shape(), "split");

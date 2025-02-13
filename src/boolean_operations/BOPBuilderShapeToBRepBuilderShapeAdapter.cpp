@@ -18,9 +18,9 @@
 
 #include "BOPBuilderShapeToBRepBuilderShapeAdapter.h"
 
-#include <BOPAlgo_BuilderShape.hxx>
+#include <BRepAlgoAPI_BuilderAlgo.hxx>
 
-BOPBuilderShapeToBRepBuilderShapeAdapter::BOPBuilderShapeToBRepBuilderShapeAdapter(BOPAlgo_BuilderShape& adaptee)
+BOPBuilderShapeToBRepBuilderShapeAdapter::BOPBuilderShapeToBRepBuilderShapeAdapter(BRepAlgoAPI_BuilderAlgo & adaptee)
     : _adaptee(adaptee)
 {
 }
