@@ -119,6 +119,7 @@ geoml::ShapePredicate is_near_ref_point(gp_Pnt ref_point, double tolerance)
 
 TEST(Test_make_fillet, simple_make_fillet_test)
 {  
+    // first we create a box
     using namespace geoml;
 
     gp_Pnt corner_1 (0.0, 0.0, 0.0); 
@@ -128,20 +129,28 @@ TEST(Test_make_fillet, simple_make_fillet_test)
 
     Shape my_box = box_maker.Solid();
 
+    // define the following point in order to select the edges that have a vertex near it
     gp_Pnt ref_point (1., 2. , 3.);
 
+    // select the edges accordingly
     Shape edges_1 = my_box.select_subshapes(is_edge).filter(has_subshape_that(is_vertex && is_near_ref_point(ref_point, 1e-5))); 
 
+    // test if the number of edges due to the selection is as expected
     EXPECT_EQ(edges_1.size(), 3);
 
+    // we don't expect an exception to be thrown by running the following code
     EXPECT_NO_THROW({ Shape filleted_box = make_fillet(my_box, edges_1, 0.15); });
 
+    // create a filleted box
     Shape filleted_box = make_fillet(my_box, edges_1, 0.15);
 
+    // now, we create three sample points in order to check (for one edge of the fillet surface, if the shape lie as expected on a circular arc. 
+    // the coordinates of the sample points are extracted from another CAD tool
     gp_Pnt sample_point_1 (0.937, 1.937, 2.937);
     gp_Pnt sample_point_2 (0.956, 0.000, 2.956);
     gp_Pnt sample_point_3 (0.000, 1.956, 2.956);
 
+    // make vertices out of the sample points
     BRepBuilderAPI_MakeVertex vertex_builder_1 (sample_point_1);
     BRepBuilderAPI_MakeVertex vertex_builder_2 (sample_point_2);
     BRepBuilderAPI_MakeVertex vertex_builder_3 (sample_point_3);
@@ -150,6 +159,7 @@ TEST(Test_make_fillet, simple_make_fillet_test)
     TopoDS_Vertex sample_vertex_2 = vertex_builder_2.Vertex();
     TopoDS_Vertex sample_vertex_3 = vertex_builder_3.Vertex();
 
+    // measure the distance of the sample vertices to the filleted box
     BRepExtrema_DistShapeShape dist_tool_1 (filleted_box, sample_vertex_1);
     dist_tool_1.Perform();
     Standard_Real sample_distance_1 = dist_tool_1.Value();
@@ -162,12 +172,15 @@ TEST(Test_make_fillet, simple_make_fillet_test)
     dist_tool_3.Perform();
     Standard_Real sample_distance_3 = dist_tool_3.Value();
  
+    // check if the distance is small enough (ideally zero), to confirm, that the tests shape is as expected
     EXPECT_TRUE(sample_distance_1 < 1e-3);
     EXPECT_TRUE(sample_distance_2 < 1e-3);
     EXPECT_TRUE(sample_distance_3 < 1e-3);
 
+    // here, contrary to the previous selection, we select such subshapes that are faces
     Shape edges_2 = my_box.select_subshapes(is_face).filter(has_subshape_that(is_vertex && is_near_ref_point(ref_point, 1e-5))); 
 
+    // we expect the program to throw an exception in the case that edges_2 contain a shape that is not an edge (as in this case)
     EXPECT_THROW({ Shape filleted_box = make_fillet(my_box, edges_2, 0.15); }, geoml::Error);
 
 }
