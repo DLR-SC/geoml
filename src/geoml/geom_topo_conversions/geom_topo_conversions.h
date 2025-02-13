@@ -21,8 +21,7 @@ namespace geoml
  * @param surface A Handle to a Geom_Surface
  * @param tolerance Sets the tolerance for resolution of degenerate edges
  */
-GEOML_API_EXPORT TopoDS_Face
-SurfaceToFace(const Handle(Geom_Surface) &surface, Standard_Real tolDegEd);
+GEOML_API_EXPORT TopoDS_Face SurfaceToFace(const Handle(Geom_Surface) &surface, Standard_Real tolDegEd);
 
 /**
  * @brief Converts a Geom_Curve in a TopoDS_Edge
@@ -30,7 +29,14 @@ SurfaceToFace(const Handle(Geom_Surface) &surface, Standard_Real tolDegEd);
  * 
  * @param curve A Handle to a Geom_Curve
  */
-GEOML_API_EXPORT TopoDS_Edge
-CurveToEdge(const Handle(Geom_Curve) &curve);
+GEOML_API_EXPORT TopoDS_Edge CurveToEdge(const Handle(Geom_Curve) &curve);
+
+/**
+ * @brief Extracts the Geom_Curve of a TopoDS_Edge
+ * 
+ * 
+ * @param edge A TopoDS_Edge
+ */
+GEOML_API_EXPORT Handle(Geom_Curve) EdgeToCurve(TopoDS_Edge const& edge);
 
 } // namespace geoml
