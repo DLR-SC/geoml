@@ -17,8 +17,6 @@
 #include <cmath>
 #include <iostream>
 
-// for debugging
-#include "STEPControl_Writer.hxx"
 
 
 
