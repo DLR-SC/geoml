@@ -52,7 +52,7 @@ Shape make_fillet (Shape const& solid , Shape const& edges, Standard_Real radius
     {
         if (!edges[i].is_type(TopAbs_EDGE))
         {
-            throw std::invalid_argument("A direct subshape of the second argument is not a TopoDS_EDGE");
+            throw geoml::Error("A direct subshape of the second argument is not a TopoDS_EDGE", GENERIC_ERROR);
         }
         TopoDS_Edge temp_edge = TopoDS::Edge(edges[i]);
         MF.Add(radius, temp_edge);  

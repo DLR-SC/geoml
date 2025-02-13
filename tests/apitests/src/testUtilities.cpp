@@ -168,6 +168,7 @@ TEST(Test_make_fillet, simple_make_fillet_test)
 
     Shape edges_2 = my_box.select_subshapes(is_face).filter(has_subshape_that(is_vertex && is_near_ref_point(ref_point, 1e-5))); 
 
-    EXPECT_THROW({ Shape filleted_box = make_fillet(my_box, edges_2, 0.15); }, std::invalid_argument);
+    //EXPECT_THROW({ Shape filleted_box = make_fillet(my_box, edges_2, 0.15); }, std::invalid_argument);
+    EXPECT_THROW({ Shape filleted_box = make_fillet(my_box, edges_2, 0.15); }, geoml::Error);
 
 }
