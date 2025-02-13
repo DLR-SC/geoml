@@ -57,9 +57,9 @@ gp_Pnt BlendCurve::control_point_2(BlendCurveConnection &side)
     int sign = side.m_outward_direction? 1 : -1;
 
     auto control_point_2_formula = [](gp_Pnt& first_point, Standard_Real beta, const gp_Vec& first_derivative)
-                            {
-                                return first_point.Translated(beta * first_derivative);
-                            };
+    {
+        return first_point.Translated(beta * first_derivative);
+    };
 
     if (std::abs (side.m_curve_blend_param - side.m_curve_last_param) < Precision::PConfusion())
     {
