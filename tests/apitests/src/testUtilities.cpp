@@ -110,11 +110,13 @@ EXPECT_NEAR(geoml::extract_control_point_vector_in_U_direction(test_surface,1).a
 
 geoml::ShapePredicate is_near_ref_point(gp_Pnt ref_point, double tolerance)
 {
-    return [=](geoml::Shape const& s){ 
+    return [=](geoml::Shape const& s)
+    { 
         TopoDS_Vertex vert = TopoDS::Vertex(s);
         gp_Pnt vert_point = BRep_Tool::Pnt(vert);
 
-        return vert_point.SquareDistance(ref_point) < tolerance; };
+        return vert_point.SquareDistance(ref_point) < tolerance; 
+    };
 }
 
 TEST(Test_make_fillet, simple_make_fillet_test)
@@ -168,7 +170,6 @@ TEST(Test_make_fillet, simple_make_fillet_test)
 
     Shape edges_2 = my_box.select_subshapes(is_face).filter(has_subshape_that(is_vertex && is_near_ref_point(ref_point, 1e-5))); 
 
-    //EXPECT_THROW({ Shape filleted_box = make_fillet(my_box, edges_2, 0.15); }, std::invalid_argument);
     EXPECT_THROW({ Shape filleted_box = make_fillet(my_box, edges_2, 0.15); }, geoml::Error);
 
 }
