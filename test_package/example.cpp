@@ -1,4 +1,4 @@
-#include <geoml/surfaces/modeling.h>
+#include <geoml/surfaces/surfaces.h>
 #include <geoml/internal/geometry/PointsToBSplineInterpolation.h>
 
 
