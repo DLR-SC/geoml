@@ -15,11 +15,10 @@
 
 #include <vector>
 #include <cmath>
+
+// for debugging
+#include "STEPControl_Writer.hxx"
 #include <iostream>
-
-
-
-
 
 TEST(Test_extract_control_points_from_surface, extract_control_points_from_surface)
 {    
@@ -183,4 +182,19 @@ TEST(Test_make_fillet, simple_make_fillet_test)
     // we expect the program to throw an exception in the case that edges_2 contain a shape that is not an edge (as in this case)
     EXPECT_THROW({ Shape filleted_box = make_fillet(my_box, edges_2, 0.15); }, geoml::Error);
 
+    // now, we want to test the history tracking functionality of make_fillet via the previously created filleted_box
+
+    // select some shapes of my_box first
+    Shape selected_face = my_box.select_subshapes(is_face).filter(has_subshape_that(is_vertex && is_near_ref_point(ref_point, 1e-5)))[2];
+
+    //TopoDS_Face sel_face = selected_face; 
+    EXPECT_EQ(TopoDS_Shape(selected_face).ShapeType(), TopAbs_FACE);
+
+    TopoDS_Face face_sel = TopoDS::Face(selected_face);
+
+    // now, get a decendent of selected_face
+    Shape des_of_selected_face = filleted_box.select_subshapes(is_modified_descendent_of(selected_face));
+
+    // simply check if des_of_selected_face has one sub shape, as expected
+    EXPECT_EQ(des_of_selected_face.size(), 1);
 }
