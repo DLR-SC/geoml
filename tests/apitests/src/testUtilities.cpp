@@ -2,6 +2,7 @@
 #include "geoml/utilities/utilities.h"
 #include <geoml/data_structures/Array2d.h>
 #include <geoml/predicates/predicate_functions.h>
+#include <geoml/boolean_ops/modeling.hpp>
 
 #include <gtest/gtest.h>
 
@@ -12,6 +13,8 @@
 #include "TopoDS.hxx"
 #include <BRepExtrema_DistShapeShape.hxx>
 #include <BRepBuilderAPI_MakeVertex.hxx>
+#include <GProp_GProps.hxx>
+#include <BRepGProp.hxx>
 
 #include <vector>
 #include <cmath>
@@ -187,7 +190,6 @@ TEST(Test_make_fillet, simple_make_fillet_test)
     // select some shapes of my_box first
     Shape selected_face = my_box.select_subshapes(is_face).filter(has_subshape_that(is_vertex && is_near_ref_point(ref_point, 1e-5)))[2];
 
-    //TopoDS_Face sel_face = selected_face; 
     EXPECT_EQ(TopoDS_Shape(selected_face).ShapeType(), TopAbs_FACE);
 
     TopoDS_Face face_sel = TopoDS::Face(selected_face);
@@ -197,4 +199,23 @@ TEST(Test_make_fillet, simple_make_fillet_test)
 
     // simply check if des_of_selected_face has one sub shape, as expected
     EXPECT_EQ(des_of_selected_face.size(), 1);
+
+    // consider the boolean cut of selected_face with des_of_seledted_face, to create a stronger test
+    Shape cut_face = boolean_subtract(selected_face, des_of_selected_face);
+
+    // compute the areas of the different faces
+    GProp_GProps surfaceProperties_selected_face;
+    BRepGProp::SurfaceProperties(selected_face, surfaceProperties_selected_face);
+    double area_selected_face = surfaceProperties_selected_face.Mass();
+
+    GProp_GProps surfaceProperties_des_of_selected_face;
+    BRepGProp::SurfaceProperties(des_of_selected_face, surfaceProperties_des_of_selected_face);
+    double area_des_of_selected_face = surfaceProperties_des_of_selected_face.Mass();
+
+    GProp_GProps surfaceProperties_cut_face;
+    BRepGProp::SurfaceProperties(cut_face, surfaceProperties_cut_face);
+    double area_cut_face = surfaceProperties_cut_face.Mass();
+
+    EXPECT_NEAR(area_cut_face, area_selected_face - area_des_of_selected_face, 1e-5);
+    
 }
