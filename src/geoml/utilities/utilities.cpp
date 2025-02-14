@@ -7,7 +7,7 @@
 #include <TopAbs.hxx>
 #include <TopoDS_Edge.hxx>
 #include <TopoDS.hxx>
-#include <stdexcept>
+#include "topology/BRepBuilderAPI_MakeShape_Operation.hpp"
 
 namespace geoml{
 
@@ -47,6 +47,8 @@ std::vector<gp_Pnt> extract_control_point_vector_in_V_direction (const Handle(Ge
 Shape make_fillet (Shape const& solid , Shape const& edges, Standard_Real radius)
 {
     BRepFilletAPI_MakeFillet MF (solid);
+ 
+    auto operation = BRepBuilderAPI_MakeShape_Operation(&MF, {solid, edges});
 
     for (int i = 0; i< edges.size(); i++)
     {
@@ -54,11 +56,12 @@ Shape make_fillet (Shape const& solid , Shape const& edges, Standard_Real radius
         {
             throw geoml::Error("A direct subshape of the second argument is not a TopoDS_EDGE", GENERIC_ERROR);
         }
+        
         TopoDS_Edge temp_edge = TopoDS::Edge(edges[i]);
         MF.Add(radius, temp_edge);  
     }
 
-    return MF.Shape();      
+    return operation.value();
 }
 
 } // namespace geoml
