@@ -19,10 +19,6 @@
 #include <vector>
 #include <cmath>
 
-// for debugging
-#include "STEPControl_Writer.hxx"
-#include <iostream>
-
 TEST(Test_extract_control_points_from_surface, extract_control_points_from_surface)
 {    
 
@@ -220,9 +216,4 @@ TEST(Test_make_fillet, simple_make_fillet_test)
 
     // make sure that area_cut_face is not zero
     EXPECT_NEAR(area_selected_face - area_des_of_selected_face, 0.4275, 1e-3);
-
-
-
-
-
 }
