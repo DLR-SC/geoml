@@ -217,5 +217,12 @@ TEST(Test_make_fillet, simple_make_fillet_test)
     double area_cut_face = surfaceProperties_cut_face.Mass();
 
     EXPECT_NEAR(area_cut_face, area_selected_face - area_des_of_selected_face, 1e-5);
-    
+
+    // make sure that area_cut_face is not zero
+    EXPECT_NEAR(area_selected_face - area_des_of_selected_face, 0.4275, 1e-3);
+
+
+
+
+
 }
