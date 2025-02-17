@@ -27,9 +27,9 @@ public:
 
     virtual ~Operation() = default;
 
-    Shape value() const {
-        Shape ret = static_cast<Derived const&>(*this).perform();
-        static_cast<Derived const&>(*this).map_subshapes(ret);
+    Shape value() {
+        Shape ret = static_cast<Derived&>(*this).perform();
+        static_cast<Derived&>(*this).map_subshapes(ret);
         
         merge_and_apply_tag_tracks(ret);
 
