@@ -48,7 +48,7 @@ Shape make_fillet (Shape const& solid , Shape const& edges, Standard_Real radius
 {
     BRepFilletAPI_MakeFillet MF (solid);
  
-    auto operation = BRepBuilderAPI_MakeShape_Operation(&MF, {solid, edges});
+    auto operation = BRepBuilderAPI_MakeShape_Operation(MF, {solid, edges});
 
     for (int i = 0; i< edges.size(); i++)
     {

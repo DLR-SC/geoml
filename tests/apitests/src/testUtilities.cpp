@@ -184,17 +184,17 @@ TEST(Test_make_fillet, simple_make_fillet_test)
     // now, we want to test the history tracking functionality of make_fillet via the previously created filleted_box
 
     // select some shapes of my_box first
-    Shape selected_face = my_box.select_subshapes(is_face).filter(has_subshape_that(is_vertex && is_near_ref_point(ref_point, 1e-5)))[2];
+    Shape selected_face = my_box.select_subshapes(is_face).filter(
+        has_subshape_that(is_vertex && is_near_ref_point(gp_Pnt(0. ,0. , 3.), 1e-5)) &&
+        !has_subshape_that(is_vertex && is_near_ref_point(gp_Pnt(0., 0., 0.), 1e-5))
+    ).unique_element();
 
     EXPECT_EQ(TopoDS_Shape(selected_face).ShapeType(), TopAbs_FACE);
 
     TopoDS_Face face_sel = TopoDS::Face(selected_face);
 
     // now, get a decendent of selected_face
-    Shape des_of_selected_face = filleted_box.select_subshapes(is_modified_descendent_of(selected_face));
-
-    // simply check if des_of_selected_face has one sub shape, as expected
-    EXPECT_EQ(des_of_selected_face.size(), 1);
+    Shape des_of_selected_face = filleted_box.select_subshapes(is_modified_descendent_of(selected_face)).unique_element();
 
     // consider the boolean cut of selected_face with des_of_seledted_face, to create a stronger test
     Shape cut_face = boolean_subtract(selected_face, des_of_selected_face);
