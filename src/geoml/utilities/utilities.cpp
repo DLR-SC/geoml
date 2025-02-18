@@ -50,14 +50,13 @@ Shape make_fillet (Shape const& solid , Shape const& edges, Standard_Real radius
  
     auto operation = BRepBuilderAPI_MakeShape_Operation(MF, {solid, edges});
 
-    for (int i = 0; i< edges.size(); i++)
-    {
-        if (!edges[i].is_type(TopAbs_EDGE))
-        {
-            throw geoml::Error("A direct subshape of the second argument is not a TopoDS_EDGE", GENERIC_ERROR);
-        }
-        
-        TopoDS_Edge temp_edge = TopoDS::Edge(edges[i]);
+    auto my_edges = edges.select_subshapes(is_edge);
+    if (my_edges.size() == 0) {
+        throw geoml::Error("Second argument to make_fillet contains no edges", GENERIC_ERROR);
+    }
+    for (int i = 0; i< my_edges.size(); i++)
+    {        
+        TopoDS_Edge temp_edge = TopoDS::Edge(my_edges[i]);
         MF.Add(radius, temp_edge);  
     }
 
