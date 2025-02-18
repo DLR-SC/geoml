@@ -60,7 +60,7 @@ class FindIfVisitor;
  * 
  */
 struct ShapeHasher {
-std::size_t operator()(Shape const& s) const;
+GEOML_API_EXPORT std::size_t operator()(Shape const& s) const;
 };
 
 /**
@@ -73,7 +73,7 @@ std::size_t operator()(Shape const& s) const;
  * 
  */
 struct ShapeIsSame {
-bool operator()(Shape const& l, Shape const& r) const;
+GEOML_API_EXPORT bool operator()(Shape const& l, Shape const& r) const;
 };
 
 using ShapeContainer = std::unordered_set<Shape, ShapeHasher, ShapeIsSame>;

@@ -22,7 +22,7 @@ namespace geoml
  * @param net An Array2d<t>.
  */
 template <typename T>
-GEOML_API_EXPORT  NCollection_Array2<T> Array2d_to_TCol (Array2d<T> const &net)
+NCollection_Array2<T> Array2d_to_TCol (Array2d<T> const &net)
 {
     NCollection_Array2<T> net_col (1, net.rowLength(), 1, net.colLength());
 
@@ -44,7 +44,7 @@ GEOML_API_EXPORT  NCollection_Array2<T> Array2d_to_TCol (Array2d<T> const &net)
  * @param net A NCollection_Array2<T>.
  */
 template <typename T>
-GEOML_API_EXPORT  Array2d<T> TCol_to_Array2d (NCollection_Array2<T>  const &net)
+Array2d<T> TCol_to_Array2d (NCollection_Array2<T>  const &net)
 {
     Array2d<T> array_2d (net.ColLength(), net.RowLength());
 
@@ -66,7 +66,7 @@ GEOML_API_EXPORT  Array2d<T> TCol_to_Array2d (NCollection_Array2<T>  const &net)
  * @param vec An std::vector<T>. 
  */
 template <typename T>
-GEOML_API_EXPORT  NCollection_Array1<T> StdVector_to_TCol(std::vector<T> const &vec)
+NCollection_Array1<T> StdVector_to_TCol(std::vector<T> const &vec)
 {
     NCollection_Array1<T> vec_col (1, vec.size());
 
@@ -85,7 +85,7 @@ GEOML_API_EXPORT  NCollection_Array1<T> StdVector_to_TCol(std::vector<T> const &
  * @param array A NCollection_Array1<T>. 
  */
 template <typename T>
-GEOML_API_EXPORT  std::vector<T> TCol_to_StdVector(NCollection_Array1<T> const &array)
+std::vector<T> TCol_to_StdVector(NCollection_Array1<T> const &array)
 {
     std::vector<T> vec;
     vec.reserve(array.Size());
