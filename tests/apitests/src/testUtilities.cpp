@@ -176,7 +176,7 @@ TEST(Test_make_fillet, simple_make_fillet_test)
     EXPECT_TRUE(sample_distance_3 < 1e-3);
 
     // here, contrary to the previous selection, we select such subshapes that are faces
-    Shape edges_2 = my_box.select_subshapes(is_face).filter(has_subshape_that(is_vertex && is_near_ref_point(ref_point, 1e-5))); 
+    Shape edges_2 = my_box.select_subshapes(is_vertex).filter(has_subshape_that(is_near_ref_point(ref_point, 1e-5))); 
 
     // we expect the program to throw an exception in the case that edges_2 contain a shape that is not an edge (as in this case)
     EXPECT_THROW({ Shape filleted_box = make_fillet(my_box, edges_2, 0.15); }, geoml::Error);
