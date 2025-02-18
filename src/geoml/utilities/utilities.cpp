@@ -1,6 +1,14 @@
 #include "geoml/utilities/utilities.h"
 #include "geoml/data_structures/conversions.h"
+#include <geoml/predicates/predicate_functions.h>
 
+#include <BRepFilletAPI_MakeFillet.hxx>
+#include <TopTools_IndexedMapOfShape.hxx>
+#include <TopExp.hxx>
+#include <TopAbs.hxx>
+#include <TopoDS_Edge.hxx>
+#include <TopoDS.hxx>
+#include "topology/BRepBuilderAPI_MakeShape_Operation.hpp"
 
 namespace geoml{
 
@@ -37,5 +45,23 @@ std::vector<gp_Pnt> extract_control_point_vector_in_V_direction (const Handle(Ge
 
 }
 
+Shape make_fillet (Shape const& solid , Shape const& edges, Standard_Real radius)
+{
+    BRepFilletAPI_MakeFillet MF (solid);
+ 
+    auto operation = BRepBuilderAPI_MakeShape_Operation(MF, {solid, edges});
+
+    auto my_edges = edges.select_subshapes(is_edge);
+    if (my_edges.size() == 0) {
+        throw geoml::Error("Second argument to make_fillet contains no edges", GENERIC_ERROR);
+    }
+    for (int i = 0; i< my_edges.size(); i++)
+    {        
+        TopoDS_Edge temp_edge = TopoDS::Edge(my_edges[i]);
+        MF.Add(radius, temp_edge);  
+    }
+
+    return operation.value();
+}
 
 } // namespace geoml

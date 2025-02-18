@@ -5,20 +5,20 @@
 namespace geoml {
 
 BRepBuilderAPI_MakeShape_Operation::BRepBuilderAPI_MakeShape_Operation(
-    BRepBuilderAPI_MakeShape* algo,
+    BRepBuilderAPI_MakeShape& algo,
     std::vector<Shape> const& inputs
 )
     : Operation(inputs), 
       m_algo(algo)
 {}
 
-Shape BRepBuilderAPI_MakeShape_Operation::perform() const
+Shape BRepBuilderAPI_MakeShape_Operation::perform()
 {
-    return m_algo->Shape();
+    return m_algo.Shape();
 
 }
 
-void BRepBuilderAPI_MakeShape_Operation::map_subshapes(Shape& result) const
+void BRepBuilderAPI_MakeShape_Operation::map_subshapes(Shape& result)
 {
     auto result_subshapes = result.get_subshapes();
 
@@ -34,7 +34,7 @@ void BRepBuilderAPI_MakeShape_Operation::map_subshapes(Shape& result) const
             }
 
             // set origin for all modified shapes
-            TopTools_ListOfShape const& modified_by_this = m_algo->Modified(input_subshape);
+            TopTools_ListOfShape const& modified_by_this = m_algo.Modified(input_subshape);
             TopTools_ListIteratorOfListOfShape it;
             for (it.Initialize(modified_by_this); it.More(); it.Next()) {
                 for (auto& result_subshape : result_subshapes) {
