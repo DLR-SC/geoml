@@ -1,5 +1,6 @@
 #include "geoml/utilities/utilities.h"
 #include "geoml/data_structures/conversions.h"
+#include <geoml/predicates/predicate_functions.h>
 
 #include <BRepFilletAPI_MakeFillet.hxx>
 #include <TopTools_IndexedMapOfShape.hxx>
