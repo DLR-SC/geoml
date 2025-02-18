@@ -9,7 +9,7 @@ endif()
 
 cmake_minimum_required (VERSION 3.15.0)
 
-project (geoml VERSION 3.3.0)
+project (geoml VERSION 0.1.0)
 
 # enable C++17 support
 set(CMAKE_CXX_STANDARD 17)
