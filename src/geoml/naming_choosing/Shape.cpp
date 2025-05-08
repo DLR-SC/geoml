@@ -155,7 +155,7 @@ bool Shape::has_origin() const
 
 bool Shape::is_unmodified_descendent_of(Shape const& other, int max_depth) const
 {
-    return is_same(other) && is_descendent_of(other);
+    return is_same(other) && is_descendent_of(other, max_depth);
 }
 
 bool Shape::is_unmodified_descendent_of_subshape_in(Shape const& other, int max_depth) const
