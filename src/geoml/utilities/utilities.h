@@ -54,4 +54,11 @@ extract_control_point_vector_in_V_direction (const Handle(Geom_BSplineSurface) &
  */
 GEOML_API_EXPORT Shape make_fillet (Shape const& solid , Shape const& edges, Standard_Real radius);
 
+/**
+ * @brief Make a compound of a vector of TopoDS_Shapes
+ *
+ * @param shapes The vector of shapes    
+ */
+GEOML_API_EXPORT TopoDS_Shape make_compound (const std::vector<TopoDS_Shape> &shapes);
+
 } // namespace geoml
