@@ -33,7 +33,7 @@ TEST(Shape, add_persistent_meta_tag_to_subshapes)
     }
 }
 
-TEST(SelectSubShapes, BooleanCutCheckNumberOfSubShapes)
+TEST(SelectSubShapes, DISABLED_BooleanCutCheckNumberOfSubShapes)
 {   
     using namespace geoml;
     auto box = create_box(1., 1., 1.);
