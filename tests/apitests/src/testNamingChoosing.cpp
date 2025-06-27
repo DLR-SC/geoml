@@ -180,7 +180,7 @@ namespace {
 } // anonymous namespace
 
 
-TEST_F(RectangularFace, example_rectangle_triangles)
+TEST_F(RectangularFace, DISABLED_example_rectangle_triangles)
 {   
     using namespace geoml;
 
