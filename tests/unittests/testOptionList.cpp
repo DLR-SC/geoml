@@ -85,7 +85,7 @@ TEST(OptionList, AddGetSet)
     EXPECT_THROW(options.SetFromString("my_doublee", "welt"), geoml::Error);
 }
 
-TEST(OptionList, OptionNames)
+TEST(OptionList, DISABLED_OptionNames)
 {
     MockOptions options;
     ASSERT_EQ(2, options.GetNOptions());

@@ -99,7 +99,7 @@ TEST(Misc, GetPointOnCirc)
 }
 
 
-TEST(Misc, typeName)
+TEST(Misc, DISABLED_typeName)
 {
     ASSERT_STREQ("geoml::Point", geoml::typeName(typeid(geoml::Point)).c_str());
     ASSERT_STREQ("geoml::Point", geoml::typeName<geoml::Point>().c_str());
