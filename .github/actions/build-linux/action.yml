@@ -53,7 +53,7 @@ runs:
       uses: conda-incubator/setup-miniconda@v3
       with:
         auto-update-conda: true
-        activate-environment: tigl-bld
+        activate-environment: geoml-bld
         environment-file: environment.yml
         auto-activate-base: false
 
