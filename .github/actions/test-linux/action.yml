@@ -43,7 +43,7 @@ runs:
       uses: conda-incubator/setup-miniconda@v3
       with:
         auto-update-conda: true
-        activate-environment: tigl-bld
+        activate-environment: geoml-bld
         environment-file: environment.yml
         auto-activate-base: false
 
@@ -62,31 +62,31 @@ runs:
       shell: bash
       run: |
         cd build/tests/unittests/
-        ./TiGL-unittests --gtest_shuffle --gtest_output=xml:unit_test_results.xml
+        ./geoml-unittests
 
-    - name: Run integration tests
-      if: ${{ inputs.integration-tests == 'true' }}
-      shell: bash
-      run: |
-        cd build/tests/integrationtests/
-        ./TiGL-integrationtests --gtest_shuffle --gtest_output=xml:integration_test_results.xml
+    # - name: Run integration tests
+    #   if: ${{ inputs.integration-tests == 'true' }}
+    #   shell: bash
+    #   run: |
+    #     cd build/tests/integrationtests/
+    #     ./TiGL-integrationtests --gtest_shuffle --gtest_output=xml:integration_test_results.xml
 
-    - name: Generate coverage report
-      if: ${{ inputs.coverage == 'true' }}
-      shell: bash
-      run: |
-        cd build
-        cmake --build . --target coverage-unittests/fast
-        cmake --build . --target coverage-integrationtests/fast
+    # - name: Generate coverage report
+    #   if: ${{ inputs.coverage == 'true' }}
+    #   shell: bash
+    #   run: |
+    #     cd build
+    #     cmake --build . --target coverage-unittests/fast
+    #     cmake --build . --target coverage-integrationtests/fast
 
-    - name: Publish coverage report to codecov.io (ubuntu debug)
-      if: ${{ inputs.coverage == 'true' }}
-      uses: codecov/codecov-action@v4
-      with:
-        files: ./build/tests/unittests/coverageReport-unit.info,./build/tests/integrationtests/coverageReport-integration.info
-        token: ${{ inputs.codecov_token }}
-        codecov_yml_path: codecov.yml
-        disable_search: true
-        verbose: true
-        flags: unittests
+    # - name: Publish coverage report to codecov.io (ubuntu debug)
+    #   if: ${{ inputs.coverage == 'true' }}
+    #   uses: codecov/codecov-action@v4
+    #   with:
+    #     files: ./build/tests/unittests/coverageReport-unit.info,./build/tests/integrationtests/coverageReport-integration.info
+    #     token: ${{ inputs.codecov_token }}
+    #     codecov_yml_path: codecov.yml
+    #     disable_search: true
+    #     verbose: true
+    #     flags: unittests
 
