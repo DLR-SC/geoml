@@ -347,7 +347,8 @@ void GEOMAlgo_Splitter::PostTreat()
   #if OCC_VERSION_HEX >= VERSION_HEX_CODE(7,6,0)
   BOPAlgo_Builder::PostTreat(p);
   #else
-    BOPAlgo_Builder::PostTreat(Message_ProgressRange());
+    //BOPAlgo_Builder::PostTreat(Message_ProgressRange());
+    BOPAlgo_Builder::PostTreat();
   #endif  
 }
 //=======================================================================
