@@ -75,7 +75,7 @@ runs:
         cd build
         cmake .. -DCMAKE_BUILD_TYPE=${{ inputs.config }} \
                  -DGEOML_BUILD_TESTS=ON 
-        make 
+        cmake --build . -j 4 --target install
        
 
     - name: create build dir archive
