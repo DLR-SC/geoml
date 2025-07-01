@@ -42,6 +42,8 @@
 #include "ProjectPointOnCurveAtAngle.h"
 #include "BSplineAlgorithms.h"
 
+#include "Standard_Version.hxx"
+
 #include "Geom_Curve.hxx"
 #include "Geom_Surface.hxx"
 #include "GeomAdaptor_Curve.hxx"
@@ -55,7 +57,13 @@
 #include "TopTools_IndexedMapOfShape.hxx"
 #include "TopTools_HSequenceOfShape.hxx"
 #include "GeomAdaptor_Curve.hxx"
+
+#if OCC_VERSION_HEX >= VERSION_HEX_CODE(7,6,0)
 #include "BRepAdaptor_CompCurve.hxx"
+#else
+#include "BRepAdaptor_HCompCurve.hxx"
+#endif
+
 #include "BRepAdaptor_Curve.hxx"
 #include "GCPnts_AbscissaPoint.hxx"
 #include "BRep_Builder.hxx"
@@ -1090,8 +1098,13 @@ TopoDS_Face BuildRuledFace(const TopoDS_Wire& wire1, const TopoDS_Wire& wire2)
 
     // Wrap the adaptor in a class which manages curve access via handle (HCurve). According to doxygen
     // this is required by the algorithms
+    #if OCC_VERSION_HEX >= VERSION_HEX_CODE(7,6,0)
+    const Handle(Adaptor3d_Curve) curve1 = new BRepAdaptor_CompCurve(compCurve1);
+    const Handle(Adaptor3d_Curve) curve2 = new BRepAdaptor_CompCurve(compCurve2);
+    #else
     Handle(Adaptor3d_Curve) curve1 = new BRepAdaptor_CompCurve(compCurve1);
     Handle(Adaptor3d_Curve) curve2 = new BRepAdaptor_CompCurve(compCurve2);
+    #endif
 
     // We have to generate an approximated curve now from the wire using the adaptor
     // NOTE: last parameter value unknown
