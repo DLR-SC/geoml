@@ -1102,8 +1102,8 @@ TopoDS_Face BuildRuledFace(const TopoDS_Wire& wire1, const TopoDS_Wire& wire2)
     const Handle(Adaptor3d_Curve) curve1 = new BRepAdaptor_CompCurve(compCurve1);
     const Handle(Adaptor3d_Curve) curve2 = new BRepAdaptor_CompCurve(compCurve2);
     #else
-    Handle(Adaptor3d_Curve) curve1 = new BRepAdaptor_CompCurve(compCurve1);
-    Handle(Adaptor3d_Curve) curve2 = new BRepAdaptor_CompCurve(compCurve2);
+    Handle(Adaptor3d_HCurve) curve1 = new BRepAdaptor_HCompCurve(compCurve1);
+    Handle(Adaptor3d_HCurve) curve2 = new BRepAdaptor_HCompCurve(compCurve2);
     #endif
 
     // We have to generate an approximated curve now from the wire using the adaptor
