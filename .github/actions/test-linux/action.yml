@@ -22,10 +22,12 @@ inputs:
     required: false
     default: true
 
-  integration-tests:
-    description: "Set to true to run TiGLs integration tests (true or false)"
+  api-tests:
+    description: "Set to true to run geoml api tests (true or false)"
     required: false
     default: true
+
+  
 
 runs:
 
@@ -63,6 +65,13 @@ runs:
       run: |
         cd build/tests/unittests/
         ./geoml-unittests
+
+    - name: Run api tests
+      if: ${{ inputs.api-tests == 'true' }}
+      shell: bash
+      run: |
+        cd build/tests/apitests/
+        ./geoml-apitests
 
     # - name: Run integration tests
     #   if: ${{ inputs.integration-tests == 'true' }}

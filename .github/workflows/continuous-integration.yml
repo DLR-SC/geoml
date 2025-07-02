@@ -95,6 +95,7 @@ jobs:
         config: ["Debug", "Release"]
         os: ["ubuntu-latest", "ubuntu-22.04"]
         unit-tests: [true]
+        api-tests: [true]
         # generate coverage reports on latest ubuntu debug builds
         exclude:
           - config: "Debug"
@@ -112,6 +113,7 @@ jobs:
           build-artifact: build-${{ matrix.os }}-${{ matrix.config }}-nightly-${{ inputs.tigl_nightly }}-concat-${{ inputs.tigl_concat_generated_files }}-cov-${{ matrix.coverage || 'OFF' }}
           coverage: ${{ matrix.coverage == 'ON' || false }}
           unit-tests: ${{ matrix.unit-tests }}
+          api-tests: ${{ matrix.unit-tests }}
         #  integration-tests: ${{ inputs.integration-tests == 'true' || false }}
         #  codecov_token: ${{ secrets.CODECOV_TOKEN }}
 
