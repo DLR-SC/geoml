@@ -74,7 +74,8 @@ runs:
         mkdir build
         cd build
         cmake .. -DCMAKE_BUILD_TYPE=${{ inputs.config }} \
-                 -DGEOML_BUILD_TESTS=ON 
+                 -DGEOML_BUILD_TESTS=ON \
+                 -DCMAKE_INSTALL_PREFIX=install
         cmake --build . -j 4 --target install
        
 
