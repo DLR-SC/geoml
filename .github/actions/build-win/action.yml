@@ -24,20 +24,20 @@ inputs:
     required: true
     default: "ON"
 
-  tigl_bindings_python_internal:
-    description: "CMake option to build the internal python API"
-    required: false
-    default: "OFF"
+  # tigl_bindings_python_internal:
+  #   description: "CMake option to build the internal python API"
+  #   required: false
+  #   default: "OFF"
 
-  tigl_enable_coverage:
-    description: "CMake option to enable code coverage with gcov/lcov (ON or OFF)"
-    required: false
-    default: "OFF"
+  # tigl_enable_coverage:
+  #   description: "CMake option to enable code coverage with gcov/lcov (ON or OFF)"
+  #   required: false
+  #   default: "OFF"
 
-  documentation-artifact:
-    description: "Name of the documentation artifact. Leave empty to skip doc build"
-    required: false
-    default: ''
+  # documentation-artifact:
+  #   description: "Name of the documentation artifact. Leave empty to skip doc build"
+  #   required: false
+  #   default: ''
 
   installer-artifact:
     description: "Name of the installer artifact. Leave empty to skip installer generation with NSIS"
@@ -63,7 +63,7 @@ runs:
       uses: conda-incubator/setup-miniconda@v3
       with:
         auto-update-conda: true
-        activate-environment: tigl-bld
+        activate-environment: geoml-bld
         environment-file: environment.yml
         auto-activate-base: false
 
@@ -87,21 +87,13 @@ runs:
     - name: Build TiGL
       shell: cmd /C call {0}
       run: |
-        set CMAKE_PREFIX_PATH=C:\Miniconda\envs\tigl-bld\Library;C:\Miniconda\envs\tigl-bld\Scripts
+        set CMAKE_PREFIX_PATH=C:\Miniconda\envs\geoml-bld\Library;C:\Miniconda\envs\geoml-bld\Scripts
         mkdir build
         cd build
         cmake .. -GNinja -DCMAKE_BUILD_TYPE=${{ inputs.config }} ^
                          -DCMAKE_INSTALL_PREFIX=install ^
                          -DOCE_STATIC_LIBS=${{ inputs.oce_static_libs }} ^
-                         -DTIGL_BUILD_TESTS=ON ^
-                         -DTIGL_CONCAT_GENERATED_FILES=${{ inputs.tigl_concat_generated_files }} ^
-                         -DTIGL_BINDINGS_PYTHON_INTERNAL=${{ inputs.tigl_bindings_python_internal }} ^
-                         -DTIGL_BINDINGS_MATLAB=ON ^
-                         -DTIGL_BINDINGS_JAVA=ON ^
-                         -DTIGL_NIGHTLY=${{ inputs.tigl-nightly }} ^
-                         -DPythonOCC_SOURCE_DIR=C:\Miniconda\envs\tigl-bld\Library\src\pythonocc-core ^
-                         -DMATLAB_DIR=C:\Miniconda\envs\tigl-bld\Library\share\matlab ^
-                         -DTIGL_ENABLE_COVERAGE=${{ inputs.tigl_enable_coverage }}
+                         -DGEOML_BUILD_TESTS=ON 
         cmake --build . -j 4 --target install
 
     - name: Create package and installer
@@ -126,19 +118,19 @@ runs:
        name: ${{ inputs.installer-artifact }}
        path: build/*.exe
 
-    - name: Create documentation
-      if: ${{ inputs.documentation-artifact }}
-      shell: cmd
-      run: |
-        cd build
-        cmake --build . --target doc
+    # - name: Create documentation
+    #   if: ${{ inputs.documentation-artifact }}
+    #   shell: cmd
+    #   run: |
+    #     cd build
+    #     cmake --build . --target doc
 
-    - name: Upload documentation as artifact
-      if: ${{ inputs.documentation-artifact }}
-      uses: actions/upload-artifact@v4
-      with:
-       name: ${{ inputs.documentation-artifact }}
-       path: build/doc/html/*
+    # - name: Upload documentation as artifact
+    #   if: ${{ inputs.documentation-artifact }}
+    #   uses: actions/upload-artifact@v4
+    #   with:
+    #    name: ${{ inputs.documentation-artifact }}
+    #    path: build/doc/html/*
 
     - name: create build dir archive
       shell: bash

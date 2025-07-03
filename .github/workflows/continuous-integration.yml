@@ -118,34 +118,34 @@ jobs:
         #  codecov_token: ${{ secrets.CODECOV_TOKEN }}
 
 
-  # build-windows:
-  #   strategy:
-  #     matrix:
-  #       config: ["Release"]
-  #       os: ["windows-2019", "windows-latest"]
-  #       include:
-  #        - config: "Release"
-  #          os: "windows-2019"
-  #          oce_static_libs: "ON"
-  #          tigl_bindings_python_internal: "ON"
-  #          documentation-artifact: ${{ inputs.documentation-artifact }}
-  #          package-artifact: ${{ inputs.win-package-artifact }}
-  #          installer-artifact: ${{ inputs.win-installer-artifact }}
-  #   runs-on: ${{ matrix.os }}
-  #   steps:
-  #     - uses: actions/checkout@v4
-  #     - uses: ./.github/actions/build-win
-  #       with:
-  #         config: ${{ matrix.config }}
-  #         tigl_nightly: ${{ inputs.tigl_nightly =='true' }}
-  #         tigl_concat_generated_files: ${{ inputs.tigl_concat_generated_files == 'true' }}
-  #         tigl_enable_coverage: 'OFF'
-  #         oce_static_libs: ${{ matrix.oce_static_libs || 'OFF' }}
-  #         tigl_bindings_python_internal: ${{ matrix.tigl_bindings_python_internal || 'OFF' }}
-  #         documentation-artifact: ${{ matrix.documentation-artifact }}
-  #         package-artifact: ${{ matrix.package-artifact }}
-  #         installer-artifact: ${{ matrix.installer-artifact }}
-  #         build-artifact: build-${{ matrix.os }}-${{ matrix.config }}-nightly-${{ inputs.tigl_nightly }}-concat-${{ inputs.tigl_concat_generated_files }}-cov-OFF-static-${{ matrix.oce_static_libs || 'OFF' }}-python-${{ matrix.tigl_bindings_python_internal || 'OFF' }}
+  build-windows:
+    strategy:
+      matrix:
+        config: ["Release"]
+        os: ["windows-2019", "windows-latest"]
+        include:
+         - config: "Release"
+           os: "windows-2019"
+           oce_static_libs: "ON"
+          #  tigl_bindings_python_internal: "ON"
+          #  documentation-artifact: ${{ inputs.documentation-artifact }}
+          #  package-artifact: ${{ inputs.win-package-artifact }}
+           installer-artifact: ${{ inputs.win-installer-artifact }}
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/build-win
+        with:
+          config: ${{ matrix.config }}
+          tigl_nightly: ${{ inputs.tigl_nightly =='true' }}
+          tigl_concat_generated_files: ${{ inputs.tigl_concat_generated_files == 'true' }}
+          tigl_enable_coverage: 'OFF'
+          oce_static_libs: ${{ matrix.oce_static_libs || 'OFF' }}
+          # tigl_bindings_python_internal: ${{ matrix.tigl_bindings_python_internal || 'OFF' }}
+          # documentation-artifact: ${{ matrix.documentation-artifact }}
+          # package-artifact: ${{ matrix.package-artifact }}
+          installer-artifact: ${{ matrix.installer-artifact }}
+          build-artifact: build-${{ matrix.os }}-${{ matrix.config }}-nightly-${{ inputs.tigl_nightly }}-concat-${{ inputs.tigl_concat_generated_files }}-cov-OFF-static-${{ matrix.oce_static_libs || 'OFF' }}-python-${{ matrix.tigl_bindings_python_internal || 'OFF' }}
 
   # test-windows:
   #   needs: build-windows
