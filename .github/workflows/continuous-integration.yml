@@ -147,25 +147,26 @@ jobs:
           installer-artifact: ${{ matrix.installer-artifact }}
           build-artifact: build-${{ matrix.os }}-${{ matrix.config }}-nightly-${{ inputs.tigl_nightly }}-concat-${{ inputs.tigl_concat_generated_files }}-cov-OFF-static-${{ matrix.oce_static_libs || 'OFF' }}-python-${{ matrix.tigl_bindings_python_internal || 'OFF' }}
 
-  # test-windows:
-  #   needs: build-windows
-  #   strategy:
-  #     matrix:
-  #       config: ["Release"]
-  #       os: ["windows-2019", "windows-latest"]
-  #       include:
-  #        - config: "Release"
-  #          os: "windows-2019"
-  #          oce_static_libs: "ON"
-  #          tigl_bindings_python_internal: "ON"
-  #   runs-on: ${{ matrix.os }}
-  #   steps:
-  #     - uses: actions/checkout@v4
-  #     - uses: ./.github/actions/test-win
-  #       with:
-  #         build-artifact: build-${{ matrix.os }}-${{ matrix.config }}-nightly-${{ inputs.tigl_nightly }}-concat-${{ inputs.tigl_concat_generated_files }}-cov-OFF-static-${{ matrix.oce_static_libs || 'OFF' }}-python-${{ matrix.tigl_bindings_python_internal || 'OFF' }}
-  #         unit-tests: true
-  #         integration-tests: ${{ inputs.integration-tests == 'true' }}
+  test-windows:
+    needs: build-windows
+    strategy:
+      matrix:
+        config: ["Release"]
+        os: ["windows-latest"]
+        include:
+         - config: "Release"
+           os: "windows-latest"
+           oce_static_libs: "ON"
+          #  tigl_bindings_python_internal: "ON"
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/test-win
+        with:
+          build-artifact: build-${{ matrix.os }}-${{ matrix.config }}-nightly-${{ inputs.tigl_nightly }}-concat-${{ inputs.tigl_concat_generated_files }}-cov-OFF-static-${{ matrix.oce_static_libs || 'OFF' }}-python-${{ matrix.tigl_bindings_python_internal || 'OFF' }}
+          unit-tests: true
+          api-tests: true
+          # integration-tests: ${{ inputs.integration-tests == 'true' }}
 
   # build-macos:
   #   runs-on: "macos-13"
