@@ -122,10 +122,10 @@ jobs:
     strategy:
       matrix:
         config: ["Release"]
-        os: ["windows-2019", "windows-latest"]
+        os: ["windows-latest"]
         include:
          - config: "Release"
-           os: "windows-2019"
+           os: "windows-latest"
            oce_static_libs: "ON"
           #  tigl_bindings_python_internal: "ON"
           #  documentation-artifact: ${{ inputs.documentation-artifact }}
