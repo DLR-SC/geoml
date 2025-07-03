@@ -71,7 +71,7 @@ runs:
       shell: bash
       run: |
         cd build/tests/apitests/
-        ./geoml-apitests
+        ./geoml-apitest
 
     # - name: Run integration tests
     #   if: ${{ inputs.integration-tests == 'true' }}
