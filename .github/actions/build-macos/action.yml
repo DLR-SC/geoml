@@ -19,15 +19,15 @@ inputs:
     required: true
     default: "ON"
 
-  tigl_bindings-python-internal:
-    description: "CMake option to build the internal python API"
-    required: false
-    default: "OFF"
+  # tigl_bindings-python-internal:
+  #   description: "CMake option to build the internal python API"
+  #   required: false
+  #   default: "OFF"
 
-  tigl_enable_coverage:
-    description: "CMake option to enable code coverage with gcov/lcov (ON or OFF)"
-    required: false
-    default: "OFF"
+  # tigl_enable_coverage:
+  #   description: "CMake option to enable code coverage with gcov/lcov (ON or OFF)"
+  #   required: false
+  #   default: "OFF"
 
   package-artifact:
     description: "Name of the package artifact. Leave empty to skip package generation."
@@ -84,13 +84,8 @@ runs:
                          -DCMAKE_INSTALL_PREFIX=install \
                          -DOCE_STATIC_LIBS=ON \
                          -DTIGL_BUILD_TESTS=ON \
-                         -DTIGL_ENABLE_COVERAGE=${{ inputs.tigl_enable_coverage }} \
                          -DTIGL_CONCAT_GENERATED_FILES=${{ inputs.tigl_concat_generated_files }} \
-                         -DTIGL_BINDINGS_PYTHON_INTERNAL=${{ inputs.tigl_bindings_python_internal }} \
-                         -DTIGL_BINDINGS_MATLAB=ON \
-                         -DTIGL_BINDINGS_JAVA=ON \
                          -DTIGL_NIGHTLY=${{ inputs.tigl_nightly }} \
-                         -DMATLAB_DIR=/tmp/matlab-libs-macos
         cmake --build . -j 4 --target install
 
     - name: Create package
