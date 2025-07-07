@@ -52,8 +52,8 @@ runs:
       shell: bash
       run: |
         cd build/tests/unittests/
-        chmod a+x ./TiGL-unittests
-        ./TiGL-unittests --gtest_shuffle --gtest_output=xml:unit_test_results.xml
+        chmod a+x ./geoml-unittests
+        ./geoml-unittests --gtest_shuffle --gtest_output=xml:unit_test_results.xml
 
     - name: Run api tests
       if: ${{ inputs.api-tests == 'true' }}
