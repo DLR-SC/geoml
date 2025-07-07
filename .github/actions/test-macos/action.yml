@@ -29,6 +29,17 @@ runs:
   
   steps:
   
+    - name: Install dependencies
+      uses: nick-fields/retry@v3
+      with:
+        timeout_minutes: 10
+        max_attempts: 3
+        command: |
+          curl --retry 3 -o sshpass-macOS.tar.gz -L https://sourceforge.net/projects/tigl/files/Thirdparty/sshpass-macOS.tar.gz
+          tar xf sshpass-macOS.tar.gz -C /tmp
+          echo "/tmp" >> $GITHUB_PATH
+          echo "CXXFLAGS=-fvisibility-inlines-hidden" >> $GITHUB_ENV
+
     - name: Setup miniconda
       uses: conda-incubator/setup-miniconda@v3
       with:
