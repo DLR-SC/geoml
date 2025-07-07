@@ -139,7 +139,7 @@ jobs:
           config: ${{ matrix.config }}
           tigl_nightly: ${{ inputs.tigl_nightly =='true' }}
           tigl_concat_generated_files: ${{ inputs.tigl_concat_generated_files == 'true' }}
-          tigl_enable_coverage: 'OFF'
+          #tigl_enable_coverage: 'OFF'
           oce_static_libs: ${{ matrix.oce_static_libs || 'OFF' }}
           # tigl_bindings_python_internal: ${{ matrix.tigl_bindings_python_internal || 'OFF' }}
           # documentation-artifact: ${{ matrix.documentation-artifact }}
