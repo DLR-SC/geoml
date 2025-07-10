@@ -371,7 +371,7 @@ void SVD(Matrix const& A, Matrix& U, Matrix& S, Matrix& V)
     Vector Sv(1,3);
     U = A;
 
-    SVD_Decompose(U, Sv, V);
+    //SVD_Decompose(U, Sv, V);
 
     S(1,1) = Sv(1);
     S(1,2) = 0.;
