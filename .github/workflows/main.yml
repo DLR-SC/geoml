@@ -7,6 +7,7 @@ on:
     branches:
       - 'main'
       - 'github_actions'
+      - 'license_branch'
     tags:
       - v*
   workflow_dispatch:
