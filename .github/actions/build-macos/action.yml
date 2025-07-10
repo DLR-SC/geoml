@@ -82,7 +82,8 @@ runs:
         cmake .. -GNinja -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
                          -DCMAKE_BUILD_TYPE=${{ inputs.config }} \
                          -DCMAKE_INSTALL_PREFIX=install \
-                         -DGEOML_BUILD_TESTS=ON 
+                         -DGEOML_BUILD_TESTS=ON \
+                         -DOCE_STATIC_LIBS=ON
         cmake --build . -j 4 --target install
 
     - name: Create package
