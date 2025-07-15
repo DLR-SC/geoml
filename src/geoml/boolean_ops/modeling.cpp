@@ -1,3 +1,8 @@
+/*
+* SPDX-License-Identifier: Apache-2.0
+* SPDX-FileCopyrightText: 2024 German Aerospace Center (DLR)
+*/
+
 #include "boolean_ops/modeling.hpp"
 #include "topology/BRepBuilderAPI_MakeShape_Operation.hpp"
 

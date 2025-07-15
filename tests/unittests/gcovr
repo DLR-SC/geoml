@@ -1,5 +1,9 @@
 #! /usr/bin/env python
 #
+# SPDX-License-Identifier: LicenseRef-BSD-3-Clause-Sandia
+# SPDX-FileCopyrightText: 2013-2024 the gcovr authors
+# SPDX-FileCopyrightText: 2013 Sandia Corporation.
+#
 # A report generator for gcov 3.4
 #
 # This routine generates a format that is similar to the format generated

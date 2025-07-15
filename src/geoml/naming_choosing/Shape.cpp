@@ -1,5 +1,10 @@
-#include "Shape.h"
 
+/**
+ * SPDX-License-Identifier: Apache-2.0
+ * SPDX-FileCopyrightText: 2024 German Aerospace Center (DLR)
+ */
+
+#include "Shape.h"
 
 #include <TopExp_Explorer.hxx>
 

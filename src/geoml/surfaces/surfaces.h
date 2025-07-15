@@ -1,6 +1,9 @@
 #pragma once
 
 /**
+ * SPDX-License-Identifier: Apache-2.0
+ * SPDX-FileCopyrightText: 2024 German Aerospace Center (DLR)
+ *
  * @brief geoml/surfaces/surfaces.h includes functions to create (B-spline) surfaces
  * by interpolating or approximating points and curves
  */

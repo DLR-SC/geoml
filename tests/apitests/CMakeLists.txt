@@ -1,3 +1,7 @@
+#
+# SPDX-License-Identifier: Apache-2.0
+# SPDX-FileCopyrightText: 2024 German Aerospace Center (DLR)
+#
 
 add_executable(geoml-apitest
     src/testSurfaces.cpp

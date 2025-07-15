@@ -1,3 +1,8 @@
+#
+# SPDX-License-Identifier: Apache-2.0
+# SPDX-FileCopyrightText: 2023 German Aerospace Center (DLR)
+#
+
 import sys
 import os
 import subprocess

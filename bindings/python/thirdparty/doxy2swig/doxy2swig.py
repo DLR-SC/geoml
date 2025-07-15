@@ -10,6 +10,10 @@ index.xml is your doxygen generated XML file and output.i is where the
 output will be written (the file will be clobbered).
 """
 #
+# SPDX-License-Identifier: LicenseRef-BSD-2-Clause-Doxy2Swig
+# SPDX-FileCopyrightText: Original work Prabhu Ramachandran
+# SPDX-FileCopyrightText: Modified work 2015, Michael Thon
+#
 # The current version of this code is hosted on a github repository:
 #   https://github.com/m7thon/doxy2swig
 #

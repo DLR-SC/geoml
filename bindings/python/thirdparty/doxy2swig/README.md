@@ -1,3 +1,7 @@
+# SPDX-License-Identifier: LicenseRef-BSD-2-Clause-Doxy2Swig
+# SPDX-FileCopyrightText: Original work Prabhu Ramachandran
+# SPDX-FileCopyrightText: Modified work 2015, Michael Thon
+
 doxy2swig (improved)
 --------------------
 

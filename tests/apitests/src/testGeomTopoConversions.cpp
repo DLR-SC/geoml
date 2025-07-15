@@ -1,5 +1,16 @@
+<<<<<<< HEAD:tests/apitests/src/testGeomTopoConversions.cpp
 #include <geoml/geom_topo_conversions/geom_topo_conversions.h>
 #include <geoml/curves/curves.h>
+=======
+/*
+* SPDX-License-Identifier: Apache-2.0
+* SPDX-FileCopyrightText: 2024 German Aerospace Center (DLR)
+*/
+
+
+#include <geoml/geom_topo/modeling.h>
+#include <geoml/curves/modeling.h>
+>>>>>>> origin/reuse_preparation:tests/apitests/src/testGeomTopoModeling.cpp
 
 #include <gtest/gtest.h>
 

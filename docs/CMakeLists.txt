@@ -1,3 +1,8 @@
+#
+# SPDX-License-Identifier: Apache-2.0
+# SPDX-FileCopyrightText: 2018 German Aerospace Center (DLR)
+#
+
 option (GEOML_BUILD_DOCS "Build documentation (requires doxygen)" OFF)
 
 if (GEOML_BUILD_DOCS)

@@ -1,3 +1,8 @@
+ /**
+ * SPDX-License-Identifier: Apache-2.0
+ * SPDX-FileCopyrightText: 2024 German Aerospace Center (DLR)
+ */
+
 #include "surfaces/surfaces.h"
 #include "geoml/curves/curves.h"
 #include "geoml/data_structures/conversions.h"
@@ -8,7 +13,7 @@
 
 #include "BRepBuilderAPI_MakeEdge.hxx"
 #include <BRepBuilderAPI_MakeFace.hxx>
-#include <BRepBuilderAPI_MakeWire.hxx> //
+#include <BRepBuilderAPI_MakeWire.hxx> 
 #include <TopoDS_Face.hxx>
 #include <TopoDS_Edge.hxx>
 #include <TopoDS_Shape.hxx>

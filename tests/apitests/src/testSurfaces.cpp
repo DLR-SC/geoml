@@ -1,6 +1,14 @@
+
+/*
+* SPDX-License-Identifier: Apache-2.0
+* SPDX-FileCopyrightText: 2018 German Aerospace Center (DLR)
+*/
+
+
 #include <geoml/surfaces/surfaces.h>
 #include <geoml/curves/curves.h>
 #include <geoml/geom_topo_conversions/geom_topo_conversions.h>
+#include <geoml/geom_topo/modeling.h>
 #include <geoml/data_structures/Array2d.h>
 
 #include <gtest/gtest.h>

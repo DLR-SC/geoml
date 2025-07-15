@@ -1,3 +1,8 @@
+#
+# SPDX-License-Identifier: Apache-2.0
+# SPDX-FileCopyrightText: 2018 German Aerospace Center (DLR)
+#
+
 # To build this project, call pip install .
 
 cmake_minimum_required(VERSION 3.4)

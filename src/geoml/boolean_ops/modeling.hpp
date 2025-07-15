@@ -1,6 +1,9 @@
 #pragma once
 
 /**
+ * SPDX-License-Identifier: Apache-2.0
+ * SPDX-FileCopyrightText: 2024 German Aerospace Center (DLR)
+ * 
  * @brief geoml/boolean_operations/modeling.hpp includes functions to perform boolean operations
  */
 #include <geoml/geoml.h>
