@@ -1,3 +1,8 @@
+/**
+ * SPDX-License-Identifier: Apache-2.0
+ * SPDX-FileCopyrightText: 2024 German Aerospace Center (DLR)
+ */
+
 #include "geom_topo_conversions/geom_topo_conversions.h"
 
 #include <BRepBuilderAPI_MakeFace.hxx>

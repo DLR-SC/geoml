@@ -4,7 +4,6 @@
 */
 
 #include <geoml/geom_topo_conversions/geom_topo_conversions.h>
-#include <geoml/geom_topo/modeling.h>
 #include <geoml/curves/curves.h>
 
 #include <gtest/gtest.h>
