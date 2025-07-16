@@ -1,6 +1,6 @@
 name: "Windows Tests"
 
-description: "Test TiGL on Windows"
+description: "Test geoml on Windows"
 
 inputs:
 
@@ -9,7 +9,7 @@ inputs:
     required: true
 
   unit-tests:
-    description: "Set to true to run TiGLs unit tests (true or false)"
+    description: "Set to true to run geomls unit tests (true or false)"
     required: false
     default: true
 
@@ -19,7 +19,7 @@ inputs:
     default: true
 
   # integration-tests:
-  #   description: "Set to true to run TiGLs integration tests (true or false)"
+  #   description: "Set to true to run geomls integration tests (true or false)"
   #   required: false
   #   default: true
 
@@ -41,7 +41,7 @@ runs:
       if: inputs.oce_static_libs == 'ON'
       shell: cmd /C call {0}
       run: |
-        conda install opencascade-static=7.4.0 tbb-devel freetype-static=2.6 freeimageplus-static -c dlr-sc -c dlr-sc/label/tigl-dev
+        conda install opencascade-static=7.4.0 tbb-devel freetype-static=2.6 freeimageplus-static -c dlr-sc -c dlr-sc/label/geoml-dev
     
     - name: Conda info
       shell: cmd /C call {0}
@@ -82,4 +82,4 @@ runs:
     #   run: |
     #     set PATH=%cd%\build\install\bin;%PATH%
     #     cd build\tests\integrationtests
-    #     .\TiGL-integrationtests --gtest_shuffle --gtest_output=xml:integration_test_results.xml
+    #     .\geoml-integrationtests --gtest_shuffle --gtest_output=xml:integration_test_results.xml

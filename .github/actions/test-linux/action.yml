@@ -1,6 +1,6 @@
 name: "Linux Tests"
 
-description: "Test TiGL on Linux"
+description: "Test geoml on Linux"
 
 inputs:
 
@@ -18,7 +18,7 @@ inputs:
     required: true
 
   unit-tests:
-    description: "Set to true to run TiGLs unit tests (true or false)"
+    description: "Set to true to run geomls unit tests (true or false)"
     required: false
     default: true
 
@@ -78,7 +78,7 @@ runs:
     #   shell: bash
     #   run: |
     #     cd build/tests/integrationtests/
-    #     ./TiGL-integrationtests --gtest_shuffle --gtest_output=xml:integration_test_results.xml
+    #     ./geoml-integrationtests --gtest_shuffle --gtest_output=xml:integration_test_results.xml
 
     # - name: Generate coverage report
     #   if: ${{ inputs.coverage == 'true' }}

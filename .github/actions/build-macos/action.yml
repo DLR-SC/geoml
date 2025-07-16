@@ -1,6 +1,6 @@
 name: "MacOS Build"
 
-description: "Build TiGL on MacOS with clang"
+description: "Build geoml on MacOS with clang"
 
 inputs:
 
@@ -9,22 +9,22 @@ inputs:
     required: true
     default: "Release"
 
-  tigl_nightly:
+  geoml_nightly:
     description: "CMake option to amend the version with the git hash (ON or OFF)"
     required: true
     default: "ON"
 
-  tigl_concat_generated_files:
+  geoml_concat_generated_files:
     description: "CMake option to concatenate the generated source files (ON or OFF)"
     required: true
     default: "ON"
 
-  # tigl_bindings-python-internal:
+  # geoml_bindings-python-internal:
   #   description: "CMake option to build the internal python API"
   #   required: false
   #   default: "OFF"
 
-  # tigl_enable_coverage:
+  # geoml_enable_coverage:
   #   description: "CMake option to enable code coverage with gcov/lcov (ON or OFF)"
   #   required: false
   #   default: "OFF"
@@ -50,7 +50,7 @@ runs:
         timeout_minutes: 10
         max_attempts: 3
         command: |
-          curl --retry 3 -o sshpass-macOS.tar.gz -L https://sourceforge.net/projects/tigl/files/Thirdparty/sshpass-macOS.tar.gz
+          curl --retry 3 -o sshpass-macOS.tar.gz -L https://sourceforge.net/projects/geoml/files/Thirdparty/sshpass-macOS.tar.gz
           tar xf sshpass-macOS.tar.gz -C /tmp
           echo "/tmp" >> $GITHUB_PATH
           echo "CXXFLAGS=-fvisibility-inlines-hidden" >> $GITHUB_ENV
@@ -59,7 +59,7 @@ runs:
       uses: conda-incubator/setup-miniconda@v3
       with:
         auto-update-conda: true
-        activate-environment: tigl-bld
+        activate-environment: geoml-bld
         environment-file: environment.yml
         auto-activate-base: false
 
@@ -74,7 +74,7 @@ runs:
       with:
         key: compiler-cache-${{ inputs.build-artifact }}
 
-    - name: Build TiGL
+    - name: Build geoml
       shell: bash -l {0}
       run: |
         mkdir build

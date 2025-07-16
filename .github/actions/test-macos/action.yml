@@ -1,6 +1,6 @@
 name: "MacOS Tests"
 
-description: "Test TiGL on MacOS"
+description: "Test geoml on MacOS"
 
 inputs:
 
@@ -9,7 +9,7 @@ inputs:
     required: true
 
   unit-tests:
-    description: "Set to true to run TiGLs unit tests (true or false)"
+    description: "Set to true to run geomls unit tests (true or false)"
     required: false
     default: true
 
@@ -19,7 +19,7 @@ inputs:
     default: true
 
   # integration-tests:
-  #   description: "Set to true to run TiGLs integration tests (true or false)"
+  #   description: "Set to true to run geomls integration tests (true or false)"
   #   required: false
   #   default: true
 
@@ -33,7 +33,7 @@ runs:
       uses: conda-incubator/setup-miniconda@v3
       with:
         auto-update-conda: true
-        activate-environment: tigl-bld
+        activate-environment: geoml-bld
         environment-file: environment.yml
         auto-activate-base: false
 
@@ -68,5 +68,5 @@ runs:
     #   shell: bash
     #   run: |
     #     cd build/tests/integrationtests/
-    #     chmod a+x ./TiGL-integrationtests
-    #     ./TiGL-integrationtests --gtest_shuffle --gtest_output=xml:integration_test_results.xml
+    #     chmod a+x ./geoml-integrationtests
+    #     ./geoml-integrationtests --gtest_shuffle --gtest_output=xml:integration_test_results.xml

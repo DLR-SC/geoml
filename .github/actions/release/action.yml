@@ -1,6 +1,6 @@
 name: "Create a Release"
 
-description: "This action drafts a Github release, adds the release notes and windows and mac os artifacts and creates PRs at tigl-conda and the tigl website"
+description: "This action drafts a Github release, adds the release notes and windows and mac os artifacts and creates PRs at geoml-conda and the geoml website"
 
 inputs:
   GH_TOKEN:
@@ -63,26 +63,26 @@ runs:
       uses: softprops/action-gh-release@v2
       with:
         tag_name: ${{ github.ref }}
-        name: TiGL ${{ env.version }}
+        name: geoml ${{ env.version }}
         body: ${{ steps.changelog.outputs.content  }}
         draft: true
         prerelease: false
         token: ${{ inputs.GH_TOKEN }}
         files: |
-          win-installer/TIGL-${{ env.version }}-win64.exe
-          win-package/TIGL-${{ env.version }}-win64.zip
-          macos-package/TIGL-${{ env.version }}-Darwin.dmg
+          win-installer/geoml-${{ env.version }}-win64.exe
+          win-package/geoml-${{ env.version }}-win64.zip
+          macos-package/geoml-${{ env.version }}-Darwin.dmg
 
-    - name: Checkout tigl-website repo
+    - name: Checkout geoml-website repo
       uses: actions/checkout@v4
       with:
-        repository: DLR-SC/tigl-website
-        path: tigl-website
+        repository: DLR-SC/geoml-website
+        path: geoml-website
 
     - name: Add documentation to website
       shell: bash -l {0}
       run: |
-        cd tigl-website/content
+        cd geoml-website/content
         rm -rf doc/latest/*
         mkdir -p doc/latest
         mkdir -p doc/${{ env.version }}
@@ -94,41 +94,41 @@ runs:
         prevver=`grep "Latest Release" 4_Documentation.md | grep -Eo "[0-9]{1,}.[0-9].{1,}[0-9]{1,}"`
         csplit -z 4_Documentation.md /"Latest Release"/
         mv xx00 4_Documentation.md
-        echo " - [Latest Release (TiGL ${{ env.version }})](../doc/latest/index.html)" >> 4_Documentation.md
-        echo " - [TiGL $prevver](../doc/$prevver/index.html)" >> 4_Documentation.md
+        echo " - [Latest Release (geoml ${{ env.version }})](../doc/latest/index.html)" >> 4_Documentation.md
+        echo " - [geoml $prevver](../doc/$prevver/index.html)" >> 4_Documentation.md
         tail -n +2 xx01 >> 4_Documentation.md
         rm xx01
 
 
-    - name: Create Pull Request at DLR-SC/tigl-website
+    - name: Create Pull Request at DLR-SC/geoml-website
       uses: peter-evans/create-pull-request@v5
       with:
-        path: tigl-website
-        title: Add documentation for TiGL ${{ env.version }}
-        body: There has been a new release over at DLR-SC/tigl. We should add the latest documentation to our website.
-        branch: add-tigl-${{ env.version }}-documentation
-        commit-message: add documentation for tigl ${{ env.version }}
+        path: geoml-website
+        title: Add documentation for geoml ${{ env.version }}
+        body: There has been a new release over at DLR-SC/geoml. We should add the latest documentation to our website.
+        branch: add-geoml-${{ env.version }}-documentation
+        commit-message: add documentation for geoml ${{ env.version }}
         token: ${{ inputs.GH_TOKEN }}
 
-    - name: Checkout tigl-conda repo
+    - name: Checkout geoml-conda repo
       uses: actions/checkout@v4
       with:
-        repository: DLR-SC/tigl-conda
-        path: tigl-conda
+        repository: DLR-SC/geoml-conda
+        path: geoml-conda
 
-    - name: Bump version of tigl3 conda recipe and reset build number
+    - name: Bump version of geoml3 conda recipe and reset build number
       shell: bash -l {0}
       run: |
-        sed -i s/"version = \".*\""/"version = \"${{ env.version }}\""/g tigl-conda/tigl3/meta.yaml
-        sed -i s/"number: .*"/"number: 0"/g tigl-conda/tigl3/meta.yaml
+        sed -i s/"version = \".*\""/"version = \"${{ env.version }}\""/g geoml-conda/geoml3/meta.yaml
+        sed -i s/"number: .*"/"number: 0"/g geoml-conda/geoml3/meta.yaml
         git diff
 
-    - name: Create Pull Request at DLR-SC/tigl-conda
+    - name: Create Pull Request at DLR-SC/geoml-conda
       uses: peter-evans/create-pull-request@v5
       with:
-        path: tigl-conda
-        title: Bump tigl3 version to ${{ env.version }}
-        body: There has been a new release over at DLR-SC/tigl. We should create new conda packages!
-        branch: bump-tigl3-version
-        commit-message: bump tigl3 version to ${{ env.version }}
+        path: geoml-conda
+        title: Bump geoml3 version to ${{ env.version }}
+        body: There has been a new release over at DLR-SC/geoml. We should create new conda packages!
+        branch: bump-geoml3-version
+        commit-message: bump geoml3 version to ${{ env.version }}
         token: ${{ inputs.GH_TOKEN }}

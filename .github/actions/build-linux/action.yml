@@ -1,6 +1,6 @@
 name: "Linux Build"
 
-description: "Build TiGL on Linux"
+description: "Build geoml on Linux"
 
 inputs:
 
@@ -9,22 +9,22 @@ inputs:
     required: true
     default: "Release"
 
-  tigl_nightly:
+  geoml_nightly:
     description: "CMake option to amend the version with the git hash (ON or OFF)"
     required: false
     default: "ON"
 
-  tigl_concat_generated_files:
+  geoml_concat_generated_files:
     description: "CMake option to concatenate the generated source files (ON or OFF)"
     required: false
     default: "ON"
 
-  # tigl_bindings_python_internal:
+  # geoml_bindings_python_internal:
   #   description: "CMake option to build the internal python API"
   #   required: false
   #   default: "OFF"
 
-  # tigl_enable_coverage:
+  # geoml_enable_coverage:
   #   description: "CMake option to enable code coverage with gcov/lcov (ON or OFF)"
   #   required: false
   #   default: "OFF"
@@ -68,7 +68,7 @@ runs:
     #   with:
     #     key: compiler-cache-${{ inputs.build-artifact }}
 
-    - name: Build TiGL
+    - name: Build geoml
       shell: bash -l {0}
       run: |
         mkdir build
