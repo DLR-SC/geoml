@@ -14,21 +14,18 @@ on:
 jobs:
 
   pre:
-    # no nightly cmake flag and no concatenation of generated files for release builds
+    # no nightly cmake flag for release builds
     runs-on: "ubuntu-latest"
     outputs:
       nightly: ${{ steps.set_flags.outputs.nightly }}
-      concat: ${{ steps.set_flags.outputs.concat }}
     steps:
       - id: set_flags
         shell: bash
         run: |
           if [[ "${{ github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v') }}" == "true" ]]; then
             echo "nightly=OFF" >> $GITHUB_OUTPUT
-            echo "concat=OFF" >> $GITHUB_OUTPUT
           else
             echo "nightly=ON" >> $GITHUB_OUTPUT
-            echo "concat=ON" >> $GITHUB_OUTPUT
           fi
 
   continuous-integration:
@@ -39,7 +36,6 @@ jobs:
       # create a release build on new git tag
       draft-release: ${{ github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v') }}
       geoml_nightly: ${{ needs.pre.outputs.nightly }}
-      geoml_concat_generated_files: ${{ needs.pre.outputs.concat }}
       #integration-tests: true
       #documentation-artifact: 'html-documentation'
       #win-installer-artifact: 'win-installer'

@@ -19,11 +19,6 @@ inputs:
     required: true
     default: "ON"
 
-  geoml_concat_generated_files:
-    description: "CMake option to concatenate the generated source files (ON or OFF)"
-    required: true
-    default: "ON"
-
   # geoml_bindings_python_internal:
   #   description: "CMake option to build the internal python API"
   #   required: false
