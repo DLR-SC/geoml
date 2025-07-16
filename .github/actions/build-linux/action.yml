@@ -70,6 +70,7 @@ runs:
         cd build
         cmake .. -DCMAKE_BUILD_TYPE=${{ inputs.config }} \
                  -DGEOML_BUILD_TESTS=ON \
+                 -DGEOML_ENABLE_COVERAGE=${{ inputs.geoml_enable_coverage }} \
                  -DCMAKE_INSTALL_PREFIX=install
         cmake --build . -j 4 --target install
        
