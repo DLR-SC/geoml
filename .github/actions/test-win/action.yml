@@ -18,11 +18,6 @@ inputs:
     required: false
     default: true
 
-  # integration-tests:
-  #   description: "Set to true to run geomls integration tests (true or false)"
-  #   required: false
-  #   default: true
-
 runs:
 
   using: "composite"
@@ -75,11 +70,3 @@ runs:
         set PATH=%cd%\build\install\bin;%PATH%
         cd build\tests\apitests
         .\geoml-apitest.exe --gtest_shuffle --gtest_output=xml:api_test_results.xml
-
-    # - name: Run integration tests
-    #   if: ${{ inputs.integration-tests == 'true' }}
-    #   shell: cmd /C call {0}
-    #   run: |
-    #     set PATH=%cd%\build\install\bin;%PATH%
-    #     cd build\tests\integrationtests
-    #     .\geoml-integrationtests --gtest_shuffle --gtest_output=xml:integration_test_results.xml

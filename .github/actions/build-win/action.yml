@@ -24,10 +24,10 @@ inputs:
   #   required: false
   #   default: "OFF"
 
-  # geoml_enable_coverage:
-  #   description: "CMake option to enable code coverage with gcov/lcov (ON or OFF)"
-  #   required: false
-  #   default: "OFF"
+  geoml_enable_coverage:
+    description: "CMake option to enable code coverage with gcov/lcov (ON or OFF)"
+    required: false
+    default: "OFF"
 
   # documentation-artifact:
   #   description: "Name of the documentation artifact. Leave empty to skip doc build"

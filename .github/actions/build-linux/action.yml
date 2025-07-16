@@ -19,14 +19,14 @@ inputs:
   #   required: false
   #   default: "OFF"
 
-  # geoml_enable_coverage:
-  #   description: "CMake option to enable code coverage with gcov/lcov (ON or OFF)"
-  #   required: false
-  #   default: "OFF"
+  geoml_enable_coverage:
+    description: "CMake option to enable code coverage with gcov/lcov (ON or OFF)"
+    required: false
+    default: "OFF"
 
-  # build-artifact:
-  #   descpription: "Set the name for the build artifact stored by this job"
-  #   required: true
+  build-artifact:
+    descpription: "Set the name for the build artifact stored by this job"
+    required: true
 
 runs:
 
@@ -58,10 +58,10 @@ runs:
         conda info
         conda list
 
-    # - name: ccache
-    #   uses: hendrikmuhs/ccache-action@v1
-    #   with:
-    #     key: compiler-cache-${{ inputs.build-artifact }}
+    - name: ccache
+      uses: hendrikmuhs/ccache-action@v1
+      with:
+        key: compiler-cache-${{ inputs.build-artifact }}
 
     - name: Build geoml
       shell: bash -l {0}

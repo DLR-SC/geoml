@@ -19,10 +19,10 @@ inputs:
   #   required: false
   #   default: "OFF"
 
-  # geoml_enable_coverage:
-  #   description: "CMake option to enable code coverage with gcov/lcov (ON or OFF)"
-  #   required: false
-  #   default: "OFF"
+  geoml_enable_coverage:
+    description: "CMake option to enable code coverage with gcov/lcov (ON or OFF)"
+    required: false
+    default: "OFF"
 
   package-artifact:
     description: "Name of the package artifact. Leave empty to skip package generation."

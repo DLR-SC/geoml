@@ -36,8 +36,7 @@ jobs:
       # create a release build on new git tag
       draft-release: ${{ github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v') }}
       geoml_nightly: ${{ needs.pre.outputs.nightly }}
-      #integration-tests: true
       #documentation-artifact: 'html-documentation'
-      #win-installer-artifact: 'win-installer'
-      #win-package-artifact: 'win-package'
-      #macos-package-artifact: 'macos-package'
+      win-installer-artifact: 'win-installer'
+      win-package-artifact: 'win-package'
+      macos-package-artifact: 'macos-package'

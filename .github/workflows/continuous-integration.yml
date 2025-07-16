@@ -27,36 +27,29 @@ on:
         default: "ON"
         type: string
 
-      # integration-tests:
-      #   # This should be a Boolean, but https://github.com/actions/runner/issues/1483
-      #   description: "Run integration tests"
-      #   required: false
-      #   default: "false"
-      #   type: string
-
       # documentation-artifact:
       #   description: "Name of the html documentation artifact. Will be build on Windows. Leave empty to skip documentation build."
       #   required: false
       #   default: ''
       #   type: string
 
-      # win-package-artifact:
-      #   description: "Name of the windows package artifact. Leave empty to skip building the package."
-      #   required: false
-      #   default: ''
-      #   type: string
+      win-package-artifact:
+        description: "Name of the windows package artifact. Leave empty to skip building the package."
+        required: false
+        default: ''
+        type: string
 
-      # win-installer-artifact:
-      #   description: "Name of the windows installer artifact. Leave empty to skip building the installer."
-      #   required: false
-      #   default: ''
-      #   type: string
+      win-installer-artifact:
+        description: "Name of the windows installer artifact. Leave empty to skip building the installer."
+        required: false
+        default: ''
+        type: string
 
-      # macos-package-artifact:
-      #   description: "Name of the Mac OS package artifact. Leave empty to skip building the package."
-      #   required: false
-      #   default: ''
-      #   type: string
+      macos-package-artifact:
+        description: "Name of the Mac OS package artifact. Leave empty to skip building the package."
+        required: false
+        default: ''
+        type: string
 
 jobs:
 
@@ -107,7 +100,6 @@ jobs:
           coverage: ${{ matrix.coverage == 'ON' || false }}
           unit-tests: ${{ matrix.unit-tests }}
           api-tests: ${{ matrix.api-tests }}
-        #  integration-tests: ${{ inputs.integration-tests == 'true' || false }}
         #  codecov_token: ${{ secrets.CODECOV_TOKEN }}
 
 
@@ -122,7 +114,7 @@ jobs:
            oce_static_libs: "ON"
           #  geoml_bindings_python_internal: "ON"
           #  documentation-artifact: ${{ inputs.documentation-artifact }}
-          #  package-artifact: ${{ inputs.win-package-artifact }}
+           package-artifact: ${{ inputs.win-package-artifact }}
            installer-artifact: ${{ inputs.win-installer-artifact }}
     runs-on: ${{ matrix.os }}
     steps:
@@ -131,11 +123,11 @@ jobs:
         with:
           config: ${{ matrix.config }}
           geoml_nightly: ${{ inputs.geoml_nightly =='true' }}
-          #geoml_enable_coverage: 'OFF'
+          geoml_enable_coverage: 'OFF'
           oce_static_libs: ${{ matrix.oce_static_libs || 'OFF' }}
           # geoml_bindings_python_internal: ${{ matrix.geoml_bindings_python_internal || 'OFF' }}
           # documentation-artifact: ${{ matrix.documentation-artifact }}
-          # package-artifact: ${{ matrix.package-artifact }}
+          package-artifact: ${{ matrix.package-artifact }}
           installer-artifact: ${{ matrix.installer-artifact }}
           build-artifact: build-${{ matrix.os }}-${{ matrix.config }}-nightly-${{ inputs.geoml_nightly }}-cov-OFF-static-${{ matrix.oce_static_libs || 'OFF' }}-python-${{ matrix.geoml_bindings_python_internal || 'OFF' }}
 
@@ -158,7 +150,6 @@ jobs:
           build-artifact: build-${{ matrix.os }}-${{ matrix.config }}-nightly-${{ inputs.geoml_nightly }}-cov-OFF-static-${{ matrix.oce_static_libs || 'OFF' }}-python-${{ matrix.geoml_bindings_python_internal || 'OFF' }}
           unit-tests: true
           api-tests: true
-          # integration-tests: ${{ inputs.integration-tests == 'true' }}
 
   build-macos:
     runs-on: "macos-13"
@@ -168,7 +159,7 @@ jobs:
         with:
           config: "Release"
           geoml_nightly: ${{ inputs.geoml_nightly =='true' }}
-         # geoml_enable_coverage: 'OFF'
+          geoml_enable_coverage: 'OFF'
           package-artifact: ${{ inputs.macos-package-artifact }}
           build-artifact: build-macos-13-Release-nightly-${{ inputs.geoml_nightly }}-cov-OFF-static-ON-python-OFF
 
@@ -182,14 +173,13 @@ jobs:
           build-artifact: build-macos-13-Release-nightly-${{ inputs.geoml_nightly }}-cov-OFF-static-ON-python-OFF
           unit-tests: true
           api-tests: true
-          #integration-tests: ${{ inputs.integration-tests == 'true' }}
 
-  # draft-release:
-  #   if: ${{ inputs.draft-release == 'true' }}
-  #   needs: ["test-macos", "test-windows", "test-linux"]
-  #   runs-on: "ubuntu-latest"
-  #   steps:
-  #     - uses: actions/checkout@v4
-  #     - uses: ./.github/actions/releasea
-  #       with:
-  #         GH_TOKEN: ${{ secrets.GH_TOKEN }}
+  draft-release:
+    if: ${{ inputs.draft-release == 'true' }}
+    needs: ["test-macos", "test-windows", "test-linux"]
+    runs-on: "ubuntu-latest"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/releasea
+        with:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
