@@ -72,22 +72,6 @@ if (GEOML_BUILD_EXAMPLES)
   add_subdirectory(examples)
 endif(GEOML_BUILD_EXAMPLES)
 
-# code coverage analysis
-IF (CMAKE_BUILD_TYPE STREQUAL "Debug")
-        # enable extensive debug output
-        OPTION(DEBUG_EXTENSIVE "Switch on extensive debug output" OFF)
-        OPTION(GEOML_ENABLE_COVERAGE "Enable GCov coverage analysis (defines a 'coverage' target and enforces static build of geoml)" OFF)
-        IF(GEOML_ENABLE_COVERAGE)
-                MESSAGE(STATUS "Coverage enabled")
-                INCLUDE(CodeCoverage)
-                SETUP_TARGET_FOR_COVERAGE(coverage-unittests geoml-unittests tests/unittests coverageReport-unit $ENV{COVERAGE_ARGS})
-                SETUP_TARGET_FOR_COVERAGE(coverage-apitest geoml-apitest tests/apitests coverageReport-api $ENV{COVERAGE_ARGS})
-                SETUP_TARGET_FOR_COVERAGE_COBERTURA(coverage-cobertura geoml-unittests coverage $ENV{COVERAGE_ARGS})
-        ELSE()
-                MESSAGE(STATUS "Coverage disabled")
-        ENDIF()
-ENDIF()
-
 set(CPACK_DEBIAN_PACKAGE_MAINTAINER "Martin Siggel") #required for debian/ubuntu
 set(CPACK_PACKAGE_VENDOR "www.dlr.de/sc")
 set(CPACK_RESOURCE_FILE_LICENSE ${PROJECT_SOURCE_DIR}/LICENSE.txt)
@@ -109,3 +93,19 @@ cpack_add_component(headers DISPLAY_NAME "Headers")
 cpack_add_component(cpp_bindings DISPLAY_NAME "Internal C++ Bindings")
 cpack_add_component(interfaces DISPLAY_NAME "Interfaces/Bindings")
 cpack_add_component(docu DISPLAY_NAME "Documentation")
+
+# code coverage analysis
+IF (CMAKE_BUILD_TYPE STREQUAL "Debug")
+        # enable extensive debug output
+        OPTION(DEBUG_EXTENSIVE "Switch on extensive debug output" OFF)
+        OPTION(GEOML_ENABLE_COVERAGE "Enable GCov coverage analysis (defines a 'coverage' target and enforces static build of geoml)" OFF)
+        IF(GEOML_ENABLE_COVERAGE)
+                MESSAGE(STATUS "Coverage enabled")
+                INCLUDE(CodeCoverage)
+                SETUP_TARGET_FOR_COVERAGE(coverage-unittests geoml-unittests tests/unittests coverageReport-unit $ENV{COVERAGE_ARGS})
+                SETUP_TARGET_FOR_COVERAGE(coverage-apitest geoml-apitest tests/apitests coverageReport-api $ENV{COVERAGE_ARGS})
+                SETUP_TARGET_FOR_COVERAGE_COBERTURA(coverage-cobertura geoml-unittests coverage $ENV{COVERAGE_ARGS})
+        ELSE()
+                MESSAGE(STATUS "Coverage disabled")
+        ENDIF()
+ENDIF()
