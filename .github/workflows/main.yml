@@ -6,7 +6,7 @@ on:
   push:
     branches:
       - 'main'
-      - 'github_actions'
+      - 'github_actions-2'
     tags:
       - v*
   workflow_dispatch:
