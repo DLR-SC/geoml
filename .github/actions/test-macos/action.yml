@@ -13,10 +13,15 @@ inputs:
     required: false
     default: true
 
-  integration-tests:
-    description: "Set to true to run TiGLs integration tests (true or false)"
+  api-tests:
+    description: "Set to true to run TiGLs unit tests (true or false)"
     required: false
-    default: true
+    default: true  
+
+  # integration-tests:
+  #   description: "Set to true to run TiGLs integration tests (true or false)"
+  #   required: false
+  #   default: true
 
 runs:
 
@@ -48,12 +53,21 @@ runs:
       run: |
         cd build/tests/unittests/
         chmod a+x ./TiGL-unittests
-        ./TiGL-unittests --gtest_shuffle --gtest_output=xml:unit_test_results.xml
+        ./geoml-unittests --gtest_shuffle --gtest_output=xml:unit_test_results.xml
 
-    - name: Run integration tests
-      if: ${{ inputs.integration-tests == 'true' }}
+    - name: Run api tests
+      if: ${{ inputs.api-tests == 'true' }}
       shell: bash
       run: |
-        cd build/tests/integrationtests/
-        chmod a+x ./TiGL-integrationtests
-        ./TiGL-integrationtests --gtest_shuffle --gtest_output=xml:integration_test_results.xml
+        cd build/tests/apitests/
+        chmod a+x ./geoml-apitest
+        ./geoml-apitest 
+        #--gtest_shuffle --gtest_output=xml:unit_test_results.xml
+
+#     - name: Run integration tests
+#       if: ${{ inputs.integration-tests == 'true' }}
+#       shell: bash
+#       run: |
+#         cd build/tests/integrationtests/
+#         chmod a+x ./TiGL-integrationtests
+#         ./TiGL-integrationtests --gtest_shuffle --gtest_output=xml:integration_test_results.xml'
