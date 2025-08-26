@@ -46,7 +46,6 @@ runs:
       shell: bash
       run: |
         gtar -xzf build.tar.gz
-        tree
 
     - name: Run unit tests
       if: ${{ inputs.unit-tests == 'true' }}
