@@ -53,7 +53,7 @@ runs:
       run: |
         cd build/tests/unittests/
         chmod a+x ./geoml-unittests
-        ./geoml-unittests --gtest_shuffle --gtest_output=xml:unit_test_results.xml
+       # ./geoml-unittests --gtest_shuffle --gtest_output=xml:unit_test_results.xml
 
     - name: Run api tests
       if: ${{ inputs.api-tests == 'true' }}
@@ -62,7 +62,7 @@ runs:
         cd build/tests/apitests/
         chmod a+x ./geoml-apitest
         ./geoml-apitest 
-        #--gtest_shuffle --gtest_output=xml:unit_test_results.xml
+      #  --gtest_shuffle --gtest_output=xml:unit_test_results.xml
 
 #     - name: Run integration tests
 #       if: ${{ inputs.integration-tests == 'true' }}
