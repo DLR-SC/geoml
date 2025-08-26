@@ -46,6 +46,13 @@ runs:
       shell: bash
       run: |
         gtar -xzf build.tar.gz
+              # Show directory
+    - name: Show directory 
+      run: |
+        ls -al
+    - name: Show directory tree
+      run: |
+        tree
 
     - name: Run unit tests
       if: ${{ inputs.unit-tests == 'true' }}
