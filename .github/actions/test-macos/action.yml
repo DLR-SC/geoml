@@ -47,19 +47,12 @@ runs:
       run: |
         gtar -xzf build.tar.gz
 
-    # - name: Run unit tests
-    #   if: ${{ inputs.unit-tests == 'true' }}
-    #   shell: bash
-    #   run: |
-    #     cd build/tests/unittests/
-    #     chmod a+x ./geoml-unittests
-    
     - name: Run unit tests
       if: ${{ inputs.unit-tests == 'true' }}
       shell: bash
       run: |
         cd build/tests/unittests/
-        ./geoml-unittests
+        chmod a+x ./geoml-unittests
 
     - name: Run api tests
       if: ${{ inputs.api-tests == 'true' }}
