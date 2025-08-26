@@ -190,7 +190,8 @@ jobs:
         with:
           build-artifact: build-macos-13-Release-nightly-${{ inputs.tigl_nightly }}-concat-${{ inputs.tigl_concat_generated_files }}-cov-OFF-static-ON-python-OFF
           unit-tests: true
-          integration-tests: ${{ inputs.integration-tests == 'true' }}
+          api-tests: true
+          #integration-tests: ${{ inputs.integration-tests == 'true' }}
 
   # draft-release:
   #   if: ${{ inputs.draft-release == 'true' }}
