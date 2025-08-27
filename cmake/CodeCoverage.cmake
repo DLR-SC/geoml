@@ -11,13 +11,13 @@
 #    which runs your test executable and produces a lcov code coverage report.
 #
 
-OPTION(TIGL_COVERAGE_GENHTML "Use Genhtml to generate htmls from gcov output" OFF)
+OPTION(GEOML_COVERAGE_GENHTML "Use Genhtml to generate htmls from gcov output" OFF)
 
 # Check prereqs
 FIND_PROGRAM( GCOV_PATH gcov )
 FIND_PROGRAM( LCOV_PATH lcov )
 
-IF(TIGL_COVERAGE_GENHTML)
+IF(GEOML_COVERAGE_GENHTML)
   FIND_PROGRAM( GENHTML_PATH genhtml )
 ENDIF()
 FIND_PROGRAM( GCOVR_PATH gcovr PATHS ${PROJECT_SOURCE_DIR}/tests)
@@ -60,7 +60,7 @@ FUNCTION(SETUP_TARGET_FOR_COVERAGE _targetname _testrunner _testdir _outputname)
                 MESSAGE(FATAL_ERROR "lcov not found! Aborting...")
         ENDIF() # NOT LCOV_PATH
 
-        IF(TIGL_COVERAGE_GENHTML)
+        IF(GEOML_COVERAGE_GENHTML)
         IF(NOT GENHTML_PATH)
                 MESSAGE(FATAL_ERROR "genhtml not found! Aborting...")
         ENDIF() # NOT GENHTML_PATH
@@ -68,9 +68,6 @@ FUNCTION(SETUP_TARGET_FOR_COVERAGE _targetname _testrunner _testdir _outputname)
         
         # copy testdata
         file(COPY ${PROJECT_SOURCE_DIR}/${_testdir}/TestData DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
-        if (BUILD_TIGL_CONFIDENTIAL_TESTS)
-            file(COPY ${PROJECT_SOURCE_DIR}/tests/conftests/TestData DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
-        endif()
 
         # Setup target
         ADD_CUSTOM_TARGET(${_targetname}
@@ -83,7 +80,7 @@ FUNCTION(SETUP_TARGET_FOR_COVERAGE _targetname _testrunner _testdir _outputname)
 
                 # Capturing lcov counters and generating report
                 COMMAND ${LCOV_PATH} --directory ../.. --capture --output-file ${_outputname}_all.info
-                COMMAND ${LCOV_PATH} --remove ${_outputname}_all.info '${PROJECT_SOURCE_DIR}/${_testdir}/*' '${PROJECT_SOURCE_DIR}/tests/common/*' '${PROJECT_SOURCE_DIR}/thirdparty/**' '/usr/*' '*oce*' '*build*' '*tixi3*' '${PROJECT_SOURCE_DIR}/src/generated/*' --output-file ${_outputname}.info
+                COMMAND ${LCOV_PATH} --remove ${_outputname}_all.info '${PROJECT_SOURCE_DIR}/${_testdir}/*' '${PROJECT_SOURCE_DIR}/thirdparty/**' '/usr/*' '*oce*' '*build*' --output-file ${_outputname}.info
 
                 COMMAND ${CMAKE_COMMAND} -E remove ${_outputname}_all.info 
 
@@ -92,7 +89,7 @@ FUNCTION(SETUP_TARGET_FOR_COVERAGE _targetname _testrunner _testdir _outputname)
                 COMMENT "Resetting code coverage counters to zero.\nProcessing code coverage counters and generating report."
         )
 
-        IF(TIGL_COVERAGE_GENHTML)
+        IF(GEOML_COVERAGE_GENHTML)
                 ADD_CUSTOM_COMMAND(TARGET ${_targetname} POST_BUILD
                         COMMAND ${GENHTML_PATH} -o ../../${_outputname} ${_outputname}.info
                         COMMENT "Generating HTML report. Open ./${_outputname}/index.html in your browser to view the coverage report."
@@ -116,12 +113,13 @@ FUNCTION(SETUP_TARGET_FOR_COVERAGE_COBERTURA _targetname _testrunner _outputname
                 # Run tests
                 COMMAND ${_testrunner} ${ARGV3}
                 WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/tests/unittests
+                WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/tests/apitests
                 COMMENT "Running coverage tests."
         )
         
         ADD_CUSTOM_COMMAND(TARGET ${_targetname} POST_BUILD
                 # Running gcovr
-                COMMAND ${GCOVR_PATH} -x -r ${CMAKE_SOURCE_DIR} -e '${CMAKE_SOURCE_DIR}/tests/' -e '${CMAKE_SOURCE_DIR}/thirdparty/' -e '${CMAKE_SOURCE_DIR}/build/' -o ${_outputname}.xml
+                COMMAND ${GCOVR_PATH} -x -r ${CMAKE_SOURCE_DIR} -e '${CMAKE_SOURCE_DIR}/tests/' -e '${CMAKE_SOURCE_DIR}/build/' -o ${_outputname}.xml
                 WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
                 COMMENT "Running gcovr to produce Cobertura code coverage report. ${_testrunner} ${ARGV3}"
         )
