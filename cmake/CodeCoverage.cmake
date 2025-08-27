@@ -112,8 +112,7 @@ FUNCTION(SETUP_TARGET_FOR_COVERAGE_COBERTURA _targetname _testrunner _outputname
         ADD_CUSTOM_TARGET(${_targetname}
                 # Run tests
                 COMMAND ${_testrunner} ${ARGV3}
-                WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/tests/unittests
-                WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/tests/apitests
+                WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/tests/unittests 
                 COMMENT "Running coverage tests."
         )
         
