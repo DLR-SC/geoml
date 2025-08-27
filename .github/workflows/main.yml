@@ -38,10 +38,10 @@ jobs:
     with:
       # create a release build on new git tag
       draft-release: ${{ github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v') }}
-      tigl_nightly: ${{ needs.pre.outputs.nightly }}
-      tigl_concat_generated_files: ${{ needs.pre.outputs.concat }}
+      geoml_nightly: ${{ needs.pre.outputs.nightly }}
+      geoml_concat_generated_files: ${{ needs.pre.outputs.concat }}
       #integration-tests: true
       #documentation-artifact: 'html-documentation'
-      #win-installer-artifact: 'win-installer'
-      #win-package-artifact: 'win-package'
-      #macos-package-artifact: 'macos-package'
+      win-installer-artifact: 'win-installer'
+      win-package-artifact: 'win-package'
+      macos-package-artifact: 'macos-package'

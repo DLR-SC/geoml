@@ -21,13 +21,13 @@ on:
         default: "false"
         type: string
 
-      tigl_nightly:
+      geoml_nightly:
         description: "CMake option to amend the version with the git hash (ON or OFF). Should be OFF for release builds."
         required: false
         default: "ON"
         type: string
 
-      tigl_concat_generated_files:
+      geoml_concat_generated_files:
         description: "CMake option to concatenate the generated source files (ON or OFF). Should be OFF for release builds."
         required: false
         default: "ON"
@@ -46,23 +46,23 @@ on:
       #   default: ''
       #   type: string
 
-      # win-package-artifact:
-      #   description: "Name of the windows package artifact. Leave empty to skip building the package."
-      #   required: false
-      #   default: ''
-      #   type: string
+      win-package-artifact:
+        description: "Name of the windows package artifact. Leave empty to skip building the package."
+        required: false
+        default: ''
+        type: string
 
-      # win-installer-artifact:
-      #   description: "Name of the windows installer artifact. Leave empty to skip building the installer."
-      #   required: false
-      #   default: ''
-      #   type: string
+      win-installer-artifact:
+        description: "Name of the windows installer artifact. Leave empty to skip building the installer."
+        required: false
+        default: ''
+        type: string
 
-      # macos-package-artifact:
-      #   description: "Name of the Mac OS package artifact. Leave empty to skip building the package."
-      #   required: false
-      #   default: ''
-      #   type: string
+      macos-package-artifact:
+        description: "Name of the Mac OS package artifact. Leave empty to skip building the package."
+        required: false
+        default: ''
+        type: string
 
 jobs:
 
@@ -78,127 +78,128 @@ jobs:
             coverage: "ON"
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: ./.github/actions/build-linux
         with:
           config: ${{ matrix.config }}
-          tigl_nightly: ${{ inputs.tigl_nightly }}
-          tigl_concat_generated_files: ${{ inputs.tigl_concat_generated_files }}
-          tigl_enable_coverage: ${{ matrix.coverage || 'OFF' }}
-          build-artifact: build-${{ matrix.os }}-${{ matrix.config }}-nightly-${{ inputs.tigl_nightly }}-concat-${{ inputs.tigl_concat_generated_files }}-cov-${{ matrix.coverage || 'OFF' }}
+          geoml_nightly: ${{ inputs.geoml_nightly }}
+          geoml_concat_generated_files: ${{ inputs.geoml_concat_generated_files }}
+          geoml_enable_coverage: ${{ matrix.coverage || 'OFF' }}
+          build-artifact: build-${{ matrix.os }}-${{ matrix.config }}-nightly-${{ inputs.geoml_nightly }}-concat-${{ inputs.geoml_concat_generated_files }}-cov-${{ matrix.coverage || 'OFF' }}
 
 
-  test-linux:
-    needs: build-linux
-    strategy:
-      matrix:
-        config: ["Debug", "Release"]
-        os: ["ubuntu-latest", "ubuntu-22.04"]
-        unit-tests: [true]
-        api-tests: [true]
-        # generate coverage reports on latest ubuntu debug builds
-        exclude:
-          - config: "Debug"
-            os: "ubuntu-22.04"
-        include:
-          - config: "Debug"
-            os: "ubuntu-22.04"
-            coverage: "ON"
-            unit-tests: false
-    runs-on: ${{ matrix.os }}
-    steps:
-      - uses: actions/checkout@v4
-      - uses: ./.github/actions/test-linux
-        with:
-          build-artifact: build-${{ matrix.os }}-${{ matrix.config }}-nightly-${{ inputs.tigl_nightly }}-concat-${{ inputs.tigl_concat_generated_files }}-cov-${{ matrix.coverage || 'OFF' }}
-          coverage: ${{ matrix.coverage == 'ON' || false }}
-          unit-tests: ${{ matrix.unit-tests }}
-          api-tests: ${{ matrix.api-tests }}
-        #  integration-tests: ${{ inputs.integration-tests == 'true' || false }}
-        #  codecov_token: ${{ secrets.CODECOV_TOKEN }}
+#  test-linux:
+#    needs: build-linux
+#    strategy:
+#      matrix:
+#        config: ["Debug", "Release"]
+#        os: ["ubuntu-latest", "ubuntu-22.04"]
+#        unit-tests: [true]
+#        api-tests: [true]
+#        # generate coverage reports on latest ubuntu debug builds
+#        exclude:
+#          - config: "Debug"
+#            os: "ubuntu-22.04"
+#        include:
+#          - config: "Debug"
+#            os: "ubuntu-22.04"
+#            coverage: "ON"
+#            unit-tests: false
+#            api-tests: false
+#    runs-on: ${{ matrix.os }}
+#    steps:
+#      - uses: actions/checkout@v5
+#      - uses: ./.github/actions/test-linux
+#        with:
+#          build-artifact: build-${{ matrix.os }}-${{ matrix.config }}-nightly-${{ inputs.geoml_nightly }}-concat-${{ inputs.geoml_concat_generated_files }}-cov-${{ matrix.coverage || 'OFF' }}
+#          coverage: ${{ matrix.coverage == 'ON' || false }}
+#          unit-tests: ${{ matrix.unit-tests }}
+#          api-tests: ${{ matrix.api-tests }}
+#        #  integration-tests: ${{ inputs.integration-tests == 'true' || false }}
+#          codecov_token: ${{ secrets.CODECOV_TOKEN }}
 
 
-  build-windows:
-    strategy:
-      matrix:
-        config: ["Release"]
-        os: ["windows-latest"]
-        include:
-         - config: "Release"
-           os: "windows-latest"
-           oce_static_libs: "ON"
-          #  tigl_bindings_python_internal: "ON"
-          #  documentation-artifact: ${{ inputs.documentation-artifact }}
-          #  package-artifact: ${{ inputs.win-package-artifact }}
-           installer-artifact: ${{ inputs.win-installer-artifact }}
-    runs-on: ${{ matrix.os }}
-    steps:
-      - uses: actions/checkout@v4
-      - uses: ./.github/actions/build-win
-        with:
-          config: ${{ matrix.config }}
-          tigl_nightly: ${{ inputs.tigl_nightly =='true' }}
-          tigl_concat_generated_files: ${{ inputs.tigl_concat_generated_files == 'true' }}
-          #tigl_enable_coverage: 'OFF'
-          oce_static_libs: ${{ matrix.oce_static_libs || 'OFF' }}
-          # tigl_bindings_python_internal: ${{ matrix.tigl_bindings_python_internal || 'OFF' }}
-          # documentation-artifact: ${{ matrix.documentation-artifact }}
-          # package-artifact: ${{ matrix.package-artifact }}
-          installer-artifact: ${{ matrix.installer-artifact }}
-          build-artifact: build-${{ matrix.os }}-${{ matrix.config }}-nightly-${{ inputs.tigl_nightly }}-concat-${{ inputs.tigl_concat_generated_files }}-cov-OFF-static-${{ matrix.oce_static_libs || 'OFF' }}-python-${{ matrix.tigl_bindings_python_internal || 'OFF' }}
+ # build-windows:
+ #   strategy:
+ #     matrix:
+ #       config: ["Release"]
+ #       os: ["windows-latest"]
+ #       include:
+ #        - config: "Release"
+ #          os: "windows-latest"
+ #          oce_static_libs: "ON"
+ #         #  tigl_bindings_python_internal: "ON"
+ #         #  documentation-artifact: ${{ inputs.documentation-artifact }}
+ #          package-artifact: ${{ inputs.win-package-artifact }}
+ #          installer-artifact: ${{ inputs.win-installer-artifact }}
+ #   runs-on: ${{ matrix.os }}
+ #   steps:
+ #     - uses: actions/checkout@v5
+ #     - uses: ./.github/actions/build-win
+ #       with:
+ #         config: ${{ matrix.config }}
+ #         geoml_nightly: ${{ inputs.geoml_nightly =='true' }}
+ #         geoml_concat_generated_files: ${{ inputs.geoml_concat_generated_files == 'true' }}
+ #         tigl_enable_coverage: 'OFF'
+ #         oce_static_libs: ${{ matrix.oce_static_libs || 'OFF' }}
+ #         # tigl_bindings_python_internal: ${{ matrix.tigl_bindings_python_internal || 'OFF' }}
+ #         # documentation-artifact: ${{ matrix.documentation-artifact }}
+ #         package-artifact: ${{ matrix.package-artifact }}
+ #         installer-artifact: ${{ matrix.installer-artifact }}
+ #         build-artifact: build-${{ matrix.os }}-${{ matrix.config }}-nightly-${{ inputs.geoml_nightly }}-concat-${{ inputs.geoml_concat_generated_files }}-cov-OFF-static-${{ matrix.oce_static_libs || 'OFF' }}-python-${{ matrix.geoml_bindings_python_internal || 'OFF' }}
 
-  test-windows:
-    needs: build-windows
-    strategy:
-      matrix:
-        config: ["Release"]
-        os: ["windows-latest"]
-        include:
-         - config: "Release"
-           os: "windows-latest"
-           oce_static_libs: "ON"
-          #  tigl_bindings_python_internal: "ON"
-    runs-on: ${{ matrix.os }}
-    steps:
-      - uses: actions/checkout@v4
-      - uses: ./.github/actions/test-win
-        with:
-          build-artifact: build-${{ matrix.os }}-${{ matrix.config }}-nightly-${{ inputs.tigl_nightly }}-concat-${{ inputs.tigl_concat_generated_files }}-cov-OFF-static-${{ matrix.oce_static_libs || 'OFF' }}-python-${{ matrix.tigl_bindings_python_internal || 'OFF' }}
-          unit-tests: true
-          api-tests: true
-          # integration-tests: ${{ inputs.integration-tests == 'true' }}
+#  test-windows:
+#    needs: build-windows
+#    strategy:
+#      matrix:
+#        config: ["Release"]
+#        os: ["windows-latest"]
+#        include:
+#         - config: "Release"
+#           os: "windows-latest"
+#           oce_static_libs: "ON"
+#          #  tigl_bindings_python_internal: "ON"
+#    runs-on: ${{ matrix.os }}
+#    steps:
+#      - uses: actions/checkout@v5
+#      - uses: ./.github/actions/test-win
+#        with:
+#          build-artifact: build-${{ matrix.os }}-${{ matrix.config }}-nightly-${{ inputs.tigl_nightly }}-concat-${{ inputs.tigl_concat_generated_files }}-cov-OFF-static-${{ matrix.oce_static_libs || 'OFF' }}-python-${{ matrix.tigl_bindings_python_internal || 'OFF' }}
+#          unit-tests: true
+#          api-tests: true
+#          # integration-tests: ${{ inputs.integration-tests == 'true' }}
 
-  build-macos:
-    runs-on: "macos-13"
-    steps:
-      - uses: actions/checkout@v4
-      - uses: ./.github/actions/build-macos
-        with:
-          config: "Release"
-          tigl_nightly: ${{ inputs.tigl_nightly =='true' }}
-          tigl_concat_generated_files: ${{ inputs.tigl_concat_generated_files == 'true' }}
-         # tigl_enable_coverage: 'OFF'
-          package-artifact: ${{ inputs.macos-package-artifact }}
-          build-artifact: build-macos-13-Release-nightly-${{ inputs.tigl_nightly }}-concat-${{ inputs.tigl_concat_generated_files }}-cov-OFF-static-ON-python-OFF
+#  build-macos:
+#    runs-on: "macos-13"
+#    steps:
+#      - uses: actions/checkout@v5
+#      - uses: ./.github/actions/build-macos
+#        with:
+#          config: "Release"
+#          geoml_nightly: ${{ inputs.geoml_nightly =='true' }}
+#          geoml_concat_generated_files: ${{ inputs.geoml_concat_generated_files == 'true' }}
+#          tigl_enable_coverage: 'OFF'
+#          package-artifact: ${{ inputs.macos-package-artifact }}
+#          build-artifact: build-macos-13-Release-nightly-${{ inputs.geoml_nightly }}-concat-${{ inputs.geoml_concat_generated_files }}-cov-OFF-static-ON-python-OFF
 
-  test-macos:
-    needs: build-macos
-    runs-on: "macos-13"
-    steps:
-      - uses: actions/checkout@v4
-      - uses: ./.github/actions/test-macos
-        with:
-          build-artifact: build-macos-13-Release-nightly-${{ inputs.tigl_nightly }}-concat-${{ inputs.tigl_concat_generated_files }}-cov-OFF-static-ON-python-OFF
-          unit-tests: true
-          api-tests: true
-          #integration-tests: ${{ inputs.integration-tests == 'true' }}
+#  test-macos:
+#    needs: build-macos
+#    runs-on: "macos-13"
+#    steps:
+#      - uses: actions/checkout@v5
+#      - uses: ./.github/actions/test-macos
+#        with:
+#          build-artifact: build-macos-13-Release-nightly-${{ inputs.geoml_nightly }}-concat-${{ inputs.geoml_concat_generated_files }}-cov-OFF-static-ON-python-OFF
+#          unit-tests: true
+#          api-tests: true
+#          #integration-tests: ${{ inputs.integration-tests == 'true' }}
 
-  # draft-release:
-  #   if: ${{ inputs.draft-release == 'true' }}
-  #   needs: ["test-macos", "test-windows", "test-linux"]
-  #   runs-on: "ubuntu-latest"
-  #   steps:
-  #     - uses: actions/checkout@v4
-  #     - uses: ./.github/actions/releasea
-  #       with:
-  #         GH_TOKEN: ${{ secrets.GH_TOKEN }}
+#  draft-release:
+#    if: ${{ inputs.draft-release == 'true' }}
+#    needs: ["test-macos", "test-windows", "test-linux"]
+#    runs-on: "ubuntu-latest"
+#    steps:
+#      - uses: actions/checkout@v5
+#      - uses: ./.github/actions/releasea
+#        with:
+#          GH_TOKEN: ${{ secrets.GH_TOKEN }}

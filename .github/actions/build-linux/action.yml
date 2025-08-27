@@ -1,6 +1,6 @@
 name: "Linux Build"
 
-description: "Build TiGL on Linux"
+description: "Build geoml on Linux"
 
 inputs:
 
@@ -9,12 +9,12 @@ inputs:
     required: true
     default: "Release"
 
-  tigl_nightly:
+  geoml_nightly:
     description: "CMake option to amend the version with the git hash (ON or OFF)"
     required: false
     default: "ON"
 
-  tigl_concat_generated_files:
+  geoml_concat_generated_files:
     description: "CMake option to concatenate the generated source files (ON or OFF)"
     required: false
     default: "ON"
@@ -24,14 +24,14 @@ inputs:
   #   required: false
   #   default: "OFF"
 
-  # tigl_enable_coverage:
-  #   description: "CMake option to enable code coverage with gcov/lcov (ON or OFF)"
-  #   required: false
-  #   default: "OFF"
+  geoml_enable_coverage:
+    description: "CMake option to enable code coverage with gcov/lcov (ON or OFF)"
+    required: false
+    default: "OFF"
 
-  # build-artifact:
-  #   descpription: "Set the name for the build artifact stored by this job"
-  #   required: true
+  build-artifact:
+    descpription: "Set the name for the build artifact stored by this job"
+    required: true
 
 runs:
 
@@ -63,19 +63,27 @@ runs:
         conda info
         conda list
 
-    # - name: ccache
-    #   uses: hendrikmuhs/ccache-action@v1
-    #   with:
-    #     key: compiler-cache-${{ inputs.build-artifact }}
+    - name: ccache
+      uses: hendrikmuhs/ccache-action@v1
+      with:
+        key: compiler-cache-${{ inputs.build-artifact }}
 
-    - name: Build TiGL
+    - name: Build geoml
       shell: bash -l {0}
       run: |
         mkdir build
         cd build
-        cmake .. -DCMAKE_BUILD_TYPE=${{ inputs.config }} \
-                 -DGEOML_BUILD_TESTS=ON \
-                 -DCMAKE_INSTALL_PREFIX=install
+        cmake .. -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
+                 -DCMAKE_BUILD_TYPE=${{ inputs.config }} \
+                 -DCMAKE_INSTALL_PREFIX=install \
+                 -DOCE_STATIC_LIBS=ON \
+                 -DTIGL_BUILD_TESTS=ON \
+                 -DTIGL_ENABLE_COVERAGE=${{ inputs.tigl_enable_coverage }} \
+                 -DTIGL_CONCAT_GENERATED_FILES=${{ inputs.tigl_concat_generated_files }} \
+                 #-DTIGL_BINDINGS_PYTHON_INTERNAL=${{ inputs.tigl_bindings_python_internal }} \
+                 #-DTIGL_BINDINGS_MATLAB=ON \
+                 #-DTIGL_BINDINGS_JAVA=ON \
+                 -DTIGL_NIGHTLY=${{ inputs.tigl_nightly }}
         cmake --build . -j 4 --target install
        
 
