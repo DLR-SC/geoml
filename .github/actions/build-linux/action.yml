@@ -77,13 +77,13 @@ runs:
                  -DCMAKE_BUILD_TYPE=${{ inputs.config }} \
                  -DCMAKE_INSTALL_PREFIX=install \
                  -DOCE_STATIC_LIBS=ON \
-                 -DTIGL_BUILD_TESTS=ON \
-                 -DTIGL_ENABLE_COVERAGE=${{ inputs.tigl_enable_coverage }} \
-                 -DTIGL_CONCAT_GENERATED_FILES=${{ inputs.tigl_concat_generated_files }} \
-                 -DTIGL_NIGHTLY=${{ inputs.tigl_nightly }}
-                 #-DTIGL_BINDINGS_PYTHON_INTERNAL=${{ inputs.tigl_bindings_python_internal }} \
-                 #-DTIGL_BINDINGS_MATLAB=ON \
-                 #-DTIGL_BINDINGS_JAVA=ON \
+                 -DGEOML_BUILD_TESTS=ON \
+                 -DGEOML_ENABLE_COVERAGE=${{ inputs.geoml_enable_coverage }} \
+                 -DGEOML_CONCAT_GENERATED_FILES=${{ inputs.geoml_concat_generated_files }} \
+                 -DGEOML_NIGHTLY=${{ inputs.geoml_nightly }}
+                 #-DGEOML_BINDINGS_PYTHON_INTERNAL=${{ inputs.geoml_bindings_python_internal }} \
+                 #-DGEOML_BINDINGS_MATLAB=ON \
+                 #-DGEOML_BINDINGS_JAVA=ON \
         cmake --build . -j 4 --target install
        
 
