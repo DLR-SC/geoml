@@ -88,35 +88,35 @@ jobs:
           build-artifact: build-${{ matrix.os }}-${{ matrix.config }}-nightly-${{ inputs.geoml_nightly }}-concat-${{ inputs.geoml_concat_generated_files }}-cov-${{ matrix.coverage || 'OFF' }}
 
 
-#  test-linux:
-#    needs: build-linux
-#    strategy:
-#      matrix:
-#        config: ["Debug", "Release"]
-#        os: ["ubuntu-latest", "ubuntu-22.04"]
-#        unit-tests: [true]
-#        api-tests: [true]
-#        # generate coverage reports on latest ubuntu debug builds
-#        exclude:
-#          - config: "Debug"
-#            os: "ubuntu-22.04"
-#        include:
-#          - config: "Debug"
-#            os: "ubuntu-22.04"
-#            coverage: "ON"
-#            unit-tests: false
-#            api-tests: false
-#    runs-on: ${{ matrix.os }}
-#    steps:
-#      - uses: actions/checkout@v5
-#      - uses: ./.github/actions/test-linux
-#        with:
-#          build-artifact: build-${{ matrix.os }}-${{ matrix.config }}-nightly-${{ inputs.geoml_nightly }}-concat-${{ inputs.geoml_concat_generated_files }}-cov-${{ matrix.coverage || 'OFF' }}
-#          coverage: ${{ matrix.coverage == 'ON' || false }}
-#          unit-tests: ${{ matrix.unit-tests }}
-#          api-tests: ${{ matrix.api-tests }}
-#        #  integration-tests: ${{ inputs.integration-tests == 'true' || false }}
-#          codecov_token: ${{ secrets.CODECOV_TOKEN }}
+  test-linux:
+    needs: build-linux
+    strategy:
+      matrix:
+        config: ["Debug", "Release"]
+        os: ["ubuntu-latest", "ubuntu-22.04"]
+        unit-tests: [true]
+        api-tests: [true]
+        # generate coverage reports on latest ubuntu debug builds
+        exclude:
+          - config: "Debug"
+            os: "ubuntu-22.04"
+        include:
+          - config: "Debug"
+            os: "ubuntu-22.04"
+            coverage: "ON"
+            unit-tests: false
+            api-tests: false
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v5
+      - uses: ./.github/actions/test-linux
+        with:
+          build-artifact: build-${{ matrix.os }}-${{ matrix.config }}-nightly-${{ inputs.geoml_nightly }}-concat-${{ inputs.geoml_concat_generated_files }}-cov-${{ matrix.coverage || 'OFF' }}
+          coverage: ${{ matrix.coverage == 'ON' || false }}
+          unit-tests: ${{ matrix.unit-tests }}
+          api-tests: ${{ matrix.api-tests }}
+        #  integration-tests: ${{ inputs.integration-tests == 'true' || false }}
+          codecov_token: ${{ secrets.CODECOV_TOKEN }}
 
 
  # build-windows:
