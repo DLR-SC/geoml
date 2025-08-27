@@ -42,18 +42,6 @@ endif()
 option(GEOML_INSTALL_INTERNAL_API "Install geoml's CPP bindings" OFF)
 
 OPTION(GEOML_NIGHTLY "Creates a nightly build of geoml (includes git sha into geoml version)" OFF)
-mark_as_advanced(GEOML_NIGHTLY)
-if(GEOML_NIGHTLY)
-    message(STATUS "Nightly build enabled")
-
-    # get git revision for daily builds
-    include(GetGitRevisionDescription)
-    get_git_head_revision(REFSPEC HASHVAR)
-
-    if(NOT ${HASHVAR} STREQUAL "GITDIR-NOTFOUND")
-        set(GEOML_REVISION ${HASHVAR})
-    endif()
-endif(GEOML_NIGHTLY)
 
 set(LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR})
 
