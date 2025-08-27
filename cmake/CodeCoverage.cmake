@@ -124,10 +124,10 @@ FUNCTION(SETUP_TARGET_FOR_COVERAGE_COBERTURA _targetname _testrunner _outputname
                 COMMENT "Running gcovr to produce Cobertura code coverage report. ${_testrunner} ${ARGV3}"
         )
 
-        # Show info where to find the report
-        ADD_CUSTOM_COMMAND(TARGET ${_targetname} POST_BUILD
-                COMMAND ;
-                COMMENT "Cobertura code coverage report saved in ${_outputname}.xml."
-        )
+        # # Show info where to find the report
+        # ADD_CUSTOM_COMMAND(TARGET ${_targetname} POST_BUILD
+        #         COMMAND ;
+        #         COMMENT "Cobertura code coverage report saved in ${_outputname}.xml."
+        # )
 
 ENDFUNCTION() # SETUP_TARGET_FOR_COVERAGE_COBERTURA 
