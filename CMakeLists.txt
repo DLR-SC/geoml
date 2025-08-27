@@ -73,7 +73,6 @@ add_custom_target(checkstyle)
 add_custom_target(checkstylexml)
 
 add_subdirectory(src)
-add_subdirectory(thirdparty)
 add_subdirectory(bindings)
 
 #create gtests, override gtest standard setting
