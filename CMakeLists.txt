@@ -41,6 +41,19 @@ endif()
 
 option(GEOML_INSTALL_INTERNAL_API "Install geoml's CPP bindings" OFF)
 
+OPTION(GEOML_NIGHTLY "Creates a nightly build of geoml (includes git sha into geoml version)" OFF)
+mark_as_advanced(GEOML_NIGHTLY)
+if(GEOML_NIGHTLY)
+    message(STATUS "Nightly build enabled")
+
+    # get git revision for daily builds
+    include(GetGitRevisionDescription)
+    get_git_head_revision(REFSPEC HASHVAR)
+
+    if(NOT ${HASHVAR} STREQUAL "GITDIR-NOTFOUND")
+        set(GEOML_REVISION ${HASHVAR})
+    endif()
+endif(GEOML_NIGHTLY)
 
 set(LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR})
 
@@ -51,11 +64,29 @@ if (MSVC)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP")
 endif()
 
+# code coverage analysis
+IF (CMAKE_BUILD_TYPE STREQUAL "Debug")
+        # enable extensive debug output
+        OPTION(DEBUG_EXTENSIVE "Switch on extensive debug output" OFF)
+        OPTION(TIGL_ENABLE_COVERAGE "Enable GCov coverage analysis (defines a 'coverage' target and enforces static build of tigl)" OFF)
+        IF(TIGL_ENABLE_COVERAGE)
+                MESSAGE(STATUS "Coverage enabled")
+                INCLUDE(CodeCoverage)
+                SETUP_TARGET_FOR_COVERAGE(coverage-unittests TiGL-unittests tests/unittests coverageReport-unit $ENV{COVERAGE_ARGS})
+                SETUP_TARGET_FOR_COVERAGE(coverage-integrationtests TiGL-integrationtests tests/integrationtests coverageReport-integration $ENV{COVERAGE_ARGS})
+                SETUP_TARGET_FOR_COVERAGE_COBERTURA(coverage-cobertura TiGL-unittests coverage $ENV{COVERAGE_ARGS})
+        ELSE()
+                MESSAGE(STATUS "Coverage disabled")
+        ENDIF()
+ENDIF()
+
 # style checks
 add_custom_target(checkstyle)
 add_custom_target(checkstylexml)
 
 add_subdirectory(src)
+add_subdirectory(thirdparty)
+add_subdirectory(bindings)
 
 #create gtests, override gtest standard setting
 option(GEOML_BUILD_TESTS "Build geoml Testsuite" OFF)
