@@ -63,11 +63,12 @@ IF (CMAKE_BUILD_TYPE STREQUAL "Debug")
                 SETUP_TARGET_FOR_COVERAGE(coverage-unittests GEOML-unittests tests/unittests coverageReport-unit $ENV{COVERAGE_ARGS})
                 SETUP_TARGET_FOR_COVERAGE(coverage-apitests GEOML-apitests tests/apitests coverageReport-integration $ENV{COVERAGE_ARGS})
                 SETUP_TARGET_FOR_COVERAGE_COBERTURA(coverage-cobertura GEOML-unittests coverage $ENV{COVERAGE_ARGS})
-                SETUP_TARGET_FOR_COVERAGE_COBERTURA(coverage-cobertura GEOML-apitests coverage $ENV{COVERAGE_ARGS})
+                SETUP_TARGET_FOR_COVERAGE_COBERTURA(coverage-cobertura-api GEOML-apitests coverage $ENV{COVERAGE_ARGS})
         ELSE()
                 MESSAGE(STATUS "Coverage disabled")
         ENDIF()
 ENDIF()
+
 
 # style checks
 add_custom_target(checkstyle)
