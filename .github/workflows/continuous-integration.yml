@@ -21,17 +21,17 @@ on:
         default: "false"
         type: string
 
-      geoml_nightly:
-        description: "CMake option to amend the version with the git hash (ON or OFF). Should be OFF for release builds."
-        required: false
-        default: "ON"
-        type: string
+      # geoml_nightly:
+      #   description: "CMake option to amend the version with the git hash (ON or OFF). Should be OFF for release builds."
+      #   required: false
+      #   default: "ON"
+      #   type: string
 
-      geoml_concat_generated_files:
-        description: "CMake option to concatenate the generated source files (ON or OFF). Should be OFF for release builds."
-        required: false
-        default: "ON"
-        type: string
+      # geoml_concat_generated_files:
+      #   description: "CMake option to concatenate the generated source files (ON or OFF). Should be OFF for release builds."
+      #   required: false
+      #   default: "ON"
+      #   type: string
 
       # integration-tests:
       #   # This should be a Boolean, but https://github.com/actions/runner/issues/1483
@@ -82,10 +82,10 @@ jobs:
       - uses: ./.github/actions/build-linux
         with:
           config: ${{ matrix.config }}
-          geoml_nightly: ${{ inputs.geoml_nightly }}
-          geoml_concat_generated_files: ${{ inputs.geoml_concat_generated_files }}
+          # geoml_nightly: ${{ inputs.geoml_nightly }}
+          # geoml_concat_generated_files: ${{ inputs.geoml_concat_generated_files }}
           geoml_enable_coverage: ${{ matrix.coverage || 'OFF' }}
-          build-artifact: build-${{ matrix.os }}-${{ matrix.config }}-nightly-${{ inputs.geoml_nightly }}-concat-${{ inputs.geoml_concat_generated_files }}-cov-${{ matrix.coverage || 'OFF' }}
+          build-artifact: build-${{ matrix.os }}-${{ matrix.config }}-cov-${{ matrix.coverage || 'OFF' }}
 
 
   test-linux:
@@ -111,7 +111,7 @@ jobs:
       - uses: actions/checkout@v5
       - uses: ./.github/actions/test-linux
         with:
-          build-artifact: build-${{ matrix.os }}-${{ matrix.config }}-nightly-${{ inputs.geoml_nightly }}-concat-${{ inputs.geoml_concat_generated_files }}-cov-${{ matrix.coverage || 'OFF' }}
+          build-artifact: build-${{ matrix.os }}-${{ matrix.config }}-cov-${{ matrix.coverage || 'OFF' }}
           coverage: ${{ matrix.coverage == 'ON' || false }}
           unit-tests: ${{ matrix.unit-tests }}
           api-tests: ${{ matrix.api-tests }}
