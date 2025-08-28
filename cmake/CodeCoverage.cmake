@@ -80,7 +80,7 @@ FUNCTION(SETUP_TARGET_FOR_COVERAGE _targetname _testrunner _testdir _outputname)
 
                 # Capturing lcov counters and generating report
                 COMMAND ${LCOV_PATH} --directory ../.. --capture --output-file ${_outputname}_all.info
-                COMMAND ${LCOV_PATH} --remove ${_outputname}_all.info '${PROJECT_SOURCE_DIR}/${_testdir}/*' '/usr/*' '*oce*' '*build*' --output-file ${_outputname}.info
+                COMMAND ${LCOV_PATH} --remove ${_outputname}_all.info '${PROJECT_SOURCE_DIR}/${_testdir}/*' '${PROJECT_SOURCE_DIR}/tests/common/*' '/usr/*' '*oce*' '*build*' --output-file ${_outputname}.info
 
                 COMMAND ${CMAKE_COMMAND} -E remove ${_outputname}_all.info 
 
