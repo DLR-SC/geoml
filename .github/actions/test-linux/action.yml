@@ -1,6 +1,6 @@
 name: "Linux Tests"
 
-description: "Test TiGL on Linux"
+description: "Test geoml on Linux"
 
 inputs:
 
@@ -85,10 +85,10 @@ runs:
       if: ${{ inputs.coverage == 'true' }}
       uses: codecov/codecov-action@v4
       with:
-        files: ./build/tests/unittests/coverageReport-unit.info,./build/tests/apitests/coverageReport-integration.info
+        files: ./build/tests/unittests/coverageReport-unit.info,./build/tests/apitests/coverageReport-api.info
         token: ${{ inputs.codecov_token }}
         codecov_yml_path: codecov.yml
         disable_search: true
         verbose: true
-        flags: unittests, apitests
+        flags: unittests
 
