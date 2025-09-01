@@ -1,6 +1,6 @@
 name: "MacOS Build"
 
-description: "Build TiGL on MacOS with clang"
+description: "Build geoml on MacOS with clang"
 
 inputs:
 
@@ -9,25 +9,25 @@ inputs:
     required: true
     default: "Release"
 
-  tigl_nightly:
-    description: "CMake option to amend the version with the git hash (ON or OFF)"
-    required: true
-    default: "ON"
+  # tigl_nightly:
+  #   description: "CMake option to amend the version with the git hash (ON or OFF)"
+  #   required: true
+  #   default: "ON"
 
-  tigl_concat_generated_files:
-    description: "CMake option to concatenate the generated source files (ON or OFF)"
-    required: true
-    default: "ON"
+  # tigl_concat_generated_files:
+  #   description: "CMake option to concatenate the generated source files (ON or OFF)"
+  #   required: true
+  #   default: "ON"
 
-  # tigl_bindings-python-internal:
-  #   description: "CMake option to build the internal python API"
-  #   required: false
-  #   default: "OFF"
+  tigl_bindings-python-internal:
+    description: "CMake option to build the internal python API"
+    required: false
+    default: "OFF"
 
-  # tigl_enable_coverage:
-  #   description: "CMake option to enable code coverage with gcov/lcov (ON or OFF)"
-  #   required: false
-  #   default: "OFF"
+  tigl_enable_coverage:
+    description: "CMake option to enable code coverage with gcov/lcov (ON or OFF)"
+    required: false
+    default: "OFF"
 
   package-artifact:
     description: "Name of the package artifact. Leave empty to skip package generation."
@@ -83,9 +83,9 @@ runs:
                          -DCMAKE_BUILD_TYPE=${{ inputs.config }} \
                          -DCMAKE_INSTALL_PREFIX=install \
                          -DOCE_STATIC_LIBS=ON \
-                         -DGEOML_BUILD_TESTS=ON \
-                         -DGEOML_CONCAT_GENERATED_FILES=${{ inputs.tigl_concat_generated_files }}
-                         #-DTIGL_NIGHTLY=${{ inputs.tigl_nightly }} 
+                         -DTIGL_BUILD_TESTS=ON \
+                         -DTIGL_ENABLE_COVERAGE=${{ inputs.tigl_enable_coverage }} \          
+                         -DTIGL_BINDINGS_PYTHON_INTERNAL=${{ inputs.geoml_bindings_python_internal }} 
         cmake --build . -j 4 --target install
 
     - name: Create package
