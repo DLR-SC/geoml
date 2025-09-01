@@ -67,7 +67,7 @@ runs:
         cd build
         cd tests\unittests
         dir
-        .\geoml-unittests.exe --gtest_shuffle --gtest_output=xml:unit_test_results.xml
+        .\geoml-unittests.exe #--gtest_shuffle --gtest_output=xml:unit_test_results.xml
 
     - name: Run api tests
       if: ${{ inputs.api-tests == 'true' }}         
