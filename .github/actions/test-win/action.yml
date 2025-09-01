@@ -63,18 +63,14 @@ runs:
       if: ${{ inputs.unit-tests == 'true' }}
       shell: cmd /C call {0}
       run: |
-        cd build
-        cd tests\unittests
-        dir
+        cd build\tests\unittests
         .\geoml-unittests.exe --gtest_shuffle --gtest_output=xml:api_test_results.xml
 
     - name: Run api tests
       if: ${{ inputs.api-tests == 'true' }}         
       shell: cmd /C call {0}
       run: |
-        cd build
-        cmake --build . # das hier kann ich wahrscheinlich, wie bei den unit tests, weglassen, da ja schon gebaut wurde
-        cd tests\apitests
+        cd build\tests\apitests
         .\geoml-apitest.exe --gtest_shuffle --gtest_output=xml:api_test_results.xml
 
     # - name: Run integration tests
