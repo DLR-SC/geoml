@@ -67,7 +67,7 @@ runs:
         cd build
         cd tests\unittests
         dir
-        .\geoml-unittests.exe #--gtest_shuffle --gtest_output=xml:unit_test_results.xml
+        geoml-unittests.exe 
 
     - name: Run api tests
       if: ${{ inputs.api-tests == 'true' }}         
@@ -75,7 +75,7 @@ runs:
       run: |
         set PATH=%cd%\build\install\bin;%PATH%
         cd build
-        cmake --build .
+        cmake --build . # das hier kann ich wahrscheinlich, wie bei den unit tests, weglassen, da ja schon gebaut wurde
         cd tests\apitests
         .\geoml-apitest.exe --gtest_shuffle --gtest_output=xml:api_test_results.xml
 
