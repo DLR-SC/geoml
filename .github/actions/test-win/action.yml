@@ -65,7 +65,6 @@ runs:
       run: |
         set PATH=%cd%\build\install\bin;%PATH%
         cd build
-        cmake --build . 
         cd tests\unittests
         .\geoml-unittests.exe --gtest_shuffle --gtest_output=xml:unit_test_results.xml
 
