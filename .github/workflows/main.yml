@@ -42,6 +42,7 @@ jobs:
       #geoml_concat_generated_files: ${{ needs.pre.outputs.concat }}
       #integration-tests: true
       #documentation-artifact: 'html-documentation'
+      api-tests: true
       win-installer-artifact: 'win-installer'
       win-package-artifact: 'win-package'
       macos-package-artifact: 'macos-package'

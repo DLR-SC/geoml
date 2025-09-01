@@ -46,6 +46,13 @@ on:
       #   default: ''
       #   type: string
 
+       api-tests:
+         # This should be a Boolean, but https://github.com/actions/runner/issues/1483
+         description: "Run api tests"
+         required: false
+         default: "false"
+         type: string
+
       win-package-artifact:
         description: "Name of the windows package artifact. Leave empty to skip building the package."
         required: false
@@ -166,7 +173,7 @@ jobs:
         with:
           build-artifact: build-${{ matrix.os }}-${{ matrix.config }}-cov-OFF-static-${{ matrix.oce_static_libs || 'OFF' }}#-python-${{ matrix.geoml_bindings_python_internal || 'OFF' }}
           unit-tests: true
-          api-tests: true # vgl. wie es bei den integration tests in tigl gemacht wird - etwas anders
+          api-tests: ${{ inputs.api-tests == 'true' }}
 
 #  build-macos:
 #    runs-on: "macos-13"
