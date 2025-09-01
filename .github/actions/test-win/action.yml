@@ -66,6 +66,7 @@ runs:
         set PATH=%cd%\build\install\bin;%PATH%
         cd build
         cd tests\unittests
+        dir
         .\geoml-unittests.exe --gtest_shuffle --gtest_output=xml:unit_test_results.xml
 
     - name: Run api tests
