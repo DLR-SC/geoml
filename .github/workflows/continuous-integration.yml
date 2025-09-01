@@ -46,12 +46,12 @@ on:
       #   default: ''
       #   type: string
 
-       api-tests:
-         # This should be a Boolean, but https://github.com/actions/runner/issues/1483
-         description: "Run api tests"
-         required: false
-         default: "false"
-         type: string
+      api-tests:
+        # This should be a Boolean, but https://github.com/actions/runner/issues/1483
+        description: "Run api tests"
+        required: false
+        default: "false"
+        type: string
 
       win-package-artifact:
         description: "Name of the windows package artifact. Leave empty to skip building the package."
