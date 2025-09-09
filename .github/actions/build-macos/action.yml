@@ -93,8 +93,8 @@ runs:
       shell: bash
       run: |
         cd build
-        cmake --build . --target doc
         cmake --build . --target package
+        cmake --build . --target doc
 
     - name: Upload package as artifact
       if: ${{ inputs.package-artifact }}
