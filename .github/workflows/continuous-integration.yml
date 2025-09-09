@@ -184,7 +184,7 @@ jobs:
           config: "Release"
           #geoml_nightly: ${{ inputs.geoml_nightly =='true' }}
           #geoml_concat_generated_files: ${{ inputs.geoml_concat_generated_files == 'true' }}
-          tigl_enable_coverage: 'OFF'
+          geoml_enable_coverage: 'OFF'
           package-artifact: ${{ inputs.macos-package-artifact }}
           build-artifact: build-macos-13-Release-cov-OFF-static-ON-python-OFF
 

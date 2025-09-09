@@ -19,7 +19,7 @@ inputs:
   #   required: true
   #   default: "ON"
 
-  geoml-python-internal:
+  geoml-bindings-python-internal:
     description: "CMake option to build the internal python API"
     required: false
     default: "OFF"
@@ -83,9 +83,9 @@ runs:
                          -DCMAKE_BUILD_TYPE=${{ inputs.config }} \
                          -DCMAKE_INSTALL_PREFIX=install \
                          -DOCE_STATIC_LIBS=ON \
-                         -Dgeoml_BUILD_TESTS=ON \
-                         -Dgeoml_ENABLE_COVERAGE=${{ inputs.geoml_enable_coverage }} \          
-                         -Dgeoml_BINDINGS_PYTHON_INTERNAL=${{ inputs.geoml_bindings_python_internal }} 
+                         -DGEOML_BUILD_TESTS=ON \
+                         -DGEOML_ENABLE_COVERAGE=${{ inputs.geoml_enable_coverage }} \          
+                         -DGEOML_BINDINGS_PYTHON_INTERNAL=${{ inputs.geoml_bindings_python_internal }} 
         cmake --build . -j 4 --target install
 
     - name: Create package
