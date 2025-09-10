@@ -93,10 +93,10 @@ runs:
         cmake .. -GNinja -DCMAKE_BUILD_TYPE=${{ inputs.config }} ^
                          -DCMAKE_INSTALL_PREFIX=install ^
                          -DOCE_STATIC_LIBS=${{ inputs.oce_static_libs }} ^
-                         -DGEOML_BUILD_TESTS=ON ^                                                 
+                         -DGEOML_BUILD_TESTS=ON ^   
+                         -DPythonOCC_SOURCE_DIR=C:\Miniconda\envs\geoml-bld\Library\src\pythonocc-core ^                                               
                          -DGEOML_ENABLE_COVERAGE=${{ inputs.geoml_enable_coverage }}
-                         #-DGEOML_BINDINGS_PYTHON_INTERNAL=${{ inputs.geoml_bindings_python_internal }} ^
-                         #-DPythonOCC_SOURCE_DIR=C:\Miniconda\envs\geoml-bld\Library\src\pythonocc-core ^ # is not in tigl (anymore?)
+                         #-DGEOML_BINDINGS_PYTHON_INTERNAL=${{ inputs.geoml_bindings_python_internal }} ^                         
         cmake --build . -j 4 --target install                         
 
 
@@ -105,7 +105,7 @@ runs:
       shell: cmd
       run: |
         cd build
-        cmake --build . #--target doc
+        cmake --build . --target doc
         cpack.exe -G ZIP & cpack.exe -G NSIS
 
     - name: Upload package as artifact
