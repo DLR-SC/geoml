@@ -1,6 +1,6 @@
 name: "Windows Build"
 
-description: "Build TiGL on Windows using MSVC"
+description: "Build geoml on Windows using MSVC"
 
 inputs:
 
@@ -39,10 +39,10 @@ inputs:
   #   required: false
   #   default: ''
 
-  installer-artifact:
-    description: "Name of the installer artifact. Leave empty to skip installer generation with NSIS"
-    required: false
-    default: ''
+  # installer-artifact:
+  #   description: "Name of the installer artifact. Leave empty to skip installer generation with NSIS"
+  #   required: false
+  #   default: ''
 
   package-artifact:
     description: "Name of the package artifact. Leave empty to skip package generation with NSIS"
@@ -93,15 +93,15 @@ runs:
         cmake .. -GNinja -DCMAKE_BUILD_TYPE=${{ inputs.config }} ^
                          -DCMAKE_INSTALL_PREFIX=install ^
                          -DOCE_STATIC_LIBS=${{ inputs.oce_static_libs }} ^
-                         -DGEOML_BUILD_TESTS=ON ^
-                         -DGEOML_BINDINGS_PYTHON_INTERNAL=${{ inputs.geoml_bindings_python_internal }} ^
+                         -DGEOML_BUILD_TESTS=ON ^                      
                          -DPythonOCC_SOURCE_DIR=C:\Miniconda\envs\geoml-bld\Library\src\pythonocc-core ^
                          -DGEOML_ENABLE_COVERAGE=${{ inputs.geoml_enable_coverage }}
+                        # -DGEOML_BINDINGS_PYTHON_INTERNAL=${{ inputs.geoml_bindings_python_internal }} ^
         cmake --build . -j 4 --target install                         
 
 
-    - name: Create package and installer
-      if: ${{ inputs.package-artifact || inputs.installer-artifact }}
+    - name: Create package #and installer
+      if: ${{ inputs.package-artifact }} #|| inputs.installer-artifact }}
       shell: cmd
       run: |
         cd build
@@ -117,12 +117,12 @@ runs:
         name: ${{ inputs.package-artifact }}
         path: build/*.zip
 
-    - name: Upload installer as artifact
-      if: ${{ inputs.installer-artifact }}
-      uses: actions/upload-artifact@v4
-      with:
-       name: ${{ inputs.installer-artifact }}
-       path: build/*.exe
+    # - name: Upload installer as artifact
+    #   if: ${{ inputs.installer-artifact }}
+    #   uses: actions/upload-artifact@v4
+    #   with:
+    #    name: ${{ inputs.installer-artifact }}
+    #    path: build/*.exe
 
     # - name: Create documentation
     #   if: ${{ inputs.documentation-artifact }}
