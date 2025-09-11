@@ -105,7 +105,8 @@ runs:
       shell: cmd
       run: |
         cd build
-        cpack.exe -G ZIP # & cpack.exe -G NSIS
+        cpack.exe -G ZIP
+        # & cpack.exe -G NSIS
         #cmake --build . --target doc
 
     - name: Upload package as artifact
