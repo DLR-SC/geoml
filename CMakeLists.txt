@@ -75,7 +75,12 @@ add_custom_target(checkstyle)
 add_custom_target(checkstylexml)
 
 add_subdirectory(src)
-add_subdirectory(bindings)
+
+option(GEOML_BUILD_PYTHON_BINDINGS "Build geoml python bindings" OFF)
+
+if(GEOML_BUILD_PYTHON_BINDINGS)
+    add_subdirectory(bindings)
+endif(GEOML_BUILD_PYTHON_BINDINGS)
 
 #create gtests, override gtest standard setting
 option(GEOML_BUILD_TESTS "Build geoml Testsuite" OFF)

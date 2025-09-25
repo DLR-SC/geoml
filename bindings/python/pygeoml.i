@@ -25,13 +25,22 @@
 #include <TCollection_module.hxx>
 #include <TColgp_module.hxx>
 #include <Geom_module.hxx>
+#include <TopoDS_Compound.hxx>
+#include <TopoDS.hxx>
+#include <TopoDS_CompSolid.hxx>
+#include <TopoDS_Solid.hxx>
+#include <TopoDS_Shell.hxx>
+#include <TopoDS_Wire.hxx>
+#include <TopoDS_Edge.hxx>
+#include <TopoDS_Vertex.hxx>
 %}
 
 %import Geom.i
 
 %{
 #include <geoml/geoml.h>
-#include <geoml/surface/modeling.h>
+#include <geoml/surfaces/surfaces.h>
+#include <geoml/data_structures/Array2d.h>
 %}
 
 %feature("autodoc", "3");
@@ -40,7 +49,21 @@
 
 %template(CurveList) std::vector<Handle(Geom_Curve)>;
 
+%include "TColStd_module.hxx"
+%include "TCollection_module.hxx"
+%include "TColgp_module.hxx"
+%include "Geom_module.hxx"
+%include "TopoDS_Compound.hxx"
+%include "TopoDS.hxx"
+%include "TopoDS_CompSolid.hxx"
+%include "TopoDS_Solid.hxx"
+%include "TopoDS_Shell.hxx"
+%include "TopoDS_Wire.hxx"
+%include "TopoDS_Edge.hxx"
+%include "TopoDS_Vertex.hxx"
+
 %include "geoml/geoml.h"
-%include "geoml/surface/modeling.h"
+%include "geoml/surfaces/surfaces.h"
+%include "geoml/data_structures/Array2d.h"
 
 
