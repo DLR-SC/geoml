@@ -79,7 +79,23 @@ add_subdirectory(src)
 option(GEOML_BUILD_PYTHON_BINDINGS "Build geoml python bindings" OFF)
 
 if(GEOML_BUILD_PYTHON_BINDINGS)
+
+    # Ensure the correct Python version is picked up by specifying the Python_EXECUTABLE
+    if (DEFINED ENV{CONDA_PREFIX})
+        if (WIN32)
+            set(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} "$ENV{CONDA_PREFIX}/Library")
+            # Helps to find PythonOCC automatically
+            set(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} "$ENV{CONDA_PREFIX}/Library/src/pythonocc-core")
+        else()
+            set(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} "$ENV{CONDA_PREFIX}")
+            # Helps to find PythonOCC automatically
+            set(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} "$ENV{CONDA_PREFIX}/src/pythonocc-core")
+        endif()
+    
+    endif()
+
     add_subdirectory(bindings)
+
 endif(GEOML_BUILD_PYTHON_BINDINGS)
 
 #create gtests, override gtest standard setting

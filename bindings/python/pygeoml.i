@@ -39,15 +39,20 @@
 
 %{
 #include <geoml/geoml.h>
-#include <geoml/surfaces/surfaces.h>
+#include "geoml/surfaces/surfaces.h"
 #include <geoml/data_structures/Array2d.h>
+#include "geoml/curves/curves.h"
 %}
 
 %feature("autodoc", "3");
 
 %catch_exceptions()
 
+%include "geoml/data_structures/Array2d.h"
+
 %template(CurveList) std::vector<Handle(Geom_Curve)>;
+%template(Array2dStandardReal) geoml::Array2d<Standard_Real>;
+%template(Array2dgp_Pnt) geoml::Array2d<gp_Pnt>;
 
 %include "TColStd_module.hxx"
 %include "TCollection_module.hxx"
@@ -64,6 +69,6 @@
 
 %include "geoml/geoml.h"
 %include "geoml/surfaces/surfaces.h"
-%include "geoml/data_structures/Array2d.h"
+%include "geoml/curves/curves.h"
 
 
