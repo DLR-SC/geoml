@@ -51,6 +51,7 @@
 %include "geoml/data_structures/Array2d.h"
 
 %template(CurveList) std::vector<Handle(Geom_Curve)>;
+%template(CPointContainer) std::vector<gp_Pnt>;
 %template(Array2dStandardReal) geoml::Array2d<Standard_Real>;
 %template(Array2dgp_Pnt) geoml::Array2d<gp_Pnt>;
 

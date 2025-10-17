@@ -3,6 +3,7 @@ from OCC.Core.TColgp import TColgp_HArray1OfPnt
 from OCC.Core.TColGeom import TColGeom_HArray1OfBSplineCurve
 from OCC.Core.gp import gp_Pnt
 from geoml import CurveList
+from geoml import CPointContainer
 
 
 def float_array(float_list):
@@ -50,6 +51,22 @@ def point_array(points):
         pnt = gp_Pnt(*py_pnt)
         pnts.SetValue(i+1, pnt)
     return pnts
+
+
+def point_vector(gp_pnt_list):
+    """
+    Creates a std::vector of gp_Pnt to be passed
+    to different geometry algorithms of geoml
+
+    :param gp_pnt_list: list of gp_Pnt
+    :return: Vectorgp_Pnt
+    """
+
+    vec = CPointContainer()
+    for pnt in gp_pnt_list:
+        vec.push_back(pnt)
+
+    return vec 
 
 
 def bspline_array(bspline_list):

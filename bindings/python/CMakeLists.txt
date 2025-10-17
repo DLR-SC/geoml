@@ -108,6 +108,10 @@ set(SWIG_MODULE_pygeoml_EXTRA_DEPS common.i doc.i)
 swig_add_library(pygeoml LANGUAGE python SOURCES pygeoml.i TYPE MODULE)
 swig_link_libraries(pygeoml geoml Python3::Module)
 
+install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/geoml
+DESTINATION ${PYTHON_SITE_PACKAGES}
+COMPONENT interfaces
+)
 install(TARGETS _pygeoml LIBRARY DESTINATION ${PYTHON_SITE_PACKAGES}/geoml)
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/pygeoml.py
         DESTINATION ${PYTHON_SITE_PACKAGES}/geoml
