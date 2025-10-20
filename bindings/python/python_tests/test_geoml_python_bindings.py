@@ -28,6 +28,35 @@ def bspline_curve(cp, knots, mults, degree):
 
 
 ###########################################################################
+##################### test geoml/occ_helpers/containers.py ################
+###########################################################################
+
+
+def testing_point_vector():
+    p_1 = gp_Pnt(0.0,0.0,0.0)
+    p_2 = gp_Pnt(0.5,0.0,0.0)       
+    p_3 = gp_Pnt(1.0,1.0,0.0)
+
+    point_list = [p_1, p_2, p_3]
+
+    return containers.point_vector(point_list)
+
+def test_point_vector():
+
+    func_name = "point_vector"
+    func = getattr(containers, func_name, None)
+
+    print(f"Testing function: {func_name}")
+
+    assert func is not None, f"{func_name} does not exist"
+
+    try:
+        result = testing_point_vector()
+    except Exception as e:
+        pytest.fail(f"Calling {func_name} raised an exception: {e}")
+
+
+###########################################################################
 ##################### test geoml/curves/curves.h ##########################
 ###########################################################################
 
@@ -114,7 +143,7 @@ def test_create_face():
 ###########################################################################
 ###########################################################################
 
-
+#display_result(testing_point_vector())
 display_result(testing_interpolate_points_to_b_spline_curve())
 # display_result(testing_create_face())
 # display_result(testing_create_surface())
