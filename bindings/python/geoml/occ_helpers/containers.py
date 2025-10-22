@@ -2,8 +2,37 @@ from OCC.Core.TColStd import TColStd_HArray1OfReal, TColStd_HArray1OfInteger
 from OCC.Core.TColgp import TColgp_HArray1OfPnt
 from OCC.Core.TColGeom import TColGeom_HArray1OfBSplineCurve
 from OCC.Core.gp import gp_Pnt
-from geoml import CurveList
-from geoml import CPointContainer
+from geoml import CurveList, CPointContainer, IntList, StandardRealList
+
+
+def standard_real_vector(float_list):
+    """
+    Creates a std::vector of Standard_Real from
+    a list of floats
+    :param float_list: List of float values
+    :return: std::vector<Standard_Real>
+    """
+
+    vec = StandardRealList()
+    for value in float_list:
+        vec.push_back(value)
+
+    return vec 
+
+
+def int_vector(int_list):
+    """
+    Creates a std::vector of int from
+    a list of integers
+    :param int_list: List of integer values
+    :return: std::vector<int>
+    """
+
+    vec = IntList()
+    for value in int_list:
+        vec.push_back(value)
+
+    return vec
 
 
 def float_array(float_list):
