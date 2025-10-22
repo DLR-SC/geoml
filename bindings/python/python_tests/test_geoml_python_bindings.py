@@ -135,6 +135,7 @@ def test_interpolate_points_to_b_spline_curve():
 ##################### test geoml/curves/BlendCurve.h ##########################
 ###########################################################################
 
+
 def testing_blend_curve():
 
     p_11 = gp_Pnt(0.0,0.0,0.0)
@@ -165,17 +166,59 @@ def testing_blend_curve():
 
     return blend_curve.blend_curve()
 
+
 def test_blend_curve():
 
     try:
         result = testing_blend_curve()
     except Exception as e:
-        pytest.fail(f"Calling {"testing_interpolate_points_to_b_spline_curve"} raised an exception: {e}")
+        pytest.fail(f"Calling {'testing_blend_curve'} raised an exception: {e}")
 
 
 ###########################################################################
 ##################### test geoml/surfaces/surfaces.h ######################
 ###########################################################################
+
+def testing_curve_network_interpolation():
+
+    # create u-curves
+    p_11 = gp_Pnt(0.0,0.0,0.0)
+    p_12 = gp_Pnt(0.0,1.0,0.0)       
+    p_13 = gp_Pnt(1.0,2.0,0.0)
+    point_list_u_1 = [p_11, p_12, p_13]
+    curve_u_1 = pygeoml.interpolate_points_to_b_spline_curve(containers.point_vector(point_list_u_1), 2)
+
+    p_21 = gp_Pnt(0.0,0.0,3.0)
+    p_22 = gp_Pnt(0.0,1.0,3.0)       
+    p_23 = gp_Pnt(1.0,2.0,3.0)
+    point_list_u_2 = [p_21, p_22, p_23]    
+    curve_u_2 = pygeoml.interpolate_points_to_b_spline_curve(containers.point_vector(point_list_u_2), 2)
+
+    p_31 = gp_Pnt(0.0,4.0,3.0)
+    p_32 = gp_Pnt(0.0,5.0,3.0)       
+    p_33 = gp_Pnt(1.0,6.0,3.0)
+    point_list_u_3 = [p_31, p_32, p_33]
+    curve_u_3 = pygeoml.interpolate_points_to_b_spline_curve(containers.point_vector(point_list_u_3), 2)
+
+    curve_list_u = [curve_u_1, curve_u_2, curve_u_3]
+
+    # create v-curves
+    point_list_v_1 = [p_11, p_21, p_31]
+    curve_v_1 = pygeoml.interpolate_points_to_b_spline_curve(containers.point_vector(point_list_v_1), 2)
+
+    point_list_v_2 = [p_12, p_22, p_32]
+    curve_v_2 = pygeoml.interpolate_points_to_b_spline_curve(containers.point_vector(point_list_v_2), 2)
+
+    point_list_v_3 = [p_13, p_23, p_33]
+    curve_v_3 = pygeoml.interpolate_points_to_b_spline_curve(containers.point_vector(point_list_v_3), 2)
+    curve_list_v = [curve_v_1, curve_v_2, curve_v_3]
+
+    u_curves = containers.geomcurve_vector(curve_list_u)
+    v_curves = containers.geomcurve_vector(curve_list_v)
+
+    gordon_surface = pygeoml.interpolate_curve_network(u_curves, v_curves, 1e-1)
+
+    return gordon_surface
 
 
 def testing_create_surface():
@@ -228,9 +271,10 @@ def test_create_face():
 ###########################################################################
 
 #display_result(testing_point_vector())
-display_result(testing_interpolate_points_to_b_spline_curve())
+#display_result(testing_interpolate_points_to_b_spline_curve())
 # display_result(testing_create_face())
 # display_result(testing_create_surface())
 
-display_result(testing_nurbs_curve())
+#display_result(testing_nurbs_curve())
 display_result(testing_blend_curve())
+display_result(testing_curve_network_interpolation())
