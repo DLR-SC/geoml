@@ -1,11 +1,12 @@
 from geoml import pygeoml
 from geoml.occ_helpers import containers
 from OCC.Core.gp import gp_Pnt
+from OCC.Core.gp import gp_Vec
 from OCC.Display.SimpleGui import init_display 
 from OCC.Core.Geom import Geom_BSplineCurve
 from OCC.Core.Geom import Geom_Curve
 
-import pytest
+import pytest 
 
 
 def display_result(shape):
@@ -179,6 +180,7 @@ def test_blend_curve():
 ##################### test geoml/surfaces/surfaces.h ######################
 ###########################################################################
 
+
 def testing_curve_network_interpolation():
 
     # create u-curves
@@ -219,6 +221,77 @@ def testing_curve_network_interpolation():
     gordon_surface = pygeoml.interpolate_curve_network(u_curves, v_curves, 1e-1)
 
     return gordon_surface
+
+
+def test_curve_network_interpolation():
+    
+    try:
+        result = testing_curve_network_interpolation()
+    except Exception as e:
+        pytest.fail(f"Calling {'testing_curve_network_interpolation'} raised an exception: {e}")
+
+
+def testing_interpolate_curves():
+
+    p_11 = gp_Pnt(0.0,0.0,0.0)
+    p_12 = gp_Pnt(0.0,1.0,0.0)       
+    p_13 = gp_Pnt(1.0,2.0,0.0)
+    point_list_1 = [p_11, p_12, p_13]
+    curve_1 = pygeoml.interpolate_points_to_b_spline_curve(containers.point_vector(point_list_1), 2)
+
+    p_21 = gp_Pnt(0.0,0.0,3.0)
+    p_22 = gp_Pnt(0.0,1.0,3.0)       
+    p_23 = gp_Pnt(1.0,2.0,3.0)
+    point_list_2 = [p_21, p_22, p_23]    
+    curve_2 = pygeoml.interpolate_points_to_b_spline_curve(containers.point_vector(point_list_2), 2)
+
+    p_31 = gp_Pnt(0.0,4.0,3.0)
+    p_32 = gp_Pnt(0.0,5.0,3.0)       
+    p_33 = gp_Pnt(1.0,6.0,3.0)
+    point_list_3 = [p_31, p_32, p_33]
+    curve_3 = pygeoml.interpolate_points_to_b_spline_curve(containers.point_vector(point_list_3), 2)
+
+    curve_list = [curve_1, curve_2, curve_3]
+
+    surface = pygeoml.interpolate_curves(containers.geomcurve_vector(curve_list), 2, True)
+
+    return surface
+
+
+def test_interpolate_curves():
+
+    try:
+        result = testing_interpolate_curves()
+    except Exception as e:
+        pytest.fail(f"Calling {'testing_interpolate_curves'} raised an exception: {e}") 
+
+
+def testing_revolving_shape():
+
+    p_1 = gp_Pnt(2.0, 0.0, 0.0)
+    p_2 = gp_Pnt(1.0, 0.0, 1.0)       
+    p_3 = gp_Pnt(3.0, 0.0, 2.0)
+
+    point_list = [p_1, p_2, p_3]
+
+    curve = pygeoml.interpolate_points_to_b_spline_curve(containers.point_vector(point_list), 2)
+    edge = pygeoml.CurveToEdge(curve)
+
+    start_point_rotation_axis = gp_Pnt(0.0, 0.0, 0.0)
+
+    rotation_axis_direction = gp_Vec(0.0, 0.0, 1.0)
+
+    revolving_shape = pygeoml.revolving_shape(edge, start_point_rotation_axis, rotation_axis_direction)
+
+    return revolving_shape
+
+
+def test_revolving_shape():
+
+    try:
+        result = testing_revolving_shape()
+    except Exception as e:
+        pytest.fail(f"Calling {'testing_revolving_shape'} raised an exception: {e}") 
 
 
 def testing_create_surface():
@@ -276,5 +349,5 @@ def test_create_face():
 # display_result(testing_create_surface())
 
 #display_result(testing_nurbs_curve())
-display_result(testing_blend_curve())
 display_result(testing_curve_network_interpolation())
+display_result(testing_revolving_shape())
