@@ -294,6 +294,83 @@ def test_revolving_shape():
         pytest.fail(f"Calling {'testing_revolving_shape'} raised an exception: {e}") 
 
 
+def testing_nurbs_surface():
+
+    p_11 = gp_Pnt(0.0,0.0,0.0)
+    p_12 = gp_Pnt(0.0,1.0,0.0)       
+    p_13 = gp_Pnt(1.0,2.0,0.0)
+
+    p_21 = gp_Pnt(0.0,0.0,3.0)
+    p_22 = gp_Pnt(0.0,1.0,3.0)       
+    p_23 = gp_Pnt(1.0,2.0,3.0)
+
+    p_31 = gp_Pnt(0.0,4.0,3.0)
+    p_32 = gp_Pnt(0.0,5.0,3.0)       
+    p_33 = gp_Pnt(1.0,6.0,3.0)
+
+    control_points = pygeoml.Array2dgp_Pnt(3, 3)
+
+    control_points.setValue(0, 0, p_11)
+    control_points.setValue(0, 1, p_12)
+    control_points.setValue(0, 2, p_13)
+    control_points.setValue(1, 0, p_21)
+    control_points.setValue(1, 1, p_22)
+    control_points.setValue(1, 2, p_23)
+    control_points.setValue(2, 0, p_31)
+    control_points.setValue(2, 1, p_32)
+    control_points.setValue(2, 2, p_33)
+
+    w_11 = 1.0 
+    w_12 = 2.0       
+    w_13 = 1.0
+
+    w_21 = 1.0
+    w_22 = 1.0      
+    w_23 = 1.0
+
+    w_31 = 1.0
+    w_32 = 1.0
+    w_33 = 1.0
+
+    weights = pygeoml.Array2dStandardReal(3, 3)
+
+    weights.setValue(0, 0, w_11)
+    weights.setValue(0, 1, w_12)
+    weights.setValue(0, 2, w_13)
+    weights.setValue(1, 0, w_21)
+    weights.setValue(1, 1, w_22)
+    weights.setValue(1, 2, w_23)
+    weights.setValue(2, 0, w_31)
+    weights.setValue(2, 1, w_32)
+    weights.setValue(2, 2, w_33)
+
+    u_knots = [0.0, 1.0]
+    v_knots = [0.0, 1.0]
+
+    u_mults = [3, 3]
+    v_mults = [3, 3]
+
+    u_degree = 2
+    v_degree = 2
+
+    surface = pygeoml.nurbs_surface(control_points, weights, 
+                                    containers.standard_real_vector(u_knots), 
+                                    containers.standard_real_vector(v_knots), 
+                                    containers.int_vector(u_mults),
+                                    containers.int_vector(v_mults),
+                                    u_degree, v_degree)
+    
+    return surface
+
+
+def test_nurbs_surface():
+
+    try:
+        result = testing_nurbs_surface()
+    except Exception as e:
+        pytest.fail(f"Calling {'testing_nurbs_surface'} raised an exception: {e}") 
+
+
 def testing_create_surface():
     x = gp_Pnt(0,0,0)
     y = gp_Pnt(0.5,0,0)       
@@ -349,5 +426,6 @@ def test_create_face():
 # display_result(testing_create_surface())
 
 #display_result(testing_nurbs_curve())
-display_result(testing_curve_network_interpolation())
-display_result(testing_revolving_shape())
+#display_result(testing_revolving_shape())
+
+display_result(testing_nurbs_surface())
