@@ -38,6 +38,7 @@
 %import Geom.i
 
 %{
+#include <functional>
 #include <geoml/geoml.h>
 #include "geoml/surfaces/surfaces.h"
 #include <geoml/data_structures/Array2d.h>
@@ -45,9 +46,14 @@
 #include "geoml/Continuity.h"
 #include "geoml/curves/BlendCurve.h"
 #include "geoml/geom_topo_conversions/geom_topo_conversions.h"
+#include "geoml/naming_choosing/Shape.h"
+#include "geoml/boolean_ops/modeling.hpp"
+#include "geoml/predicates/temp_predicates.h"
 %}
 
+
 %feature("autodoc", "3");
+
 
 %catch_exceptions()
 
@@ -59,6 +65,7 @@
 %template(IntList) std::vector<int>;
 %template(Array2dStandardReal) geoml::Array2d<Standard_Real>;
 %template(Array2dgp_Pnt) geoml::Array2d<gp_Pnt>;
+
 
 %include "TColStd_module.hxx"
 %include "TCollection_module.hxx"
@@ -79,4 +86,7 @@
 %include "geoml/Continuity.h"
 %include "geoml/curves/BlendCurve.h"
 %include "geoml/geom_topo_conversions/geom_topo_conversions.h"
+%include "geoml/naming_choosing/Shape.h"
+%include "geoml/boolean_ops/modeling.hpp"
+%include "geoml/predicates/temp_predicates.h"
 

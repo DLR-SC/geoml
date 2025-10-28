@@ -43,6 +43,7 @@ def testing_point_vector():
 
     return containers.point_vector(point_list)
 
+
 def test_point_vector():
 
     func_name = "point_vector"
@@ -415,6 +416,40 @@ def test_create_face():
         result = testing_create_face()
     except Exception as e:
         pytest.fail(f"Calling {func_name} raised an exception: {e}")
+
+
+###########################################################################
+##################### test geoml/naming_choosing/Shape.h ##################
+###########################################################################
+
+
+p_1 = gp_Pnt(0.0,0.0,0.0)
+p_2 = gp_Pnt(1.0,0.0,0.0)       
+p_3 = gp_Pnt(2.0,0.0,0.0)
+
+point_list = [p_1, p_2, p_3]
+
+curve = pygeoml.interpolate_points_to_b_spline_curve(containers.point_vector(point_list), 2)
+edge = pygeoml.CurveToEdge(curve)
+
+edge_shape = pygeoml.Shape(edge)
+
+
+
+#######################################
+
+pred = pygeoml.has_tag("test_string")
+ret = pred("another_string")
+assert(type(ret) == bool)
+print(pred(""))
+
+def mypredicate(shape):
+    return False
+
+#shape.select_subshapes(mypredicate)
+
+
+
 
 
 ###########################################################################
