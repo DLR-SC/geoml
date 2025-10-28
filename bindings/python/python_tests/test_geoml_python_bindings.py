@@ -442,6 +442,7 @@ pred = pygeoml.has_tag("test_string")
 ret = pred("another_string")
 assert(type(ret) == bool)
 print(pred(""))
+print(ret)
 
 def mypredicate(shape):
     return False
