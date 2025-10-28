@@ -2,10 +2,10 @@
 
 namespace geoml{
 
-// ShapePredicate operator&&(ShapePredicate const& l, ShapePredicate const& r)
-// {
-//     return [=](Shape const& s){ return l(s) && r(s); };
-// }
+StringPredicate operator&&(StringPredicate const& l, StringPredicate const& r)
+{
+    return [=](std::string const& s){ return l(s) && r(s); };
+}
 
 // ShapePredicate operator||(ShapePredicate const& l, ShapePredicate const& r)
 // {

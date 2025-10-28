@@ -34,7 +34,7 @@ private:
 //  * @param l First ShapePredicate
 //  * @param r Second ShapePredicate
 //  */
-// GEOML_API_EXPORT ShapePredicate operator&&(ShapePredicate const& l, ShapePredicate const& r);
+GEOML_API_EXPORT StringPredicate operator&&(StringPredicate const& l, StringPredicate const& r);
 
 // /**
 //  * @brief Returns the ShapePredicate representing the disjunction of the two input ShapePredicates

@@ -444,8 +444,19 @@ assert(type(ret) == bool)
 print(pred(""))
 print(ret)
 
-def mypredicate(shape):
-    return False
+pred_2 = pygeoml.has_tag("test_string_2")
+
+pred_3 = pred and pred_2 # operator&& seems to work
+
+print(pred_3)
+
+print(pred_3("some_string"))
+
+# pred_op = pygeoml.
+
+
+# def mypredicate(shape):
+#     return False
 
 #shape.select_subshapes(mypredicate)
 
@@ -464,4 +475,6 @@ def mypredicate(shape):
 #display_result(testing_nurbs_curve())
 #display_result(testing_revolving_shape())
 
-display_result(testing_nurbs_surface())
+# display_result(testing_nurbs_surface())
+
+print("Ran through till the end")
