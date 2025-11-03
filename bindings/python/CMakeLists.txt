@@ -87,7 +87,6 @@ include(${SWIG_USE_FILE})
 
 # we use the same definitions as pythonocc for their build to hide some of their warnings
 option(SWIG_HIDE_WARNINGS "Check this option if you want a less verbose swig output." ON)
-set(CMAKE_SWIG_FLAGS ${CMAKE_SWIG_FLAGS} -py3)
 if(SWIG_HIDE_WARNINGS)
   message(STATUS "Disabled SWIG warnings")
   set(CMAKE_SWIG_FLAGS ${CMAKE_SWIG_FLAGS} -w302,401,402,412,314,509,512,504,325,503,520,350,351,383,389,394,395,404)

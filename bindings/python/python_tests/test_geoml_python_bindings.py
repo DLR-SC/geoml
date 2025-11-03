@@ -1,4 +1,5 @@
 from geoml import pygeoml
+from geoml.pygeoml import is_vertex
 from geoml.occ_helpers import containers
 from OCC.Core.gp import gp_Pnt
 from OCC.Core.gp import gp_Vec
@@ -449,18 +450,18 @@ pred_2 = pygeoml.has_tag("test_string_2")
 pred_3 = pred and pred_2 # operator&& seems to work
 
 print(pred_3)
+print(type(pred_3))
 
 print(pred_3("some_string"))
 
-# pred_op = pygeoml.
 
 
-# def mypredicate(shape):
-#     return False
+print("Now, inline stuff:")
 
-#shape.select_subshapes(mypredicate)
-
-
+result = is_vertex
+print(result)
+print(type(result))
+print(result("fdfd")) # does not work
 
 
 
