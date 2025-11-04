@@ -440,28 +440,35 @@ edge_shape = pygeoml.Shape(edge)
 #######################################
 
 pred = pygeoml.has_tag("test_string")
-ret = pred("another_string")
-assert(type(ret) == bool)
-print(pred(""))
-print(ret)
 
-pred_2 = pygeoml.has_tag("test_string_2")
+# tests with StirngPredicates
+# ret = pred("another_string")
+# assert(type(ret) == bool)
+# print(pred(""))
+# print(ret)
 
-pred_3 = pred and pred_2 # operator&& seems to work
+#pred_2 = pygeoml.has_tag("test_string_2")
 
-print(pred_3)
-print(type(pred_3))
+# pred_3 = pred and pred_2 # operator&& seems to work
 
-print(pred_3("some_string"))
+# print(pred_3)
+# print(type(pred_3))
+
+# print(pred_3("some_string"))
 
 
 
 print("Now, inline stuff:")
 
-result = is_vertex
-print(result)
-print(type(result))
-print(result("fdfd")) # does not work
+# result = iis_vertex
+# print(result)
+# print(type(result))
+# print(result("fdfd")) # does not work
+
+
+# tests with ShapePredicates:
+
+
 
 
 

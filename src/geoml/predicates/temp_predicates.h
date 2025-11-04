@@ -51,17 +51,17 @@ GEOML_API_EXPORT StringPredicate operator&&(StringPredicate const& l, StringPred
 // This is necessary, because SWIG had difficulty parsing the inline definitions with lambda functions
 // directly
 namespace details {
-    inline bool _is_vertex(std::string const& s){ return true; }
+    inline bool _iis_vertex(std::string const& s){ return true; }
 }
 
-inline StringPredicate const is_vertex = &details::_is_vertex;
+inline StringPredicate const iis_vertex = &details::_iis_vertex;
 // inline ShapePredicate const is_edge = [](Shape const& s){ return s.is_type(TopAbs_EDGE); };
 // inline ShapePredicate const is_face = [](Shape const& s){ return s.is_type(TopAbs_FACE); };
 // inline ShapePredicate const is_solid = [](Shape const& s){ return s.is_type(TopAbs_SOLID); };
 // inline ShapePredicate const has_origin = [](Shape const& s){ return s.has_origin(); };
 
 // // some free functions returning shape predicates
-GEOML_API_EXPORT StringPredicate has_tag(std::string const& tag);
+GEOML_API_EXPORT StringPredicate hhas_tag(std::string const& tag);
 // GEOML_API_EXPORT ShapePredicate is_type(TopAbs_ShapeEnum shape_type);
 // GEOML_API_EXPORT ShapePredicate is_same(Shape const& other);
 // GEOML_API_EXPORT ShapePredicate is_same(TopoDS_Shape const& other); 

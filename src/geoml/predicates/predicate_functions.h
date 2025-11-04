@@ -48,12 +48,28 @@ GEOML_API_EXPORT ShapePredicate operator||(ShapePredicate const& l, ShapePredica
 GEOML_API_EXPORT ShapePredicate operator!(ShapePredicate const& pred);
 
 
-// some shape predicates as free functions.
-inline ShapePredicate const is_vertex = [](Shape const& s){ return s.is_type(TopAbs_VERTEX); };
-inline ShapePredicate const is_edge = [](Shape const& s){ return s.is_type(TopAbs_EDGE); };
-inline ShapePredicate const is_face = [](Shape const& s){ return s.is_type(TopAbs_FACE); };
-inline ShapePredicate const is_solid = [](Shape const& s){ return s.is_type(TopAbs_SOLID); };
-inline ShapePredicate const has_origin = [](Shape const& s){ return s.has_origin(); };
+// This is necessary, because SWIG had difficulty parsing the inline definitions with lambda functions
+// directly
+namespace details {
+    inline bool _is_vertex(Shape const& s){ return s.is_type(TopAbs_VERTEX); }
+    inline bool _is_edge(Shape const& s){ return s.is_type(TopAbs_EDGE); }
+    inline bool _is_face(Shape const& s){ return s.is_type(TopAbs_FACE); }
+    inline bool _is_solid(Shape const& s){ return s.is_type(TopAbs_SOLID); }
+    inline bool _has_origin(Shape const& s){ return s.has_origin(); }
+}
+
+inline ShapePredicate const is_vertex = &details::_is_vertex;
+inline ShapePredicate const is_edge = &details::_is_edge;
+inline ShapePredicate const is_face = &details::_is_face;
+inline ShapePredicate const is_solid = &details::_is_solid;
+inline ShapePredicate const is_has_origin = &details::_has_origin;
+
+
+// inline ShapePredicate const is_vertex = [](Shape const& s){ return s.is_type(TopAbs_VERTEX); };
+// inline ShapePredicate const is_edge = [](Shape const& s){ return s.is_type(TopAbs_EDGE); };
+// inline ShapePredicate const is_face = [](Shape const& s){ return s.is_type(TopAbs_FACE); };
+// inline ShapePredicate const is_solid = [](Shape const& s){ return s.is_type(TopAbs_SOLID); };
+// inline ShapePredicate const has_origin = [](Shape const& s){ return s.has_origin(); };
 
 // some free functions returning shape predicates
 GEOML_API_EXPORT ShapePredicate has_tag(std::string const& tag);

@@ -17,7 +17,7 @@ StringPredicate operator&&(StringPredicate const& l, StringPredicate const& r)
 //     return [=](Shape const& s){ return !pred(s); };
 // }
 
-StringPredicate has_tag(std::string const& tag)
+StringPredicate hhas_tag(std::string const& tag)
 {
     return [=](std::string const& s){ return false; };
 }

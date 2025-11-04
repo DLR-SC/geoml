@@ -48,7 +48,8 @@
 #include "geoml/geom_topo_conversions/geom_topo_conversions.h"
 #include "geoml/naming_choosing/Shape.h"
 #include "geoml/boolean_ops/modeling.hpp"
-#include "geoml/predicates/temp_predicates.h"
+// #include "geoml/predicates/temp_predicates.h"
+#include "geoml/predicates/predicate_functions.h"
 %}
 
 
@@ -88,5 +89,6 @@
 %include "geoml/geom_topo_conversions/geom_topo_conversions.h"
 %include "geoml/naming_choosing/Shape.h"
 %include "geoml/boolean_ops/modeling.hpp"
-%include "geoml/predicates/temp_predicates.h"
+// %include "geoml/predicates/temp_predicates.h"
+%include "geoml/predicates/predicate_functions.h"
 
