@@ -33,6 +33,7 @@
 #include <TopoDS_Wire.hxx>
 #include <TopoDS_Edge.hxx>
 #include <TopoDS_Vertex.hxx>
+#include <TopAbs_ShapeEnum.hxx>
 %}
 
 %import Geom.i
@@ -50,7 +51,7 @@
 #include "geoml/boolean_ops/modeling.hpp"
 // #include "geoml/predicates/temp_predicates.h"
 #include "geoml/predicates/predicate_functions.h"
-%}
+%} 
 
 
 %feature("autodoc", "3");
@@ -80,6 +81,7 @@
 %include "TopoDS_Wire.hxx"
 %include "TopoDS_Edge.hxx"
 %include "TopoDS_Vertex.hxx"
+%include "TopAbs_ShapeEnum.hxx"
 
 %include "geoml/geoml.h"
 %include "geoml/surfaces/surfaces.h"

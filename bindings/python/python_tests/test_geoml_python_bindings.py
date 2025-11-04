@@ -6,6 +6,8 @@ from OCC.Core.gp import gp_Vec
 from OCC.Display.SimpleGui import init_display 
 from OCC.Core.Geom import Geom_BSplineCurve
 from OCC.Core.Geom import Geom_Curve
+from OCC.Core.TopAbs import TopAbs_EDGE, TopAbs_FACE
+from OCC.Core.TopAbs import TopAbs_ShapeEnum
 
 import pytest 
 
@@ -162,6 +164,7 @@ def testing_blend_curve():
     curve_2 = pygeoml.interpolate_points_to_b_spline_curve(containers.point_vector(point_list_2), 2)
     edge_2 = pygeoml.CurveToEdge(curve_2)    
     enum_2 = pygeoml.GContinuity_G2
+
 
     end_connection = pygeoml.BlendCurveConnection(edge_2, p_23, enum_2)
 
@@ -439,7 +442,7 @@ edge_shape = pygeoml.Shape(edge)
 
 #######################################
 
-pred = pygeoml.has_tag("test_string")
+# pred = pygeoml.has_tag("test_string")
 
 # tests with StirngPredicates
 # ret = pred("another_string")
@@ -467,6 +470,33 @@ print("Now, inline stuff:")
 
 
 # tests with ShapePredicates:
+pred = pygeoml.has_tag("test_string")
+
+p_1 = gp_Pnt(0.0,0.0,0.0)
+p_2 = gp_Pnt(1.0,0.0,0.0)       
+p_3 = gp_Pnt(2.0,0.0,0.0)
+
+point_list = [p_1, p_2, p_3]
+
+curve = pygeoml.interpolate_points_to_b_spline_curve(containers.point_vector(point_list), 2)
+edge = pygeoml.CurveToEdge(curve)
+
+edge_shape = pygeoml.Shape(edge)
+
+# print(edge_shape)
+#print("Here we are!!")
+
+sub_shapes = edge_shape.direct_subshapes()
+print(sub_shapes) # looks right
+#print(edge_shape.get_subshapes())
+
+print("slightly above")
+print(edge_shape.is_type(TopAbs_FACE))
+
+print("from here now...")
+print(TopAbs_EDGE)
+print(type(TopAbs_EDGE))
+
 
 
 
