@@ -18,25 +18,44 @@
 
 %module (package="geoml") pygeoml
 
+
 %include common.i
 
 %{
-#include <TColStd_module.hxx>
-#include <TCollection_module.hxx>
-#include <TColgp_module.hxx>
-#include <Geom_module.hxx>
-#include <TopoDS_Compound.hxx>
-#include <TopoDS.hxx>
-#include <TopoDS_CompSolid.hxx>
-#include <TopoDS_Solid.hxx>
-#include <TopoDS_Shell.hxx>
-#include <TopoDS_Wire.hxx>
-#include <TopoDS_Edge.hxx>
-#include <TopoDS_Vertex.hxx>
-#include <TopAbs_ShapeEnum.hxx>
+#include <TColStd_module.hxx> // TopoDS.i ( pythonocc-core/src/SWIG_files/headers/TopoDS_module.hxx )
+#include <TCollection_module.hxx> // TopoDS.i
+#include <TColgp_module.hxx> // TopoDS.i
+#include <Geom_module.hxx> // Geom.i ( /src/SWIG_files/headers/Geom_module.hxx )
+#include <TopoDS_Compound.hxx> // TopoDS.i ( pythonocc-core/src/SWIG_files/headers/TopoDS_module.hxx ) 
+#include <TopoDS.hxx>  // TopoDS.i ( pythonocc-core/src/SWIG_files/headers/TopoDS_module.hxx )
+#include <TopoDS_CompSolid.hxx> // TopoDS.i ( pythonocc-core/src/SWIG_files/headers/TopoDS_module.hxx )
+#include <TopoDS_Solid.hxx> // TopoDS.i ( pythonocc-core/src/SWIG_files/headers/TopoDS_module.hxx )
+#include <TopoDS_Shell.hxx> // TopoDS.i ( pythonocc-core/src/SWIG_files/headers/TopoDS_module.hxx )
+#include <TopoDS_Wire.hxx> // TopoDS.i ( pythonocc-core/src/SWIG_files/headers/TopoDS_module.hxx )
+#include <TopoDS_Edge.hxx> // TopoDS.i ( pythonocc-core/src/SWIG_files/headers/TopoDS_module.hxx )
+#include <TopoDS_Vertex.hxx> // TopoDS.i ( pythonocc-core/src/SWIG_files/headers/TopoDS_module.hxx )
+#include <TopAbs_ShapeEnum.hxx> // TopAbs.i  ( src/SWIG_files/headers/TopAbs_module.hxx )
+#include <Message_Alert.hxx>
+#include <Message_Attribute.hxx>
+#include <Message_Printer.hxx>
+#include <Message_ProgressIndicator.hxx>
+#include <Message_Report.hxx>
+#include <Message_AttributeStream.hxx>
+#include <Message_PrinterOStream.hxx>
+#include <Message_PrinterSystemLog.hxx>
+#include <Message_PrinterToReport.hxx>
+#include <TopoDS_AlertWithShape.hxx>
+#include <Message_AttributeMeter.hxx>
+#include <Message_AttributeObject.hxx>
+#include <TopoDS_AlertAttribute.hxx>
+#include <Message_Algorithm.hxx>
 %}
 
-%import Geom.i
+
+%import "TopoDS.i"
+%import "Geom.i" // nur das war drin
+// %import "TopAbs.i"
+
 
 %{
 #include <functional>
@@ -69,19 +88,19 @@
 %template(Array2dgp_Pnt) geoml::Array2d<gp_Pnt>;
 
 
-%include "TColStd_module.hxx"
-%include "TCollection_module.hxx"
-%include "TColgp_module.hxx"
-%include "Geom_module.hxx"
-%include "TopoDS_Compound.hxx"
-%include "TopoDS.hxx"
-%include "TopoDS_CompSolid.hxx"
-%include "TopoDS_Solid.hxx"
-%include "TopoDS_Shell.hxx"
-%include "TopoDS_Wire.hxx"
-%include "TopoDS_Edge.hxx"
-%include "TopoDS_Vertex.hxx"
-%include "TopAbs_ShapeEnum.hxx"
+// %include "TColStd_module.hxx"
+// %include "TCollection_module.hxx"
+// %include "TColgp_module.hxx"
+// %include "Geom_module.hxx"
+// %include "TopoDS_Compound.hxx"
+// %include "TopoDS.hxx"
+// %include "TopoDS_CompSolid.hxx"
+// %include "TopoDS_Solid.hxx"
+// %include "TopoDS_Shell.hxx"
+// %include "TopoDS_Wire.hxx"
+// %include "TopoDS_Edge.hxx"
+// %include "TopoDS_Vertex.hxx"
+// %include "TopAbs_ShapeEnum.hxx"
 
 %include "geoml/geoml.h"
 %include "geoml/surfaces/surfaces.h"
