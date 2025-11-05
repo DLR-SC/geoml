@@ -6,7 +6,7 @@ from OCC.Core.gp import gp_Vec
 from OCC.Display.SimpleGui import init_display 
 from OCC.Core.Geom import Geom_BSplineCurve
 from OCC.Core.Geom import Geom_Curve
-from OCC.Core.TopAbs import TopAbs_EDGE, TopAbs_FACE
+from OCC.Core.TopAbs import TopAbs_EDGE, TopAbs_FACE, TopAbs_VERTEX
 from OCC.Core.TopAbs import TopAbs_ShapeEnum
 
 import pytest 
@@ -491,14 +491,29 @@ print(sub_shapes) # looks right
 #print(edge_shape.get_subshapes())
 
 print("slightly above")
-print(edge_shape.is_type(TopAbs_FACE))
+print(edge_shape.is_type(TopAbs_EDGE))
 
 print("from here now...")
 print(TopAbs_EDGE)
 print(type(TopAbs_EDGE))
 
+print("Now, from here on ... new tests:")
 
+print(id(edge_shape))
 
+edge_shape_2 = pygeoml.Shape(edge)
+print(id(edge_shape_2))
+
+print(edge_shape.is_same(edge_shape_2)) # hier kommt true raus
+print(edge_shape.is_same(edge_shape)) # hier kommt auch true raus
+
+print(edge_shape.is_same(edge)) # TopoDS_Shape as an argument
+
+print("is_empty:")
+print(edge_shape.is_empty())
+print("has_subshape:")
+print(edge_shape.has_subshape(edge_shape))
+print(edge_shape.has_subshape(edge_shape_2))
 
 
 
