@@ -88,7 +88,7 @@ using ShapeContainer = std::unordered_set<Shape, ShapeHasher, ShapeIsSame>;
  * Internally, it wraps a TopoDS_Shape. It provides some interface
  * functions to explore the topological graph as well has the modeling
  * history graph. The topological graph is determined through the topological
- * information encoded in the wrapped TopoDS_Shape. Thei historical graph
+ * information encoded in the wrapped TopoDS_Shape. The historical graph
  * is determined by functors derived from the CRTP class template geoml::Operation.
  * 
  * Shape is a light-weight wrapper around shared heap allocated memory.

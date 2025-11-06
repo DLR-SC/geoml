@@ -549,6 +549,36 @@ pred_2 = pygeoml.has_tag("added_tag")
 print(edge_shape.select_subshapes(pred_1))
 print(edge_shape.select_subshapes(pred_2))
 
+print("filter: ")
+
+print(edge_shape.filter(pred_2))
+
+print("unique_element: ")
+
+# print(edge_shape.unique_element()) # get an error here (probably as expected)
+
+print("unique_element_or: ")
+
+print(edge_shape.unique_element_or(edge_shape))
+
+print("add_meta_tag_to_subshapes: ")
+
+edge_shape.add_meta_tag_to_subshapes(pred_2, "another_added_tag")
+
+print(edge_shape.has_tag("another_added_tag"))
+print(edge_shape.has_tag("another_not_added_tag"))
+
+print("add_meta_tag: ")
+
+edge_shape.add_meta_tag("third_added_tag")
+
+print(edge_shape.has_tag("third_added_tag"))
+print(edge_shape.has_tag("another_added_tag"))
+print(edge_shape.has_tag("added_tag"))
+print(edge_shape.has_tag("not_added_tag"))
+
+
+
 
 
 ###########################################################################

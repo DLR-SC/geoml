@@ -91,6 +91,18 @@
                                   int max_depth = std::numeric_limits<int>::max()) const {
         return $self->select_subshapes(pred, max_depth);
     }
+
+    geoml::Shape filter(const geoml::ShapePredicate& pred) const {
+        return $self->filter(pred);  
+    }
+
+    void add_meta_tag_to_subshapes(const geoml::ShapePredicate& pred, std::string const& input_tag) {
+        geoml::Shape selection = $self->select_subshapes(pred);
+        for (auto& selected_shape : selection)
+        {
+            selected_shape.add_meta_tag(input_tag);
+        }
+    }
 }
 
 // %include "TColStd_module.hxx"
