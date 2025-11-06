@@ -3,6 +3,7 @@ from geoml.pygeoml import is_vertex
 from geoml.occ_helpers import containers
 from OCC.Core.gp import gp_Pnt
 from OCC.Core.gp import gp_Vec
+from OCC.Core.TopoDS import TopoDS_Shape
 from OCC.Display.SimpleGui import init_display 
 from OCC.Core.Geom import Geom_BSplineCurve
 from OCC.Core.Geom import Geom_Curve
@@ -442,36 +443,13 @@ edge_shape = pygeoml.Shape(edge)
 
 #######################################
 
-# pred = pygeoml.has_tag("test_string")
 
-# tests with StirngPredicates
-# ret = pred("another_string")
-# assert(type(ret) == bool)
-# print(pred(""))
-# print(ret)
-
-#pred_2 = pygeoml.has_tag("test_string_2")
-
-# pred_3 = pred and pred_2 # operator&& seems to work
-
-# print(pred_3)
-# print(type(pred_3))
-
-# print(pred_3("some_string"))
-
-
-
-print("Now, inline stuff:")
-
-# result = iis_vertex
-# print(result)
-# print(type(result))
-# print(result("fdfd")) # does not work
-
-
-# tests with ShapePredicates:
+print("Test ShapePredicate has_tag: ")
 pred = pygeoml.has_tag("test_string")
+print(pred)
 
+
+print("Create a Shape: ")
 p_1 = gp_Pnt(0.0,0.0,0.0)
 p_2 = gp_Pnt(1.0,0.0,0.0)       
 p_3 = gp_Pnt(2.0,0.0,0.0)
@@ -483,37 +461,93 @@ edge = pygeoml.CurveToEdge(curve)
 
 edge_shape = pygeoml.Shape(edge)
 
-# print(edge_shape)
-#print("Here we are!!")
+print(edge_shape)
 
+
+print("Test direct_subshapes method: ")
 sub_shapes = edge_shape.direct_subshapes()
-print(sub_shapes) # looks right
-#print(edge_shape.get_subshapes())
+print(sub_shapes)
 
-print("slightly above")
+print("Test get_subshapes method: ")
+print(edge_shape.get_subshapes())
+
+print("Test is_type method: ")
 print(edge_shape.is_type(TopAbs_EDGE))
 
-print("from here now...")
-print(TopAbs_EDGE)
-print(type(TopAbs_EDGE))
-
-print("Now, from here on ... new tests:")
-
+print("Get id of edge_shape: ")
 print(id(edge_shape))
 
+print("Get id of edge_shape_2: ")
 edge_shape_2 = pygeoml.Shape(edge)
 print(id(edge_shape_2))
 
+print("Test is_same method: edge_shape same as edge_shape_2:  ")
 print(edge_shape.is_same(edge_shape_2)) # hier kommt true raus
+
+print("Test is_same method: edge_shape same as edge_shape:  ")
 print(edge_shape.is_same(edge_shape)) # hier kommt auch true raus
 
+print("Test is_same method: edge_shape same as edge:  ")
 print(edge_shape.is_same(edge)) # TopoDS_Shape as an argument
 
-print("is_empty:")
+print("is_empty: edge_shape.is_empty(): ")
 print(edge_shape.is_empty())
-print("has_subshape:")
+
+print("has_subshape: edge_shape.has_subshape(edge_shape):")
 print(edge_shape.has_subshape(edge_shape))
+
+print("has_subshape: edge_shape.has_subshape(edge_shape_2):")
 print(edge_shape.has_subshape(edge_shape_2))
+
+print("has_origin: edge_shape.has_origin(): ")
+print(edge_shape.has_origin())
+
+print("is_unmodified_descendent_of: edge_shape.is_unmodified_descendent_of(edge_shape): ")
+print(edge_shape.is_unmodified_descendent_of(edge_shape))
+
+print("is_unmodified_descendent_of_subshape_in: edge_shape.is_unmodified_descendent_of_subshape_in(edge_shape):")
+print(edge_shape.is_unmodified_descendent_of_subshape_in(edge_shape))
+
+print("is_modified_descendent_of: edge_shape.is_modified_descendent_of(edge_shape): ")
+print(edge_shape.is_modified_descendent_of(edge_shape))
+
+print("is_modified_descendent_of_subshape_in: edge_shape.is_modified_descendent_of_subshape_in(edge_shape): ")
+print(edge_shape.is_modified_descendent_of_subshape_in(edge_shape))
+
+print("is_descendent_of_subshape_in: edge_shape.is_descendent_of_subshape_in(edge_shape): ")
+print(edge_shape.is_descendent_of_subshape_in(edge_shape))
+
+print("is_descendent_of: edge_shape.is_descendent_of(edge_shape): ")
+print(edge_shape.is_descendent_of(edge_shape))
+
+print("is_ancestor_of: edge_shape.is_ancestor_of(edge_shape): ")
+print(edge_shape.is_ancestor_of(edge_shape))
+
+print("has_tag: edge_shape.has_tag('tag_example'): ")
+print(edge_shape.has_tag("tag_example"))
+
+print("After adding a tag: edge_shape.add_meta_tag('added_tag'):")
+edge_shape.add_meta_tag("added_tag")
+
+print("has_tag: print(edge_shape.has_tag('added_tag')): ")
+print(edge_shape.has_tag("added_tag"))
+
+print("has_tag: print(edge_shape.has_tag('not_added_tag')): ")
+print(edge_shape.has_tag("not_added_tag"))
+
+print("ShapeIsSame: ")
+s_i_s = pygeoml.ShapeIsSame()
+print(s_i_s(edge_shape, edge_shape_2))
+
+print("Try implicit conversion to TopoDS_Shape: Does not work ")
+
+print("select_subshapes: ")
+
+pred_1 = pygeoml.has_tag("not_added_tag")
+pred_2 = pygeoml.has_tag("added_tag")
+
+print(edge_shape.select_subshapes(pred_1))
+print(edge_shape.select_subshapes(pred_2))
 
 
 

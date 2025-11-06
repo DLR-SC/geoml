@@ -20,7 +20,7 @@
 
 
 %include common.i
-
+// %import "Message.i"
 %{
 #include <TColStd_module.hxx> // TopoDS.i ( pythonocc-core/src/SWIG_files/headers/TopoDS_module.hxx )
 #include <TCollection_module.hxx> // TopoDS.i
@@ -86,7 +86,12 @@
 %template(IntList) std::vector<int>;
 %template(Array2dStandardReal) geoml::Array2d<Standard_Real>;
 %template(Array2dgp_Pnt) geoml::Array2d<gp_Pnt>;
-
+%extend geoml::Shape {
+    geoml::Shape select_subshapes(const geoml::ShapePredicate& pred,
+                                  int max_depth = std::numeric_limits<int>::max()) const {
+        return $self->select_subshapes(pred, max_depth);
+    }
+}
 
 // %include "TColStd_module.hxx"
 // %include "TCollection_module.hxx"
