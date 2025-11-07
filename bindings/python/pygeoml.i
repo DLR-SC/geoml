@@ -97,11 +97,12 @@
     }
 
     void add_meta_tag_to_subshapes(const geoml::ShapePredicate& pred, std::string const& input_tag) {
-        geoml::Shape selection = $self->select_subshapes(pred);
-        for (auto& selected_shape : selection)
-        {
-            selected_shape.add_meta_tag(input_tag);
-        }
+        // geoml::Shape selection = $self->select_subshapes(pred);
+        $self->add_meta_tag_to_subshapes(pred, input_tag);
+        // for (auto& selected_shape : selection)
+        // {
+        //     selected_shape.add_meta_tag(input_tag);
+        // }
     }
 }
 

@@ -546,8 +546,12 @@ print("select_subshapes: ")
 pred_1 = pygeoml.has_tag("not_added_tag")
 pred_2 = pygeoml.has_tag("added_tag")
 
+# def native_pred(shape: pygeoml.Shape):
+#     return True
+
 print(edge_shape.select_subshapes(pred_1))
 print(edge_shape.select_subshapes(pred_2))
+# print(edge_shape.select_subshapes(native_pred))
 
 print("filter: ")
 
@@ -576,6 +580,10 @@ print(edge_shape.has_tag("third_added_tag"))
 print(edge_shape.has_tag("another_added_tag"))
 print(edge_shape.has_tag("added_tag"))
 print(edge_shape.has_tag("not_added_tag"))
+
+# next: add_tag_track method (line 264)
+# tag_track = pygeoml.TagTrack("added_by_trag_track_if_is_vertex",is_vertex, 2)
+
 
 
 
