@@ -27,6 +27,22 @@ class Operation;
 
 class Shape;
 
+// this wrapper class is here to make swig happy and because we dont understand how to wrap std::function directly.
+class ShapePredicate
+{
+public:
+    // template<typename Pred>
+    inline ShapePredicate(std::function<bool(Shape const&)> const& f) : fun(f) {}
+    // inline ShapePredicate(Pred&& f) : fun(std::forward<Pred>(f)) {}
+
+    inline bool operator()(Shape const& s) const {
+        return fun(s);
+    }
+
+private:
+    std::function<bool(Shape const&)> fun;
+};
+
 /**
 * @brief A TagTrack stores
 *  - a tag name
@@ -34,11 +50,11 @@ class Shape;
 *  - a logical criterion
 */
 struct TagTrack {
+    template<typename Pred>
+    GEOML_API_EXPORT TagTrack(std::string const& t, Pred&& criterion, int remainingSteps) 
+        : m_tag(t), m_criterion(std::forward<Pred>(criterion)), m_remainingSteps(remainingSteps) {}
 
-    GEOML_API_EXPORT TagTrack(std::string const& t, std::function<bool(Shape const&)> const& criterion, int remainingSteps) 
-        : m_tag(t), m_criterion(criterion), m_remainingSteps(remainingSteps) {}
-
-    std::function<bool(Shape const&)> m_criterion;
+    ShapePredicate m_criterion;
     std::string m_tag;
     int m_remainingSteps;
 };

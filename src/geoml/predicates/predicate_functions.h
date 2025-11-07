@@ -11,22 +11,6 @@
 namespace geoml
 {
 
-//using ShapePredicate = std::function<bool(Shape const&)>;
-
-// this wrapper class is here to make swig happy and because we dont understand how to wrap std::function directly.
-class ShapePredicate
-{
-public:
-    inline ShapePredicate(std::function<bool(Shape const&)> const& f) : fun(f) {}
-
-    inline bool operator()(Shape const& s) const {
-        return fun(s);
-    }
-
-private:
-    std::function<bool(Shape const&)> fun;
-};
-
 /**
  * @brief Returns the ShapePredicate representing the conjunction of the two input ShapePredicates
  * 
