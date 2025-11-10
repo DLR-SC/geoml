@@ -582,8 +582,21 @@ print(edge_shape.has_tag("added_tag"))
 print(edge_shape.has_tag("not_added_tag"))
 
 print("TagTrack: ")
+
 tag_track = pygeoml.TagTrack("added_by_trag_track_if_is_vertex",is_vertex, 2)
 print(tag_track)
+
+print("add_tag_track: ")
+
+edge_shape.add_tag_track(tag_track)
+
+print("get_tag_track: ")
+
+tag_tracks = edge_shape.get_tag_tracks()
+print(tag_tracks)
+
+edge_shape.apply_tag_tracks()
+
 
 
 
