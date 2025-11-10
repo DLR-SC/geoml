@@ -100,6 +100,11 @@
         $self->add_meta_tag_to_subshapes(pred, input_tag);        
     }
 }
+%extend geoml::ShapePredicate {
+    ShapePredicate(std::function<bool(geoml::Shape const&)> pred) {
+        return new geoml::ShapePredicate(pred);
+    }
+}
 %extend geoml::TagTrack {
     TagTrack(std::string const& tag,
              geoml::ShapePredicate const& criterion,
