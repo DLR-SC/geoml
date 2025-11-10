@@ -20,21 +20,21 @@
 
 
 %include common.i
-// %import "Message.i"
+
 %{
-#include <TColStd_module.hxx> // TopoDS.i ( pythonocc-core/src/SWIG_files/headers/TopoDS_module.hxx )
-#include <TCollection_module.hxx> // TopoDS.i
-#include <TColgp_module.hxx> // TopoDS.i
-#include <Geom_module.hxx> // Geom.i ( /src/SWIG_files/headers/Geom_module.hxx )
-#include <TopoDS_Compound.hxx> // TopoDS.i ( pythonocc-core/src/SWIG_files/headers/TopoDS_module.hxx ) 
-#include <TopoDS.hxx>  // TopoDS.i ( pythonocc-core/src/SWIG_files/headers/TopoDS_module.hxx )
-#include <TopoDS_CompSolid.hxx> // TopoDS.i ( pythonocc-core/src/SWIG_files/headers/TopoDS_module.hxx )
-#include <TopoDS_Solid.hxx> // TopoDS.i ( pythonocc-core/src/SWIG_files/headers/TopoDS_module.hxx )
-#include <TopoDS_Shell.hxx> // TopoDS.i ( pythonocc-core/src/SWIG_files/headers/TopoDS_module.hxx )
-#include <TopoDS_Wire.hxx> // TopoDS.i ( pythonocc-core/src/SWIG_files/headers/TopoDS_module.hxx )
-#include <TopoDS_Edge.hxx> // TopoDS.i ( pythonocc-core/src/SWIG_files/headers/TopoDS_module.hxx )
-#include <TopoDS_Vertex.hxx> // TopoDS.i ( pythonocc-core/src/SWIG_files/headers/TopoDS_module.hxx )
-#include <TopAbs_ShapeEnum.hxx> // TopAbs.i  ( src/SWIG_files/headers/TopAbs_module.hxx )
+#include <TColStd_module.hxx> 
+#include <TCollection_module.hxx>
+#include <TColgp_module.hxx> 
+#include <Geom_module.hxx> 
+#include <TopoDS_Compound.hxx> 
+#include <TopoDS.hxx>  
+#include <TopoDS_CompSolid.hxx> 
+#include <TopoDS_Solid.hxx> 
+#include <TopoDS_Shell.hxx> 
+#include <TopoDS_Wire.hxx>  
+#include <TopoDS_Edge.hxx> 
+#include <TopoDS_Vertex.hxx> 
+#include <TopAbs_ShapeEnum.hxx> 
 #include <Message_Alert.hxx>
 #include <Message_Attribute.hxx>
 #include <Message_Printer.hxx>
@@ -53,8 +53,7 @@
 
 
 %import "TopoDS.i"
-%import "Geom.i" // nur das war drin
-// %import "TopAbs.i"
+%import "Geom.i" 
 
 
 %{
@@ -68,7 +67,6 @@
 #include "geoml/geom_topo_conversions/geom_topo_conversions.h"
 #include "geoml/naming_choosing/Shape.h"
 #include "geoml/boolean_ops/modeling.hpp"
-// #include "geoml/predicates/temp_predicates.h"
 #include "geoml/predicates/predicate_functions.h"
 %} 
 
@@ -100,11 +98,6 @@
         $self->add_meta_tag_to_subshapes(pred, input_tag);        
     }
 }
-%extend geoml::ShapePredicate {
-    ShapePredicate(std::function<bool(geoml::Shape const&)> pred) {
-        return new geoml::ShapePredicate(pred);
-    }
-}
 %extend geoml::TagTrack {
     TagTrack(std::string const& tag,
              geoml::ShapePredicate const& criterion,
@@ -112,20 +105,6 @@
         return new geoml::TagTrack(tag, criterion, remaining_steps);
     }
 }
-
-// %include "TColStd_module.hxx"
-// %include "TCollection_module.hxx"
-// %include "TColgp_module.hxx"
-// %include "Geom_module.hxx"
-// %include "TopoDS_Compound.hxx"
-// %include "TopoDS.hxx"
-// %include "TopoDS_CompSolid.hxx"
-// %include "TopoDS_Solid.hxx"
-// %include "TopoDS_Shell.hxx"
-// %include "TopoDS_Wire.hxx"
-// %include "TopoDS_Edge.hxx"
-// %include "TopoDS_Vertex.hxx"
-// %include "TopAbs_ShapeEnum.hxx"
 
 %include "geoml/geoml.h"
 %include "geoml/surfaces/surfaces.h"
@@ -135,6 +114,5 @@
 %include "geoml/geom_topo_conversions/geom_topo_conversions.h"
 %include "geoml/naming_choosing/Shape.h"
 %include "geoml/boolean_ops/modeling.hpp"
-// %include "geoml/predicates/temp_predicates.h"
 %include "geoml/predicates/predicate_functions.h"
 
