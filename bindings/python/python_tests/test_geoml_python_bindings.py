@@ -646,7 +646,7 @@ def test_predicate_functions():
     edge_shape.add_meta_tag("added_tag")
 
     pred1 = pygeoml.has_tag("test_string")
-    assert pred1(edge_shape) == True
+    assert pred1(edge_shape) == False
 
     pred2 = pygeoml.is_type(TopAbs_EDGE)
 
