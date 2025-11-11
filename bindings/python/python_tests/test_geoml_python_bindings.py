@@ -1,5 +1,5 @@
 from geoml import pygeoml
-from geoml.pygeoml import is_vertex
+from geoml.pygeoml import is_vertex, is_edge
 from geoml.occ_helpers import containers
 from OCC.Core.gp import gp_Pnt
 from OCC.Core.gp import gp_Vec
@@ -583,7 +583,7 @@ print(edge_shape.has_tag("not_added_tag"))
 
 print("TagTrack: ")
 
-tag_track = pygeoml.TagTrack("added_by_trag_track_if_is_vertex",is_vertex, 2)
+tag_track = pygeoml.TagTrack("added_by_tag_track_if_is_vertex",is_edge, 2)
 print(tag_track)
 
 print("add_tag_track: ")
@@ -597,6 +597,29 @@ print(tag_tracks)
 
 edge_shape.apply_tag_tracks()
 
+print(edge_shape.has_tag("not_added_tag"))
+print(edge_shape.has_tag("added_tag"))
+print(edge_shape.has_tag("another_added_tag"))
+print(edge_shape.has_tag("added_by_tag_track_if_is_vertex"))
+
+print("operator[]: ")
+
+print(edge_shape[0])
+print(edge_shape[1])
+print(edge_shape[2])
+print(edge_shape[3])
+print(edge_shape[4])
+print(edge_shape[5])
+print(edge_shape[6])
+print(edge_shape[7])
+
+print("size(): ")
+
+print(edge_shape.size())
+
+print("is_null: ")
+
+print(edge_shape.is_null())
 
 
 

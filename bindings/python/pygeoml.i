@@ -97,6 +97,10 @@
     void add_meta_tag_to_subshapes(const geoml::ShapePredicate& pred, std::string const& input_tag) {
         $self->add_meta_tag_to_subshapes(pred, input_tag);        
     }
+
+    Shape& __getitem__(int i) {
+        return $self->operator[](i);
+    }
 }
 %extend geoml::TagTrack {
     TagTrack(std::string const& tag,
