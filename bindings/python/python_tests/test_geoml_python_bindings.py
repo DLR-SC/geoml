@@ -30,15 +30,11 @@ def bspline_curve(cp, knots, mults, degree):
 
 
 ###########################################################################
-###########################################################################
-
-
-###########################################################################
 ##################### test geoml/occ_helpers/containers.py ################
 ###########################################################################
 
 
-def testing_point_vector():
+def compute_point_vector():
     p_1 = gp_Pnt(0.0,0.0,0.0)
     p_2 = gp_Pnt(0.5,0.0,0.0)       
     p_3 = gp_Pnt(1.0,1.0,0.0)
@@ -51,14 +47,10 @@ def testing_point_vector():
 def test_point_vector():
 
     func_name = "point_vector"
-    func = getattr(containers, func_name, None)
-
     print(f"Testing function: {func_name}")
-
-    assert func is not None, f"{func_name} does not exist"
-
+          
     try:
-        result = testing_point_vector()
+        result = compute_point_vector()
     except Exception as e:
         pytest.fail(f"Calling {func_name} raised an exception: {e}")
 
@@ -68,7 +60,7 @@ def test_point_vector():
 ###########################################################################
 
 
-def testing_nurbs_curve():
+def compute_nurbs_curve():
     
     p_1 = gp_Pnt(0.0, 0.0, 0.0)
     p_2 = gp_Pnt(0.0, 1.0, 2.0)
@@ -97,19 +89,15 @@ def testing_nurbs_curve():
 def test_nurbs_curve():
 
     func_name = "nurbs_curve"
-    func = getattr(pygeoml, func_name, None)
-
     print(f"Testing function: {func_name}")
 
-    assert func is not None, f"{func_name} does not exist"
-
     try:
-        result = testing_nurbs_curve()
+        result = compute_nurbs_curve()
     except Exception as e:
         pytest.fail(f"Calling {func_name} raised an exception: {e}")
 
 
-def testing_interpolate_points_to_b_spline_curve():
+def compute_interpolate_points_to_b_spline_curve():
      
     p_1 = gp_Pnt(0,0,0)
     p_2 = gp_Pnt(0.5,0,0)       
@@ -125,14 +113,10 @@ def testing_interpolate_points_to_b_spline_curve():
 def test_interpolate_points_to_b_spline_curve():
 
     func_name = "interpolate_points_to_b_spline_curve"
-    func = getattr(pygeoml, func_name, None)
-
     print(f"Testing function: {func_name}")
 
-    assert func is not None, f"{func_name} does not exist"
-
     try:
-        result = testing_interpolate_points_to_b_spline_curve()
+        result = compute_interpolate_points_to_b_spline_curve()
     except Exception as e:
         pytest.fail(f"Calling {func_name} raised an exception: {e}")
 
@@ -142,7 +126,7 @@ def test_interpolate_points_to_b_spline_curve():
 ###########################################################################
 
 
-def testing_blend_curve():
+def compute_blend_curve():
 
     p_11 = gp_Pnt(0.0,0.0,0.0)
     p_12 = gp_Pnt(1.0,0.0,0.0)       
@@ -176,10 +160,13 @@ def testing_blend_curve():
 
 def test_blend_curve():
 
+    func_name = "BlendCurve"
+    print(f"Testing class: {func_name}")
+
     try:
-        result = testing_blend_curve()
+        result = compute_blend_curve()
     except Exception as e:
-        pytest.fail(f"Calling {'testing_blend_curve'} raised an exception: {e}")
+        pytest.fail(f"Calling {func_name} raised an exception: {e}")
 
 
 ###########################################################################
@@ -187,7 +174,7 @@ def test_blend_curve():
 ###########################################################################
 
 
-def testing_curve_network_interpolation():
+def compute_curve_network_interpolation():
 
     # create u-curves
     p_11 = gp_Pnt(0.0,0.0,0.0)
@@ -231,13 +218,16 @@ def testing_curve_network_interpolation():
 
 def test_curve_network_interpolation():
     
+    func_name = "curve_network_interpolation"
+    print(f"Testing function: {func_name}")
+
     try:
-        result = testing_curve_network_interpolation()
+        result = compute_curve_network_interpolation()
     except Exception as e:
-        pytest.fail(f"Calling {'testing_curve_network_interpolation'} raised an exception: {e}")
+        pytest.fail(f"Calling {func_name} raised an exception: {e}")
 
 
-def testing_interpolate_curves():
+def compute_interpolate_curves():
 
     p_11 = gp_Pnt(0.0,0.0,0.0)
     p_12 = gp_Pnt(0.0,1.0,0.0)       
@@ -266,13 +256,16 @@ def testing_interpolate_curves():
 
 def test_interpolate_curves():
 
+    func_name = "interpolate_curves"
+    print(f"Testing function: {func_name}")
+
     try:
-        result = testing_interpolate_curves()
+        result = compute_interpolate_curves()
     except Exception as e:
-        pytest.fail(f"Calling {'testing_interpolate_curves'} raised an exception: {e}") 
+        pytest.fail(f"Calling {func_name} raised an exception: {e}") 
 
 
-def testing_revolving_shape():
+def compute_revolving_shape():
 
     p_1 = gp_Pnt(2.0, 0.0, 0.0)
     p_2 = gp_Pnt(1.0, 0.0, 1.0)       
@@ -294,13 +287,16 @@ def testing_revolving_shape():
 
 def test_revolving_shape():
 
+    func_name = "revolving_surface"
+    print(f"Testing function: {func_name}")
+
     try:
-        result = testing_revolving_shape()
+        result = compute_revolving_shape()
     except Exception as e:
-        pytest.fail(f"Calling {'testing_revolving_shape'} raised an exception: {e}") 
+        pytest.fail(f"Calling {func_name} raised an exception: {e}") 
 
 
-def testing_nurbs_surface():
+def compute_nurbs_surface():
 
     p_11 = gp_Pnt(0.0,0.0,0.0)
     p_12 = gp_Pnt(0.0,1.0,0.0)       
@@ -371,13 +367,16 @@ def testing_nurbs_surface():
 
 def test_nurbs_surface():
 
+    func_name = "nurbs_surface"
+    print(f"Testing function: {func_name}")
+
     try:
-        result = testing_nurbs_surface()
+        result = compute_nurbs_surface()
     except Exception as e:
-        pytest.fail(f"Calling {'testing_nurbs_surface'} raised an exception: {e}") 
+        pytest.fail(f"Calling {func_name} raised an exception: {e}") 
 
 
-def testing_create_surface():
+def compute_create_surface():
     x = gp_Pnt(0,0,0)
     y = gp_Pnt(0.5,0,0)       
     z = gp_Pnt(1,1,0)
@@ -387,20 +386,17 @@ def testing_create_surface():
 
 
 def test_create_surface():
-    func_name = "create_surface"
-    func = getattr(pygeoml, func_name, None)
 
+    func_name = "create_surface"
     print(f"Testing function: {func_name}")
 
-    assert func is not None, f"{func_name} does not exist"
-
     try:
-        result = testing_create_surface()
+        result = compute_create_surface()
     except Exception as e:
         pytest.fail(f"Calling {func_name} raised an exception: {e}")
 
 
-def testing_create_face():
+def compute_create_face():
     x = gp_Pnt(0,0,0)
     y = gp_Pnt(0.5,0,0)       
     z = gp_Pnt(1,1,0)
@@ -410,43 +406,46 @@ def testing_create_face():
 
 
 def test_create_face():
-    func_name = "create_face"
-    func = getattr(pygeoml, func_name, None)
 
+    func_name = "create_face"
     print(f"Testing function: {func_name}")
 
-    assert func is not None, f"{func_name} does not exist"
-
     try:
-        result = testing_create_face()
+        result = compute_create_face()
     except Exception as e:
         pytest.fail(f"Calling {func_name} raised an exception: {e}")
 
 
 ###########################################################################
-##################### test geoml/naming_choosing/Shape.h ##################
+##################### test geoml\naming_choosing\Shape.h ##################
 ###########################################################################
 
 
-p_1 = gp_Pnt(0.0,0.0,0.0)
-p_2 = gp_Pnt(1.0,0.0,0.0)       
-p_3 = gp_Pnt(2.0,0.0,0.0)
+def compute_Shape_constructor():
+    
+    p_1 = gp_Pnt(0.0,0.0,0.0)
+    p_2 = gp_Pnt(1.0,0.0,0.0)       
+    p_3 = gp_Pnt(2.0,0.0,0.0)
 
-point_list = [p_1, p_2, p_3]
+    point_list = [p_1, p_2, p_3]
 
-curve = pygeoml.interpolate_points_to_b_spline_curve(containers.point_vector(point_list), 2)
-edge = pygeoml.CurveToEdge(curve)
+    curve = pygeoml.interpolate_points_to_b_spline_curve(containers.point_vector(point_list), 2)
+    edge = pygeoml.CurveToEdge(curve)
 
-edge_shape = pygeoml.Shape(edge)
+    edge_shape = pygeoml.Shape(edge)
 
+    return edge_shape
 
+def test_Shape_constructor():
 
-#######################################
+    func_name = "Shape_constructor"
+    print(f"Testing: {func_name}")
 
+    try:
+        result = compute_Shape_constructor()
+    except Exception as e:
+        pytest.fail(f"Calling {func_name} raised an exception: {e}")
 
-print("Test ShapePredicate has_tag: ")
-pred = pygeoml.has_tag("test_string")
-print(pred)
 
 
 print("Create a Shape: ")
@@ -621,6 +620,37 @@ print("is_null: ")
 
 print(edge_shape.is_null())
 
+
+###########################################################################
+##################### test geoml\predicates\predicate_functions.h #########
+###########################################################################
+
+
+# def compute_has_tag():
+    
+#     return pygeoml.has_tag("test_string")
+
+# def test_has_tag():
+
+#     func_name = "has_tag"
+#     print(f"Testing: {func_name}")
+
+#     try:
+#         result = compute_has_tag()
+#     except Exception as e:
+#         pytest.fail(f"Calling {func_name} raised an exception: {e}")
+
+def test_predicate_functions():
+
+    edge_shape = compute_Shape_constructor()
+    edge_shape.add_meta_tag("added_tag")
+
+    pred1 = pygeoml.has_tag("test_string")
+    assert pred1(edge_shape) == True
+
+    pred2 = pygeoml.is_type(TopAbs_EDGE)
+
+    
 
 
 
