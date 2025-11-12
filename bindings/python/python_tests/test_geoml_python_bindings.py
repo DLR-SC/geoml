@@ -447,8 +447,113 @@ def test_Shape_constructor():
         pytest.fail(f"Calling {func_name} raised an exception: {e}")
 
 
+def test_Shape_class():
 
-print("Create a Shape: ")
+    # create a TopoDS_EDGE
+    p_1 = gp_Pnt(0.0,0.0,0.0)
+    p_2 = gp_Pnt(1.0,0.0,0.0)       
+    p_3 = gp_Pnt(2.0,0.0,0.0)
+
+    point_list = [p_1, p_2, p_3]
+
+    curve = pygeoml.interpolate_points_to_b_spline_curve(containers.point_vector(point_list), 2)
+    edge = pygeoml.CurveToEdge(curve)
+
+    # test: Shape(TopoDS_Shape const& theShape);
+    edge_shape = pygeoml.Shape(edge)
+
+    # test: operator TopoDS_Shape() const;
+    # -> does not work currently
+
+    # test: std::vector<Shape>& direct_subshapes();
+    sub_shapes = edge_shape.direct_subshapes()
+
+    # test: Shape get_subshapes() const;
+    edge_shape.get_subshapes()
+
+    # test: void add_meta_tag(std::string const& tag);
+    edge_shape.add_meta_tag("added_tag")
+
+    # test: template <typename Pred>
+    # Shape select_subshapes(Pred&& f, int max_depth = std::numeric_limits<int>::max()) const
+    pred_1 = pygeoml.has_tag("not_added_tag")
+    pred_2 = pygeoml.has_tag("added_tag")
+
+    edge_shape.select_subshapes(pred_1)
+    edge_shape.select_subshapes(pred_2)
+
+    # test: template <typename Pred>
+    # Shape filter(Pred&& f) const
+    edge_shape.filter(pred_2)
+
+    # test: Shape unique_element() const;
+    # edge_shape.unique_element() get an error, probably as expected
+
+    # test: Shape unique_element_or(Shape const& other) const;
+    edge_shape.unique_element_or(edge_shape)
+
+    # test: template <typename Pred>
+    # void add_meta_tag_to_subshapes(Pred&& f, std::string const& input_tag)
+    edge_shape.add_meta_tag_to_subshapes(pred_2, "another_added_tag")
+
+    # test: void add_tag_track(TagTrack const& tt);
+    tag_track = pygeoml.TagTrack("added_by_tag_track_if_is_edge", is_edge, 2)
+    
+    edge_shape.add_tag_track(tag_track)
+
+    # test: std::vector<TagTrack>& get_tag_tracks();
+    tag_tracks = edge_shape.get_tag_tracks()
+
+    # test: void apply_tag_tracks();
+    edge_shape.apply_tag_tracks()
+
+    assert edge_shape.has_tag("not_added_tag") == False
+    assert edge_shape.has_tag("added_tag") == True
+    assert edge_shape.has_tag("another_added_tag") == True
+    assert edge_shape.has_tag("added_by_tag_track_if_is_edge") == True
+
+    # test: Shape operator[](int i);
+    edge_shape[0]
+    edge_shape[1]
+    edge_shape[2]
+    edge_shape[3]
+    edge_shape[4]
+    edge_shape[5]
+    edge_shape[6]
+
+    # test: size_t size() const;
+    edge_shape.size()
+
+    # test: bool is_empty() const;
+    edge_shape.is_empty()
+
+    # test: bool is_null() const;
+    edge_shape.is_null()
+
+    # test: bool is_type(TopAbs_ShapeEnum shape_type) const;
+    edge_shape.is_type(TopAbs_EDGE)
+
+    # test: bool is_same(Shape const& other) const;
+    edge_shape_1 = pygeoml.Shape(edge)
+
+    assert edge_shape.is_same(edge_shape_1) == True
+    assert edge_shape.is_same(edge_shape) == True
+
+    # test: bool is_same(TopoDS_Shape const& other) const; 
+    assert edge_shape.is_same(edge) == True
+
+
+
+    
+
+
+
+
+
+
+
+
+# create a TopoDS_EDGE
 p_1 = gp_Pnt(0.0,0.0,0.0)
 p_2 = gp_Pnt(1.0,0.0,0.0)       
 p_3 = gp_Pnt(2.0,0.0,0.0)
@@ -458,9 +563,8 @@ point_list = [p_1, p_2, p_3]
 curve = pygeoml.interpolate_points_to_b_spline_curve(containers.point_vector(point_list), 2)
 edge = pygeoml.CurveToEdge(curve)
 
+# test:  Shape(TopoDS_Shape const& theShape);
 edge_shape = pygeoml.Shape(edge)
-
-print(edge_shape)
 
 
 print("Test direct_subshapes method: ")
