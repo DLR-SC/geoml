@@ -109,6 +109,21 @@
         return new geoml::TagTrack(tag, criterion, remaining_steps);
     }
 }
+%extend geoml::ShapePredicate {
+    // Map operator! to Python's __invert__ (i.e. ~)
+    ShapePredicate __invert__() {
+        return operator!(*$self);
+    }
+    // Map operator&& to Python’s __and__ (i.e. &)
+    ShapePredicate __and__(ShapePredicate const& other) {
+        return operator&&(*$self, other);
+    }
+
+    // Map operator|| to Python’s __or__ (i.e. |)
+    ShapePredicate __or__(ShapePredicate const& other) {
+        return operator||(*$self, other);
+    }
+}
 
 %include "geoml/geoml.h"
 %include "geoml/surfaces/surfaces.h"

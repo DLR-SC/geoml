@@ -48,13 +48,6 @@ inline ShapePredicate const is_face = &details::_is_face;
 inline ShapePredicate const is_solid = &details::_is_solid;
 inline ShapePredicate const is_has_origin = &details::_has_origin;
 
-
-// inline ShapePredicate const is_vertex = [](Shape const& s){ return s.is_type(TopAbs_VERTEX); };
-// inline ShapePredicate const is_edge = [](Shape const& s){ return s.is_type(TopAbs_EDGE); };
-// inline ShapePredicate const is_face = [](Shape const& s){ return s.is_type(TopAbs_FACE); };
-// inline ShapePredicate const is_solid = [](Shape const& s){ return s.is_type(TopAbs_SOLID); };
-// inline ShapePredicate const has_origin = [](Shape const& s){ return s.has_origin(); };
-
 // some free functions returning shape predicates
 GEOML_API_EXPORT ShapePredicate has_tag(std::string const& tag);
 GEOML_API_EXPORT ShapePredicate is_type(TopAbs_ShapeEnum shape_type);
