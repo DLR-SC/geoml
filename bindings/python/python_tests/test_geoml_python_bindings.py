@@ -9,6 +9,7 @@ from OCC.Core.Geom import Geom_BSplineCurve
 from OCC.Core.Geom import Geom_Curve
 from OCC.Core.TopAbs import TopAbs_EDGE, TopAbs_FACE, TopAbs_VERTEX
 from OCC.Core.TopAbs import TopAbs_ShapeEnum
+from OCC.Core.BRepPrimAPI import BRepPrimAPI_MakeBox, BRepPrimAPI_MakeSphere
 
 import pytest 
 
@@ -715,6 +716,22 @@ def test_predicate_functions_h():
     pred_is_edge = pygeoml.is_type(TopAbs_EDGE)
     pred = pygeoml.has_subshape_that(pred_is_edge)
     assert pred(edge_shape) == True
-  
+
+
+###########################################################################
+##################### test geoml/boolean_ops/modeling.hpp #################
+###########################################################################
+
+def test_boolean_ops():
+
+    box = BRepPrimAPI_MakeBox(10.0, 10.0, 10.0).Shape()
+    sphere = BRepPrimAPI_MakeSphere(5.0).Shape()
+
+    box_shape = pygeoml.Shape(box)
+    sphere_shape = pygeoml.Shape(sphere)
+
+    subtracted_shape = pygeoml.boolean_subtract(box_shape, sphere_shape)
+
+
 
 print("Ran through till the end")
