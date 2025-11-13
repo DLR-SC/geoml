@@ -40,6 +40,10 @@ Shape::operator TopoDS_Shape() const {
     return m_data->shape;
 }
 
+TopoDS_Shape Shape::shape() const {
+    return m_data->shape;
+}
+
 std::vector<Shape> const& Shape::direct_subshapes() const
 {
     return m_data->children;

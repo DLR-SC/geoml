@@ -137,6 +137,13 @@ public:
      * @return TopoDS_Shape the wrapped OpenCascade shape
      */
     GEOML_API_EXPORT operator TopoDS_Shape() const;
+    
+    /**
+     * @brief returns the wrapped TopoDS_Shape
+     * 
+     * @return TopoDS_Shape the wrapped OpenCascade shape
+     */
+    GEOML_API_EXPORT TopoDS_Shape shape() const;
 
     /**
      * @brief returns the direct topological subshapes of the shape

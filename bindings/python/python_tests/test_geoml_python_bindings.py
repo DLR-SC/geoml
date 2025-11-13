@@ -7,7 +7,7 @@ from OCC.Core.TopoDS import TopoDS_Shape
 from OCC.Display.SimpleGui import init_display 
 from OCC.Core.Geom import Geom_BSplineCurve
 from OCC.Core.Geom import Geom_Curve
-from OCC.Core.TopAbs import TopAbs_EDGE, TopAbs_FACE, TopAbs_VERTEX
+from OCC.Core.TopAbs import TopAbs_EDGE, TopAbs_FACE, TopAbs_VERTEX, TopAbs_SHAPE
 from OCC.Core.TopAbs import TopAbs_ShapeEnum
 from OCC.Core.BRepPrimAPI import BRepPrimAPI_MakeBox, BRepPrimAPI_MakeSphere
 
@@ -415,8 +415,8 @@ def test_create_face():
 def test_Shape_h():
 
     # create a TopoDS_EDGE
-    p_1 = gp_Pnt(0.0,0.0,0.0)
-    p_2 = gp_Pnt(1.0,0.0,0.0)       
+    p_1 = gp_Pnt(0.0,0.0,2.0)
+    p_2 = gp_Pnt(1.0,5.0,0.0)       
     p_3 = gp_Pnt(2.0,0.0,0.0)
 
     point_list = [p_1, p_2, p_3]
@@ -427,7 +427,13 @@ def test_Shape_h():
     # test: Shape(TopoDS_Shape const& theShape);
     edge_shape = pygeoml.Shape(edge)
 
-    # test: operator TopoDS_Shape() const;
+    # test: TopoDS_Shape shape() const;
+    try:
+        wrapped_shape = edge_shape.shape()
+    except Exception as e:
+        pytest.fail(f"Calling {'shape'} raised an exception: {e}")
+    
+    # wrapped_shapet: operator TopoDS_Shape() const;
     # -> does not work currently
 
     # test: std::vector<Shape>& direct_subshapes();
@@ -590,8 +596,8 @@ def test_Shape_h():
 
 
 def compute_Shape_constructor():
-    p_1 = gp_Pnt(0.0,0.0,0.0)
-    p_2 = gp_Pnt(1.0,0.0,0.0)       
+    p_1 = gp_Pnt(0.0,0.0,2.0)
+    p_2 = gp_Pnt(1.0,5.0,0.0)       
     p_3 = gp_Pnt(2.0,0.0,0.0)
 
     point_list = [p_1, p_2, p_3]
