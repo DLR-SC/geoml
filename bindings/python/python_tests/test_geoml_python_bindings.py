@@ -736,8 +736,33 @@ def test_boolean_ops():
     box_shape = pygeoml.Shape(box)
     sphere_shape = pygeoml.Shape(sphere)
 
-    subtracted_shape = pygeoml.boolean_subtract(box_shape, sphere_shape)
+    # test: Shape boolean_subtract(Shape const& shape, Shape const& cutting_tool);
+    try:
+        subtracted_shape = pygeoml.boolean_subtract(box_shape, sphere_shape)
+    except Exception as e:
+        pytest.fail(f"Calling {'boolean_subtract'} raised an exception: {e}")
 
+    # test: Shape operator-(Shape const& shape, Shape const& cutting_tool);
+    try:
+        subtracted_shape_1 = sphere_shape - box_shape
+    except Exception as e:
+        pytest.fail(f"Calling {'operator-'} raised an exception: {e}")
+    
+    # test: Shape boolean_union(Shape const& shape_1, Shape const& shape_2);
+    try:
+        united_shape = pygeoml.boolean_union(box_shape, sphere_shape)
+    except Exception as e:
+        pytest.fail(f"Calling {'boolean_union'} raised an exception: {e}")
 
+    # test: Shape operator+(Shape const& shape_1, Shape const& shape_2);
+    try:
+        united_shape_1 = box_shape + sphere_shape
+    except Exception as e:
+        pytest.fail(f"Calling {'operator+'} raised an exception: {e}")
+
+    
+    
+
+    
 
 print("Ran through till the end")

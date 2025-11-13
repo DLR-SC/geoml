@@ -104,6 +104,15 @@
     Shape& __getitem__(int i) {
         return $self->operator[](i);
     }
+    Shape __sub__(Shape const& other) {
+        return geoml::operator-(*$self, other);
+    }
+    Shape __sub__(Shape const& other) {
+        return geoml::operator-(*$self, other);
+    }
+    Shape __add__(Shape const& other) {
+        return geoml::operator+(*$self, other);
+    }
 }
 %extend geoml::TagTrack {
     TagTrack(std::string const& tag,
