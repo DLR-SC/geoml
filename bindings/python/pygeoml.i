@@ -77,6 +77,7 @@
 %catch_exceptions()
 
 %include "geoml/data_structures/Array2d.h"
+%include "geoml/naming_choosing/Shape.h"
 
 %template(CurveList) std::vector<Handle(Geom_Curve)>;
 %template(CPointContainer) std::vector<gp_Pnt>;
@@ -84,6 +85,7 @@
 %template(IntList) std::vector<int>;
 %template(Array2dStandardReal) geoml::Array2d<Standard_Real>;
 %template(Array2dgp_Pnt) geoml::Array2d<gp_Pnt>;
+%template(add_persistent_meta_tag_to_subshapes) geoml::add_persistent_meta_tag_to_subshapes<geoml::ShapePredicate>;
 %extend geoml::Shape {
     geoml::Shape select_subshapes(const geoml::ShapePredicate& pred,
                                   int max_depth = std::numeric_limits<int>::max()) const {

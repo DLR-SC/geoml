@@ -542,8 +542,54 @@ def test_Shape_class():
     # test: bool is_same(TopoDS_Shape const& other) const; 
     assert edge_shape.is_same(edge) == True
 
+    # test: bool has_subshape(Shape const& shape) const;
+    assert edge_shape.has_subshape(edge_shape) == True
+    assert edge_shape.has_subshape(edge_shape_1) == True
+
+    # test:  bool has_origin() const;
+    assert edge_shape.has_origin() == False
+
+    # test: bool bool is_unmodified_descendent_of(Shape const& other, int max_depth=std::numeric_limits<int>::max()) const;(Shape const& other, int max_depth=std::numeric_limits<int>::max()) const;
+    assert edge_shape.is_unmodified_descendent_of(edge_shape) == True
+
+    # test: bool is_unmodified_descendent_of_subshape_in(Shape const& other, int max_depth=std::numeric_limits<int>::max()) const;
+    assert edge_shape.is_unmodified_descendent_of_subshape_in(edge_shape) == True
+
+    # test: bool is_modified_descendent_of(Shape const& other, int max_depth=std::numeric_limits<int>::max()) const;
+    assert edge_shape.is_modified_descendent_of(edge_shape) == False
+
+    # test: bool is_modified_descendent_of_subshape_in(Shape const& other, int max_depth=std::numeric_limits<int>::max()) const;
+    assert edge_shape.is_modified_descendent_of_subshape_in(edge_shape) == False
+
+    # test: bool is_descendent_of_subshape_in(Shape const& other, int max_depth=std::numeric_limits<int>::max()) const;
+    assert edge_shape.is_descendent_of_subshape_in(edge_shape) == True
+
+    # test: bool is_descendent_of(Shape const& other, int max_depth=std::numeric_limits<int>::max()) const;
+    assert edge_shape.is_descendent_of(edge_shape) == True
+
+    # test: bool is_ancestor_of(Shape const& other, int max_depth=std::numeric_limits<int>::max()) const;
+    assert edge_shape.is_ancestor_of(edge_shape) == True
+
+    # test: bool has_tag(std::string const& tag) const;
+    assert edge_shape.has_tag("tag_example") == False
+
+    # test: template <typename Pred>
+    # bool has_subshape_that(Pred&& pred) const;
+    pred_is_edge = pygeoml.is_type(TopAbs_EDGE)
+    pred = pygeoml.has_subshape_that(pred_is_edge)
+    assert pred(edge_shape) == True
+
+    # test (free function): template <typename Pred>
+    # void add_persistent_meta_tag_to_subshapes(const Shape &input, Pred&& f, const std::string &tag) 
+    pygeoml.add_persistent_meta_tag_to_subshapes(edge_shape, pred_is_edge, "added_via_free_function")
+    assert edge_shape.has_tag("added_via_free_function") == True
+    
 
 
+
+  
+    
+    
     
 
 
