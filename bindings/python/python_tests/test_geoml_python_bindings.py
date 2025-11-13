@@ -47,7 +47,6 @@ def compute_point_vector():
 def test_point_vector():
 
     func_name = "point_vector"
-    print(f"Testing function: {func_name}")
           
     try:
         result = compute_point_vector()
@@ -89,7 +88,6 @@ def compute_nurbs_curve():
 def test_nurbs_curve():
 
     func_name = "nurbs_curve"
-    print(f"Testing function: {func_name}")
 
     try:
         result = compute_nurbs_curve()
@@ -113,7 +111,6 @@ def compute_interpolate_points_to_b_spline_curve():
 def test_interpolate_points_to_b_spline_curve():
 
     func_name = "interpolate_points_to_b_spline_curve"
-    print(f"Testing function: {func_name}")
 
     try:
         result = compute_interpolate_points_to_b_spline_curve()
@@ -161,7 +158,6 @@ def compute_blend_curve():
 def test_blend_curve():
 
     func_name = "BlendCurve"
-    print(f"Testing class: {func_name}")
 
     try:
         result = compute_blend_curve()
@@ -219,7 +215,6 @@ def compute_curve_network_interpolation():
 def test_curve_network_interpolation():
     
     func_name = "curve_network_interpolation"
-    print(f"Testing function: {func_name}")
 
     try:
         result = compute_curve_network_interpolation()
@@ -257,7 +252,6 @@ def compute_interpolate_curves():
 def test_interpolate_curves():
 
     func_name = "interpolate_curves"
-    print(f"Testing function: {func_name}")
 
     try:
         result = compute_interpolate_curves()
@@ -288,7 +282,6 @@ def compute_revolving_shape():
 def test_revolving_shape():
 
     func_name = "revolving_surface"
-    print(f"Testing function: {func_name}")
 
     try:
         result = compute_revolving_shape()
@@ -368,7 +361,6 @@ def compute_nurbs_surface():
 def test_nurbs_surface():
 
     func_name = "nurbs_surface"
-    print(f"Testing function: {func_name}")
 
     try:
         result = compute_nurbs_surface()
@@ -388,7 +380,6 @@ def compute_create_surface():
 def test_create_surface():
 
     func_name = "create_surface"
-    print(f"Testing function: {func_name}")
 
     try:
         result = compute_create_surface()
@@ -408,7 +399,6 @@ def compute_create_face():
 def test_create_face():
 
     func_name = "create_face"
-    print(f"Testing function: {func_name}")
 
     try:
         result = compute_create_face()
@@ -421,33 +411,7 @@ def test_create_face():
 ###########################################################################
 
 
-def compute_Shape_constructor():
-    
-    p_1 = gp_Pnt(0.0,0.0,0.0)
-    p_2 = gp_Pnt(1.0,0.0,0.0)       
-    p_3 = gp_Pnt(2.0,0.0,0.0)
-
-    point_list = [p_1, p_2, p_3]
-
-    curve = pygeoml.interpolate_points_to_b_spline_curve(containers.point_vector(point_list), 2)
-    edge = pygeoml.CurveToEdge(curve)
-
-    edge_shape = pygeoml.Shape(edge)
-
-    return edge_shape
-
-def test_Shape_constructor():
-
-    func_name = "Shape_constructor"
-    print(f"Testing: {func_name}")
-
-    try:
-        result = compute_Shape_constructor()
-    except Exception as e:
-        pytest.fail(f"Calling {func_name} raised an exception: {e}")
-
-
-def test_Shape_class():
+def test_Shape_h():
 
     # create a TopoDS_EDGE
     p_1 = gp_Pnt(0.0,0.0,0.0)
@@ -466,46 +430,77 @@ def test_Shape_class():
     # -> does not work currently
 
     # test: std::vector<Shape>& direct_subshapes();
-    sub_shapes = edge_shape.direct_subshapes()
+    # sub_shapes = edge_shape.direct_subshapes()
+    try:
+        edge_shape.direct_subshapes()
+    except Exception as e:
+        pytest.fail(f"Calling {'direct_subshapes'} raised an exception: {e}")
 
     # test: Shape get_subshapes() const;
-    edge_shape.get_subshapes()
+    try:
+        edge_shape.get_subshapes()
+    except Exception as e:
+            pytest.fail(f"Calling {'get_subshapes'} raised an exception: {e}")
 
     # test: void add_meta_tag(std::string const& tag);
-    edge_shape.add_meta_tag("added_tag")
+    try:
+        edge_shape.add_meta_tag("added_tag")
+    except Exception as e:
+            pytest.fail(f"Calling {'add_meta_tag'} raised an exception: {e}")
 
     # test: template <typename Pred>
     # Shape select_subshapes(Pred&& f, int max_depth = std::numeric_limits<int>::max()) const
     pred_1 = pygeoml.has_tag("not_added_tag")
     pred_2 = pygeoml.has_tag("added_tag")
 
-    edge_shape.select_subshapes(pred_1)
-    edge_shape.select_subshapes(pred_2)
+    try:
+        edge_shape.select_subshapes(pred_1)
+        edge_shape.select_subshapes(pred_2)
+    except Exception as e:
+            pytest.fail(f"Calling {'select_subshapes'} raised an exception: {e}")
 
     # test: template <typename Pred>
     # Shape filter(Pred&& f) const
-    edge_shape.filter(pred_2)
+    try:
+        edge_shape.filter(pred_2)
+    except Exception as e:
+            pytest.fail(f"Calling {'filter'} raised an exception: {e}")
 
     # test: Shape unique_element() const;
     # edge_shape.unique_element() get an error, probably as expected
 
     # test: Shape unique_element_or(Shape const& other) const;
-    edge_shape.unique_element_or(edge_shape)
+    try:
+        edge_shape.unique_element_or(edge_shape)
+    except Exception as e:
+            pytest.fail(f"Calling {'unique_element'} raised an exception: {e}")
 
     # test: template <typename Pred>
     # void add_meta_tag_to_subshapes(Pred&& f, std::string const& input_tag)
-    edge_shape.add_meta_tag_to_subshapes(pred_2, "another_added_tag")
+    try:
+        edge_shape.add_meta_tag_to_subshapes(pred_2, "another_added_tag")
+    except Exception as e:
+            pytest.fail(f"Calling {'add_meta_tag_to_subshapes'} raised an exception: {e}")
 
     # test: void add_tag_track(TagTrack const& tt);
     tag_track = pygeoml.TagTrack("added_by_tag_track_if_is_edge", is_edge, 2)
     
-    edge_shape.add_tag_track(tag_track)
+    try:
+        edge_shape.add_tag_track(tag_track)
+    except Exception as e:
+            pytest.fail(f"Calling {'add_tag_track'} raised an exception: {e}")
 
     # test: std::vector<TagTrack>& get_tag_tracks();
-    tag_tracks = edge_shape.get_tag_tracks()
+    try:
+        tag_tracks = edge_shape.get_tag_tracks()
+    except Exception as e:
+            pytest.fail(f"Calling {'edge_shape'} raised an exception: {e}")
 
     # test: void apply_tag_tracks();
-    edge_shape.apply_tag_tracks()
+    try:
+        edge_shape.apply_tag_tracks()
+    except Exception as e:
+            pytest.fail(f"Calling {'apply_tag_tracks'} raised an exception: {e}")
 
     assert edge_shape.has_tag("not_added_tag") == False
     assert edge_shape.has_tag("added_tag") == True
@@ -513,25 +508,28 @@ def test_Shape_class():
     assert edge_shape.has_tag("added_by_tag_track_if_is_edge") == True
 
     # test: Shape operator[](int i);
-    edge_shape[0]
-    edge_shape[1]
-    edge_shape[2]
-    edge_shape[3]
-    edge_shape[4]
-    edge_shape[5]
-    edge_shape[6]
+    try:
+        edge_shape[0]
+        edge_shape[1]
+        edge_shape[2]
+        edge_shape[3]
+        edge_shape[4]
+        edge_shape[5]
+        edge_shape[6]
+    except Exception as e:
+            pytest.fail(f"Calling {'operator[](int i)'} raised an exception: {e}")
 
     # test: size_t size() const;
-    edge_shape.size()
+    assert edge_shape.size() == 1
 
     # test: bool is_empty() const;
-    edge_shape.is_empty()
+    assert edge_shape.is_empty() == False
 
     # test: bool is_null() const;
-    edge_shape.is_null()
+    assert edge_shape.is_null() == False
 
     # test: bool is_type(TopAbs_ShapeEnum shape_type) const;
-    edge_shape.is_type(TopAbs_EDGE)
+    assert edge_shape.is_type(TopAbs_EDGE) == True
 
     # test: bool is_same(Shape const& other) const;
     edge_shape_1 = pygeoml.Shape(edge)
@@ -585,198 +583,24 @@ def test_Shape_class():
     assert edge_shape.has_tag("added_via_free_function") == True
     
 
-
-
-  
-    
-    
-    
-
-
-
-
-
-
-
-
-# create a TopoDS_EDGE
-p_1 = gp_Pnt(0.0,0.0,0.0)
-p_2 = gp_Pnt(1.0,0.0,0.0)       
-p_3 = gp_Pnt(2.0,0.0,0.0)
-
-point_list = [p_1, p_2, p_3]
-
-curve = pygeoml.interpolate_points_to_b_spline_curve(containers.point_vector(point_list), 2)
-edge = pygeoml.CurveToEdge(curve)
-
-# test:  Shape(TopoDS_Shape const& theShape);
-edge_shape = pygeoml.Shape(edge)
-
-
-print("Test direct_subshapes method: ")
-sub_shapes = edge_shape.direct_subshapes()
-print(sub_shapes)
-
-print("Test get_subshapes method: ")
-print(edge_shape.get_subshapes())
-
-print("Test is_type method: ")
-print(edge_shape.is_type(TopAbs_EDGE))
-
-print("Get id of edge_shape: ")
-print(id(edge_shape))
-
-print("Get id of edge_shape_2: ")
-edge_shape_2 = pygeoml.Shape(edge)
-print(id(edge_shape_2))
-
-print("Test is_same method: edge_shape same as edge_shape_2:  ")
-print(edge_shape.is_same(edge_shape_2)) # hier kommt true raus
-
-print("Test is_same method: edge_shape same as edge_shape:  ")
-print(edge_shape.is_same(edge_shape)) # hier kommt auch true raus
-
-print("Test is_same method: edge_shape same as edge:  ")
-print(edge_shape.is_same(edge)) # TopoDS_Shape as an argument
-
-print("is_empty: edge_shape.is_empty(): ")
-print(edge_shape.is_empty())
-
-print("has_subshape: edge_shape.has_subshape(edge_shape):")
-print(edge_shape.has_subshape(edge_shape))
-
-print("has_subshape: edge_shape.has_subshape(edge_shape_2):")
-print(edge_shape.has_subshape(edge_shape_2))
-
-print("has_origin: edge_shape.has_origin(): ")
-print(edge_shape.has_origin())
-
-print("is_unmodified_descendent_of: edge_shape.is_unmodified_descendent_of(edge_shape): ")
-print(edge_shape.is_unmodified_descendent_of(edge_shape))
-
-print("is_unmodified_descendent_of_subshape_in: edge_shape.is_unmodified_descendent_of_subshape_in(edge_shape):")
-print(edge_shape.is_unmodified_descendent_of_subshape_in(edge_shape))
-
-print("is_modified_descendent_of: edge_shape.is_modified_descendent_of(edge_shape): ")
-print(edge_shape.is_modified_descendent_of(edge_shape))
-
-print("is_modified_descendent_of_subshape_in: edge_shape.is_modified_descendent_of_subshape_in(edge_shape): ")
-print(edge_shape.is_modified_descendent_of_subshape_in(edge_shape))
-
-print("is_descendent_of_subshape_in: edge_shape.is_descendent_of_subshape_in(edge_shape): ")
-print(edge_shape.is_descendent_of_subshape_in(edge_shape))
-
-print("is_descendent_of: edge_shape.is_descendent_of(edge_shape): ")
-print(edge_shape.is_descendent_of(edge_shape))
-
-print("is_ancestor_of: edge_shape.is_ancestor_of(edge_shape): ")
-print(edge_shape.is_ancestor_of(edge_shape))
-
-print("has_tag: edge_shape.has_tag('tag_example'): ")
-print(edge_shape.has_tag("tag_example"))
-
-print("After adding a tag: edge_shape.add_meta_tag('added_tag'):")
-edge_shape.add_meta_tag("added_tag")
-
-print("has_tag: print(edge_shape.has_tag('added_tag')): ")
-print(edge_shape.has_tag("added_tag"))
-
-print("has_tag: print(edge_shape.has_tag('not_added_tag')): ")
-print(edge_shape.has_tag("not_added_tag"))
-
-print("ShapeIsSame: ")
-s_i_s = pygeoml.ShapeIsSame()
-print(s_i_s(edge_shape, edge_shape_2))
-
-print("Try implicit conversion to TopoDS_Shape: Does not work ")
-
-print("select_subshapes: ")
-
-pred_1 = pygeoml.has_tag("not_added_tag")
-pred_2 = pygeoml.has_tag("added_tag")
-
-# def native_pred(shape: pygeoml.Shape):
-#     return True
-
-print(edge_shape.select_subshapes(pred_1))
-print(edge_shape.select_subshapes(pred_2))
-# print(edge_shape.select_subshapes(native_pred))
-
-print("filter: ")
-
-print(edge_shape.filter(pred_2))
-
-print("unique_element: ")
-
-# print(edge_shape.unique_element()) # get an error here (probably as expected)
-
-print("unique_element_or: ")
-
-print(edge_shape.unique_element_or(edge_shape))
-
-print("add_meta_tag_to_subshapes: ")
-
-edge_shape.add_meta_tag_to_subshapes(pred_2, "another_added_tag")
-
-print(edge_shape.has_tag("another_added_tag"))
-print(edge_shape.has_tag("another_not_added_tag"))
-
-print("add_meta_tag: ")
-
-edge_shape.add_meta_tag("third_added_tag")
-
-print(edge_shape.has_tag("third_added_tag"))
-print(edge_shape.has_tag("another_added_tag"))
-print(edge_shape.has_tag("added_tag"))
-print(edge_shape.has_tag("not_added_tag"))
-
-print("TagTrack: ")
-
-tag_track = pygeoml.TagTrack("added_by_tag_track_if_is_vertex",is_edge, 2)
-print(tag_track)
-
-print("add_tag_track: ")
-
-edge_shape.add_tag_track(tag_track)
-
-print("get_tag_track: ")
-
-tag_tracks = edge_shape.get_tag_tracks()
-print(tag_tracks)
-
-edge_shape.apply_tag_tracks()
-
-print(edge_shape.has_tag("not_added_tag"))
-print(edge_shape.has_tag("added_tag"))
-print(edge_shape.has_tag("another_added_tag"))
-print(edge_shape.has_tag("added_by_tag_track_if_is_vertex"))
-
-print("operator[]: ")
-
-print(edge_shape[0])
-print(edge_shape[1])
-print(edge_shape[2])
-print(edge_shape[3])
-print(edge_shape[4])
-print(edge_shape[5])
-print(edge_shape[6])
-print(edge_shape[7])
-
-print("size(): ")
-
-print(edge_shape.size())
-
-print("is_null: ")
-
-print(edge_shape.is_null())
-
-
 ###########################################################################
 ##################### test geoml\predicates\predicate_functions.h #########
 ###########################################################################
 
 
-def test_predicate_functions():
+def compute_Shape_constructor():
+    p_1 = gp_Pnt(0.0,0.0,0.0)
+    p_2 = gp_Pnt(1.0,0.0,0.0)       
+    p_3 = gp_Pnt(2.0,0.0,0.0)
+
+    point_list = [p_1, p_2, p_3]
+
+    curve = pygeoml.interpolate_points_to_b_spline_curve(containers.point_vector(point_list), 2)
+    edge = pygeoml.CurveToEdge(curve)
+
+    return pygeoml.Shape(edge)
+
+def test_predicate_functions_h():
 
     edge_shape = compute_Shape_constructor()
     edge_shape.add_meta_tag("added_tag")
@@ -791,10 +615,6 @@ def test_predicate_functions():
     pred_1_and_2 = pred_1 & pred_2
     assert pred_1_and_2(edge_shape) == False
 
-    print("pred_1_and_2 printed: ")
-    print(pred_1_and_2) # hier wird ein ShapePredicate ausgegeben
-
-
     edge_shape.add_meta_tag("test_string_1")
     edge_shape.add_meta_tag("test_string_2")
 
@@ -806,9 +626,6 @@ def test_predicate_functions():
     pred_1_or_3 = pred_1 | pred_3
     assert pred_1_or_3(edge_shape) == True
 
-    print("pred_1_or_3 printed: ")
-    print(pred_1_or_3) # hier wird ein ShapePredicate ausgegeben 
-    
     pred_3_or_3 = pred_3 | pred_3
     assert pred_3_or_3(edge_shape) == False
 
@@ -898,20 +715,6 @@ def test_predicate_functions():
     pred_is_edge = pygeoml.is_type(TopAbs_EDGE)
     pred = pygeoml.has_subshape_that(pred_is_edge)
     assert pred(edge_shape) == True
-
-
-
-###########################################################################
-###########################################################################
   
-#display_result(testing_point_vector())
-#display_result(testing_interpolate_points_to_b_spline_curve())
-# display_result(testing_create_face())
-# display_result(testing_create_surface())
-
-#display_result(testing_nurbs_curve())
-#display_result(testing_revolving_shape())
-
-# display_result(testing_nurbs_surface())
 
 print("Ran through till the end")
