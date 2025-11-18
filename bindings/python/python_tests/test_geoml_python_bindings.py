@@ -859,9 +859,14 @@ def test_Array2d_h():
 
     # test: std::vector<T> getRow(int index)
     row = weights.getRow(1) 
-    print(row)
 
     assert row[1] == 2.2 # note, the .at(int i) method of std::vector is not exposed here!
+
+    # test: std::vector<T> getCol(int index)
+    col = weights.getCol(1) 
+    assert col[0] == 2.0
+
+
 
 
 print("Ran through till the end")

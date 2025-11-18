@@ -78,7 +78,7 @@ public:
         std::vector<T> col;
         col.reserve(colLength());
         for(int i = 0; i < m_rows; ++i){
-            col.push_back(this->at(index, i));
+            col.push_back(this->at(i, index));
         }
 
         return col;
