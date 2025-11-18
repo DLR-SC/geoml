@@ -77,6 +77,18 @@
 
 %catch_exceptions()
 
+%typemap(out) double& {
+    $result = PyFloat_FromDouble((double)(*$1));
+}
+
+%typemap(out) float& {
+    $result = PyFloat_FromDouble((double)(*$1));
+}
+
+%typemap(out) int& {
+    $result = PyLong_FromLong((long)(*$1));
+}
+
 %include "geoml/data_structures/Array2d.h"
 %include "geoml/naming_choosing/Shape.h"
 
@@ -87,14 +99,6 @@
 %template(Array2dStandardReal) geoml::Array2d<Standard_Real>;
 %template(Array2dgp_Pnt) geoml::Array2d<gp_Pnt>;
 %template(add_persistent_meta_tag_to_subshapes) geoml::add_persistent_meta_tag_to_subshapes<geoml::ShapePredicate>;
-
-// %ignore Array2dStandardReal::at;
-
-%extend geoml::Array2d<Standard_Real> {
-    double my_at(int row, int col) {
-        return $self->at(row, col);        
-    }
-}
 
 %extend geoml::Shape {
     geoml::Shape select_subshapes(const geoml::ShapePredicate& pred,

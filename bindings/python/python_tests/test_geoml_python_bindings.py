@@ -836,10 +836,15 @@ def test_Array2d_h():
     assert value_at_1_1.IsEqual(p_22, 1e-5)
 
     # other_value_at_1_1 = weights.at(1,1)
-    other_value_at_1_1 = weights.my_at(1,1)
+    other_value_at_1_1 = weights.at(1,1)
     assert other_value_at_1_1 == w_22 # if one uses .at(1,1) in the line above, this comparison gives an error 
-    
 
+    # test: T& operator()(int row, int col)    
+    value_at_1_1_new = control_points(1,1)
+    assert value_at_1_1_new.IsEqual(p_22, 1e-5)
+
+    other_value_at_1_1_new = weights(1,1)
+    assert other_value_at_1_1_new ==w_22
     
 
 print("Ran through till the end")
