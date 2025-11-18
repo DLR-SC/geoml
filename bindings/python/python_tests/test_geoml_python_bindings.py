@@ -867,6 +867,41 @@ def test_Array2d_h():
     assert col[0] == 2.0
 
 
+###########################################################################
+##################### test geoml/data_structures/conversions.h ############
+###########################################################################
+
+
+def test_conversions_h():
+    weights = pygeoml.Array2dStandardReal(3, 3)
+
+    w_11 = 1.0 
+    w_12 = 2.0       
+    w_13 = 1.0
+
+    w_21 = 1.0
+    w_22 = 1.0      
+    w_23 = 1.0
+
+    w_31 = 1.0
+    w_32 = 1.0
+    w_33 = 1.0
+
+    weights.setValue(0, 0, w_11)
+    weights.setValue(0, 1, w_12)
+    weights.setValue(0, 2, w_13)
+    weights.setValue(1, 0, w_21)
+    weights.setValue(1, 1, w_22)
+    weights.setValue(1, 2, w_23)
+    weights.setValue(2, 0, w_31)
+    weights.setValue(2, 1, w_32)
+    weights.setValue(2, 2, w_33)     
+    
+    # test: NCollection_Array2<StandardReal> Array2d_to_TCol (Array2d<StandardReal> const &net)
+    pygeoml.Array2dToTColStandardReal(weights)
+
+
+
 
 
 print("Ran through till the end")

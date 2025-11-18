@@ -24,6 +24,10 @@
 %{
 #include <TColStd_module.hxx> 
 #include <TCollection_module.hxx>
+
+// #include <NCollection_Array2.hxx>   
+// #include <NCollection_Array1.hxx>
+
 #include <TColgp_module.hxx> 
 #include <Geom_module.hxx> 
 #include <TopoDS_Compound.hxx> 
@@ -68,7 +72,7 @@
 #include "geoml/naming_choosing/Shape.h"
 #include "geoml/boolean_ops/modeling.hpp"
 #include "geoml/predicates/predicate_functions.h"
-#include "geoml/boolean_ops/modeling.hpp"
+#include "geoml/data_structures/conversions.h"
 %} 
 
 
@@ -91,6 +95,8 @@
 
 %include "geoml/data_structures/Array2d.h"
 %include "geoml/naming_choosing/Shape.h"
+%include "geoml/data_structures/conversions.h"
+
 
 %template(CurveList) std::vector<Handle(Geom_Curve)>;
 %template(CPointContainer) std::vector<gp_Pnt>;
@@ -99,6 +105,7 @@
 %template(Array2dStandardReal) geoml::Array2d<Standard_Real>;
 %template(Array2dgp_Pnt) geoml::Array2d<gp_Pnt>;
 %template(add_persistent_meta_tag_to_subshapes) geoml::add_persistent_meta_tag_to_subshapes<geoml::ShapePredicate>;
+%template(Array2dToTColStandardReal) geoml::Array2d_to_TCol<Standard_Real>;
 
 %extend geoml::Shape {
     geoml::Shape select_subshapes(const geoml::ShapePredicate& pred,
@@ -153,8 +160,7 @@
 %include "geoml/Continuity.h"
 %include "geoml/curves/BlendCurve.h"
 %include "geoml/geom_topo_conversions/geom_topo_conversions.h"
-%include "geoml/naming_choosing/Shape.h"
+// %include "geoml/naming_choosing/Shape.h"
 %include "geoml/boolean_ops/modeling.hpp"
 %include "geoml/predicates/predicate_functions.h"
-%include "geoml/boolean_ops/modeling.hpp"
 
