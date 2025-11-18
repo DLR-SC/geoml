@@ -846,5 +846,22 @@ def test_Array2d_h():
     other_value_at_1_1_new = weights(1,1)
     assert other_value_at_1_1_new ==w_22
     
+    # test: void setValue(int row, int col, T input)
+    weights.setValue(1, 1, 2.2)
+
+    assert weights(1, 1) == 2.2
+
+    # test: int rowLength() const
+    assert weights.rowLength() == 3
+
+    # test: int colLength() const
+    assert weights.colLength() == 3
+
+    # test: std::vector<T> getRow(int index)
+    row = weights.getRow(1) 
+    print(row)
+
+    assert row[1] == 2.2 # note, the .at(int i) method of std::vector is not exposed here!
+
 
 print("Ran through till the end")
