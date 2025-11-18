@@ -87,6 +87,15 @@
 %template(Array2dStandardReal) geoml::Array2d<Standard_Real>;
 %template(Array2dgp_Pnt) geoml::Array2d<gp_Pnt>;
 %template(add_persistent_meta_tag_to_subshapes) geoml::add_persistent_meta_tag_to_subshapes<geoml::ShapePredicate>;
+
+// %ignore Array2dStandardReal::at;
+
+%extend geoml::Array2d<Standard_Real> {
+    double my_at(int row, int col) {
+        return $self->at(row, col);        
+    }
+}
+
 %extend geoml::Shape {
     geoml::Shape select_subshapes(const geoml::ShapePredicate& pred,
                                   int max_depth = std::numeric_limits<int>::max()) const {
@@ -103,9 +112,6 @@
 
     Shape& __getitem__(int i) {
         return $self->operator[](i);
-    }
-    Shape __sub__(Shape const& other) {
-        return geoml::operator-(*$self, other);
     }
     Shape __sub__(Shape const& other) {
         return geoml::operator-(*$self, other);

@@ -474,7 +474,7 @@ def test_Shape_h():
             pytest.fail(f"Calling {'filter'} raised an exception: {e}")
 
     # test: Shape unique_element() const;
-    # edge_shape.unique_element() get an error, probably as expected
+    # edge_shape.unique_element() #get an error, probably as expected
 
     # test: Shape unique_element_or(Shape const& other) const;
     try:
@@ -613,6 +613,7 @@ def test_predicate_functions_h():
     edge_shape.add_meta_tag("added_tag")
 
     # test: ShapePredicate operator&&(ShapePredicate const& l, ShapePredicate const& r);
+    # CAUTION: pred_1 or pred_2 doesn't give an error message!
     pred_1 = pygeoml.has_tag("test_string_1")
     assert pred_1(edge_shape) == False
 
@@ -628,6 +629,7 @@ def test_predicate_functions_h():
     assert pred_1_and_2(edge_shape) == True
 
     # test: ShapePredicate operator||(ShapePredicate const& l, ShapePredicate const& r);
+    # CAUTION: pred_1 and pred_2 doesn't give an error message! 
     pred_3 = pygeoml.has_tag("test_string_3")
 
     pred_1_or_3 = pred_1 | pred_3
@@ -637,6 +639,7 @@ def test_predicate_functions_h():
     assert pred_3_or_3(edge_shape) == False
 
     # test: ShapePredicate operator!(ShapePredicate const& pred);
+    # CAUTION:  not pred doesn't give an error message!
     pred_1_not = ~pred_1
     assert pred_1_not(edge_shape) == False
 
@@ -761,6 +764,80 @@ def test_boolean_ops():
         pytest.fail(f"Calling {'operator+'} raised an exception: {e}")
 
     
+###########################################################################
+##################### test geoml/data_structures/Array2d.h ################
+###########################################################################
+
+
+def test_Array2d_h():
+    
+    # test: construct an Array2dStandardReal and set values
+    weights = pygeoml.Array2dStandardReal(3, 3)
+
+    w_11 = 1.0 
+    w_12 = 2.0       
+    w_13 = 1.0
+
+    w_21 = 1.0
+    w_22 = 1.0      
+    w_23 = 1.0
+
+    w_31 = 1.0
+    w_32 = 1.0
+    w_33 = 1.0
+
+    try:
+        weights.setValue(0, 0, w_11)
+        weights.setValue(0, 1, w_12)
+        weights.setValue(0, 2, w_13)
+        weights.setValue(1, 0, w_21)
+        weights.setValue(1, 1, w_22)
+        weights.setValue(1, 2, w_23)
+        weights.setValue(2, 0, w_31)
+        weights.setValue(2, 1, w_32)
+        weights.setValue(2, 2, w_33) 
+    except Exception as e:
+        pytest.fail(f"Calling {'setValue for Array2dStandardReal'} raised an exception: {e}")
+
+    # test: construct an Array2dgp_Pnt and set values
+    control_points = pygeoml.Array2dgp_Pnt(3, 3)
+
+    p_11 = gp_Pnt(0.0,0.0,0.0)
+    p_12 = gp_Pnt(0.0,1.0,0.0)       
+    p_13 = gp_Pnt(1.0,2.0,0.0)
+
+    p_21 = gp_Pnt(0.0,0.0,3.0)
+    p_22 = gp_Pnt(0.0,1.0,3.0)       
+    p_23 = gp_Pnt(1.0,2.0,3.0)
+
+    p_31 = gp_Pnt(0.0,4.0,3.0)
+    p_32 = gp_Pnt(0.0,5.0,3.0)       
+    p_33 = gp_Pnt(1.0,6.0,3.0)
+
+    try:
+        control_points.setValue(0, 0, p_11)
+        control_points.setValue(0, 1, p_12)
+        control_points.setValue(0, 2, p_13)
+        control_points.setValue(1, 0, p_21)
+        control_points.setValue(1, 1, p_22)
+        control_points.setValue(1, 2, p_23)
+        control_points.setValue(2, 0, p_31)
+        control_points.setValue(2, 1, p_32)
+        control_points.setValue(2, 2, p_33)
+    except Exception as e:
+        pytest.fail(f"Calling {'setValue for Array2dgp_Pnt'} raised an exception: {e}")
+
+    # test: T& at(int row, int col)
+    value_at_1_1 = control_points.at(1,1)
+    assert value_at_1_1.X() == p_22.X()
+    assert value_at_1_1.Y() == p_22.Y()
+    assert value_at_1_1.Z() == p_22.Z()
+
+    assert value_at_1_1.IsEqual(p_22, 1e-5)
+
+    # other_value_at_1_1 = weights.at(1,1)
+    other_value_at_1_1 = weights.my_at(1,1)
+    assert other_value_at_1_1 == w_22 # if one uses .at(1,1) in the line above, this comparison gives an error 
     
 
     

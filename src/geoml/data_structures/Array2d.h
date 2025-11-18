@@ -39,11 +39,11 @@ public:
     GEOML_API_EXPORT T& at(int row, int col) {
         return m_flat_data.at(row * m_cols + col);
     }
-
+    
     GEOML_API_EXPORT const T& at(int row, int col) const {
         return m_flat_data.at(row * m_cols + col);
     } 
-
+    
     GEOML_API_EXPORT T& operator()(int row, int col) {
         return m_flat_data[row * m_cols + col];
     }
@@ -51,7 +51,7 @@ public:
     GEOML_API_EXPORT const T& operator()(int row, int col) const {
         return m_flat_data[row * m_cols + col];
     }
-
+       
     GEOML_API_EXPORT void setValue(int row, int col, T input) {
         m_flat_data.at(row * m_cols + col) = input;
     }
