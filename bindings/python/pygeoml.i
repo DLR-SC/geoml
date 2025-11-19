@@ -160,7 +160,6 @@
 %include "geoml/Continuity.h"
 %include "geoml/curves/BlendCurve.h"
 %include "geoml/geom_topo_conversions/geom_topo_conversions.h"
-// %include "geoml/naming_choosing/Shape.h"
 %include "geoml/boolean_ops/modeling.hpp"
 %include "geoml/predicates/predicate_functions.h"
 
