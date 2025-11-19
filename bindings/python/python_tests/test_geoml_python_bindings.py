@@ -10,6 +10,7 @@ from OCC.Core.Geom import Geom_Curve
 from OCC.Core.TopAbs import TopAbs_EDGE, TopAbs_FACE, TopAbs_VERTEX, TopAbs_SHAPE
 from OCC.Core.TopAbs import TopAbs_ShapeEnum
 from OCC.Core.BRepPrimAPI import BRepPrimAPI_MakeBox, BRepPrimAPI_MakeSphere
+from OCC.Core.TColStd import TColStd_Array2OfReal, TColStd_HArray2OfReal
 
 import pytest 
 
@@ -898,10 +899,10 @@ def test_conversions_h():
     weights.setValue(2, 2, w_33)     
     
     # test: NCollection_Array2<StandardReal> Array2d_to_TCol (Array2d<StandardReal> const &net)
-    pygeoml.Array2dToTColStandardReal(weights)
+    # and helper function from conversions.h: TColStd_Array2OfReal conversion_func(geoml::Array2d<Standard_Real> const& array_2d)
+    # and containers.py function: def float_array_2d (array_2d: Array2dStandardReal):
+    TCol_weights =  containers.float_array_2d(weights)
 
-
-
-
+    assert TCol_weights.Value(1,2) == 2.0
 
 print("Ran through till the end")

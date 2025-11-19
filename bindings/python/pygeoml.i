@@ -58,6 +58,7 @@
 
 %import "TopoDS.i"
 %import "Geom.i" 
+%import "TColStd.i"
 
 
 %{
@@ -97,7 +98,6 @@
 %include "geoml/naming_choosing/Shape.h"
 %include "geoml/data_structures/conversions.h"
 
-
 %template(CurveList) std::vector<Handle(Geom_Curve)>;
 %template(CPointContainer) std::vector<gp_Pnt>;
 %template(StandardRealList) std::vector<Standard_Real>;
@@ -105,7 +105,6 @@
 %template(Array2dStandardReal) geoml::Array2d<Standard_Real>;
 %template(Array2dgp_Pnt) geoml::Array2d<gp_Pnt>;
 %template(add_persistent_meta_tag_to_subshapes) geoml::add_persistent_meta_tag_to_subshapes<geoml::ShapePredicate>;
-%template(Array2dToTColStandardReal) geoml::Array2d_to_TCol<Standard_Real>;
 
 %extend geoml::Shape {
     geoml::Shape select_subshapes(const geoml::ShapePredicate& pred,

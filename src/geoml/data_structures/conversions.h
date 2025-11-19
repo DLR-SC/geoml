@@ -7,13 +7,13 @@
 #include <gp_Pnt.hxx>
 #include <NCollection_Array2.hxx>   
 #include <NCollection_Array1.hxx>
+#include <TColStd_Array2OfReal.hxx>
 
 #include <vector>
 
 
 namespace geoml 
 {
-
 
 /**
  * @brief Convert an Array2d<T> to NCollection_Array2<T>. We remark as an example that the commonly used class TColgp_Array2OfPnt is a typedef of NCollection_Array2<gp_Pnt>.
@@ -36,6 +36,10 @@ NCollection_Array2<T> Array2d_to_TCol (Array2d<T> const &net)
 
     return net_col;
 }
+
+inline TColStd_Array2OfReal conversion_func(geoml::Array2d<Standard_Real> const& array_2d) {
+    return geoml::Array2d_to_TCol (array_2d);
+} 
 
 /**
  * @brief Convert an NCollection_Array2<T> to an Array2d<T>. We remark as an example that the commonly used class TColgp_Array2OfPnt is a typedef of NCollection_Array2<gp_Pnt>.

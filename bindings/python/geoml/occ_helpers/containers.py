@@ -1,8 +1,10 @@
-from OCC.Core.TColStd import TColStd_HArray1OfReal, TColStd_HArray1OfInteger
+from OCC.Core.TColStd import TColStd_HArray1OfReal, TColStd_HArray1OfInteger, TColStd_HArray2OfReal, TColStd_Array2OfReal
 from OCC.Core.TColgp import TColgp_HArray1OfPnt
 from OCC.Core.TColGeom import TColGeom_HArray1OfBSplineCurve
 from OCC.Core.gp import gp_Pnt
 from geoml import CurveList, CPointContainer, IntList, StandardRealList
+from geoml import pygeoml
+from geoml.pygeoml import Array2dStandardReal
 
 
 def standard_real_vector(float_list):
@@ -80,6 +82,26 @@ def point_array(points):
         pnt = gp_Pnt(*py_pnt)
         pnts.SetValue(i+1, pnt)
     return pnts
+
+def float_array_2d (array_2d: Array2dStandardReal):
+    """
+    Returns a TColgp_HArray2OfReal from a Array2d
+
+    :param array_2d: 2d array of type Array2dStandardReal
+    :return: TColgp_HArray2OfReal
+    """
+
+    nrows = array_2d.rowLength()
+    ncols = array_2d.colLength()
+
+    TCol_array_2d = TColStd_HArray2OfReal(1, array_2d.rowLength(), 1, array_2d.colLength())
+    
+    for i in range(nrows):
+        for j in range(ncols):
+            value = array_2d.at(i,j)
+            TCol_array_2d.SetValue(i + 1, j + 1, value)
+
+    return TCol_array_2d
 
 
 def point_vector(gp_pnt_list):
