@@ -55,6 +55,36 @@ def test_point_vector():
     except Exception as e:
         pytest.fail(f"Calling {func_name} raised an exception: {e}")
 
+def test_containers_py():
+    # test: def float_array_2d (array_2d: Array2dStandardReal):
+
+    weights = pygeoml.Array2dStandardReal(3, 3)
+
+    w_11 = 1.0 
+    w_12 = 2.0       
+    w_13 = 1.0
+
+    w_21 = 1.0
+    w_22 = 1.0      
+    w_23 = 1.0
+
+    w_31 = 1.0
+    w_32 = 1.0
+    w_33 = 1.0
+
+    weights.setValue(0, 0, w_11)
+    weights.setValue(0, 1, w_12)
+    weights.setValue(0, 2, w_13)
+    weights.setValue(1, 0, w_21)
+    weights.setValue(1, 1, w_22)
+    weights.setValue(1, 2, w_23)
+    weights.setValue(2, 0, w_31)
+    weights.setValue(2, 1, w_32)
+    weights.setValue(2, 2, w_33)  
+    
+    TCol_weights =  containers.float_array_2d(weights)
+
+    assert TCol_weights.Value(1,2) == 2.0
 
 ###########################################################################
 ##################### test geoml/curves/curves.h ##########################
@@ -899,10 +929,6 @@ def test_conversions_h():
     weights.setValue(2, 2, w_33)     
     
     # test: NCollection_Array2<StandardReal> Array2d_to_TCol (Array2d<StandardReal> const &net)
-    # and helper function from conversions.h: TColStd_Array2OfReal conversion_func(geoml::Array2d<Standard_Real> const& array_2d)
-    # and containers.py function: def float_array_2d (array_2d: Array2dStandardReal):
-    TCol_weights =  containers.float_array_2d(weights)
-
-    assert TCol_weights.Value(1,2) == 2.0
+    
 
 print("Ran through till the end")
