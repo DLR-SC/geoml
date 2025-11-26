@@ -1056,5 +1056,24 @@ def test_conversions_h():
     # test: NCollection_Array2<StandardReal> Array2d_to_TCol (Array2d<StandardReal> const &net)
     
 
+###########################################################################
+##################### test geoml/geom_topo_conversions/geom_topo_conversions.h 
+###########################################################################
+
+
+def test_geom_topo_conversions_h():
+    # test: TopoDS_Face SurfaceToFace(const Handle(Geom_Surface) &surface, Standard_Real tolDegEd);
+
+    x = gp_Pnt(0,0,0)
+    y = gp_Pnt(0.5,0,0)       
+    z = gp_Pnt(1,1,0)
+    w = gp_Pnt(0,3,0)
+    
+    srf = pygeoml.create_surface(x,y,z,w)
+
+    face = pygeoml.SurfaceToFace(srf, 1e-4)
+    
+    ### continue here ### 
+
 
 print("Ran through till the end")
