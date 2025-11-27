@@ -1205,7 +1205,6 @@ def test_utilities_h():
 
     filleted_box = pygeoml.make_fillet(box_shape, edge_shapes, radius)
 
-    display_result(filleted_box.shape())
 
 
 
