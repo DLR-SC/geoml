@@ -1103,5 +1103,41 @@ def test_geom_topo_conversions_h():
     except Exception as e:
         pytest.fail(f"Calling {func_name} raised an exception: {e}")
 
+###########################################################################
+##################### test geoml/primitives/modeling.hpp ################## 
+###########################################################################
+
+
+def test_primitives():
+    # test: Shape create_cylinder(double radius, double height);
+
+    radius = 2.0
+    height = 8.0
+
+    func_name = "create_cylinder"
+    try:
+        cylinder_shape = pygeoml.create_cylinder(radius, height)
+    except Exception as e:
+        pytest.fail(f"Calling {func_name} raised an exception: {e}")
+
+    # test: Shape create_box(double dx, double dy, double dz);
+
+    dx = 1.0
+    dy = 2.0
+    dz = 4.0
+
+    func_name = "create_box"
+    try:
+        box_shape = pygeoml.create_box(dx, dy, dz)
+    except Exception as e:
+        pytest.fail(f"Calling {func_name} raised an exception: {e}")
+
+    
+
+    
+
+
+
+
 
 print("Ran through till the end")
