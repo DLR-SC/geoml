@@ -1081,7 +1081,7 @@ def test_geom_topo_conversions_h():
 
     p_1 = gp_Pnt(0.0, 0.0, 0.0)
     p_2 = gp_Pnt(1.0, 1.0, 1.0)
-    p_3 = gp_Pnt(3.0, 3.0, 3.0)
+    p_3 = gp_Pnt(3.0, 0.0, 6.0)
 
     point_vec = containers.point_vector([p_1, p_2, p_3])
 
@@ -1093,6 +1093,15 @@ def test_geom_topo_conversions_h():
     except Exception as e:
         pytest.fail(f"Calling {func_name} raised an exception: {e}")
     
+    # test: Handle(Geom_Curve) EdgeToCurve(TopoDS_Edge const& edge);
+
+    edge = pygeoml.CurveToEdge(curve)
+
+    func_name = "EdgeToCurve"
+    try:
+        crv = pygeoml.EdgeToCurve(edge)
+    except Exception as e:
+        pytest.fail(f"Calling {func_name} raised an exception: {e}")
 
 
 print("Ran through till the end")
