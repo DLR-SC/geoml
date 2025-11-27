@@ -1,8 +1,7 @@
 from geoml import pygeoml
 from geoml.pygeoml import is_vertex, is_edge
 from geoml.occ_helpers import containers
-from OCC.Core.gp import gp_Pnt
-from OCC.Core.gp import gp_Vec
+from OCC.Core.gp import gp_Pnt, gp_Vec, gp_GTrsf, gp_Trsf, gp_Mat, gp_XYZ
 from OCC.Core.TopoDS import TopoDS_Shape
 from OCC.Display.SimpleGui import init_display 
 from OCC.Core.Geom import Geom_BSplineCurve, Geom_Curve, Geom_BSplineSurface
@@ -1206,7 +1205,19 @@ def test_utilities_h():
     filleted_box = pygeoml.make_fillet(box_shape, edge_shapes, radius)
 
 
+###########################################################################
+##################### test geoml/transformations/Transform.h ##############
+###########################################################################
+
+
+def test_Transform_h():
+
+    transf = pygeoml.Transform()
+
+
+
 
 
 
 print("Ran through till the end")
+
