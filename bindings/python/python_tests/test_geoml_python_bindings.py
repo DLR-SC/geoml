@@ -1071,9 +1071,28 @@ def test_geom_topo_conversions_h():
     
     srf = pygeoml.create_surface(x,y,z,w)
 
-    face = pygeoml.SurfaceToFace(srf, 1e-4)
+    func_name = "SurfaceToFace"
+    try:
+        face = pygeoml.SurfaceToFace(srf, 1e-4)
+    except Exception as e:
+        pytest.fail(f"Calling {func_name} raised an exception: {e}")
+
+    # test: TopoDS_Edge CurveToEdge(const Handle(Geom_Curve) &curve);
+
+    p_1 = gp_Pnt(0.0, 0.0, 0.0)
+    p_2 = gp_Pnt(1.0, 1.0, 1.0)
+    p_3 = gp_Pnt(3.0, 3.0, 3.0)
+
+    point_vec = containers.point_vector([p_1, p_2, p_3])
+
+    curve = pygeoml.interpolate_points_to_b_spline_curve(point_vec)
+
+    func_name = "CurveToEdge"
+    try:
+        edge = pygeoml.CurveToEdge(curve)
+    except Exception as e:
+        pytest.fail(f"Calling {func_name} raised an exception: {e}")
     
-    ### continue here ### 
 
 
 print("Ran through till the end")
