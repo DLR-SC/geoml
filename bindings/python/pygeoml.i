@@ -77,6 +77,8 @@
 #include "geoml/geom_topo_conversions/geom_topo_conversions.h"
 #include "geoml/primitives/modeling.hpp"
 #include "geoml/utilities/utilities.h"
+#include "geometry/Transformation.h"
+#include "geoml/transformations/Transform.h"
 %} 
 
 
@@ -167,4 +169,5 @@
 %include "geoml/geom_topo_conversions/geom_topo_conversions.h"
 %include "geoml/primitives/modeling.hpp"
 %include "geoml/utilities/utilities.h"
+%include "geoml/transformations/Transform.h"
 

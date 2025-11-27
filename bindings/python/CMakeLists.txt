@@ -105,7 +105,7 @@ set_source_files_properties(pygeoml.i PROPERTIES CPLUSPLUS ON)
 set(SWIG_MODULE_pygeoml_EXTRA_DEPS common.i doc.i)
 
 swig_add_library(pygeoml LANGUAGE python SOURCES pygeoml.i TYPE MODULE)
-swig_link_libraries(pygeoml geoml Python3::Module)
+swig_link_libraries(pygeoml geoml geoml_internal Python3::Module)
 
 install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/geoml
 DESTINATION ${PYTHON_SITE_PACKAGES}
