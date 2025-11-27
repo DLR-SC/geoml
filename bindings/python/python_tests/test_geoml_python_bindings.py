@@ -1190,5 +1190,24 @@ def test_utilities_h():
     assert v_vec[1].Z() == cp_22.Z()
 
 
+    # test: Shape make_fillet (Shape const& solid , Shape const& edges, Standard_Real radius);
+    dx = 1.0
+    dy = 2.0
+    dz = 4.0
+
+    box_shape = pygeoml.create_box(dx, dy, dz)
+
+    pred = pygeoml.is_type(TopAbs_EDGE)
+
+    edge_shapes = box_shape.select_subshapes(pred)
+
+    radius = 0.2
+
+    filleted_box = pygeoml.make_fillet(box_shape, edge_shapes, radius)
+
+    display_result(filleted_box.shape())
+
+
+
 
 print("Ran through till the end")
