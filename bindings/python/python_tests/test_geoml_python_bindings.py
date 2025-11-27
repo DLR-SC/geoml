@@ -5,8 +5,7 @@ from OCC.Core.gp import gp_Pnt
 from OCC.Core.gp import gp_Vec
 from OCC.Core.TopoDS import TopoDS_Shape
 from OCC.Display.SimpleGui import init_display 
-from OCC.Core.Geom import Geom_BSplineCurve
-from OCC.Core.Geom import Geom_Curve
+from OCC.Core.Geom import Geom_BSplineCurve, Geom_Curve, Geom_BSplineSurface
 from OCC.Core.TopAbs import TopAbs_EDGE, TopAbs_FACE, TopAbs_VERTEX, TopAbs_SHAPE
 from OCC.Core.TopAbs import TopAbs_ShapeEnum
 from OCC.Core.BRepPrimAPI import BRepPrimAPI_MakeBox, BRepPrimAPI_MakeSphere
@@ -122,6 +121,7 @@ def test_point_array_2d_to_tcol():
     assert TCol_points.Value(1,2).Y() == 1.0
     assert TCol_points.Value(1,2).Z() == 0.0
     
+
 def test_float_tcol_to_array_2d():
     # test: def float_tcol_to_array_2d(t_col: TColStd_HArray2OfReal):
      
@@ -1132,10 +1132,44 @@ def test_primitives():
     except Exception as e:
         pytest.fail(f"Calling {func_name} raised an exception: {e}")
 
-    
 
-    
+###########################################################################
+##################### test geoml/utilities/utilities.h #################### 
+###########################################################################
 
+
+def test_utilities_h():
+    # test: Array2d<gp_Pnt> extract_control_points_surface(const Handle(Geom_BSplineSurface) &b_spline_surface);
+    
+    p_11 = gp_Pnt(0.0,0.0,0.0)
+    p_12 = gp_Pnt(0.0,1.0,0.0)       
+    p_13 = gp_Pnt(1.0,2.0,0.0)
+    point_list_1 = [p_11, p_12, p_13]
+    curve_1 = pygeoml.interpolate_points_to_b_spline_curve(containers.point_vector(point_list_1), 2)
+
+    p_21 = gp_Pnt(0.0,0.0,3.0)
+    p_22 = gp_Pnt(0.0,1.0,3.0)       
+    p_23 = gp_Pnt(1.0,2.0,3.0)
+    point_list_2 = [p_21, p_22, p_23]    
+    curve_2 = pygeoml.interpolate_points_to_b_spline_curve(containers.point_vector(point_list_2), 2)
+
+    p_31 = gp_Pnt(0.0,4.0,3.0)
+    p_32 = gp_Pnt(0.0,5.0,3.0)       
+    p_33 = gp_Pnt(1.0,6.0,3.0)
+    point_list_3 = [p_31, p_32, p_33]
+    curve_3 = pygeoml.interpolate_points_to_b_spline_curve(containers.point_vector(point_list_3), 2)
+
+    curve_list = [curve_1, curve_2, curve_3]
+
+    surface = pygeoml.interpolate_curves(containers.geomcurve_vector(curve_list), 2, True)
+
+    array_2d = pygeoml.extract_control_points_surface(surface)
+    
+    cp_22 = surface.Pole(2, 2)
+
+    assert array_2d.at(1, 1).X() == cp_22.X()
+    assert array_2d.at(1, 1).Y() == cp_22.Y()
+    assert array_2d.at(1, 1).Z() == cp_22.Z()
 
 
 
