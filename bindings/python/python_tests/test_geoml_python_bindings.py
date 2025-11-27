@@ -1172,6 +1172,16 @@ def test_utilities_h():
     assert array_2d.at(1, 1).Z() == cp_22.Z()
 
 
+    # test: std::vector<gp_Pnt> extract_control_point_vector_in_U_direction (const Handle(Geom_BSplineSurface) &b_spline_surface, int j);
+
+    u_vec = pygeoml.extract_control_point_vector_in_U_direction(surface, 1)
+
+    assert u_vec[1].X() == cp_22.X()
+    assert u_vec[1].Y() == cp_22.Y()
+    assert u_vec[1].Z() == cp_22.Z()
+
+
+    
 
 
 print("Ran through till the end")
