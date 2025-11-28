@@ -35,22 +35,17 @@ def bspline_curve(cp, knots, mults, degree):
 ###########################################################################
 
 
-def compute_point_vector():
+def test_point_vector():
     p_1 = gp_Pnt(0.0,0.0,0.0)
     p_2 = gp_Pnt(0.5,0.0,0.0)       
     p_3 = gp_Pnt(1.0,1.0,0.0)
 
     point_list = [p_1, p_2, p_3]
 
-    return containers.point_vector(point_list)
-
-
-def test_point_vector():
-
     func_name = "point_vector"
           
     try:
-        result = compute_point_vector()
+        result = containers.point_vector(point_list)
     except Exception as e:
         pytest.fail(f"Calling {func_name} raised an exception: {e}")
 
@@ -241,16 +236,35 @@ def compute_nurbs_curve():
 
 
 def test_nurbs_curve():
+    
+    p_1 = gp_Pnt(0.0, 0.0, 0.0)
+    p_2 = gp_Pnt(0.0, 1.0, 2.0)
+    p_3 = gp_Pnt(0.0, 2.0, -1.0)
+    p_4 = gp_Pnt(1.0, 0.0, 3.0)
+    p_5 = gp_Pnt(0.0, 4.0, 0.0)
+
+    control_points = [p_1, p_2, p_3, p_4, p_5]
+
+    weights = [1.0, 2.0, 1.0, 1.0, 1.0]
+
+    knots = [0.0, 1.0, 2.0, 3.0]
+
+    mults = [3, 1, 1, 3]
+
+    degree = 2
 
     func_name = "nurbs_curve"
 
     try:
-        result = compute_nurbs_curve()
+        result = pygeoml.nurbs_curve(containers.point_vector(control_points), 
+                                containers.standard_real_vector(weights), 
+                                containers.standard_real_vector(knots), 
+                                containers.int_vector(mults), degree)
     except Exception as e:
         pytest.fail(f"Calling {func_name} raised an exception: {e}")
 
 
-def compute_interpolate_points_to_b_spline_curve():
+def test_interpolate_points_to_b_spline_curve():
      
     p_1 = gp_Pnt(0,0,0)
     p_2 = gp_Pnt(0.5,0,0)       
@@ -258,17 +272,11 @@ def compute_interpolate_points_to_b_spline_curve():
 
     point_list = [p_1, p_2, p_3]
 
-    curve = pygeoml.interpolate_points_to_b_spline_curve(containers.point_vector(point_list), 2)
-    
-    return curve
-
-
-def test_interpolate_points_to_b_spline_curve():
 
     func_name = "interpolate_points_to_b_spline_curve"
 
     try:
-        result = compute_interpolate_points_to_b_spline_curve()
+        result = pygeoml.interpolate_points_to_b_spline_curve(containers.point_vector(point_list), 2)
     except Exception as e:
         pytest.fail(f"Calling {func_name} raised an exception: {e}")
 
@@ -278,8 +286,7 @@ def test_interpolate_points_to_b_spline_curve():
 ###########################################################################
 
 
-def compute_blend_curve():
-
+def test_blend_curve():
     p_11 = gp_Pnt(0.0,0.0,0.0)
     p_12 = gp_Pnt(1.0,0.0,0.0)       
     p_13 = gp_Pnt(2.0,0.0,0.0)
@@ -307,15 +314,11 @@ def compute_blend_curve():
 
     blend_curve = pygeoml.BlendCurve(start_connection, end_connection)
 
-    return blend_curve.blend_curve()
-
-
-def test_blend_curve():
 
     func_name = "BlendCurve"
 
     try:
-        result = compute_blend_curve()
+        result = blend_curve.blend_curve()
     except Exception as e:
         pytest.fail(f"Calling {func_name} raised an exception: {e}")
 
@@ -325,7 +328,7 @@ def test_blend_curve():
 ###########################################################################
 
 
-def compute_curve_network_interpolation():
+def test_curve_network_interpolation():
 
     # create u-curves
     p_11 = gp_Pnt(0.0,0.0,0.0)
@@ -361,23 +364,16 @@ def compute_curve_network_interpolation():
 
     u_curves = containers.geomcurve_vector(curve_list_u)
     v_curves = containers.geomcurve_vector(curve_list_v)
-
-    gordon_surface = pygeoml.interpolate_curve_network(u_curves, v_curves, 1e-1)
-
-    return gordon_surface
-
-
-def test_curve_network_interpolation():
     
     func_name = "curve_network_interpolation"
 
     try:
-        result = compute_curve_network_interpolation()
+        result = pygeoml.interpolate_curve_network(u_curves, v_curves, 1e-1)
     except Exception as e:
         pytest.fail(f"Calling {func_name} raised an exception: {e}")
 
 
-def compute_interpolate_curves():
+def test_interpolate_curves():
 
     p_11 = gp_Pnt(0.0,0.0,0.0)
     p_12 = gp_Pnt(0.0,1.0,0.0)       
@@ -399,22 +395,16 @@ def compute_interpolate_curves():
 
     curve_list = [curve_1, curve_2, curve_3]
 
-    surface = pygeoml.interpolate_curves(containers.geomcurve_vector(curve_list), 2, True)
-
-    return surface
-
-
-def test_interpolate_curves():
 
     func_name = "interpolate_curves"
 
     try:
-        result = compute_interpolate_curves()
+        result = pygeoml.interpolate_curves(containers.geomcurve_vector(curve_list), 2, True)
     except Exception as e:
         pytest.fail(f"Calling {func_name} raised an exception: {e}") 
 
 
-def compute_revolving_shape():
+def test_revolving_shape():
 
     p_1 = gp_Pnt(2.0, 0.0, 0.0)
     p_2 = gp_Pnt(1.0, 0.0, 1.0)       
@@ -429,22 +419,15 @@ def compute_revolving_shape():
 
     rotation_axis_direction = gp_Vec(0.0, 0.0, 1.0)
 
-    revolving_shape = pygeoml.revolving_shape(edge, start_point_rotation_axis, rotation_axis_direction)
-
-    return revolving_shape
-
-
-def test_revolving_shape():
-
     func_name = "revolving_surface"
 
     try:
-        result = compute_revolving_shape()
+        result = pygeoml.revolving_shape(edge, start_point_rotation_axis, rotation_axis_direction)
     except Exception as e:
         pytest.fail(f"Calling {func_name} raised an exception: {e}") 
 
 
-def compute_nurbs_surface():
+def test_nurbs_surface():
 
     p_11 = gp_Pnt(0.0,0.0,0.0)
     p_12 = gp_Pnt(0.0,1.0,0.0)       
@@ -503,60 +486,44 @@ def compute_nurbs_surface():
     u_degree = 2
     v_degree = 2
 
-    surface = pygeoml.nurbs_surface(control_points, weights, 
+
+    func_name = "nurbs_surface"
+
+    try:
+        result = pygeoml.nurbs_surface(control_points, weights, 
                                     containers.standard_real_vector(u_knots), 
                                     containers.standard_real_vector(v_knots), 
                                     containers.int_vector(u_mults),
                                     containers.int_vector(v_mults),
                                     u_degree, v_degree)
-    
-    return surface
-
-
-def test_nurbs_surface():
-
-    func_name = "nurbs_surface"
-
-    try:
-        result = compute_nurbs_surface()
     except Exception as e:
         pytest.fail(f"Calling {func_name} raised an exception: {e}") 
 
 
-def compute_create_surface():
+def test_create_surface():
     x = gp_Pnt(0,0,0)
     y = gp_Pnt(0.5,0,0)       
     z = gp_Pnt(1,1,0)
     w = gp_Pnt(0,3,0)
-    
-    return pygeoml.create_surface(x,y,z,w)
-
-
-def test_create_surface():
 
     func_name = "create_surface"
 
     try:
-        result = compute_create_surface()
+        result = pygeoml.create_surface(x,y,z,w)
     except Exception as e:
         pytest.fail(f"Calling {func_name} raised an exception: {e}")
 
 
-def compute_create_face():
+def test_create_face():
     x = gp_Pnt(0,0,0)
     y = gp_Pnt(0.5,0,0)       
     z = gp_Pnt(1,1,0)
     w = gp_Pnt(0,3,0)
-    
-    return pygeoml.create_face(x,y,z,w)
-
-
-def test_create_face():
 
     func_name = "create_face"
 
     try:
-        result = compute_create_face()
+        result = pygeoml.create_face(x,y,z,w)
     except Exception as e:
         pytest.fail(f"Calling {func_name} raised an exception: {e}")
 
@@ -1053,6 +1020,8 @@ def test_conversions_h():
     weights.setValue(2, 2, w_33)     
     
     # test: NCollection_Array2<StandardReal> Array2d_to_TCol (Array2d<StandardReal> const &net)
+
+    # this does not work yet! See containers.py for a workaround instead.
     
 
 ###########################################################################
@@ -1101,6 +1070,7 @@ def test_geom_topo_conversions_h():
         crv = pygeoml.EdgeToCurve(edge)
     except Exception as e:
         pytest.fail(f"Calling {func_name} raised an exception: {e}")
+
 
 ###########################################################################
 ##################### test geoml/primitives/modeling.hpp ################## 
@@ -1301,5 +1271,4 @@ def test_Transform_h():
     surf_transf_2 = transf_3(surf_transformed)
 
 
-print("Ran through till the end")
 
