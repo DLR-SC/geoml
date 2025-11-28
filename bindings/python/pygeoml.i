@@ -157,6 +157,11 @@
         return operator||(*$self, other);
     }
 }
+%extend geoml::Transform {
+    geoml::Transform __mul__(const geoml::Transform& other) const {
+        return geoml::operator*(*$self, other);
+    }
+}
 
 %include "geoml/geoml.h"
 %include "geoml/surfaces/surfaces.h"
