@@ -1212,19 +1212,36 @@ def test_utilities_h():
 
 def test_Transform_h():
     # test: constructing a Transform object
-    transf = pygeoml.Transform()
+    func_name = "default ctor Tranform"
+    try:
+        transf = pygeoml.Transform()
+    except Exception as e:
+        pytest.fail(f"Calling {func_name} raised an exception: {e}")
 
     g_trans = gp_GTrsf()
     translation = gp_XYZ(0.0, 0.0, 1.0)    
     g_trans.SetTranslationPart(translation)
 
-    transf_1 = pygeoml.Transform(g_trans)
+    func_name = "ctor of Tranform from gp_GTrsf"
+    try:
+        transf_1 = pygeoml.Transform(g_trans)
+    except Exception as e:
+        pytest.fail(f"Calling {func_name} raised an exception: {e}")
 
     vec = gp_Vec(1.0, 2.0, 3.0)
-    transf_2 = pygeoml.Transform(vec)
+    
+    func_name = "ctor of Transform from gp_Vec"
+    try:
+        transf_2 = pygeoml.Transform(vec)
+    except Exception as e:
+            pytest.fail(f"Calling {func_name} raised an exception: {e}")
 
     # test: void pre_multiply(const Transform& aTrans);
-    transf_1.pre_multiply(transf_2)
+    func_name = "pre_multiply"
+    try:
+        transf_1.pre_multiply(transf_2)
+    except Exception as e:
+        pytest.fail(f"Calling {func_name} raised an exception: {e}")
 
     # test: TopoDS_Shape operator()(const TopoDS_Shape& shape) const;
     dx = 1.0
@@ -1235,12 +1252,20 @@ def test_Transform_h():
 
     box = box_shape.shape()
 
-    box_transformed = transf_2(box)
+    func_name = "TopoDS_Shape operator()(const TopoDS_Shape& shape) const;"
+    try:
+        box_transformed = transf_2(box)
+    except Exception as e:
+        pytest.fail(f"Calling {func_name} raised an exception: {e}")
 
     # test: gp_Pnt operator()(const gp_Pnt& point) const;
     point = gp_Pnt(0.0, 1.0, 2.0)
 
-    point_transformed = transf_1(point)
+    func_name = " gp_Pnt operator()(const gp_Pnt& point) const;"
+    try:
+        point_transformed = transf_1(point)
+    except Exception as e:
+        pytest.fail(f"Calling {func_name} raised an exception: {e}")
 
     # test:  Handle(Geom_Surface) operator()(const Handle(Geom_Surface)& surf) const;
     x = gp_Pnt(0,0,0)
@@ -1250,15 +1275,28 @@ def test_Transform_h():
     
     surf = pygeoml.create_surface(x,y,z,w)
 
-    surf_transformed = transf_2(surf)
+    func_name = "Handle(Geom_Surface) operator()(const Handle(Geom_Surface)& surf) const;"
+    try:
+        surf_transformed = transf_2(surf)
+    except Exception as e:
+        pytest.fail(f"Calling {func_name} raised an exception: {e}")
 
     face = pygeoml.SurfaceToFace(surf_transformed, 1e-5)
 
     # test: gp_Vec operator()(const gp_Vec& vec) const;
-    vec_transformed = transf_1(vec)
+    func_name = "gp_Vec operator()(const gp_Vec& vec) const;"
+    try:
+        vec_transformed = transf_1(vec)
+    except Exception as e:
+        pytest.fail(f"Calling {func_name} raised an exception: {e}")
 
     # test: Transform operator*(const Transform& a, const Transform& b);
-    transf_3 = transf_1 * transf_2 
+
+    func_name = "Transform operator*(const Transform& a, const Transform& b);"
+    try:
+        transf_3 = transf_1 * transf_2 
+    except Exception as e:
+        pytest.fail(f"Calling {func_name} raised an exception: {e}")
 
     surf_transf_2 = transf_3(surf_transformed)
 
