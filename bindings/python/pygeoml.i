@@ -144,7 +144,7 @@
 }
 %extend geoml::ShapePredicate {
 
-    %template(ShapePred) geoml::ShapePredicate::ShapePredicate<std::function<bool(Shape const&)>>;
+    // %template(ShapePred) geoml::ShapePredicate::ShapePredicate<std::function<bool(Shape const&)>>;
     // ShapePredicate(std::function<bool(Shape const&)> const& f) {
     //     return new geoml::ShapePredicate(f);
     // }
