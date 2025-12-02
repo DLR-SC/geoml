@@ -143,6 +143,11 @@
     }
 }
 %extend geoml::ShapePredicate {
+
+    %template(ShapePred) geoml::ShapePredicate::ShapePredicate<std::function<bool(Shape const&)>>;
+    // ShapePredicate(std::function<bool(Shape const&)> const& f) {
+    //     return new geoml::ShapePredicate(f);
+    // }
     // Map operator! to Python's __invert__ (i.e. ~)
     ShapePredicate __invert__() {
         return operator!(*$self);
