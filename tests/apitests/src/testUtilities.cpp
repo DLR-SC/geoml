@@ -106,13 +106,13 @@ EXPECT_NEAR(geoml::extract_control_point_vector_in_U_direction(test_surface,1).a
 
 geoml::ShapePredicate is_near_ref_point(gp_Pnt ref_point, double tolerance)
 {
-    return [=](geoml::Shape const& s)
+    return geoml::ShapePredicate([=](geoml::Shape const& s)
     { 
         TopoDS_Vertex vert = TopoDS::Vertex(s);
         gp_Pnt vert_point = BRep_Tool::Pnt(vert);
 
         return vert_point.SquareDistance(ref_point) < tolerance * tolerance; 
-    };
+    });
 }
 
 TEST(Test_make_fillet, simple_make_fillet_test)
