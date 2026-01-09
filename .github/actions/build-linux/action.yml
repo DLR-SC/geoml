@@ -9,11 +9,6 @@ inputs:
     required: true
     default: "Release"
 
-  # tigl_bindings_python_internal:
-  #   description: "CMake option to build the internal python API"
-  #   required: false
-  #   default: "OFF"
-
   geoml_api_python_bindings:
     description: "CMake option to build the python bindings of the geoml api"
     required: false
@@ -74,9 +69,7 @@ runs:
                  -DOCE_STATIC_LIBS=ON \
                  -DGEOML_BUILD_TESTS=ON \
                  -DGEOML_ENABLE_COVERAGE=${{ inputs.geoml_enable_coverage }} 
-                 #-DGEOML_NIGHTLY=${{ inputs.geoml_nightly }}                               
-                 #-DGEOML_CONCAT_GENERATED_FILES=${{ inputs.geoml_concat_generated_files }} \
-                 #-DGEOML_BINDINGS_PYTHON_INTERNAL=${{ inputs.geoml_bindings_python_internal }} \
+
         cmake --build . -j 4 --target install
        
 
