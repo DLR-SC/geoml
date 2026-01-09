@@ -18,10 +18,6 @@ inputs:
     required: false
     default: true
 
-  # integration-tests:
-  #   description: "Set to true to run TiGLs integration tests (true or false)"
-  #   required: false
-  #   default: true
 
 runs:
 
@@ -38,7 +34,6 @@ runs:
         auto-activate-base: false
 
     - name: Install dependencies (static opencascade)
-#      if: inputs.oce_static_libs == 'ON'
       shell: cmd /C call {0}
       run: |
         conda install tbb
@@ -73,10 +68,3 @@ runs:
         cd build\tests\apitests
         .\geoml-apitest.exe --gtest_shuffle --gtest_output=xml:api_test_results.xml
 
-    # - name: Run integration tests
-    #   if: ${{ inputs.integration-tests == 'true' }}
-    #   shell: cmd /C call {0}
-    #   run: |
-    #     set PATH=%cd%\build\install\bin;%PATH%
-    #     cd build\tests\integrationtests
-    #     .\TiGL-integrationtests --gtest_shuffle --gtest_output=xml:integration_test_results.xml

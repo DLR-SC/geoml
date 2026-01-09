@@ -18,10 +18,6 @@ inputs:
     required: false
     default: true  
 
-  # integration-tests:
-  #   description: "Set to true to run TiGLs integration tests (true or false)"
-  #   required: false
-  #   default: true
 
 runs:
 
@@ -62,11 +58,3 @@ runs:
         cd build/tests/apitests/
         chmod a+x ./geoml-apitest
         ./geoml-apitest --gtest_shuffle --gtest_output=xml:integration_test_results.xml
-
-#     - name: Run integration tests
-#       if: ${{ inputs.integration-tests == 'true' }}
-#       shell: bash
-#       run: |
-#         cd build/tests/integrationtests/
-#         chmod a+x ./TiGL-integrationtests
-#         ./TiGL-integrationtests --gtest_shuffle --gtest_output=xml:integration_test_results.xml'

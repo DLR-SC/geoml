@@ -21,25 +21,6 @@ on:
         default: "false"
         type: string
 
-      # geoml_nightly:
-      #   description: "CMake option to amend the version with the git hash (ON or OFF). Should be OFF for release builds."
-      #   required: false
-      #   default: "ON"
-      #   type: string
-
-      # geoml_concat_generated_files:
-      #   description: "CMake option to concatenate the generated source files (ON or OFF). Should be OFF for release builds."
-      #   required: false
-      #   default: "ON"
-      #   type: string
-
-      # integration-tests:
-      #   # This should be a Boolean, but https://github.com/actions/runner/issues/1483
-      #   description: "Run integration tests"
-      #   required: false
-      #   default: "false"
-      #   type: string
-
       # documentation-artifact:
       #   description: "Name of the html documentation artifact. Will be build on Windows. Leave empty to skip documentation build."
       #   required: false
@@ -65,11 +46,11 @@ on:
         default: ''
         type: string
 
-      macos-package-artifact:
-        description: "Name of the Mac OS package artifact. Leave empty to skip building the package."
-        required: false
-        default: ''
-        type: string
+      # macos-package-artifact:
+      #   description: "Name of the Mac OS package artifact. Leave empty to skip building the package."
+      #   required: false
+      #   default: ''
+      #   type: string
 
 jobs:
 
@@ -89,8 +70,6 @@ jobs:
       - uses: ./.github/actions/build-linux
         with:
           config: ${{ matrix.config }}
-          # geoml_nightly: ${{ inputs.geoml_nightly }}
-          # geoml_concat_generated_files: ${{ inputs.geoml_concat_generated_files }}
           geoml_enable_coverage: ${{ matrix.coverage || 'OFF' }}
           build-artifact: build-${{ matrix.os }}-${{ matrix.config }}-cov-${{ matrix.coverage || 'OFF' }}
 
@@ -122,7 +101,6 @@ jobs:
           coverage: ${{ matrix.coverage == 'ON' || false }}
           unit-tests: ${{ matrix.unit-tests }}
           api-tests: ${{ matrix.api-tests }}
-        #  integration-tests: ${{ inputs.integration-tests == 'true' || false }}
           codecov_token: ${{ secrets.CODECOV_TOKEN }}
 
 
@@ -145,8 +123,6 @@ jobs:
       - uses: ./.github/actions/build-win
         with:
           config: ${{ matrix.config }}
-          #geoml_nightly: ${{ inputs.geoml_nightly =='true' }}
-          #geoml_concat_generated_files: ${{ inputs.geoml_concat_generated_files == 'true' }}
           geoml_enable_coverage: 'OFF'
           oce_static_libs: ${{ matrix.oce_static_libs || 'OFF' }}
           #geoml_bindings_python_internal: ${{ matrix.geoml_bindings_python_internal || 'OFF' }}
@@ -182,8 +158,6 @@ jobs:
       - uses: ./.github/actions/build-macos
         with:
           config: "Release"
-          #geoml_nightly: ${{ inputs.geoml_nightly =='true' }}
-          #geoml_concat_generated_files: ${{ inputs.geoml_concat_generated_files == 'true' }}
           geoml_enable_coverage: 'OFF'
           package-artifact: ${{ inputs.macos-package-artifact }}
           build-artifact: build-macos-13-Release-cov-OFF-static-ON-python-OFF
@@ -198,14 +172,4 @@ jobs:
           build-artifact: build-macos-13-Release-cov-OFF-static-ON-python-OFF
           unit-tests: true
           api-tests: ${{ inputs.api-tests == 'true' }}
-          #integration-tests: ${{ inputs.integration-tests == 'true' }}
 
-#  draft-release:
-#    if: ${{ inputs.draft-release == 'true' }}
-#    needs: ["test-macos", "test-windows", "test-linux"]
-#    runs-on: "ubuntu-latest"
-#    steps:
-#      - uses: actions/checkout@v5
-#      - uses: ./.github/actions/releasea
-#        with:
-#          GH_TOKEN: ${{ secrets.GH_TOKEN }}

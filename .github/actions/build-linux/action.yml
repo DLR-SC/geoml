@@ -9,20 +9,15 @@ inputs:
     required: true
     default: "Release"
 
-  # geoml_nightly:
-  #   description: "CMake option to amend the version with the git hash (ON or OFF)"
-  #   required: false
-  #   default: "ON"
-
-  # geoml_concat_generated_files:
-  #   description: "CMake option to concatenate the generated source files (ON or OFF)"
-  #   required: false
-  #   default: "ON"
-
   # tigl_bindings_python_internal:
   #   description: "CMake option to build the internal python API"
   #   required: false
   #   default: "OFF"
+
+  geoml_api_python_bindings:
+    description: "CMake option to build the python bindings of the geoml api"
+    required: false
+    default: "OFF"
 
   geoml_enable_coverage:
     description: "CMake option to enable code coverage with gcov/lcov (ON or OFF)"

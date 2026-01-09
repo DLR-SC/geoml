@@ -14,16 +14,6 @@ inputs:
     required: false
     default: "OFF"
 
-#  tigl_nightly:
-#    description: "CMake option to amend the version with the git hash (ON or OFF)"
-#    required: true
-#    default: "ON"
-
-  # tigl_concat_generated_files:
-  #   description: "CMake option to concatenate the generated source files (ON or OFF)"
-  #   required: true
-  #   default: "ON"
-
   # tigl_bindings_python_internal:
   #   description: "CMake option to build the internal python API"
   #   required: false
@@ -36,11 +26,6 @@ inputs:
 
   # documentation-artifact:
   #   description: "Name of the documentation artifact. Leave empty to skip doc build"
-  #   required: false
-  #   default: ''
-
-  # installer-artifact:
-  #   description: "Name of the installer artifact. Leave empty to skip installer generation with NSIS"
   #   required: false
   #   default: ''
 
@@ -96,10 +81,7 @@ runs:
                          -DGEOML_BUILD_TESTS=ON ^                      
                          -DPythonOCC_SOURCE_DIR=C:\Miniconda\envs\geoml-bld\Library\src\pythonocc-core ^
                          -DGEOML_ENABLE_COVERAGE=${{ inputs.geoml_enable_coverage }}                        
-        cmake --build . -j 4 --target install        
-
-      # -DGEOML_BINDINGS_PYTHON_INTERNAL=${{ inputs.geoml_bindings_python_internal }} ^                 
-
+        cmake --build . -j 4 --target install                        
 
     - name: Create package #and installer
       if: ${{ inputs.package-artifact }} #|| inputs.installer-artifact }}
@@ -108,22 +90,12 @@ runs:
         cd build
         cpack.exe -G ZIP
 
-      # & cpack.exe -G NSIS
-      #cmake --build . --target doc
-
     - name: Upload package as artifact
       if: ${{ inputs.package-artifact }}
       uses: actions/upload-artifact@v4
       with:
         name: ${{ inputs.package-artifact }}
         path: build/*.zip
-
-    # - name: Upload installer as artifact
-    #   if: ${{ inputs.installer-artifact }}
-    #   uses: actions/upload-artifact@v4
-    #   with:
-    #    name: ${{ inputs.installer-artifact }}
-    #    path: build/*.exe
 
     # - name: Create documentation
     #   if: ${{ inputs.documentation-artifact }}
