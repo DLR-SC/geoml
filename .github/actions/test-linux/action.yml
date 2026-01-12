@@ -89,5 +89,5 @@ runs:
         codecov_yml_path: codecov.yml
         disable_search: true
         verbose: true
-        flags: unittests
+        flags: tests
 
