@@ -80,14 +80,25 @@ runs:
         cmake --build . --target coverage-unittests/fast
         cmake --build . --target coverage-apitests/fast
 
-    - name: Publish coverage report to codecov.io (ubuntu debug)
+    - name: Publish coverage report of unittests to codecov.io (ubuntu debug)
       if: ${{ inputs.coverage == 'true' }}
       uses: codecov/codecov-action@v4
       with:
-        files: ./build/tests/unittests/coverageReport-unit.info,./build/tests/apitests/coverageReport-api.info
+        files: ./build/tests/unittests/coverageReport-unit.info
         token: ${{ inputs.codecov_token }}
         codecov_yml_path: codecov.yml
         disable_search: true
         verbose: true
-        flags: tests
+        flags: unittests
+
+    - name: Publish coverage report of api-tests to codecov.io (ubuntu debug)
+      if: ${{ inputs.coverage == 'true' }}
+      uses: codecov/codecov-action@v4
+      with:
+        files: ./build/tests/apitests/coverageReport-api.info
+        token: ${{ inputs.codecov_token }}
+        codecov_yml_path: codecov.yml
+        disable_search: true
+        verbose: true
+        flags: api-tests
 
