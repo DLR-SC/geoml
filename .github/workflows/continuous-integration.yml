@@ -27,12 +27,6 @@ on:
         default: ''
         type: string
 
-      win-installer-artifact:
-        description: "Name of the windows installer artifact. Leave empty to skip building the installer."
-        required: false
-        default: ''
-        type: string
-
 jobs:
 
   build-linux:
