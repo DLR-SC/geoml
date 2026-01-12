@@ -33,6 +33,8 @@ TEST(Shape, add_persistent_meta_tag_to_subshapes)
     }
 }
 
+// Currently, a subshape's hash is determined from the address of the pointer of ... . As a selection in this test is based on the hash, 
+// the selected shape changes with every ..., to shapes that were not intended for this test to run, the test crashes sometimes. 
 TEST(SelectSubShapes, DISABLED_BooleanCutCheckNumberOfSubShapes)
 {   
     using namespace geoml;
@@ -179,7 +181,8 @@ namespace {
 
 } // anonymous namespace
 
-
+// Currently, a subshape's hash is determined from the address of the pointer of ... . As a selection in this test is based on the hash, 
+// the selected shape changes with every ..., to shapes that were not intended for this test to run, the test crashes sometimes. 
 TEST_F(RectangularFace, DISABLED_example_rectangle_triangles)
 {   
     using namespace geoml;
