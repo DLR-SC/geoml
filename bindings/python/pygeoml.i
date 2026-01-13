@@ -24,10 +24,6 @@
 %{
 #include <TColStd_module.hxx> 
 #include <TCollection_module.hxx>
-
-// #include <NCollection_Array2.hxx>   
-// #include <NCollection_Array1.hxx>
-
 #include <TColgp_module.hxx> 
 #include <Geom_module.hxx> 
 #include <TopoDS_Compound.hxx> 

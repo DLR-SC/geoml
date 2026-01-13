@@ -31,8 +31,6 @@ class Shape;
 class ShapePredicate
 {
 public:
-    // template <typename Pred>
-    // inline ShapePredicate(Pred&& f) : fun(std::forward<Pred>(f)) {}
     inline ShapePredicate(std::function<bool(Shape const&)> const& f) : fun(f) {}
 
     inline bool operator()(Shape const& s) const {
