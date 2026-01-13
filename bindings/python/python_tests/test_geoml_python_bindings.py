@@ -34,6 +34,21 @@ def bspline_curve(cp, knots, mults, degree):
 ##################### test geoml/occ_helpers/containers.py ################
 ###########################################################################
 
+def test_standard_real_vector():
+    float_list = [1.0, 2.0, 3.0, 4.0]
+
+    vec = containers.standard_real_vector(float_list)
+
+    assert vec[1] == 2.0
+    assert vec[2] == 3.0
+
+def test_int_vector():
+    int_list = [1, 2, 3, 4] 
+
+    vec = containers.int_vector(int_list)
+
+    assert vec[1] == 2   
+    assert vec[2] == 3   
 
 def test_point_vector():
     p_1 = gp_Pnt(0.0,0.0,0.0)
