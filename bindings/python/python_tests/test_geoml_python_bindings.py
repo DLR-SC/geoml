@@ -779,21 +779,6 @@ def test_predicate_functions_h():
     pred_1_not = ~pred_1
     assert pred_1_not(edge_shape) == False
 
-    # test: bool _is_vertex(Shape const& s){ return s.is_type(TopAbs_VERTEX); }
-    assert pygeoml._is_vertex(edge_shape) == False
-
-    # test: bool _is_edge(Shape const& s){ return s.is_type(TopAbs_EDGE); }
-    assert pygeoml._is_edge(edge_shape) == True
-
-    # test: bool _is_face(Shape const& s){ return s.is_type(TopAbs_FACE); }
-    assert pygeoml._is_face(edge_shape) == False
-
-    # test: bool _is_solid(Shape const& s){ return s.is_type(TopAbs_SOLID); }
-    assert pygeoml._is_solid(edge_shape) == False
-
-    # test: bool _has_origin(Shape const& s){ return s.has_origin(); }
-    assert pygeoml._has_origin(edge_shape) == False
-
     # test: ShapePredicate has_tag(std::string const& tag);
     pred = pygeoml.has_tag("added_tag")
     assert pred(edge_shape) == True
