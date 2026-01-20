@@ -127,3 +127,19 @@ def test_predicate_functions_h():
     pred = pygeoml.has_subshape_that(pred_is_edge)
     assert pred(edge_shape) == True
 
+    # test: ShapePredicate const is_vertex = ShapePredicate(&details::_is_vertex);
+    assert pygeoml.is_vertex(edge_shape) == False
+
+    # test: ShapePredicate const is_edge = ShapePredicate(&details::_is_edge);
+    assert pygeoml.is_edge(edge_shape) == True
+
+    # test: ShapePredicate const is_face = ShapePredicate(&details::_is_face);
+    assert pygeoml.is_face(edge_shape) == False
+
+    # test: ShapePredicate const is_solid = ShapePredicate(&details::_is_solid);
+    assert pygeoml.is_solid(edge_shape) == False
+
+    # test: ShapePredicate const is_has_origin = ShapePredicate(&details::_has_origin);
+    assert pygeoml.is_has_origin(edge_shape) == False
+ 
+
