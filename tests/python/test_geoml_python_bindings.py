@@ -2,9 +2,9 @@ from geoml import pygeoml
 from geoml.pygeoml import is_vertex, is_edge
 from geoml.occ_helpers import containers
 from OCC.Core.gp import gp_Pnt, gp_Vec, gp_GTrsf, gp_Trsf, gp_Mat, gp_XYZ 
-from OCC.Core.TopoDS import TopoDS_Shape
+from OCC.Core.TopoDS import TopoDS_Shape, TopoDS_Edge, TopoDS_Face, TopoDS_Solid
 from OCC.Display.SimpleGui import init_display 
-from OCC.Core.Geom import Geom_BSplineCurve, Geom_Curve, Geom_BSplineSurface
+from OCC.Core.Geom import Geom_BSplineCurve, Geom_Curve, Geom_BSplineSurface, Geom_Surface
 from OCC.Core.TopAbs import TopAbs_EDGE, TopAbs_FACE, TopAbs_VERTEX, TopAbs_SHAPE
 from OCC.Core.TopAbs import TopAbs_ShapeEnum
 from OCC.Core.BRepPrimAPI import BRepPrimAPI_MakeBox, BRepPrimAPI_MakeSphere
@@ -57,12 +57,9 @@ def test_point_vector():
 
     point_list = [p_1, p_2, p_3]
 
-    func_name = "point_vector"
-          
-    try:
-        result = containers.point_vector(point_list)
-    except Exception as e:
-        pytest.fail(f"Calling {func_name} raised an exception: {e}")
+    result = containers.point_vector(point_list)
+    
+    assert type(result) is pygeoml.CPointContainer
 
 
 def test_float_array_2d_to_tcol():
@@ -270,13 +267,12 @@ def test_nurbs_curve():
 
     func_name = "nurbs_curve"
 
-    try:
-        result = pygeoml.nurbs_curve(containers.point_vector(control_points), 
-                                containers.standard_real_vector(weights), 
-                                containers.standard_real_vector(knots), 
-                                containers.int_vector(mults), degree)
-    except Exception as e:
-        pytest.fail(f"Calling {func_name} raised an exception: {e}")
+    result = pygeoml.nurbs_curve(containers.point_vector(control_points), 
+                            containers.standard_real_vector(weights), 
+                            containers.standard_real_vector(knots), 
+                            containers.int_vector(mults), degree)
+
+    assert type(result) is Geom_BSplineCurve 
 
 
 def test_interpolate_points_to_b_spline_curve():
@@ -287,13 +283,11 @@ def test_interpolate_points_to_b_spline_curve():
 
     point_list = [p_1, p_2, p_3]
 
-
     func_name = "interpolate_points_to_b_spline_curve"
 
-    try:
-        result = pygeoml.interpolate_points_to_b_spline_curve(containers.point_vector(point_list), 2)
-    except Exception as e:
-        pytest.fail(f"Calling {func_name} raised an exception: {e}")
+    result = pygeoml.interpolate_points_to_b_spline_curve(containers.point_vector(point_list), 2)
+
+    assert type(result) is Geom_BSplineCurve
 
 
 ###########################################################################
@@ -332,10 +326,9 @@ def test_blend_curve():
 
     func_name = "BlendCurve"
 
-    try:
-        result = blend_curve.blend_curve()
-    except Exception as e:
-        pytest.fail(f"Calling {func_name} raised an exception: {e}")
+    result = blend_curve.blend_curve()
+
+    assert type(result) is TopoDS_Edge
 
 
 ###########################################################################
@@ -382,10 +375,9 @@ def test_curve_network_interpolation():
     
     func_name = "curve_network_interpolation"
 
-    try:
-        result = pygeoml.interpolate_curve_network(u_curves, v_curves, 1e-1)
-    except Exception as e:
-        pytest.fail(f"Calling {func_name} raised an exception: {e}")
+    result = pygeoml.interpolate_curve_network(u_curves, v_curves, 1e-1)
+
+    assert type(result) is Geom_BSplineSurface
 
 
 def test_interpolate_curves():
@@ -413,10 +405,9 @@ def test_interpolate_curves():
 
     func_name = "interpolate_curves"
 
-    try:
-        result = pygeoml.interpolate_curves(containers.geomcurve_vector(curve_list), 2, True)
-    except Exception as e:
-        pytest.fail(f"Calling {func_name} raised an exception: {e}") 
+    result = pygeoml.interpolate_curves(containers.geomcurve_vector(curve_list), 2, True)
+
+    assert type(result) is Geom_BSplineSurface
 
 
 def test_revolving_shape():
@@ -436,10 +427,10 @@ def test_revolving_shape():
 
     func_name = "revolving_surface"
 
-    try:
-        result = pygeoml.revolving_shape(edge, start_point_rotation_axis, rotation_axis_direction)
-    except Exception as e:
-        pytest.fail(f"Calling {func_name} raised an exception: {e}") 
+
+    result = pygeoml.revolving_shape(edge, start_point_rotation_axis, rotation_axis_direction)
+
+    assert type(result) is TopoDS_Face
 
 
 def test_nurbs_surface():
@@ -504,15 +495,15 @@ def test_nurbs_surface():
 
     func_name = "nurbs_surface"
 
-    try:
-        result = pygeoml.nurbs_surface(control_points, weights, 
-                                    containers.standard_real_vector(u_knots), 
-                                    containers.standard_real_vector(v_knots), 
-                                    containers.int_vector(u_mults),
-                                    containers.int_vector(v_mults),
-                                    u_degree, v_degree)
-    except Exception as e:
-        pytest.fail(f"Calling {func_name} raised an exception: {e}") 
+
+    result = pygeoml.nurbs_surface(control_points, weights, 
+                                containers.standard_real_vector(u_knots), 
+                                containers.standard_real_vector(v_knots), 
+                                containers.int_vector(u_mults),
+                                containers.int_vector(v_mults),
+                                u_degree, v_degree)
+
+    assert type(result) is Geom_BSplineSurface
 
 
 def test_create_surface():
@@ -523,10 +514,9 @@ def test_create_surface():
 
     func_name = "create_surface"
 
-    try:
-        result = pygeoml.create_surface(x,y,z,w)
-    except Exception as e:
-        pytest.fail(f"Calling {func_name} raised an exception: {e}")
+    result = pygeoml.create_surface(x,y,z,w)
+    
+    assert type(result) is Geom_Surface
 
 
 def test_create_face():
@@ -537,10 +527,9 @@ def test_create_face():
 
     func_name = "create_face"
 
-    try:
-        result = pygeoml.create_face(x,y,z,w)
-    except Exception as e:
-        pytest.fail(f"Calling {func_name} raised an exception: {e}")
+    result = pygeoml.create_face(x,y,z,w)
+
+    assert type(result) is TopoDS_Face
 
 
 ###########################################################################
@@ -564,103 +553,81 @@ def test_Shape_h():
     edge_shape = pygeoml.Shape(edge)
 
     # test: TopoDS_Shape shape() const;
-    try:
-        wrapped_shape = edge_shape.shape()
-    except Exception as e:
-        pytest.fail(f"Calling {'shape'} raised an exception: {e}")
-    
+    wrapped_shape = edge_shape.shape()
+    assert type(wrapped_shape) is TopoDS_Edge
+
     # wrapped_shapet: operator TopoDS_Shape() const;
     # -> does not work currently
 
     # test: std::vector<Shape>& direct_subshapes();
     # sub_shapes = edge_shape.direct_subshapes()
-    try:
-        edge_shape.direct_subshapes()
-    except Exception as e:
-        pytest.fail(f"Calling {'direct_subshapes'} raised an exception: {e}")
+    edge_shape.direct_subshapes()
+    assert type(edge_shape) is pygeoml.Shape
 
     # test: Shape get_subshapes() const;
-    try:
-        edge_shape.get_subshapes()
-    except Exception as e:
-            pytest.fail(f"Calling {'get_subshapes'} raised an exception: {e}")
+    edge_shape.get_subshapes()
+    assert type(edge_shape) is pygeoml.Shape
 
     # test: void add_meta_tag(std::string const& tag);
-    try:
-        edge_shape.add_meta_tag("added_tag")
-    except Exception as e:
-            pytest.fail(f"Calling {'add_meta_tag'} raised an exception: {e}")
+    edge_shape.add_meta_tag("added_tag")
+    assert type(edge_shape) is pygeoml.Shape
 
     # test: template <typename Pred>
     # Shape select_subshapes(Pred&& f, int max_depth = std::numeric_limits<int>::max()) const
     pred_1 = pygeoml.has_tag("not_added_tag")
     pred_2 = pygeoml.has_tag("added_tag")
 
-    try:
-        edge_shape.select_subshapes(pred_1)
-        edge_shape.select_subshapes(pred_2)
-    except Exception as e:
-            pytest.fail(f"Calling {'select_subshapes'} raised an exception: {e}")
+    edge_shape.select_subshapes(pred_1)
+    assert type(edge_shape) is pygeoml.Shape
+
+    edge_shape.select_subshapes(pred_2)
+    assert type(edge_shape) is pygeoml.Shape
 
     # test: template <typename Pred>
     # Shape filter(Pred&& f) const
-    try:
-        edge_shape.filter(pred_2)
-    except Exception as e:
-            pytest.fail(f"Calling {'filter'} raised an exception: {e}")
+    edge_shape.filter(pred_2)
+    assert type(edge_shape) is pygeoml.Shape
 
     # test: Shape unique_element() const;
     # edge_shape.unique_element() #get an error, probably as expected
 
     # test: Shape unique_element_or(Shape const& other) const;
-    try:
-        edge_shape.unique_element_or(edge_shape)
-    except Exception as e:
-            pytest.fail(f"Calling {'unique_element'} raised an exception: {e}")
+    edge_shape.unique_element_or(edge_shape)
+    assert type(edge_shape) is pygeoml.Shape
 
     # test: template <typename Pred>
     # void add_meta_tag_to_subshapes(Pred&& f, std::string const& input_tag)
-    try:
-        edge_shape.add_meta_tag_to_subshapes(pred_2, "another_added_tag")
-    except Exception as e:
-            pytest.fail(f"Calling {'add_meta_tag_to_subshapes'} raised an exception: {e}")
+    edge_shape.add_meta_tag_to_subshapes(pred_2, "another_added_tag")
+    assert type(edge_shape) is pygeoml.Shape
 
     # test: void add_tag_track(TagTrack const& tt);
     tag_track = pygeoml.TagTrack("added_by_tag_track_if_is_edge", is_edge, 2)
     
-    try:
-        edge_shape.add_tag_track(tag_track)
-    except Exception as e:
-            pytest.fail(f"Calling {'add_tag_track'} raised an exception: {e}")
+    edge_shape.add_tag_track(tag_track)
+    assert type(edge_shape) is pygeoml.Shape
 
     # test: std::vector<TagTrack>& get_tag_tracks();
-    try:
-        tag_tracks = edge_shape.get_tag_tracks()
-    except Exception as e:
-            pytest.fail(f"Calling {'edge_shape'} raised an exception: {e}")
+    tag_tracks = edge_shape.get_tag_tracks()
+    assert type(tag_tracks) is pygeoml.TagTrackList
+
 
     # test: void apply_tag_tracks();
-    try:
-        edge_shape.apply_tag_tracks()
-    except Exception as e:
-            pytest.fail(f"Calling {'apply_tag_tracks'} raised an exception: {e}")
-
+    edge_shape.apply_tag_tracks()
+    assert type(edge_shape) is pygeoml.Shape
+    
     assert edge_shape.has_tag("not_added_tag") == False
     assert edge_shape.has_tag("added_tag") == True
     assert edge_shape.has_tag("another_added_tag") == True
     assert edge_shape.has_tag("added_by_tag_track_if_is_edge") == True
 
     # test: Shape operator[](int i);
-    try:
-        edge_shape[0]
-        edge_shape[1]
-        edge_shape[2]
-        edge_shape[3]
-        edge_shape[4]
-        edge_shape[5]
-        edge_shape[6]
-    except Exception as e:
-            pytest.fail(f"Calling {'operator[](int i)'} raised an exception: {e}")
+    assert type(edge_shape[0]) is pygeoml.Shape 
+    assert type(edge_shape[1]) is pygeoml.Shape 
+    assert type(edge_shape[2]) is pygeoml.Shape 
+    assert type(edge_shape[3]) is pygeoml.Shape 
+    assert type(edge_shape[4]) is pygeoml.Shape 
+    assert type(edge_shape[5]) is pygeoml.Shape 
+    assert type(edge_shape[6]) is pygeoml.Shape 
 
     # test: size_t size() const;
     assert edge_shape.size() == 1
@@ -862,28 +829,20 @@ def test_boolean_ops():
     sphere_shape = pygeoml.Shape(sphere)
 
     # test: Shape boolean_subtract(Shape const& shape, Shape const& cutting_tool);
-    try:
-        subtracted_shape = pygeoml.boolean_subtract(box_shape, sphere_shape)
-    except Exception as e:
-        pytest.fail(f"Calling {'boolean_subtract'} raised an exception: {e}")
+    subtracted_shape = pygeoml.boolean_subtract(box_shape, sphere_shape)
+    assert type(subtracted_shape) is pygeoml.Shape
 
     # test: Shape operator-(Shape const& shape, Shape const& cutting_tool);
-    try:
-        subtracted_shape_1 = sphere_shape - box_shape
-    except Exception as e:
-        pytest.fail(f"Calling {'operator-'} raised an exception: {e}")
-    
+    subtracted_shape_1 = sphere_shape - box_shape
+    assert type(subtracted_shape) is pygeoml.Shape
+
     # test: Shape boolean_union(Shape const& shape_1, Shape const& shape_2);
-    try:
-        united_shape = pygeoml.boolean_union(box_shape, sphere_shape)
-    except Exception as e:
-        pytest.fail(f"Calling {'boolean_union'} raised an exception: {e}")
+    united_shape = pygeoml.boolean_union(box_shape, sphere_shape)
+    assert type(subtracted_shape) is pygeoml.Shape
 
     # test: Shape operator+(Shape const& shape_1, Shape const& shape_2);
-    try:
-        united_shape_1 = box_shape + sphere_shape
-    except Exception as e:
-        pytest.fail(f"Calling {'operator+'} raised an exception: {e}")
+    united_shape_1 = box_shape + sphere_shape
+    assert type(united_shape_1) is pygeoml.Shape
 
     
 ###########################################################################
@@ -1039,11 +998,8 @@ def test_geom_topo_conversions_h():
     
     srf = pygeoml.create_surface(x,y,z,w)
 
-    func_name = "SurfaceToFace"
-    try:
-        face = pygeoml.SurfaceToFace(srf, 1e-4)
-    except Exception as e:
-        pytest.fail(f"Calling {func_name} raised an exception: {e}")
+    face = pygeoml.SurfaceToFace(srf, 1e-4)
+    assert type(face) is TopoDS_Face
 
     # test: TopoDS_Edge CurveToEdge(const Handle(Geom_Curve) &curve);
 
@@ -1055,21 +1011,15 @@ def test_geom_topo_conversions_h():
 
     curve = pygeoml.interpolate_points_to_b_spline_curve(point_vec)
 
-    func_name = "CurveToEdge"
-    try:
-        edge = pygeoml.CurveToEdge(curve)
-    except Exception as e:
-        pytest.fail(f"Calling {func_name} raised an exception: {e}")
-    
+    edge = pygeoml.CurveToEdge(curve)
+    assert type(edge) is TopoDS_Edge
+
     # test: Handle(Geom_Curve) EdgeToCurve(TopoDS_Edge const& edge);
 
     edge = pygeoml.CurveToEdge(curve)
 
-    func_name = "EdgeToCurve"
-    try:
-        crv = pygeoml.EdgeToCurve(edge)
-    except Exception as e:
-        pytest.fail(f"Calling {func_name} raised an exception: {e}")
+    crv = pygeoml.EdgeToCurve(edge)
+    assert type(crv) is Geom_Curve
 
 
 ###########################################################################
@@ -1083,11 +1033,8 @@ def test_primitives():
     radius = 2.0
     height = 8.0
 
-    func_name = "create_cylinder"
-    try:
-        cylinder_shape = pygeoml.create_cylinder(radius, height)
-    except Exception as e:
-        pytest.fail(f"Calling {func_name} raised an exception: {e}")
+    cylinder_shape = pygeoml.create_cylinder(radius, height)
+    assert type(cylinder_shape) is pygeoml.Shape
 
     # test: Shape create_box(double dx, double dy, double dz);
 
@@ -1095,11 +1042,8 @@ def test_primitives():
     dy = 2.0
     dz = 4.0
 
-    func_name = "create_box"
-    try:
-        box_shape = pygeoml.create_box(dx, dy, dz)
-    except Exception as e:
-        pytest.fail(f"Calling {func_name} raised an exception: {e}")
+    box_shape = pygeoml.create_box(dx, dy, dz)
+    assert type(box_shape) is pygeoml.Shape
 
 
 ###########################################################################
@@ -1173,6 +1117,7 @@ def test_utilities_h():
     radius = 0.2
 
     filleted_box = pygeoml.make_fillet(box_shape, edge_shapes, radius)
+    assert type(filleted_box) is pygeoml.Shape
 
 
 ###########################################################################
@@ -1182,36 +1127,27 @@ def test_utilities_h():
 
 def test_Transform_h():
     # test: constructing a Transform object
-    func_name = "default ctor Tranform"
-    try:
-        transf = pygeoml.Transform()
-    except Exception as e:
-        pytest.fail(f"Calling {func_name} raised an exception: {e}")
+
+    transf = pygeoml.Transform()
+    assert type(transf) is pygeoml.Transform
 
     g_trans = gp_GTrsf()
     translation = gp_XYZ(0.0, 0.0, 1.0)    
     g_trans.SetTranslationPart(translation)
 
-    func_name = "ctor of Tranform from gp_GTrsf"
-    try:
-        transf_1 = pygeoml.Transform(g_trans)
-    except Exception as e:
-        pytest.fail(f"Calling {func_name} raised an exception: {e}")
+    transf_1 = pygeoml.Transform(g_trans)
+    assert type(transf_1) is pygeoml.Transform
 
     vec = gp_Vec(1.0, 2.0, 3.0)
     
-    func_name = "ctor of Transform from gp_Vec"
-    try:
-        transf_2 = pygeoml.Transform(vec)
-    except Exception as e:
-            pytest.fail(f"Calling {func_name} raised an exception: {e}")
+    transf_2 = pygeoml.Transform(vec)
+    assert type(transf_2) is pygeoml.Transform
+
 
     # test: void pre_multiply(const Transform& aTrans);
-    func_name = "pre_multiply"
-    try:
-        transf_1.pre_multiply(transf_2)
-    except Exception as e:
-        pytest.fail(f"Calling {func_name} raised an exception: {e}")
+    transf_1.pre_multiply(transf_2)
+    assert type(transf_1) is pygeoml.Transform
+
 
     # test: TopoDS_Shape operator()(const TopoDS_Shape& shape) const;
     dx = 1.0
@@ -1222,20 +1158,15 @@ def test_Transform_h():
 
     box = box_shape.shape()
 
-    func_name = "TopoDS_Shape operator()(const TopoDS_Shape& shape) const;"
-    try:
-        box_transformed = transf_2(box)
-    except Exception as e:
-        pytest.fail(f"Calling {func_name} raised an exception: {e}")
+    box_transformed = transf_2(box)
+    assert type(box_transformed) is TopoDS_Solid
+
 
     # test: gp_Pnt operator()(const gp_Pnt& point) const;
     point = gp_Pnt(0.0, 1.0, 2.0)
 
-    func_name = " gp_Pnt operator()(const gp_Pnt& point) const;"
-    try:
-        point_transformed = transf_1(point)
-    except Exception as e:
-        pytest.fail(f"Calling {func_name} raised an exception: {e}")
+    point_transformed = transf_1(point)
+    assert type(point_transformed) is gp_Pnt
 
     # test:  Handle(Geom_Surface) operator()(const Handle(Geom_Surface)& surf) const;
     x = gp_Pnt(0,0,0)
@@ -1245,30 +1176,21 @@ def test_Transform_h():
     
     surf = pygeoml.create_surface(x,y,z,w)
 
-    func_name = "Handle(Geom_Surface) operator()(const Handle(Geom_Surface)& surf) const;"
-    try:
-        surf_transformed = transf_2(surf)
-    except Exception as e:
-        pytest.fail(f"Calling {func_name} raised an exception: {e}")
+    surf_transformed = transf_2(surf)
 
     face = pygeoml.SurfaceToFace(surf_transformed, 1e-5)
 
     # test: gp_Vec operator()(const gp_Vec& vec) const;
-    func_name = "gp_Vec operator()(const gp_Vec& vec) const;"
-    try:
-        vec_transformed = transf_1(vec)
-    except Exception as e:
-        pytest.fail(f"Calling {func_name} raised an exception: {e}")
+    vec_transformed = transf_1(vec)
+    assert type(vec_transformed) is gp_Vec
 
     # test: Transform operator*(const Transform& a, const Transform& b);
 
-    func_name = "Transform operator*(const Transform& a, const Transform& b);"
-    try:
-        transf_3 = transf_1 * transf_2 
-    except Exception as e:
-        pytest.fail(f"Calling {func_name} raised an exception: {e}")
+    transf_3 = transf_1 * transf_2 
+    assert type(transf_3) is pygeoml.Transform
 
     surf_transf_2 = transf_3(surf_transformed)
+    assert type(surf_transf_2) is Geom_Surface
 
 
 

@@ -37,6 +37,10 @@ public:
         return fun(s);
     }
 
+    inline operator std::function<bool(Shape const&)>() {
+        return fun;
+    }
+
 private:
     std::function<bool(Shape const&)> fun;
 };
@@ -45,17 +49,26 @@ private:
 * @brief A TagTrack stores
 *  - a tag name
 *  - the number of remaining modeling steps determining its lifetime in the modelling history 
-*  - a logical criterion
+*  - a logical criterion (predicate)
 */
-struct TagTrack {
+struct TagTrack 
+{
     template<typename Pred>
     GEOML_API_EXPORT TagTrack(std::string const& t, Pred&& criterion, int remainingSteps) 
         : m_tag(t), m_criterion(std::forward<Pred>(criterion)), m_remainingSteps(remainingSteps) {}
+
+    GEOML_API_EXPORT TagTrack(std::string const& t, ShapePredicate const& criterion, int remainingSteps) 
+        : m_tag(t), m_criterion(criterion), m_remainingSteps(remainingSteps) {}
+
+    // the default ctr is for using std::vector<TagTrack> for the SWIG bindings (see pygeoml.i)    
+    GEOML_API_EXPORT TagTrack()
+        : m_criterion([](Shape const& ){return true;}) {} 
 
     ShapePredicate m_criterion;
     std::string m_tag;
     int m_remainingSteps;
 };
+
 namespace details {
 
 template <typename Pred>

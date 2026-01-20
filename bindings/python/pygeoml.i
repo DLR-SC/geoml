@@ -101,6 +101,7 @@
 
 %template(CurveList) std::vector<Handle(Geom_Curve)>;
 %template(CPointContainer) std::vector<gp_Pnt>;
+%template(TagTrackList) std::vector<geoml::TagTrack>;
 %template(StandardRealList) std::vector<Standard_Real>;
 %template(IntList) std::vector<int>;
 %template(Array2dStandardReal) geoml::Array2d<Standard_Real>;
