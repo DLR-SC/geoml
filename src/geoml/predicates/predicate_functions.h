@@ -46,7 +46,7 @@ inline ShapePredicate const is_vertex = ShapePredicate(&details::_is_vertex);
 inline ShapePredicate const is_edge = ShapePredicate(&details::_is_edge);
 inline ShapePredicate const is_face = ShapePredicate(&details::_is_face);
 inline ShapePredicate const is_solid = ShapePredicate(&details::_is_solid);
-inline ShapePredicate const is_has_origin = ShapePredicate(&details::_has_origin);
+inline ShapePredicate const has_origin = ShapePredicate(&details::_has_origin);
 
 // some free functions returning shape predicates
 GEOML_API_EXPORT ShapePredicate has_tag(std::string const& tag);

@@ -140,6 +140,6 @@ def test_predicate_functions_h():
     assert pygeoml.is_solid(edge_shape) == False
 
     # test: ShapePredicate const is_has_origin = ShapePredicate(&details::_has_origin);
-    assert pygeoml.is_has_origin(edge_shape) == False
+    assert pygeoml.has_origin(edge_shape) == False
  
 
