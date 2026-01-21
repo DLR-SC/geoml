@@ -15,9 +15,6 @@ endif (POLICY CMP0078)
 
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 
-# build geoml first
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../../ ${CMAKE_CURRENT_BINARY_DIR}/native EXCLUDE_FROM_ALL)
-
 if (MSVC)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /bigobj")
 endif()
@@ -26,6 +23,24 @@ find_package(Python3 COMPONENTS Interpreter Development REQUIRED)
 message(STATUS "Python3 interpreter:" ${Python3_EXECUTABLE})
 message(STATUS "Python include directory: ${Python3_INCLUDE_DIR}")
 message(STATUS "Python library release: ${Python3_LIBRARY_RELEASE}")
+
+# this requires setuptools to be installed
+execute_process(
+  COMMAND "${Python3_EXECUTABLE}" -c "if True:
+  from distutils import sysconfig as sc
+  print(sc.get_python_lib(prefix='', plat_specific=True))"
+  OUTPUT_VARIABLE PYTHON_SITE_PACKAGES
+  OUTPUT_STRIP_TRAILING_WHITESPACE
+  ERROR_VARIABLE PYTHON_SITE_PACKAGES_ERROR
+)
+
+if (PYTHON_SITE_PACKAGES_ERROR)
+  set(PYTHON_SITE_PACKAGES geoml)
+  message(WARNING "Python site-packages directory could not be found (missing setuptools?). Falling back to: ${PYTHON_SITE_PACKAGES}")
+else()
+  cmake_path(SET PYTHON_SITE_PACKAGES NORMALIZE "${PYTHON_SITE_PACKAGES}")
+  message(STATUS "Python site-packages: ${PYTHON_SITE_PACKAGES}")
+endif()
 
 
 find_package(SWIG 3.0.11 REQUIRED)
@@ -69,7 +84,6 @@ include(${SWIG_USE_FILE})
 
 # we use the same definitions as pythonocc for their build to hide some of their warnings
 option(SWIG_HIDE_WARNINGS "Check this option if you want a less verbose swig output." ON)
-set(CMAKE_SWIG_FLAGS ${CMAKE_SWIG_FLAGS} -py3)
 if(SWIG_HIDE_WARNINGS)
   message(STATUS "Disabled SWIG warnings")
   set(CMAKE_SWIG_FLAGS ${CMAKE_SWIG_FLAGS} -w302,401,402,412,314,509,512,504,325,503,520,350,351,383,389,394,395,404)
@@ -88,11 +102,15 @@ set_source_files_properties(pygeoml.i PROPERTIES CPLUSPLUS ON)
 set(SWIG_MODULE_pygeoml_EXTRA_DEPS common.i doc.i)
 
 swig_add_library(pygeoml LANGUAGE python SOURCES pygeoml.i TYPE MODULE)
-swig_link_libraries(pygeoml geoml Python3::Module)
+swig_link_libraries(pygeoml geoml geoml_internal Python3::Module)
 
-install(TARGETS _pygeoml LIBRARY DESTINATION geoml)
+install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/geoml
+DESTINATION ${PYTHON_SITE_PACKAGES}
+COMPONENT interfaces
+)
+install(TARGETS _pygeoml LIBRARY DESTINATION ${PYTHON_SITE_PACKAGES}/geoml)
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/pygeoml.py
-        DESTINATION geoml
+        DESTINATION ${PYTHON_SITE_PACKAGES}/geoml
 )
 
 

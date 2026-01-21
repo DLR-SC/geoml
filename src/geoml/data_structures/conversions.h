@@ -7,13 +7,13 @@
 #include <gp_Pnt.hxx>
 #include <NCollection_Array2.hxx>   
 #include <NCollection_Array1.hxx>
+#include <TColStd_Array2OfReal.hxx>
 
 #include <vector>
 
 
 namespace geoml 
 {
-
 
 /**
  * @brief Convert an Array2d<T> to NCollection_Array2<T>. We remark as an example that the commonly used class TColgp_Array2OfPnt is a typedef of NCollection_Array2<gp_Pnt>.

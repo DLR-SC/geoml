@@ -41,6 +41,7 @@ endif()
 
 option(GEOML_INSTALL_INTERNAL_API "Install geoml's CPP bindings" OFF)
 
+OPTION(GEOML_NIGHTLY "Creates a nightly build of geoml (includes git sha into geoml version)" OFF)
 
 set(LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR})
 
@@ -51,11 +52,51 @@ if (MSVC)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP")
 endif()
 
+# code coverage analysis
+IF (CMAKE_BUILD_TYPE STREQUAL "Debug")
+        # enable extensive debug output
+        OPTION(DEBUG_EXTENSIVE "Switch on extensive debug output" OFF)
+        OPTION(GEOML_ENABLE_COVERAGE "Enable GCov coverage analysis (defines a 'coverage' target and enforces static build of geoml)" OFF)
+        IF(GEOML_ENABLE_COVERAGE)
+                MESSAGE(STATUS "Coverage enabled")
+                INCLUDE(CodeCoverage)
+                SETUP_TARGET_FOR_COVERAGE(coverage-unittests geoml-unittests tests/unittests coverageReport-unit $ENV{COVERAGE_ARGS})
+                SETUP_TARGET_FOR_COVERAGE(coverage-apitests geoml-apitest tests/apitests coverageReport-api $ENV{COVERAGE_ARGS})
+                SETUP_TARGET_FOR_COVERAGE_COBERTURA(coverage-cobertura geoml-unittests coverage $ENV{COVERAGE_ARGS})
+                SETUP_TARGET_FOR_COVERAGE_COBERTURA(coverage-cobertura-api geoml-apitest coverage $ENV{COVERAGE_ARGS})
+        ELSE()
+                MESSAGE(STATUS "Coverage disabled")
+        ENDIF()
+ENDIF()
+
+
 # style checks
 add_custom_target(checkstyle)
 add_custom_target(checkstylexml)
 
 add_subdirectory(src)
+
+option(GEOML_BUILD_PYTHON_BINDINGS "Build geoml python bindings" OFF)
+
+if(GEOML_BUILD_PYTHON_BINDINGS)
+
+    # Ensure the correct Python version is picked up by specifying the Python_EXECUTABLE
+    if (DEFINED ENV{CONDA_PREFIX})
+        if (WIN32)
+            set(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} "$ENV{CONDA_PREFIX}/Library")
+            # Helps to find PythonOCC automatically
+            set(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} "$ENV{CONDA_PREFIX}/Library/src/pythonocc-core")
+        else()
+            set(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} "$ENV{CONDA_PREFIX}")
+            # Helps to find PythonOCC automatically
+            set(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} "$ENV{CONDA_PREFIX}/src/pythonocc-core")
+        endif()
+    
+    endif()
+
+    add_subdirectory(bindings)
+
+endif(GEOML_BUILD_PYTHON_BINDINGS)
 
 #create gtests, override gtest standard setting
 option(GEOML_BUILD_TESTS "Build geoml Testsuite" OFF)
@@ -82,7 +123,7 @@ if(CPACK_GENERATOR)
 elseif(APPLE)
     set(CPACK_GENERATOR DragNDrop)
 elseif(WIN32)
-    set(CPACK_GENERATOR "NSIS;ZIP")
+    set(CPACK_GENERATOR "ZIP")
 else()
     set(CPACK_GENERATOR TGZ)
 endif()

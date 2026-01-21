@@ -98,8 +98,8 @@ TEST(Misc, GetPointOnCirc)
     ASSERT_NEAR(1.00, ProjectPointOnWire(wire, p5), 1e-7);
 }
 
-
-TEST(Misc, typeName)
+// As the boost library has been removed after stripping down from TiGL, this test has been disabled since it uses the boost library.
+TEST(Misc, DISABLED_typeName)
 {
     ASSERT_STREQ("geoml::Point", geoml::typeName(typeid(geoml::Point)).c_str());
     ASSERT_STREQ("geoml::Point", geoml::typeName<geoml::Point>().c_str());

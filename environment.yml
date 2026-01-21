@@ -1,0 +1,12 @@
+name: geoml-bld
+# This is the recommended environment for building tigl from source
+channels:
+ - dlr-sc
+dependencies:
+ - pip                           # just make sure that pip installs into this env, if used
+ - setuptools                    # needed to infer the python site-packages path
+ - opencascade=7.6.2             # library for dealing with b-spline and nurbs geometries. dlr-sc version contains patch for C2-cont. Coons patches
+ - conda-forge::qt=5.15.8        # needed to build tiglviewer
+ - python                        # needed to build python bindings
+ # other build dependencies
+ - ninja=1.10.2                  # not strictly needed, tigl can be build using any other camke generator

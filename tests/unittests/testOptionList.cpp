@@ -85,7 +85,8 @@ TEST(OptionList, AddGetSet)
     EXPECT_THROW(options.SetFromString("my_doublee", "welt"), geoml::Error);
 }
 
-TEST(OptionList, OptionNames)
+// As the boost library has been removed after stripping down from TiGL, this test has been disabled since it uses the boost library.
+TEST(OptionList, DISABLED_OptionNames)
 {
     MockOptions options;
     ASSERT_EQ(2, options.GetNOptions());

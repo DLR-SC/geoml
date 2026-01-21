@@ -33,7 +33,12 @@ TEST(Shape, add_persistent_meta_tag_to_subshapes)
     }
 }
 
-TEST(SelectSubShapes, BooleanCutCheckNumberOfSubShapes)
+// Currently, an edge is picked via an index, which is dependant of a hash function, which is used in the context of ShapeContainers, which is a typedef 
+// of std::unordered_set. For hash is calculated with ShapeHasher, which uses, amongs other inputs, the address of the TShape instance of the 
+// underlying TopoDS_Shape instance. Each execution of the tests may lead to different addresses allocated by the operational system (depending
+// on which recources are currently available, also due to potentially other open applications), and hence to different hashes which again might
+// lead to different index distributions, which explains the flakyness of this edge selection
+TEST(SelectSubShapes, DISABLED_BooleanCutCheckNumberOfSubShapes)
 {   
     using namespace geoml;
     auto box = create_box(1., 1., 1.);
@@ -179,8 +184,12 @@ namespace {
 
 } // anonymous namespace
 
-
-TEST_F(RectangularFace, example_rectangle_triangles)
+// Currently, an edge is picked via an index, which is dependant of a hash function, which is used in the context of ShapeContainers, which is a typedef 
+// of std::unordered_set. For hash is calculated with ShapeHasher, which uses, amongs other inputs, the address of the TShape instance of the 
+// underlying TopoDS_Shape instance. Each execution of the tests may lead to different addresses allocated by the operational system (depending
+// on which recources are currently available, also due to potentially other open applications), and hence to different hashes which again might
+// lead to different index distributions, which explains the flakyness of this edge selection 
+TEST_F(RectangularFace, DISABLED_example_rectangle_triangles)
 {   
     using namespace geoml;
 

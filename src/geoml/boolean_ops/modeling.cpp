@@ -13,10 +13,26 @@ Shape boolean_subtract (Shape const& shape, Shape const& cutting_tool)
     return operation.value();
 }
 
+
 Shape operator-(Shape const& shape, Shape const& cutting_tool)
 {
     return boolean_subtract(shape, cutting_tool);
 }
+
+
+Shape boolean_union(Shape const& shape_1, Shape const& shape_2)
+{
+    BRepAlgoAPI_Fuse fuser(shape_1, shape_2);
+    auto operation = BRepBuilderAPI_MakeShape_Operation(fuser, {shape_1, shape_2});
+    return operation.value();
+}
+
+
+Shape operator+(Shape const& shape_1, Shape const& shape_2)
+{
+    return boolean_union(shape_1, shape_2);
+}
+
 
 
 } // namespace geoml

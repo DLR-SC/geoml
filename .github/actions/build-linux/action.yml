@@ -1,0 +1,86 @@
+name: "Linux Build"
+
+description: "Build geoml on Linux"
+
+inputs:
+
+  config:
+    description: "Configuration to build (Release or Debug, see CMAKE_BUILD_TYPE)"
+    required: true
+    default: "Release"
+
+  geoml_api_python_bindings:
+    description: "CMake option to build the python bindings of the geoml api"
+    required: false
+    default: "OFF"
+
+  geoml_enable_coverage:
+    description: "CMake option to enable code coverage with gcov/lcov (ON or OFF)"
+    required: false
+    default: "OFF"
+
+  build-artifact:
+    descpription: "Set the name for the build artifact stored by this job"
+    required: true
+
+runs:
+
+  using: "composite"
+
+  steps:
+
+    - name: Install dependencies
+      uses: nick-fields/retry@v3
+      with:
+        timeout_minutes: 10
+        max_attempts: 3
+        command: |
+          sudo apt-get update -qq
+          sudo apt-get install -y ccache lcov gcovr cmake cmake-data sshpass mesa-common-dev libglu1-mesa-dev
+          echo "/usr/lib/ccache" >> $GITHUB_PATH
+
+    - name: Setup miniconda
+      uses: conda-incubator/setup-miniconda@v3
+      with:
+        auto-update-conda: true
+        activate-environment: geoml-bld
+        environment-file: environment.yml
+        auto-activate-base: false
+
+    - name: Conda info
+      shell: bash -el {0}
+      run: |
+        conda info
+        conda list
+
+    - name: ccache
+      uses: hendrikmuhs/ccache-action@v1
+      with:
+        key: compiler-cache-${{ inputs.build-artifact }}
+
+    - name: Build geoml
+      shell: bash -l {0}
+      run: |
+        mkdir build
+        cd build
+        cmake .. -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
+                 -DCMAKE_BUILD_TYPE=${{ inputs.config }} \
+                 -DCMAKE_INSTALL_PREFIX=install \
+                 -DOCE_STATIC_LIBS=ON \
+                 -DGEOML_BUILD_TESTS=ON \
+                 -DGEOML_ENABLE_COVERAGE=${{ inputs.geoml_enable_coverage }} 
+
+        cmake --build . -j 4 --target install
+       
+
+    - name: create build dir archive
+      shell: bash
+      run: |
+        tar -czf build.tar.gz build
+
+    - name: Upload build directory
+      uses: actions/upload-artifact@v4
+      with:
+        name: ${{ inputs.build-artifact }}
+        path: build.tar.gz
+        retention-days: 1

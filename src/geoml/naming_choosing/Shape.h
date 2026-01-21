@@ -27,21 +27,48 @@ class Operation;
 
 class Shape;
 
+// this wrapper class is here to make swig happy and because we dont understand how to wrap std::function directly.
+class ShapePredicate
+{
+public:
+    inline ShapePredicate(std::function<bool(Shape const&)> const& f) : fun(f) {}
+
+    inline bool operator()(Shape const& s) const {
+        return fun(s);
+    }
+
+    inline operator std::function<bool(Shape const&)>() {
+        return fun;
+    }
+
+private:
+    std::function<bool(Shape const&)> fun;
+};
+
 /**
 * @brief A TagTrack stores
 *  - a tag name
 *  - the number of remaining modeling steps determining its lifetime in the modelling history 
-*  - a logical criterion
+*  - a logical criterion (predicate)
 */
-struct TagTrack {
+struct TagTrack 
+{
+    template<typename Pred>
+    GEOML_API_EXPORT TagTrack(std::string const& t, Pred&& criterion, int remainingSteps) 
+        : m_tag(t), m_criterion(std::forward<Pred>(criterion)), m_remainingSteps(remainingSteps) {}
 
-    GEOML_API_EXPORT TagTrack(std::string const& t, std::function<bool(Shape const&)> const& criterion, int remainingSteps) 
+    GEOML_API_EXPORT TagTrack(std::string const& t, ShapePredicate const& criterion, int remainingSteps) 
         : m_tag(t), m_criterion(criterion), m_remainingSteps(remainingSteps) {}
 
-    std::function<bool(Shape const&)> m_criterion;
+    // the default ctr is for using std::vector<TagTrack> for the SWIG bindings (see pygeoml.i)    
+    GEOML_API_EXPORT TagTrack()
+        : m_criterion([](Shape const& ){return true;}) {} 
+
+    ShapePredicate m_criterion;
     std::string m_tag;
     int m_remainingSteps;
 };
+
 namespace details {
 
 template <typename Pred>
@@ -88,7 +115,7 @@ using ShapeContainer = std::unordered_set<Shape, ShapeHasher, ShapeIsSame>;
  * Internally, it wraps a TopoDS_Shape. It provides some interface
  * functions to explore the topological graph as well has the modeling
  * history graph. The topological graph is determined through the topological
- * information encoded in the wrapped TopoDS_Shape. Thei historical graph
+ * information encoded in the wrapped TopoDS_Shape. The historical graph
  * is determined by functors derived from the CRTP class template geoml::Operation.
  * 
  * Shape is a light-weight wrapper around shared heap allocated memory.
@@ -123,6 +150,13 @@ public:
      * @return TopoDS_Shape the wrapped OpenCascade shape
      */
     GEOML_API_EXPORT operator TopoDS_Shape() const;
+    
+    /**
+     * @brief returns the wrapped TopoDS_Shape
+     * 
+     * @return TopoDS_Shape the wrapped OpenCascade shape
+     */
+    GEOML_API_EXPORT TopoDS_Shape shape() const;
 
     /**
      * @brief returns the direct topological subshapes of the shape

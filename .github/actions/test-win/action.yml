@@ -1,0 +1,70 @@
+name: "Windows Tests"
+
+description: "Test geoml on Windows"
+
+inputs:
+
+  build-artifact:
+    description: "Name of the build artifact that contains the unit test binary."
+    required: true
+
+  unit-tests:
+    description: "Set to true to run geoml unit tests (true or false)"
+    required: false
+    default: true
+
+  api-tests:
+    description: "Set to true to run geoml api tests (true or false)"
+    required: false
+    default: true
+
+
+runs:
+
+  using: "composite"
+
+  steps:
+
+    - name: Setup miniconda
+      uses: conda-incubator/setup-miniconda@v3
+      with:
+        auto-update-conda: true
+        activate-environment: geoml-bld
+        environment-file: environment.yml
+        auto-activate-base: false
+
+    - name: Install dependencies (static opencascade)
+      shell: cmd /C call {0}
+      run: |
+        conda install tbb
+    
+    - name: Conda info
+      shell: cmd /C call {0}
+      run: |
+        conda info
+        conda list
+
+    - name: Download built test directory
+      uses: actions/download-artifact@v4
+      with:
+        name: ${{ inputs.build-artifact }}
+        
+    - name: extract build archive
+      shell: bash
+      run: |
+        tar -xzf build.tar.gz
+
+    - name: Run unit tests
+      if: ${{ inputs.unit-tests == 'true' }}
+      shell: cmd /C call {0}
+      run: |
+        cd build\tests\unittests
+        .\geoml-unittests.exe --gtest_shuffle --gtest_output=xml:api_test_results.xml
+
+    - name: Run api tests
+      if: ${{ inputs.api-tests == 'true' }}         
+      shell: cmd /C call {0}
+      run: |
+        cd build\tests\apitests
+        .\geoml-apitest.exe --gtest_shuffle --gtest_output=xml:api_test_results.xml
+
