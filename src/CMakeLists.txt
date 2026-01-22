@@ -39,12 +39,26 @@ generate_export_header(geoml
     EXPORT_FILE_NAME geoml/exports.h
 )
 
-target_link_libraries(geoml PUBLIC ${OpenCASCADE_LIBRARIES} )
+target_link_libraries(geoml PUBLIC ${OpenCASCADE_LIBRARIES})
 
 target_include_directories(geoml
     PRIVATE ${GEOML_INCLUDES}
     PRIVATE ${CMAKE_CURRENT_BINARY_DIR}
 )
+
+if (GEOML_USE_ADOLC)
+  target_link_libraries(geoml PUBLIC ADOLC::ADOLC)
+  target_include_directories(geoml PRIVATE ${ADOLC_INCLUDE_DIRS})
+  # Possible values of GEOML_USE_ADOLC_MODE are [forward, reverse]
+  if (NOT DEFINED GEOML_USE_ADOLC_MODE)
+    set(GEOML_USE_ADOLC_MODE "forward")
+  endif()
+  if (${GEOML_USE_ADOLC_MODE} STREQUAL "forward")
+    target_compile_definitions(geoml PUBLIC GEOML_ADOLC_FORWARD)
+  elseif(${GEOML_USE_ADOLC_MODE} STREQUAL "reverse")
+    target_compile_definitions(geoml PUBLIC GEOML_ADOLC_REVERSE)
+  endif()
+endif()
 
 if(MSVC)
     target_compile_definitions(geoml PRIVATE _CRT_SECURE_NO_WARNINGS=1 /wd4355 GEOML_INTERNAL_EXPORTS)

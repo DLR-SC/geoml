@@ -41,6 +41,12 @@ endif()
 
 option(GEOML_INSTALL_INTERNAL_API "Install geoml's CPP bindings" OFF)
 
+option(GEOML_USE_ADOLC "Enable algorithmic differentiation with ADOL-C" OFF)
+
+if(GEOML_USE_ADOLC)
+    include(UseADOLC)
+endif()
+
 OPTION(GEOML_NIGHTLY "Creates a nightly build of geoml (includes git sha into geoml version)" OFF)
 
 set(LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR})
