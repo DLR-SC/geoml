@@ -58,17 +58,17 @@ namespace geoml
 // helper function for std::find
 struct IsInsideTolerance
 {
-    IsInsideTolerance(double value, double tolerance = 1e-15)
+    IsInsideTolerance(Standard_Real value, Standard_Real tolerance = 1e-15)
         : _a(value), _tol(tolerance)
     {}
 
-    bool operator()(double v)
+    bool operator()(Standard_Real v)
     {
         return (fabs(_a - v) <= _tol);
     }
 
-    double _a;
-    double _tol;
+    Standard_Real _a;
+    Standard_Real _tol;
 };
 
 enum Continuity
@@ -86,8 +86,8 @@ GEOML_EXPORT Standard_Real GetLength(const TopoDS_Wire& wire);
 GEOML_EXPORT Standard_Real GetLength(const TopoDS_Edge& edge);
 
 // returns a point on the wire (0 <= alpha <= 1)
-GEOML_EXPORT gp_Pnt WireGetPoint(const TopoDS_Wire& wire, double alpha);
-GEOML_EXPORT void WireGetPointTangent(const TopoDS_Wire& wire, double alpha, gp_Pnt& point, gp_Vec& normal);
+GEOML_EXPORT gp_Pnt WireGetPoint(const TopoDS_Wire& wire, Standard_Real alpha);
+GEOML_EXPORT void WireGetPointTangent(const TopoDS_Wire& wire, Standard_Real alpha, gp_Pnt& point, gp_Vec& normal);
 
 // returns the starting point of the wire/edge
 GEOML_EXPORT gp_Pnt GetFirstPoint(const TopoDS_Shape& wireOrEdge);
@@ -99,8 +99,8 @@ GEOML_EXPORT gp_Pnt GetLastPoint(const TopoDS_Shape& wireOrEdge);
 GEOML_EXPORT gp_Pnt GetLastPoint(const TopoDS_Wire& w);
 GEOML_EXPORT gp_Pnt GetLastPoint(const TopoDS_Edge& e);
 
-GEOML_EXPORT gp_Pnt EdgeGetPoint(const TopoDS_Edge& edge, double alpha);
-GEOML_EXPORT void EdgeGetPointTangent(const TopoDS_Edge& edge, double alpha, gp_Pnt& point, gp_Vec& normal);
+GEOML_EXPORT gp_Pnt EdgeGetPoint(const TopoDS_Edge& edge, Standard_Real alpha);
+GEOML_EXPORT void EdgeGetPointTangent(const TopoDS_Edge& edge, Standard_Real alpha, gp_Pnt& point, gp_Vec& normal);
 
 // calculates the alpha value for a given point on a wire
 GEOML_EXPORT Standard_Real ProjectPointOnWire(const TopoDS_Wire& wire, gp_Pnt p);
@@ -109,7 +109,7 @@ GEOML_EXPORT Standard_Real ProjectPointOnWire(const TopoDS_Wire& wire, gp_Pnt p)
 GEOML_EXPORT Standard_Real ProjectPointOnLine(gp_Pnt p, gp_Pnt lineStart, gp_Pnt lineStop);
 
 // calculates the alpha value for a given point on a wire
-GEOML_EXPORT Standard_Real ProjectPointOnWireAtAngle(const TopoDS_Wire& wire, gp_Pnt p, gp_Dir rotationAxisAroundP, double angle);
+GEOML_EXPORT Standard_Real ProjectPointOnWireAtAngle(const TopoDS_Wire& wire, gp_Pnt p, gp_Dir rotationAxisAroundP, Standard_Real angle);
 
 // projects a point onto a plane and returns the point in parameters of the plane
 GEOML_EXPORT gp_Pnt2d ProjectPointOnPlane(gp_Pln pln, gp_Pnt p);
@@ -122,7 +122,7 @@ GEOML_EXPORT gp_Pnt ProjectPointOnShape(const TopoDS_Shape& shape, const gp_Pnt&
 struct UVResult
 {
     TopoDS_Face face;
-    double u, v;
+    Standard_Real u, v;
 };
 
 /**
@@ -140,7 +140,7 @@ struct UVResult
  */
 GEOML_EXPORT std::optional<UVResult> GetFaceAndUV(TopoDS_Shape const& shape,
                                    gp_Pnt const& pnt,
-                                   double tol = 1e-3);
+                                   Standard_Real tol = 1e-3);
 
 
 /**
@@ -154,10 +154,10 @@ GEOML_EXPORT std::optional<UVResult> GetFaceAndUV(TopoDS_Shape const& shape,
  * @return the trimmed face
  */
 GEOML_EXPORT TopoDS_Face TrimFace(TopoDS_Face const& face,
-                                 double umin,
-                                 double umax,
-                                 double vmin,
-                                 double vmax);
+                                 Standard_Real umin,
+                                 Standard_Real umax,
+                                 Standard_Real vmin,
+                                 Standard_Real vmax);
 
 
 /**
@@ -212,22 +212,22 @@ GEOML_EXPORT TopoDS_Shape GetFacesByName(const PNamedShape shape, const std::str
 
 // Returns the coordinates of the bounding box of the shape
 GEOML_EXPORT void GetShapeExtension(const TopoDS_Shape& shape,
-                                   double& minx, double& maxx,
-                                   double& miny, double& maxy,
-                                   double& minz, double& maxz);
+                                   Standard_Real& minx, Standard_Real& maxx,
+                                   Standard_Real& miny, Standard_Real& maxy,
+                                   Standard_Real& minz, Standard_Real& maxz);
 
 
 // Creates an Edge from the given Points by B-Spline interpolation
 GEOML_EXPORT TopoDS_Edge EdgeSplineFromPoints(const std::vector<gp_Pnt>& points);
 
 // Computes the intersection point of a face and an edge
-GEOML_EXPORT bool GetIntersectionPoint(const TopoDS_Face& face, const TopoDS_Edge& edge, gp_Pnt& dst, double tolerance = Precision::Confusion());
+GEOML_EXPORT bool GetIntersectionPoint(const TopoDS_Face& face, const TopoDS_Edge& edge, gp_Pnt& dst, Standard_Real tolerance = Precision::Confusion());
 
 // Computes the intersection point of a face and a wire
-GEOML_EXPORT bool GetIntersectionPoint(const TopoDS_Face& face, const TopoDS_Wire& wire, gp_Pnt& dst, double tolerance = Precision::Confusion());
+GEOML_EXPORT bool GetIntersectionPoint(const TopoDS_Face& face, const TopoDS_Wire& wire, gp_Pnt& dst, Standard_Real tolerance = Precision::Confusion());
 
 // Comuptes the intersection points of two wires
-GEOML_EXPORT bool GetIntersectionPoint(const TopoDS_Wire& wire1, const TopoDS_Wire& wire2, intersectionPointList& intersectionPoints, const double tolerance=Precision::SquareConfusion());
+GEOML_EXPORT bool GetIntersectionPoint(const TopoDS_Wire& wire1, const TopoDS_Wire& wire2, intersectionPointList& intersectionPoints, const Standard_Real tolerance=Precision::SquareConfusion());
 
 // Checks, whether a points lies inside a given shape, which must be a solid.
 // An optional bounding box can be passed to include a bounding box test as a prephase
@@ -342,7 +342,7 @@ GEOML_EXPORT TopoDS_Face GetNearestFace(const TopoDS_Shape& src, const gp_Pnt& p
 GEOML_EXPORT gp_Pnt GetCenterOfMass(const TopoDS_Shape& shape);
 
 // Method for finding the area of a shape or the area that is framed by the shape
-GEOML_EXPORT double GetArea(const TopoDS_Shape &shape);
+GEOML_EXPORT Standard_Real GetArea(const TopoDS_Shape &shape);
 
 // Method for checking for duplicate edges in the passed shape.
 // The method returns a shape with only unique edges
@@ -350,37 +350,37 @@ GEOML_EXPORT double GetArea(const TopoDS_Shape &shape);
 //       OF THE EDGES, BUT DOES NOT COMPARE THE CURVES EXACTLY
 GEOML_EXPORT TopoDS_Shape RemoveDuplicateEdges(const TopoDS_Shape& shape);
 
-inline double Radians(double degree)
+inline Standard_Real Radians(Standard_Real degree)
 {
     return degree / 180. * M_PI;
 }
 
-inline double Degrees(double radians)
+inline Standard_Real Degrees(Standard_Real radians)
 {
     return 180.*radians / M_PI;
 }
 
 // Clamps val between min and max
 GEOML_EXPORT int Clamp(int val, int min, int max);
-GEOML_EXPORT double Clamp(double val, double min, double max);
+GEOML_EXPORT Standard_Real Clamp(Standard_Real val, Standard_Real min, Standard_Real max);
 GEOML_EXPORT size_t Clamp(size_t val, size_t min, size_t max);
 
 // linearly interpolate between two values result = x*(1−a)+y*a.
-GEOML_EXPORT double Mix(double x, double y, double a);
+GEOML_EXPORT Standard_Real Mix(Standard_Real x, Standard_Real y, Standard_Real a);
 
 // Normalizes the input angle into the range [0, 360)
-GEOML_EXPORT double NormalizeAngleDeg(double angleDeg);
+GEOML_EXPORT Standard_Real NormalizeAngleDeg(Standard_Real angleDeg);
 
 // Creates a linear spaces array but with some additional breaking points
 // If the breaking points are very close to a point, the point will be replaced
 // Else, the breaking point will be inserted
-GEOML_EXPORT std::vector<double> LinspaceWithBreaks(double umin, double umax, size_t n_values, const std::vector<double>& breaks);
+GEOML_EXPORT std::vector<Standard_Real> LinspaceWithBreaks(Standard_Real umin, Standard_Real umax, size_t n_values, const std::vector<Standard_Real>& breaks);
 
 /// Converters between std::vectors and opencascade vectors
 GEOML_EXPORT Handle(TColgp_HArray1OfPnt) OccArray(const std::vector<gp_Pnt>& pnts);
 GEOML_EXPORT Handle(TColgp_HArray1OfPnt) OccArray(const std::vector<geoml::Point>& pnts);
 
-GEOML_EXPORT Handle(TColStd_HArray1OfReal) OccFArray(const std::vector<double>& vector);
+GEOML_EXPORT Handle(TColStd_HArray1OfReal) OccFArray(const std::vector<Standard_Real>& vector);
 GEOML_EXPORT Handle(TColStd_HArray1OfInteger) OccIArray(const std::vector<int>& vector);
 
 template <typename T>

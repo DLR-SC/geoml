@@ -37,31 +37,31 @@ public:
         : m_value(0), m_derivative(0)
     {}
 
-    GEOML_EXPORT ValueWithDerivative(double v, double d)
+    GEOML_EXPORT ValueWithDerivative(Standard_Real v, Standard_Real d)
         : m_value(v), m_derivative(d)
     {}
     
-    double& value()
+    Standard_Real& value()
     {
         return m_value;
     }
-    const double value() const
+    const Standard_Real value() const
     {
         return m_value;
     }
     
-    double& derivative()
+    Standard_Real& derivative()
     {
         return m_derivative;
     }
-    const double derivative() const
+    const Standard_Real derivative() const
     {
         return m_derivative;
     }
 
 private:
-    double m_value;
-    double m_derivative;
+    Standard_Real m_value;
+    Standard_Real m_derivative;
 };
 
 class ProjectPointOnCurveAtAngle
@@ -78,7 +78,7 @@ public:
      *        corresponds to standard projection.
      * @param planeRefNormal Normal of the reference plane, in which the angle is measured.
      */
-    GEOML_EXPORT ProjectPointOnCurveAtAngle(const gp_Pnt& p, const Handle(Geom_Curve)& curve, double angle, const gp_Dir& planeRefNormal);
+    GEOML_EXPORT ProjectPointOnCurveAtAngle(const gp_Pnt& p, const Handle(Geom_Curve)& curve, Standard_Real angle, const gp_Dir& planeRefNormal);
     
     /// Returns true, if the computation is successful. Note: It might be, that
     /// there is no solution possible. In this case, IsDone() returns false.
@@ -88,21 +88,21 @@ public:
     GEOML_EXPORT gp_Pnt Point(int i) const;
     
     /// Returns the parameter on the curve
-    GEOML_EXPORT double Parameter(int i) const;
+    GEOML_EXPORT Standard_Real Parameter(int i) const;
 
     GEOML_EXPORT int NbPoints() const;
     
 private:
     void Compute() const;
-    void FindPoint(double ustart) const;
-    void AddSolution(double value, double tol) const;
+    void FindPoint(Standard_Real ustart) const;
+    void AddSolution(Standard_Real value, Standard_Real tol) const;
 
     const Handle(Geom_Curve) m_curve;
-    const double m_angle;
+    const Standard_Real m_angle;
     const gp_Dir m_refNormal;
     const gp_Pnt m_pointToProject;
 
-    mutable std::vector<double> resultParameter;
+    mutable std::vector<Standard_Real> resultParameter;
     mutable bool m_hasComputed = true;
 };
 

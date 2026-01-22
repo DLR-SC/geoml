@@ -61,7 +61,7 @@ namespace {
 
 namespace geoml {
 
-InterpolateWires::InterpolateWires(double tolerance, double sameKnotTolerance)
+InterpolateWires::InterpolateWires(Standard_Real tolerance, Standard_Real sameKnotTolerance)
 {
     _hasPerformed = false;
     _makeSolid = true;
@@ -70,7 +70,7 @@ InterpolateWires::InterpolateWires(double tolerance, double sameKnotTolerance)
     _mySameKnotTolerance = sameKnotTolerance;
 }
 
-InterpolateWires::InterpolateWires(const TopoDS_Shape& profiles, const TopoDS_Shape& guides, double tolerance, double sameKnotTolerance)
+InterpolateWires::InterpolateWires(const TopoDS_Shape& profiles, const TopoDS_Shape& guides, Standard_Real tolerance, Standard_Real sameKnotTolerance)
 {
     _hasPerformed = false;
     _result.Nullify();

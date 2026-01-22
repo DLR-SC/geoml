@@ -52,7 +52,7 @@ public:
      */
     GEOML_EXPORT InterpolateCurveNetwork(const std::vector<Handle(Geom_Curve)>& profiles,
                                              const std::vector<Handle(Geom_Curve)>& guides,
-                                             double spatialTolerance);
+                                             Standard_Real spatialTolerance);
 
     GEOML_EXPORT operator Handle(Geom_BSplineSurface) ();
     
@@ -69,10 +69,10 @@ public:
     GEOML_EXPORT Handle(Geom_BSplineSurface) SurfaceIntersections();
 
     /// Returns the v parameters of the final surface, that correspond to the profile curve locations
-    GEOML_EXPORT std::vector<double> ParametersProfiles();
+    GEOML_EXPORT std::vector<Standard_Real> ParametersProfiles();
 
     /// Returns the u parameters of the final surface, that correspond to the guide curve locations
-    GEOML_EXPORT std::vector<double> ParametersGuides();
+    GEOML_EXPORT std::vector<Standard_Real> ParametersGuides();
 
 private:
     void Perform();
@@ -92,19 +92,19 @@ private:
                                                    math_Matrix & intersection_params_v) const;
 
     bool m_hasPerformed;
-    double m_spatialTol;
+    Standard_Real m_spatialTol;
     
     typedef std::vector<Handle(Geom_BSplineCurve)> CurveArray;
     CurveArray m_profiles;
     CurveArray m_guides;
-    std::vector<double> m_intersectionParamsU, m_intersectionParamsV;
+    std::vector<Standard_Real> m_intersectionParamsU, m_intersectionParamsV;
     Handle(Geom_BSplineSurface) m_skinningSurfProfiles, m_skinningSurfGuides, m_tensorProdSurf, m_gordonSurf;
 };
 
 /// Convenience function calling InterpolateCurveNetwork
 GEOML_EXPORT Handle(Geom_BSplineSurface) curveNetworkToSurface(const std::vector<Handle(Geom_Curve)>& profiles,
                                                               const std::vector<Handle(Geom_Curve)>& guides,
-                                                              double spatialTol = 3e-4);
+                                                              Standard_Real spatialTol = 3e-4);
 
 } // namespace geoml
 

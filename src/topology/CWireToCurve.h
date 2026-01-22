@@ -45,7 +45,7 @@ public:
      * @param tolerance Maximum distance of the connection point of two edges. If distance is larger than 
      *        tolerance, the class returns a NULL Handle.
      */
-    GEOML_EXPORT CWireToCurve(const TopoDS_Wire&, bool parByLength=true, double tolerance = 1e-6);
+    GEOML_EXPORT CWireToCurve(const TopoDS_Wire&, bool parByLength=true, Standard_Real tolerance = 1e-6);
 
     /// Returns the resulting spline
     /// Returns NULL Handle in case of an error
@@ -54,7 +54,7 @@ public:
 
 private:
     TopoDS_Wire _wire;
-    double _tolerance;
+    Standard_Real _tolerance;
     bool _parByLength;
 };
 

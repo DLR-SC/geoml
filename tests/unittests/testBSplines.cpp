@@ -160,7 +160,7 @@ protected:
             if (cols.size() != 8) {
                 continue;
             }
-            double px, py, pz, t;
+            Standard_Real px, py, pz, t;
             geoml::from_string<>(cols[0], px);
             geoml::from_string<>(cols[2], py);
             geoml::from_string<>(cols[4], pz);
@@ -176,7 +176,7 @@ protected:
     {
     }
 
-    std::vector<double> parms;
+    std::vector<Standard_Real> parms;
     TColgp_Array1OfPnt pnts;
 };
 
@@ -209,9 +209,9 @@ TEST_F(BSplineInterpolation, approxAndInterpolateContinuous1)
     TColgp_Array1OfPnt pnt2(1, nPoints);
 
     for (int i = 0; i < nPoints; ++i) {
-        pnt2.SetValue(i + 1, gp_Pnt(cos((i * 2.*M_PI) / static_cast<double>(nPoints - 1)),
+        pnt2.SetValue(i + 1, gp_Pnt(cos((i * 2.*M_PI) / static_cast<Standard_Real>(nPoints - 1)),
                                     0.,
-                                    sin((i * 2.*M_PI) / static_cast<double>(nPoints - 1))));
+                                    sin((i * 2.*M_PI) / static_cast<Standard_Real>(nPoints - 1))));
     }
     
     geoml::BSplineApproxInterp app(pnt2, 9, 3, true);
@@ -242,9 +242,9 @@ TEST_F(BSplineInterpolation, approxAndInterpolateContinuous2)
     TColgp_Array1OfPnt pnt2(1, nPoints);
 
     for (int i = 0; i < nPoints; ++i) {
-        pnt2.SetValue(i + 1, gp_Pnt(cos((i * 2.*M_PI) / static_cast<double>(nPoints - 1)),
+        pnt2.SetValue(i + 1, gp_Pnt(cos((i * 2.*M_PI) / static_cast<Standard_Real>(nPoints - 1)),
                                     0.,
-                                    sin((i * 2.*M_PI) / static_cast<double>(nPoints - 1))));
+                                    sin((i * 2.*M_PI) / static_cast<Standard_Real>(nPoints - 1))));
     }
     
     geoml::BSplineApproxInterp app(pnt2, 9, 3, true);
@@ -277,9 +277,9 @@ TEST_F(BSplineInterpolation, approxAndInterpolateContinuous3)
     TColgp_Array1OfPnt pnt2(1, nPoints - 1);
 
     for (int i = 0; i < nPoints - 1; ++i) {
-        pnt2.SetValue(i + 1, gp_Pnt(cos((i * 2.*M_PI) / static_cast<double>(nPoints - 1)),
+        pnt2.SetValue(i + 1, gp_Pnt(cos((i * 2.*M_PI) / static_cast<Standard_Real>(nPoints - 1)),
                                     0.,
-                                    sin((i * 2.*M_PI) / static_cast<double>(nPoints - 1))));
+                                    sin((i * 2.*M_PI) / static_cast<Standard_Real>(nPoints - 1))));
     }
     
     geoml::BSplineApproxInterp app(pnt2, 9, 3, true);
@@ -294,7 +294,7 @@ TEST_F(BSplineInterpolation, interpolateAll)
     int nPoints = 8;
     TColgp_Array1OfPnt pnt2(1, nPoints);
 
-    double dx = 2. * M_PI / (nPoints - 1);
+    Standard_Real dx = 2. * M_PI / (nPoints - 1);
     for (int i = 0; i < nPoints; ++i) {
         pnt2.SetValue(i + 1, gp_Pnt(cos(i*dx),
                                     0.,
@@ -317,7 +317,7 @@ TEST_F(BSplineInterpolation, interpolateAllContinuous)
     int nPoints = 8;
     TColgp_Array1OfPnt pnt2(1, nPoints);
 
-    double dx = 2. * M_PI / (nPoints - 1);
+    Standard_Real dx = 2. * M_PI / (nPoints - 1);
     for (int i = 0; i < nPoints; ++i) {
         pnt2.SetValue(i + 1, gp_Pnt(cos(i*dx),
                                     0.,
@@ -341,7 +341,7 @@ TEST_F(BSplineInterpolation, interpolateAllContinuousHalfCircle)
     int nPoints = 8;
     TColgp_Array1OfPnt pnt2(1, nPoints);
 
-    double dx = 2.*M_PI / (nPoints - 1);
+    Standard_Real dx = 2.*M_PI / (nPoints - 1);
     for (int i = 0; i < nPoints; ++i) {
         pnt2.SetValue(i + 1, gp_Pnt(cos(i*dx),
                                     0.,
@@ -365,7 +365,7 @@ TEST_F(BSplineInterpolation, interpolateErrors)
     int nPoints = 8;
     TColgp_Array1OfPnt pnt2(1, nPoints);
 
-    double dx = 2.*M_PI / (nPoints - 1);
+    Standard_Real dx = 2.*M_PI / (nPoints - 1);
     for (int i = 0; i < nPoints; ++i) {
         pnt2.SetValue(i + 1, gp_Pnt(cos(i*dx),
                                     0.,
@@ -445,7 +445,7 @@ TEST_F(BSplineInterpolation, tipKink)
 
 TEST_F(BSplineInterpolation, tipKink2)
 {
-    std::vector<double> parms2;
+    std::vector<Standard_Real> parms2;
     parms2.push_back(0. / 4.);
     parms2.push_back(0.5 / 4.);
     parms2.push_back(1.0 / 4.);
@@ -498,7 +498,7 @@ TEST_F(BSplineInterpolation, withKinksShield)
 
     ASSERT_FALSE(curve.IsNull());
 
-    const double tol = 1e-8;
+    const Standard_Real tol = 1e-8;
 
     EXPECT_TRUE(curve->Value(0.2).IsEqual(points->Value(2), tol));
     EXPECT_TRUE(curve->Value(0.8).IsEqual(points->Value(4), tol));
@@ -535,7 +535,7 @@ TEST_F(BSplineInterpolation, withKinksSlit)
 
     ASSERT_FALSE(curve.IsNull());
 
-    const double tol = 1e-8;
+    const Standard_Real tol = 1e-8;
 
     EXPECT_TRUE(curve->Value(0.5).IsEqual(points->Value(3), tol));
     
@@ -573,7 +573,7 @@ TEST_F(BSplineInterpolation, withKinksSmooth)
 
     ASSERT_FALSE(curve.IsNull());
 
-    const double tol = 1e-8;
+    const Standard_Real tol = 1e-8;
 
     EXPECT_TRUE(curve->Value(0.5).IsEqual(points->Value(3), tol));
     
@@ -618,7 +618,7 @@ TEST_F(BSplineInterpolation, interpolationContinuous)
         Handle(Geom_BSplineCurve) result = app.Curve();
 
         // test interpolation accuracy
-        const std::vector<double>& params = app.Parameters();
+        const std::vector<Standard_Real>& params = app.Parameters();
         for (int iparm = 0; iparm < params.size(); ++iparm) {
             gp_Pnt p = result->Value(params[iparm]);
             EXPECT_NEAR(0., p.Distance(pnt2->Value(iparm + 1)), 1e-10);
@@ -654,7 +654,7 @@ TEST_F(BSplineInterpolation, interpolationDiscontinuous)
         Handle(Geom_BSplineCurve) result = app.Curve();
 
         // test interpolation accuracy
-        const std::vector<double>& params = app.Parameters();
+        const std::vector<Standard_Real>& params = app.Parameters();
         for (int iparm = 0; iparm < params.size(); ++iparm) {
             gp_Pnt p = result->Value(params[iparm]);
             EXPECT_NEAR(0., p.Distance(pnt2->Value(iparm + 1)), 1e-10);
@@ -680,7 +680,7 @@ TEST_F(BSplineInterpolation, interpolationLinear)
     Handle(Geom_BSplineCurve) result = app.Curve();
 
     // test interpolation accuracy
-    const std::vector<double>& params = app.Parameters();
+    const std::vector<Standard_Real>& params = app.Parameters();
     for (int iparm = 0; iparm < params.size(); ++iparm) {
         gp_Pnt p = result->Value(params[iparm]);
         EXPECT_NEAR(0., p.Distance(pnt2->Value(iparm + 1)), 1e-10);
@@ -703,7 +703,7 @@ TEST_F(BSplineInterpolation, interpolationClosedIssue1)
     pnt2->SetValue(4, gp_Pnt(-358.904397, 904.415830, 218.280826));
     pnt2->SetValue(5, gp_Pnt(-428.410051, -0.000000, 869.975291));
 
-    std::vector<double> params;
+    std::vector<Standard_Real> params;
     params.push_back(0.);
     params.push_back(0.28329579);
     params.push_back(0.49656342);

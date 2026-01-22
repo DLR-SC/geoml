@@ -36,15 +36,15 @@ public:
      * @param uparams Ordered list of parameters. Must be one entry more than surfaces
      */
     GEOML_EXPORT CompoundSurface(const std::vector<Handle(Geom_BoundedSurface)>& surfaces,
-                                     const std::vector<double>& uparams);
+                                     const std::vector<Standard_Real>& uparams);
 
-    GEOML_EXPORT gp_Pnt Value(double u, double v) const;
+    GEOML_EXPORT gp_Pnt Value(Standard_Real u, Standard_Real v) const;
 
     GEOML_EXPORT CompoundSurface& operator=(const CompoundSurface& other) = default;
 
 private:
     std::vector<Handle(Geom_BoundedSurface)> m_surfaces;
-    std::vector<double> m_uparams;
+    std::vector<Standard_Real> m_uparams;
 };
 
 } // namespace geoml

@@ -37,8 +37,8 @@ namespace geoml
 class InterpolateWires
 {
 public:
-    GEOML_EXPORT InterpolateWires(double tolerance = 1e-6, double sameKnotTolerance = 1e-6);
-    GEOML_EXPORT InterpolateWires(const TopoDS_Shape& profiles, const TopoDS_Shape& guides, double tolerance = 1e-6, double sameKnotTolerance = 1e-6);
+    GEOML_EXPORT InterpolateWires(Standard_Real tolerance = 1e-6, Standard_Real sameKnotTolerance = 1e-6);
+    GEOML_EXPORT InterpolateWires(const TopoDS_Shape& profiles, const TopoDS_Shape& guides, Standard_Real tolerance = 1e-6, Standard_Real sameKnotTolerance = 1e-6);
     
     /**
      * @brief Should be called to add sections/profiles to the algorithm.
@@ -97,7 +97,7 @@ private:
      *        (Last only relevant in the case of guide curves)
      *        Default Value is 1E-6
      */
-    double _myTolerance;
+    Standard_Real _myTolerance;
     /**
      * \brief Relative tolerance for comparing knots of opposite curves
      *        If k1 and k2 are values of corresponding knots of opposite curves C1 and C2 
@@ -105,7 +105,7 @@ private:
      *        Only relevant in the case of guide curves
      *        Default Value is 1E-6
      */
-    double _mySameKnotTolerance;
+    Standard_Real _mySameKnotTolerance;
     std::vector<TopoDS_Wire> guides, wires;
     std::vector<Standard_Real> uparams, vparams;
     bool _hasPerformed, _makeSolid;

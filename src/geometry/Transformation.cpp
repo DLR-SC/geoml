@@ -103,7 +103,7 @@ void Transformation::SetIdentity()
 }
 
 // Sets a value of the transformation matrix by row/col
-void Transformation::SetValue(int row, int col, double value)
+void Transformation::SetValue(int row, int col, Standard_Real value)
 {
     if (row < 0 || row > 3 || col < 0 || col > 3) {
         throw Error("Invalid row or column index in Transformation::SetValue", geoml::INDEX_ERROR);
@@ -116,7 +116,7 @@ void Transformation::SetValue(int row, int col, double value)
 // the result in this matrix
 void Transformation::PostMultiply(const Transformation& aTrans)
 {
-    double tmp_matrix[4][4];
+    Standard_Real tmp_matrix[4][4];
     int row;
 
     for (row = 0; row < 4; row++) {
@@ -140,7 +140,7 @@ void Transformation::PostMultiply(const Transformation& aTrans)
 // the result in this matrix
 void Transformation::PreMultiply(const Transformation& aTrans)
 {
-    double tmp_matrix[4][4];
+    Standard_Real tmp_matrix[4][4];
     int row;
 
     for (row = 0; row < 4; row++) {
@@ -187,20 +187,20 @@ gp_GTrsf Transformation::Get_gp_GTrsf() const
 }
 
 // Converts degree to radian, utility function
-double Transformation::DegreeToRadian(double degree)
+Standard_Real Transformation::DegreeToRadian(Standard_Real degree)
 {
     return (degree * 1.74532925199433E-02);
 }
 
 // Converts radian to degree, utility function
-double Transformation::RadianToDegree(double radian)
+Standard_Real Transformation::RadianToDegree(Standard_Real radian)
 {
     return (radian * 57.2957795130823);
 }
 
 // Adds a translation to this transformation. Translation part
 // is stored in the last column of the transformation matrix.
-void Transformation::AddTranslation(double tx, double ty, double tz)
+void Transformation::AddTranslation(Standard_Real tx, Standard_Real ty, Standard_Real tz)
 {
     // Matrix is:
     //
@@ -217,7 +217,7 @@ void Transformation::AddTranslation(double tx, double ty, double tz)
     PreMultiply(trans);
 }
 
-void Transformation::AddScaling(double sx, double sy, double sz)
+void Transformation::AddScaling(Standard_Real sx, Standard_Real sy, Standard_Real sz)
 {
     // Matrix is:
     //
@@ -234,11 +234,11 @@ void Transformation::AddScaling(double sx, double sy, double sz)
     PreMultiply(trans);
 }
 
-void Transformation::AddRotationX(double degreeX)
+void Transformation::AddRotationX(Standard_Real degreeX)
 {
-    double radianX = DegreeToRadian(degreeX);
-    double sinVal  = sin(radianX);
-    double cosVal  = cos(radianX);
+    Standard_Real radianX = DegreeToRadian(degreeX);
+    Standard_Real sinVal  = sin(radianX);
+    Standard_Real cosVal  = cos(radianX);
 
     // Matrix is:
     //
@@ -256,11 +256,11 @@ void Transformation::AddRotationX(double degreeX)
     PreMultiply(trans);
 }
 
-void Transformation::AddRotationY(double degreeY)
+void Transformation::AddRotationY(Standard_Real degreeY)
 {
-    double radianY = DegreeToRadian(degreeY);
-    double sinVal  = sin(radianY);
-    double cosVal  = cos(radianY);
+    Standard_Real radianY = DegreeToRadian(degreeY);
+    Standard_Real sinVal  = sin(radianY);
+    Standard_Real cosVal  = cos(radianY);
 
     // Matrix is:
     //
@@ -278,11 +278,11 @@ void Transformation::AddRotationY(double degreeY)
     PreMultiply(trans);
 }
 
-void Transformation::AddRotationZ(double degreeZ)
+void Transformation::AddRotationZ(Standard_Real degreeZ)
 {
-    double radianZ = DegreeToRadian(degreeZ);
-    double sinVal  = sin(radianZ);
-    double cosVal  = cos(radianZ);
+    Standard_Real radianZ = DegreeToRadian(degreeZ);
+    Standard_Real sinVal  = sin(radianZ);
+    Standard_Real cosVal  = cos(radianZ);
 
     // Matrix is:
     //
@@ -301,7 +301,7 @@ void Transformation::AddRotationZ(double degreeZ)
 }
 
 // Adds a rotation in intrinsic x-y'-z'' Euler convention to the matrix
-void Transformation::AddRotationIntrinsicXYZ(double phi, double theta, double psi)
+void Transformation::AddRotationIntrinsicXYZ(Standard_Real phi, Standard_Real theta, Standard_Real psi)
 {
     // intrinsic x-y'-z'' corresponds to extrinsic z-y-x, i.e. Rx*Ry*Rz:
     AddRotationZ(psi);
@@ -519,7 +519,7 @@ bool Transformation::IsUniform() const
     anIdentity.SetIdentity();
     TM.Subtract(anIdentity);
 
-    double v = 0;
+    Standard_Real v = 0;
     v = TM.Value(1, 1);
     if (fabs(v) > Precision::Confusion()) {
         return false;
@@ -573,7 +573,7 @@ Transformation Transformation::Inverted() const
     return Transformation(Get_gp_GTrsf().Inverted());
 }
 
-void Transformation::Decompose(double scale[3], double rotation[3], double translation[3]) const
+void Transformation::Decompose(Standard_Real scale[3], Standard_Real rotation[3], Standard_Real translation[3]) const
 {
     // compute polar decomposition of upper 3x3 part
     Matrix A(1, 3, 1, 3);
@@ -592,7 +592,7 @@ void Transformation::Decompose(double scale[3], double rotation[3], double trans
     scale[2] = P(3,3);
 
     // check for shearing
-    double aveAbsOffDiag = (fabs(P(1,2)) + fabs(P(1,3)) + fabs(P(2,3)))/3;
+    Standard_Real aveAbsOffDiag = (fabs(P(1,2)) + fabs(P(1,3)) + fabs(P(2,3)))/3;
     if (aveAbsOffDiag > Precision::Confusion() ) {
         LOG(WARNING) << "Transformation::Decompose: The Transformation contains a Shearing, that will be discarded in the decomposition!";
     }
@@ -610,7 +610,7 @@ void Transformation::Decompose(double scale[3], double rotation[3], double trans
 
     if( fabs( fabs(U(1, 3)) - 1) > 1e-10 ){
         rotation[1] = asin(U(1, 3));
-        double cosTheta = cos(rotation[1]);
+        Standard_Real cosTheta = cos(rotation[1]);
         rotation[0] = -atan2(U(2,3)/cosTheta, U(3,3)/cosTheta);
         rotation[2] = -atan2(U(1,2)/cosTheta, U(1,1)/cosTheta);
     }
@@ -638,7 +638,7 @@ void Transformation::Decompose(double scale[3], double rotation[3], double trans
 }
 
 // Getter for matrix values
-double Transformation::GetValue(int row, int col) const
+Standard_Real Transformation::GetValue(int row, int col) const
 {
     if (row < 0 || row > 3 || col < 0 || col > 3) {
         throw Error("Invalid row or column index in Transformation::GetValue", geoml::INDEX_ERROR);

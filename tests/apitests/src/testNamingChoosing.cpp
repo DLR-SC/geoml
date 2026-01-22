@@ -163,7 +163,7 @@ protected:
 
 namespace {
 
-    geoml::Shape make_tool(double design_parameter) {
+    geoml::Shape make_tool(Standard_Real design_parameter) {
         // create a triangular surface
         gp_Pnt p1(5.0 - design_parameter, -1.0, 0.0); 
         gp_Pnt p2(7.0 - design_parameter, -1.0, 0.0); 

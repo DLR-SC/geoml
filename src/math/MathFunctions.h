@@ -47,7 +47,7 @@ GEOML_EXPORT int factorial(int n);
  * @param n Exponent 
  * @return x^n
  */
-GEOML_EXPORT double pow_int(double x, int n);
+GEOML_EXPORT Standard_Real pow_int(Standard_Real x, int n);
 
 /** 
  * @brief Computes the values of the i-th bernstein polynome 
@@ -57,7 +57,7 @@ GEOML_EXPORT double pow_int(double x, int n);
  *@param n Degree of the polynome, n > 0
  *@param x Value the polynom should be evaluated at (normally 0 <= x <= 1, but not necessarily)
 */
-GEOML_EXPORT double bernstein_poly(int i, int n, double x);
+GEOML_EXPORT Standard_Real bernstein_poly(int i, int n, Standard_Real x);
 
 /** 
  * @brief Computes the values of the k-th derivative of the 
@@ -68,46 +68,46 @@ GEOML_EXPORT double bernstein_poly(int i, int n, double x);
  *@param n Degree of the polynome, n > 0
  *@param x Value the polynom should be evaluated at (normally 0 <= x <= 1, but not necessarily)
 */
-GEOML_EXPORT double bernstein_poly_deriv(int k, int i, int n, double x);
+GEOML_EXPORT Standard_Real bernstein_poly_deriv(int k, int i, int n, Standard_Real x);
 
 /**
  * @brief Calculated the area of a quadrilateral defined by the 4 corner points A,B,C,D
  */
-GEOML_EXPORT double quadrilateral_area(const Point& A, const Point& B, const Point& C, const Point& D);
+GEOML_EXPORT Standard_Real quadrilateral_area(const Point& A, const Point& B, const Point& C, const Point& D);
 
 /**
  * @brief Calculates the distance of a point P from the line defined by a point X0 and direction DX
  */
-GEOML_EXPORT double distance_point_from_line(const Point& P, const Point& X0, const Point& DX);
+GEOML_EXPORT Standard_Real distance_point_from_line(const Point& P, const Point& X0, const Point& DX);
 
 /**
  * @brief Computes the nth derivative of x^k
  */
-GEOML_EXPORT double pow_deriv(double x, double k, int n);
+GEOML_EXPORT Standard_Real pow_deriv(Standard_Real x, Standard_Real k, int n);
 
 /** @brief defines the class function
  * C(psi) = psi^N1 * (1-psi)^N2
  * for a CST air profile curve
  */
-GEOML_EXPORT double class_function(const double& N1, const double& N2, const double& x);
+GEOML_EXPORT Standard_Real class_function(const Standard_Real& N1, const Standard_Real& N2, const Standard_Real& x);
 
 /** @brief defines the derivative of the class function
  * C(psi) = psi^N1 * (1-psi)^N2
  * for a CST air profile curve
  */
-GEOML_EXPORT double class_function_deriv(const double& N1, const double& N2, const int& n, const double& x);
+GEOML_EXPORT Standard_Real class_function_deriv(const Standard_Real& N1, const Standard_Real& N2, const int& n, const Standard_Real& x);
 
 /** @brief defines the shape function
  * S(psi)=sum_i=1^N B_i * P_i^n(psi)
  * for a CST air profile curve. The P_i^n are the Bernstein polynomials.
  */
-GEOML_EXPORT double shape_function(const std::vector<double>& B, const double& x);
+GEOML_EXPORT Standard_Real shape_function(const std::vector<Standard_Real>& B, const Standard_Real& x);
 
 /** @brief defines the derivative of the shape function
  * S(psi)=sum_i=1^N B_i * P_i^n(psi)
  * for a CST air profile curve. The P_i^n are the Bernstein polynomials.
  */
-GEOML_EXPORT double shape_function_deriv(const std::vector<double>& B, const int& n, const double& x);
+GEOML_EXPORT Standard_Real shape_function_deriv(const std::vector<Standard_Real>& B, const int& n, const Standard_Real& x);
 
 /** @brief defines the CST air profile curve according to
  * "CST" Universal Paramteric Geometry Representation Method
@@ -121,12 +121,12 @@ GEOML_EXPORT double shape_function_deriv(const std::vector<double>& B, const int
  * inside the shape function S(psi)=sum_i=1^N B_i * p_i^n(psi)
  * The order of the Bernstein polynomials N is defined by the length of the B vector
  */
-GEOML_EXPORT double cstcurve(const double& N1, const double& N2, const std::vector<double>& B, const double& T, const double& x);
+GEOML_EXPORT Standard_Real cstcurve(const Standard_Real& N1, const Standard_Real& N2, const std::vector<Standard_Real>& B, const Standard_Real& T, const Standard_Real& x);
 
 /** @brief defines the derivative of the CST air profile curve 
  * CST(psi)=C(psi)*S(psi)
  */
-GEOML_EXPORT double cstcurve_deriv(const double& N1, const double& N2, const std::vector<double>& B, const double& T, const int& n, const double& x);
+GEOML_EXPORT Standard_Real cstcurve_deriv(const Standard_Real& N1, const Standard_Real& N2, const std::vector<Standard_Real>& B, const Standard_Real& T, const int& n, const Standard_Real& x);
 
 /**
  * Return true if the value of a is similar to b
@@ -135,7 +135,7 @@ GEOML_EXPORT double cstcurve_deriv(const double& N1, const double& N2, const std
  * @param epsilon
  * @return
  */
-GEOML_EXPORT bool isNear(double a, double b, double epsilon = Precision::Confusion());
+GEOML_EXPORT bool isNear(Standard_Real a, Standard_Real b, Standard_Real epsilon = Precision::Confusion());
 
 /**
  * 1D Function interface accepting one parameter t and returning
@@ -145,7 +145,7 @@ class MathFunc1d
 {
 public:
     GEOML_EXPORT virtual ~MathFunc1d(){}
-    virtual double value(double t) = 0;
+    virtual Standard_Real value(Standard_Real t) = 0;
 };
 
 /**
@@ -156,9 +156,9 @@ class MathFunc3d
 {
 public:
     GEOML_EXPORT virtual ~MathFunc3d(){}
-    virtual double valueX(double t) = 0;
-    virtual double valueY(double t) = 0;
-    virtual double valueZ(double t) = 0;
+    virtual Standard_Real valueX(Standard_Real t) = 0;
+    virtual Standard_Real valueY(Standard_Real t) = 0;
+    virtual Standard_Real valueZ(Standard_Real t) = 0;
 };
 
 /**
@@ -172,7 +172,7 @@ public:
  * @param b Last  parameter of the function to approximate
  * @return Chebycheff coefficients
  */
-GEOML_EXPORT math_Vector cheb_approx(MathFunc1d& func, int N, double a, double b);
+GEOML_EXPORT math_Vector cheb_approx(MathFunc1d& func, int N, Standard_Real a, Standard_Real b);
 
 
 /** 
@@ -212,7 +212,7 @@ GEOML_EXPORT void SVD(Matrix const& A, Matrix& U, Matrix& S, Matrix& V);
 /**
  * Linear interpolation in of xdata<->ydata array at position x
  */
-GEOML_EXPORT double Interpolate(const std::vector<double>& xdata, const std::vector<double>& ydata, double x);
+GEOML_EXPORT Standard_Real Interpolate(const std::vector<Standard_Real>& xdata, const std::vector<Standard_Real>& ydata, Standard_Real x);
 
 } // namespace geoml
 

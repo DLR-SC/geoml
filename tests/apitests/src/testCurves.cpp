@@ -240,7 +240,7 @@ TEST(Test_interpolate_points_to_b_spline_curve, simple_interpolation_of_points)
         points_col->SetValue(i + 1, input_points.at(i));
     }
 
-    std::vector<double> params = geoml::BSplineAlgorithms::computeParamsBSplineCurve(points_col);
+    std::vector<Standard_Real> params = geoml::BSplineAlgorithms::computeParamsBSplineCurve(points_col);
     
     // check if the first and last points match with the right curve parameters
     EXPECT_NEAR(params[0], 0, 1e-5);
@@ -248,7 +248,7 @@ TEST(Test_interpolate_points_to_b_spline_curve, simple_interpolation_of_points)
 
     // check if the second point is interpolated
     gp_Pnt sec_point = curve -> Value(params[1]);
-    double dist = pt_2.Distance(sec_point);
+    Standard_Real dist = pt_2.Distance(sec_point);
 
     EXPECT_NEAR(dist, 0, 1e-5);
 

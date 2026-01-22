@@ -47,7 +47,7 @@ public:
      * @param dir           Direction to concatenate
      */
     GEOML_EXPORT ConcatSurfaces(const std::vector<Handle(Geom_BSplineSurface)>& surfaces,
-                                    const std::vector<double>& surfaceParams, ConcatDir dir);
+                                    const std::vector<Standard_Real>& surfaceParams, ConcatDir dir);
 
     /**
      * @brief This allows the algorithm to make the knot sequence of each input
@@ -69,7 +69,7 @@ public:
 
 private:
     std::vector<Handle(Geom_BSplineSurface)> m_surfaces;
-    std::vector<double> m_params;
+    std::vector<Standard_Real> m_params;
     ConcatDir m_dir;
 
     struct SegmentsSize {

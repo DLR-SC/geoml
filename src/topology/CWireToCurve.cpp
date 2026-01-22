@@ -41,7 +41,7 @@
 namespace geoml
 {
 
-CWireToCurve::CWireToCurve(const TopoDS_Wire& w, bool parByLength, double t)
+CWireToCurve::CWireToCurve(const TopoDS_Wire& w, bool parByLength, Standard_Real t)
 {
     _wire = w;
     _tolerance = t;
@@ -71,7 +71,7 @@ Handle(Geom_BSplineCurve) CWireToCurve::curve()
     for (TopExp_Explorer exp(theWire, TopAbs_EDGE); exp.More(); exp.Next()) {
         TopoDS_Edge e = TopoDS::Edge(exp.Current());
 
-        double u1, u2;
+        Standard_Real u1, u2;
         Handle(Geom_Curve) curve = BRep_Tool::Curve(e, u1, u2);
         curve = new Geom_TrimmedCurve(curve, u1, u2);
         if (e.Orientation() == TopAbs_REVERSED) {

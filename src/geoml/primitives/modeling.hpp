@@ -17,7 +17,7 @@ namespace geoml
  * @param radius The radius of the cylinder
  * @param height The height of the cylinder in z-direction
  */
-GEOML_API_EXPORT Shape create_cylinder(double radius, double height);
+GEOML_API_EXPORT Shape create_cylinder(Standard_Real radius, Standard_Real height);
 
 /**
  * @brief Define a box with a corner in the origin by giving its extensions in x,y,z-dimension.
@@ -27,7 +27,7 @@ GEOML_API_EXPORT Shape create_cylinder(double radius, double height);
  * @param dy Extension in y-dimension
  * @param dz Extension in z-dimension
  */
-GEOML_API_EXPORT Shape create_box(double dx, double dy, double dz);
+GEOML_API_EXPORT Shape create_box(Standard_Real dx, Standard_Real dy, Standard_Real dz);
 
 } // namespace geoml
 

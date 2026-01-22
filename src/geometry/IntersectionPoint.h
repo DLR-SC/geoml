@@ -23,7 +23,7 @@
 
 //This struct is used by GetIntersectionPoint(const TopoDS_Wire& wire1, const TopoDS_Wire& wire2,[...]) in common/CommonFunctions.h
 struct IntersectionPoint {
-    double SquareDistance;
+    Standard_Real SquareDistance;
     gp_Pnt Center;
 };
 

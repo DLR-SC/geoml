@@ -28,15 +28,15 @@
 
 struct InTolerance
 {
-    InTolerance(double tol) : m_tol(tol) {}
+    InTolerance(Standard_Real tol) : m_tol(tol) {}
     InTolerance(const InTolerance& other) : m_tol(other.m_tol) {}
 
-    bool operator()(double v1, double v2) const
+    bool operator()(Standard_Real v1, Standard_Real v2) const
     {
         return fabs(v1 - v2) <= m_tol;
     }
 
-    double m_tol;
+    Standard_Real m_tol;
 };
 
 

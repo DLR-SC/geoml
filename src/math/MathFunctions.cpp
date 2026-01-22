@@ -78,11 +78,11 @@ int factorial(int n)
 /**
  * @brief Computes the power x^n
  */
-double pow_int(double x, int n) 
+Standard_Real pow_int(Standard_Real x, int n) 
 {
     assert(n >= 0);
     
-    double result = 1.;
+    Standard_Real result = 1.;
     for (int i = 0; i < n; ++i) {
         result *= x;
     }
@@ -94,10 +94,10 @@ double pow_int(double x, int n)
  * @brief Computes the values of the i-th bernstein polynome 
  * with degree n at position x
 */
-double bernstein_poly(int i, int n, double x) 
+Standard_Real bernstein_poly(int i, int n, Standard_Real x) 
 {
     assert(i <= n);
-    return (double)binom(n,i) * pow_int(x, i) * pow_int(1.-x, n-i);
+    return (Standard_Real)binom(n,i) * pow_int(x, i) * pow_int(1.-x, n-i);
 }
 
 /** 
@@ -108,7 +108,7 @@ double bernstein_poly(int i, int n, double x)
  * Doha et al (2011): On the Derivatives of Bernstein Polynomials: An Application for
  * the Solution of High Even-Order Differential Equations
 */
-double bernstein_poly_deriv(int k, int i, int n, double x) 
+Standard_Real bernstein_poly_deriv(int k, int i, int n, Standard_Real x) 
 {
     if (k <= 0) {
         return bernstein_poly(i, n, x);
@@ -122,7 +122,7 @@ double bernstein_poly_deriv(int k, int i, int n, double x)
     int jmin = std::max(0, i + k - n);
     int jmax = std::min(i, k);
     
-    double result = 0.;
+    Standard_Real result = 0.;
     for (int j = jmin; j <= jmax; ++j) {
         result += pow_int(-1., j + k) * binom(k, j) * bernstein_poly(i - j, n - k, x);
     }
@@ -133,7 +133,7 @@ double bernstein_poly_deriv(int k, int i, int n, double x)
 /**
  * @brief Calculated the area of a quadrilateral defined by the 4 corner points A,B,C,D
  */
-double quadrilateral_area(const Point& A, const Point& B, const Point& C, const Point& D) 
+Standard_Real quadrilateral_area(const Point& A, const Point& B, const Point& C, const Point& D) 
 {
     gp_Vec AC(A.Get_gp_Pnt(),C.Get_gp_Pnt());
     gp_Vec BD(B.Get_gp_Pnt(),D.Get_gp_Pnt());
@@ -144,9 +144,9 @@ double quadrilateral_area(const Point& A, const Point& B, const Point& C, const 
 /**
  * @brief Calculates the distance of a point P from the line defined by a point X0 and direction DX
  */
-double distance_point_from_line(const Point& P, const Point& X0, const Point& DX)
+Standard_Real distance_point_from_line(const Point& P, const Point& X0, const Point& DX)
 {
-    double lenDX = DX.norm2();
+    Standard_Real lenDX = DX.norm2();
     assert(lenDX > 0.);
     
     return Point::cross_prod(DX, X0-P).norm2()/lenDX;
@@ -155,7 +155,7 @@ double distance_point_from_line(const Point& P, const Point& X0, const Point& DX
 /** 
  * @brief Computes the nth derivative of x^k
  */
-double pow_deriv(double x, double k, int n) 
+Standard_Real pow_deriv(Standard_Real x, Standard_Real k, int n) 
 {
     assert(n >= 0);
 
@@ -163,18 +163,18 @@ double pow_deriv(double x, double k, int n)
         return pow(x,k);
     }
 
-    double eps = 1e-15;
+    Standard_Real eps = 1e-15;
 
     // check if k is a natural number. if yes, we have to return 0 if n > k
     if ( fabs(k - int(k)) < eps && n > k) {
         return 0.;
     }
     else {
-        double fact = 1.;
+        Standard_Real fact = 1.;
         for (int i = 0; i < n; ++i){
             fact *= (k-i);
         }
-        return fact * pow(x, k - (double)n);
+        return fact * pow(x, k - (Standard_Real)n);
     }
 }
 
@@ -182,7 +182,7 @@ double pow_deriv(double x, double k, int n)
  * C(psi) = psi^N1 * (1-psi)^N2
  * for a CST air profile curve
  */
-double class_function(const double& N1, const double& N2, const double& x)
+Standard_Real class_function(const Standard_Real& N1, const Standard_Real& N2, const Standard_Real& x)
 {
     return pow(x,N1) * pow(1-x,N2);
 }
@@ -190,9 +190,9 @@ double class_function(const double& N1, const double& N2, const double& x)
  * C(psi) = psi^N1 * (1-psi)^N2
  * for a CST air profile curve
  */
-double class_function_deriv(const double& N1, const double& N2, const int& n, const double& x)
+Standard_Real class_function_deriv(const Standard_Real& N1, const Standard_Real& N2, const int& n, const Standard_Real& x)
 {
-    double res = 0.;
+    Standard_Real res = 0.;
     for (int i = 0; i <= n; i++) {
         res += geoml::binom(n,i)
              * geoml::pow_deriv(x,N1,i)
@@ -205,12 +205,12 @@ double class_function_deriv(const double& N1, const double& N2, const int& n, co
  * S(psi)=sum_i=1^N B_i * P_i^n(psi)
  * for a CST air profile curve. The P_i^n are the Bernstein polynomials.
  */
-double shape_function(const std::vector<double>& B, const double& x)
+Standard_Real shape_function(const std::vector<Standard_Real>& B, const Standard_Real& x)
 {
-    double ret = 0.;
+    Standard_Real ret = 0.;
     int order = static_cast<int>(B.size()) - 1;
     int i = 0;
-    for (std::vector<double>::const_iterator bIT = B.begin(); bIT != B.end(); ++bIT, ++i) {
+    for (std::vector<Standard_Real>::const_iterator bIT = B.begin(); bIT != B.end(); ++bIT, ++i) {
         ret += *bIT * bernstein_poly(i, order, x);
     }
     return ret;
@@ -219,12 +219,12 @@ double shape_function(const std::vector<double>& B, const double& x)
  * S(psi)=sum_i=1^N B_i * P_i^n(psi)
  * for a CST air profile curve. The P_i^n are the Bernstein polynomials.
  */
-double shape_function_deriv(const std::vector<double>& B, const int& n, const double& x)
+Standard_Real shape_function_deriv(const std::vector<Standard_Real>& B, const int& n, const Standard_Real& x)
 {
-    double ret = 0.;
+    Standard_Real ret = 0.;
     int order = static_cast<int>(B.size()) - 1;
     int i = 0;
-    for (std::vector<double>::const_iterator bIT = B.begin(); bIT != B.end(); ++bIT, ++i) {
+    for (std::vector<Standard_Real>::const_iterator bIT = B.begin(); bIT != B.end(); ++bIT, ++i) {
         ret += *bIT * geoml::bernstein_poly_deriv(n, i, order, x);
     }
     return ret;
@@ -241,16 +241,16 @@ double shape_function_deriv(const std::vector<double>& B, const int& n, const do
  * inside the shape function S(psi)=sum_i=1^N B_i * p_i^n(psi)
  * The order of the Bernstein polynomials N is defined by the length of the B vector
  */
-double cstcurve(const double& N1, const double& N2, const std::vector<double>& B, const double& T, const double& x)
+Standard_Real cstcurve(const Standard_Real& N1, const Standard_Real& N2, const std::vector<Standard_Real>& B, const Standard_Real& T, const Standard_Real& x)
 {
         return class_function(N1, N2, x) * shape_function(B, x) + x*T;
 }
 /** @brief defines the derivative of the CST air profile curve 
  * CST(psi)=C(psi)*S(psi)
  */
-double cstcurve_deriv(const double& N1, const double& N2, const std::vector<double>& B, const double& T, const int& n, const double& x)
+Standard_Real cstcurve_deriv(const Standard_Real& N1, const Standard_Real& N2, const std::vector<Standard_Real>& B, const Standard_Real& T, const int& n, const Standard_Real& x)
 {
-    double res = 0.;
+    Standard_Real res = 0.;
     for (int i= 0; i<= n; i++) {
         res += geoml::binom(n,i)
              * class_function_deriv(N1, N2, i, x)
@@ -273,16 +273,16 @@ double cstcurve_deriv(const double& N1, const double& N2, const std::vector<doub
  * @param b Last  parameter of the function to approximate
  * @return Chebycheff coefficients
  */
-math_Vector cheb_approx(MathFunc1d& func, int N, double a, double b)
+math_Vector cheb_approx(MathFunc1d& func, int N, Standard_Real a, Standard_Real b)
 {
     if (N <= 0) {
         throw Error("N <= 0 in cheb_approx", geoml::MATH_ERROR);
     }
     math_Vector c(0, N-1);
     
-    double * fx = new double[N];
+    Standard_Real * fx = new Standard_Real[N];
     for (int k = 1; k <= N; ++k) {
-        double x = cos(M_PI * ((double)k - 0.5) / (double)N);
+        Standard_Real x = cos(M_PI * ((Standard_Real)k - 0.5) / (Standard_Real)N);
         // shift to correct intervall
         x = (x + 1.) / 2. *(b-a) + a;
         
@@ -291,10 +291,10 @@ math_Vector cheb_approx(MathFunc1d& func, int N, double a, double b)
     }
     
     for (int j = 0; j < N; ++j) {
-        double cj = 0;
+        Standard_Real cj = 0;
         for (int k = 1; k <= N; ++k) {
-            double v = fx[k-1] * cos(M_PI * (double)j * ((double)k - 0.5)/ (double)N);
-            cj += 2./(double) N * v;
+            Standard_Real v = fx[k-1] * cos(M_PI * (Standard_Real)j * ((Standard_Real)k - 0.5)/ (Standard_Real)N);
+            cj += 2./(Standard_Real) N * v;
         }
         c(j) = cj;
     }
@@ -316,7 +316,7 @@ math_Matrix cheb_to_monomial(int N)
     
     for (int j = 2; j < N; ++j) {
         for (int i = 0; i <= j; ++i) {
-            double val = 0.;
+            Standard_Real val = 0.;
             if (i > 0) {
                 val += 4.*matrix(i-1, j-1);
             }
@@ -341,8 +341,8 @@ math_Matrix monimial_to_bezier(int N)
     
     for (int j=0; j < N; ++j) {
         for (int i = j; i < N; ++i) {
-            double div1= binom(i, i-j);
-            double div2= binom(N-1, j);
+            Standard_Real div1= binom(i, i-j);
+            Standard_Real div2= binom(N-1, j);
             matrix(i,j) = div1 / div2;
         }
     }
@@ -388,7 +388,7 @@ void SVD(Matrix const& A, Matrix& U, Matrix& S, Matrix& V)
 
 /// searches for i, such that xdata[i] <= x < xdata[i+1]
 /// used by linear interpolation function
-size_t FindPosition(const std::vector<double>& xdata, double x)
+size_t FindPosition(const std::vector<Standard_Real>& xdata, Standard_Real x)
 {
     // we assume, that the xvalues are ordered in ascending order
     size_t ilow = 0;
@@ -427,7 +427,7 @@ size_t FindPosition(const std::vector<double>& xdata, double x)
 }
 
 /// linear interpolation in of xdata<->ydata array at position x
-double Interpolate(const std::vector<double>& xdata, const std::vector<double>& ydata, double x)
+Standard_Real Interpolate(const std::vector<Standard_Real>& xdata, const std::vector<Standard_Real>& ydata, Standard_Real x)
 {
     if (xdata.size() == 0) {
         return 0.;
@@ -448,11 +448,11 @@ double Interpolate(const std::vector<double>& xdata, const std::vector<double>& 
     assert(pos < (unsigned int)(xdata.size() - 1));
     assert(ydata.size() == xdata.size());
 
-    double y = (ydata[pos+1] - ydata[pos])/(xdata[pos+1]-xdata[pos]) * (x - xdata[pos]) + ydata[pos];
+    Standard_Real y = (ydata[pos+1] - ydata[pos])/(xdata[pos+1]-xdata[pos]) * (x - xdata[pos]) + ydata[pos];
     return y;
 }
 
-bool isNear(double a, double b, double epsilon)
+bool isNear(Standard_Real a, Standard_Real b, Standard_Real epsilon)
 {
     return (fabs(a - b) <= epsilon);
 }

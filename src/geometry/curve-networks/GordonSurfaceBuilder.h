@@ -62,9 +62,9 @@ public:
      */
     GEOML_EXPORT GordonSurfaceBuilder(const std::vector<Handle(Geom_BSplineCurve)>& profiles,
                               const std::vector<Handle(Geom_BSplineCurve)>& guides,
-                              const std::vector<double>& intersectParamsOnProfiles,
-                              const std::vector<double>& intersectParamsOnGuides,
-                              double spatialTolerance);
+                              const std::vector<Standard_Real>& intersectParamsOnProfiles,
+                              const std::vector<Standard_Real>& intersectParamsOnGuides,
+                              Standard_Real spatialTolerance);
     
     /// Returns the interpolation surface
     GEOML_EXPORT Handle(Geom_BSplineSurface) SurfaceGordon();
@@ -83,22 +83,22 @@ private:
 
     void CheckCurveNetworkCompatibility(const std::vector<Handle(Geom_BSplineCurve) >& profiles,
                                         const std::vector<Handle(Geom_BSplineCurve) >& guides,
-                                        const std::vector<double>& intersection_params_spline_u,
-                                        const std::vector<double>& intersection_params_spline_v,
-                                        double tol);
+                                        const std::vector<Standard_Real>& intersection_params_spline_u,
+                                        const std::vector<Standard_Real>& intersection_params_spline_v,
+                                        Standard_Real tol);
 
     void CreateGordonSurface(const std::vector<Handle(Geom_BSplineCurve)>& profiles,
                              const std::vector<Handle(Geom_BSplineCurve)>& guides,
-                             const std::vector<double>& intersection_params_spline_u,
-                             const std::vector<double>& intersection_params_spline_v);
+                             const std::vector<Standard_Real>& intersection_params_spline_u,
+                             const std::vector<Standard_Real>& intersection_params_spline_v);
 
     typedef std::vector<Handle(Geom_BSplineCurve)> CurveArray;
     CurveArray m_profiles;
     CurveArray m_guides;
-    const std::vector<double>& m_intersection_params_spline_u, m_intersection_params_spline_v;
+    const std::vector<Standard_Real>& m_intersection_params_spline_u, m_intersection_params_spline_v;
     Handle(Geom_BSplineSurface) m_skinningSurfProfiles, m_skinningSurfGuides, m_tensorProdSurf, m_gordonSurf;
     bool m_hasPerformed;
-    double m_tol;
+    Standard_Real m_tol;
 };
 
 } // namespace geoml

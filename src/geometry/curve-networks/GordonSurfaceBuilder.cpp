@@ -30,7 +30,7 @@
 
 namespace
 {
-    void assertRange(const Handle(Geom_Curve)& curve, double umin, double umax, double tol=1e-7)
+    void assertRange(const Handle(Geom_Curve)& curve, Standard_Real umin, Standard_Real umax, Standard_Real tol=1e-7)
     {
         if (std::abs(curve->FirstParameter() - umin) > tol || std::abs(curve->LastParameter() - umax) > tol) {
             throw geoml::Error("Curve not in range [" + std::to_string(umin) + ", " + std::to_string(umax) + "].");
@@ -42,9 +42,9 @@ namespace geoml
 {
 
 GordonSurfaceBuilder::GordonSurfaceBuilder(const CurveArray &profiles, const CurveArray &guides,
-                                                     const std::vector<double> &intersection_params_spline_u,
-                                                     const std::vector<double> &intersection_params_spline_v,
-                                                     double tol)
+                                                     const std::vector<Standard_Real> &intersection_params_spline_u,
+                                                     const std::vector<Standard_Real> &intersection_params_spline_v,
+                                                     Standard_Real tol)
     : m_profiles(profiles)
     , m_guides(guides)
     , m_intersection_params_spline_u(intersection_params_spline_u)
@@ -96,8 +96,8 @@ void GordonSurfaceBuilder::Perform()
 
 void GordonSurfaceBuilder::CreateGordonSurface(const std::vector<Handle(Geom_BSplineCurve) >& profiles,
                                                     const std::vector<Handle(Geom_BSplineCurve) >& guides,
-                                                    const std::vector<double>& intersection_params_spline_u,
-                                                    const std::vector<double>& intersection_params_spline_v)
+                                                    const std::vector<Standard_Real>& intersection_params_spline_u,
+                                                    const std::vector<Standard_Real>& intersection_params_spline_v)
 {
     // check whether there are any u-directional and v-directional B-splines in the vectors
     if (profiles.size() < 2) {
@@ -109,14 +109,14 @@ void GordonSurfaceBuilder::CreateGordonSurface(const std::vector<Handle(Geom_BSp
     }
 
     // check B-spline parametrization is equal among all curves
-    double umin = profiles.front()->FirstParameter();
-    double umax = profiles.front()->LastParameter();
+    Standard_Real umin = profiles.front()->FirstParameter();
+    Standard_Real umax = profiles.front()->LastParameter();
     for (CurveArray::const_iterator it = m_profiles.begin(); it != m_profiles.end(); ++it) {
         assertRange(*it, umin, umax, 1e-5);
     }
 
-    double vmin = guides.front()->FirstParameter();
-    double vmax = guides.front()->LastParameter();
+    Standard_Real vmin = guides.front()->FirstParameter();
+    Standard_Real vmax = guides.front()->LastParameter();
     for (CurveArray::const_iterator it = m_guides.begin(); it != m_guides.end(); ++it) {
         assertRange(*it, vmin, vmax, 1e-5);
     }
@@ -138,16 +138,16 @@ void GordonSurfaceBuilder::CreateGordonSurface(const std::vector<Handle(Geom_BSp
     for (size_t spline_idx = 0; spline_idx < profiles.size(); ++spline_idx) {
         for (size_t intersection_idx = 0; intersection_idx < intersection_params_spline_u.size(); ++intersection_idx) {
             Handle(Geom_BSplineCurve) spline_u = profiles[spline_idx];
-            double parameter = intersection_params_spline_u[intersection_idx];
+            Standard_Real parameter = intersection_params_spline_u[intersection_idx];
             intersection_pnts(static_cast<Standard_Integer>(intersection_idx + 1),
                               static_cast<Standard_Integer>(spline_idx + 1)) = spline_u->Value(parameter);
         }
     }
 
     // check, whether to build a closed continuous surface
-    double curve_u_tolerance = BSplineAlgorithms::REL_TOL_CLOSED * BSplineAlgorithms::scale(guides);
-    double curve_v_tolerance = BSplineAlgorithms::REL_TOL_CLOSED * BSplineAlgorithms::scale(profiles);
-    double tp_tolerance      = BSplineAlgorithms::REL_TOL_CLOSED * BSplineAlgorithms::scale(intersection_pnts);
+    Standard_Real curve_u_tolerance = BSplineAlgorithms::REL_TOL_CLOSED * BSplineAlgorithms::scale(guides);
+    Standard_Real curve_v_tolerance = BSplineAlgorithms::REL_TOL_CLOSED * BSplineAlgorithms::scale(profiles);
+    Standard_Real tp_tolerance      = BSplineAlgorithms::REL_TOL_CLOSED * BSplineAlgorithms::scale(intersection_pnts);
     
     bool makeUClosed = BSplineAlgorithms::isUDirClosed(intersection_pnts, tp_tolerance) && guides.front()->IsEqual(guides.back(), curve_u_tolerance);
     bool makeVClosed = BSplineAlgorithms::isVDirClosed(intersection_pnts, tp_tolerance) && profiles.front()->IsEqual(profiles.back(), curve_v_tolerance);
@@ -218,12 +218,12 @@ void GordonSurfaceBuilder::CreateGordonSurface(const std::vector<Handle(Geom_BSp
 
 void GordonSurfaceBuilder::CheckCurveNetworkCompatibility(const std::vector<Handle(Geom_BSplineCurve) >& profiles,
                                                                const std::vector<Handle(Geom_BSplineCurve) >& guides,
-                                                               const std::vector<double>& intersection_params_spline_u,
-                                                               const std::vector<double>& intersection_params_spline_v,
-                                                               double tol)
+                                                               const std::vector<Standard_Real>& intersection_params_spline_u,
+                                                               const std::vector<Standard_Real>& intersection_params_spline_v,
+                                                               Standard_Real tol)
 {
     // find out the 'average' scale of the B-splines in order to being able to handle a more approximate dataset and find its intersections
-    double splines_scale = 0.5 * (BSplineAlgorithms::scale(profiles)+ BSplineAlgorithms::scale(guides));
+    Standard_Real splines_scale = 0.5 * (BSplineAlgorithms::scale(profiles)+ BSplineAlgorithms::scale(guides));
 
     if (std::abs(intersection_params_spline_u.front()) > splines_scale * tol || std::abs(intersection_params_spline_u.back() - 1.) > splines_scale * tol) {
         throw geoml::Error("WARNING: B-splines in u-direction mustn't stick out, spline network must be 'closed'!");
@@ -235,15 +235,15 @@ void GordonSurfaceBuilder::CheckCurveNetworkCompatibility(const std::vector<Hand
 
     // check compatibilty of network
     for (size_t u_param_idx = 0; u_param_idx < intersection_params_spline_u.size(); ++u_param_idx) {
-        double spline_u_param = intersection_params_spline_u[u_param_idx];
+        Standard_Real spline_u_param = intersection_params_spline_u[u_param_idx];
         const Handle(Geom_BSplineCurve)& spline_v = guides[u_param_idx];
         for (size_t v_param_idx = 0; v_param_idx < intersection_params_spline_v.size(); ++v_param_idx) {
             const Handle(Geom_BSplineCurve)& spline_u = profiles[v_param_idx];
-            double spline_v_param = intersection_params_spline_v[v_param_idx];
+            Standard_Real spline_v_param = intersection_params_spline_v[v_param_idx];
 
             gp_Pnt p_prof = spline_u->Value(spline_u_param);
             gp_Pnt p_guid = spline_v->Value(spline_v_param);
-            double distance = p_prof.Distance(p_guid);
+            Standard_Real distance = p_prof.Distance(p_guid);
 
             if (distance > splines_scale * tol) {
                 throw geoml::Error("B-spline network is incompatible (e.g. wrong parametrization) or intersection parameters are in a wrong order!");

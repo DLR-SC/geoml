@@ -8,21 +8,21 @@
 
 namespace geoml{
 
-TopoDS_Shape translate(TopoDS_Shape const& origin, gp_Vec const& direction, double factor)
+TopoDS_Shape translate(TopoDS_Shape const& origin, gp_Vec const& direction, Standard_Real factor)
 {
     auto t = Transformation(direction*factor);
     
     return t.Transform(origin);
 }
 
-gp_Pnt translate(gp_Pnt const& origin, gp_Vec const& direction, double factor)
+gp_Pnt translate(gp_Pnt const& origin, gp_Vec const& direction, Standard_Real factor)
 {
     auto t = Transformation(direction*factor);
 
     return t.Transform(origin);
 }
 
-std::vector<gp_Pnt> translate(std::vector<gp_Pnt> const& origin, gp_Vec const& direction, double factor)
+std::vector<gp_Pnt> translate(std::vector<gp_Pnt> const& origin, gp_Vec const& direction, Standard_Real factor)
 {
     auto t = Transformation(direction*factor);
 

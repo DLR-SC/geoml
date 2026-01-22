@@ -44,7 +44,7 @@ gp_Pnt ProjectOnLinearSpline::Point()
     return _pProj;
 }
 
-double ProjectOnLinearSpline::Parameter()
+Standard_Real ProjectOnLinearSpline::Parameter()
 {
     if (!IsDone()) {
         throw Error("Can not compute proejection parameter in ProjectOnLinearSpline::Parameter", geoml::MATH_ERROR);
@@ -68,7 +68,7 @@ bool ProjectOnLinearSpline::compute()
         return false;
     }
 
-    double minDist = FLT_MAX;
+    Standard_Real minDist = FLT_MAX;
 
     for (int i = 1; i < _curve->NbPoles(); ++i) {
         gp_Pnt p1 = _curve->Pole(i);
@@ -77,13 +77,13 @@ bool ProjectOnLinearSpline::compute()
         // project point onto line p1-p2
         gp_XYZ p1p2 = p1.XYZ() - p2.XYZ();
         gp_XYZ p1p  = p1.XYZ() - _point.XYZ();
-        double alpha = p1p2.Dot(p1p) / p1p2.Dot(p1p2);
+        Standard_Real alpha = p1p2.Dot(p1p) / p1p2.Dot(p1p2);
 
         if (alpha >= 0. && alpha <= 1.) {
             gp_Pnt pproj = p1.XYZ() - alpha * p1p2;
 
-            double parm = _curve->Knot(i) + alpha*(_curve->Knot(i+1) - _curve->Knot(i));
-            double dist = pproj.Distance(_point);
+            Standard_Real parm = _curve->Knot(i) + alpha*(_curve->Knot(i+1) - _curve->Knot(i));
+            Standard_Real dist = pproj.Distance(_point);
 
             if (dist < minDist) {
                 _pProj = pproj;

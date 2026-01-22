@@ -27,7 +27,7 @@ namespace geoml
 {
 
 ConcatSurfaces::ConcatSurfaces(const std::vector<Handle(Geom_BSplineSurface)>& surfaces,
-                                         const std::vector<double>& surfaceParams, ConcatDir dir)
+                                         const std::vector<Standard_Real>& surfaceParams, ConcatDir dir)
     : m_surfaces(surfaces)
     , m_params(surfaceParams)
     , m_dir(dir)

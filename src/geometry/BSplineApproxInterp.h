@@ -36,13 +36,13 @@ namespace geoml {
 
 struct ProjectResult
 {
-    ProjectResult(double p, double e)
+    ProjectResult(Standard_Real p, Standard_Real e)
         : parameter(p), error(e)
     {
     }
 
-    double parameter;
-    double error;
+    Standard_Real parameter;
+    Standard_Real error;
 };
 
 class BSplineApproxInterp
@@ -54,27 +54,27 @@ public:
     GEOML_EXPORT void InterpolatePoint(size_t pointIndex, bool withKink=false);
 
     /// Returns the resulting curve and the fit error
-    GEOML_EXPORT ApproxResult FitCurve(const std::vector<double>& initialParms = std::vector<double>()) const;
+    GEOML_EXPORT ApproxResult FitCurve(const std::vector<Standard_Real>& initialParms = std::vector<Standard_Real>()) const;
 
     /// Fits the curve by optimizing the parameters.
     /// Important: Parameters of points that are interpolated are not optimized
-    GEOML_EXPORT ApproxResult FitCurveOptimal(const std::vector<double>& initialParms = std::vector<double>(), int maxIter=10) const;
+    GEOML_EXPORT ApproxResult FitCurveOptimal(const std::vector<Standard_Real>& initialParms = std::vector<Standard_Real>(), int maxIter=10) const;
 
 private:
-    ProjectResult projectOnCurve(const gp_Pnt& pnt, const Handle(Geom_Curve)& curve, double initial_Parm) const;
-    std::vector<double> computeParameters(double alpha) const;
-    void computeKnots(int ncp, const std::vector<double>& params, std::vector<double>& knots, std::vector<int>& mults) const;
+    ProjectResult projectOnCurve(const gp_Pnt& pnt, const Handle(Geom_Curve)& curve, Standard_Real initial_Parm) const;
+    std::vector<Standard_Real> computeParameters(Standard_Real alpha) const;
+    void computeKnots(int ncp, const std::vector<Standard_Real>& params, std::vector<Standard_Real>& knots, std::vector<int>& mults) const;
     
-    ApproxResult solve(const std::vector<double>& params, const TColStd_Array1OfReal& knots, const TColStd_Array1OfInteger& mults) const;
-    math_Matrix getContinuityMatrix(int nCtrPnts, int contin_cons, const std::vector<double>& params, const TColStd_Array1OfReal& flatKnots) const;
+    ApproxResult solve(const std::vector<Standard_Real>& params, const TColStd_Array1OfReal& knots, const TColStd_Array1OfInteger& mults) const;
+    math_Matrix getContinuityMatrix(int nCtrPnts, int contin_cons, const std::vector<Standard_Real>& params, const TColStd_Array1OfReal& flatKnots) const;
 
-    void optimizeParameters(const Handle(Geom_Curve)& curve, std::vector<double>& parms) const;
+    void optimizeParameters(const Handle(Geom_Curve)& curve, std::vector<Standard_Real>& parms) const;
 
     bool isClosed() const;
     bool firstAndLastInterpolated() const;
 
     /// computes the maximum distance of the given points
-    double maxDistanceOfBoundingBox(const TColgp_Array1OfPnt& points) const;
+    Standard_Real maxDistanceOfBoundingBox(const TColgp_Array1OfPnt& points) const;
     
     /// curve coordinates to be fitted by the B-spline
     TColgp_Array1OfPnt m_pnts;

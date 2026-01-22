@@ -154,7 +154,7 @@ void CFuseShapes::DoFuse()
             DSFill.Perform();
 #ifdef DEBUG_BOP
             stop = clock();
-            printf("dsfiller [ms]: %f\n", (stop-start)/(double)CLOCKS_PER_SEC * 1000.);
+            printf("dsfiller [ms]: %f\n", (stop-start)/(Standard_Real)CLOCKS_PER_SEC * 1000.);
 
             start = clock();
 #endif
@@ -167,7 +167,7 @@ void CFuseShapes::DoFuse()
 
 #ifdef DEBUG_BOP
             stop = clock();
-            printf("intersection [ms]: %f\n", (stop-start)/(double)CLOCKS_PER_SEC * 1000.);
+            printf("intersection [ms]: %f\n", (stop-start)/(Standard_Real)CLOCKS_PER_SEC * 1000.);
 
             start = clock();
 #endif
@@ -175,7 +175,7 @@ void CFuseShapes::DoFuse()
 
 #ifdef DEBUG_BOP
             stop = clock();
-            printf("parent split [ms]: %f\n", (stop-start)/(double)CLOCKS_PER_SEC * 1000.);
+            printf("parent split [ms]: %f\n", (stop-start)/(Standard_Real)CLOCKS_PER_SEC * 1000.);
 
             start = clock();
 #endif
@@ -184,7 +184,7 @@ void CFuseShapes::DoFuse()
 
 #ifdef DEBUG_BOP
             stop = clock();
-            printf("child split [ms]: %f\n", (stop-start)/(double)CLOCKS_PER_SEC * 1000.);
+            printf("child split [ms]: %f\n", (stop-start)/(Standard_Real)CLOCKS_PER_SEC * 1000.);
 #endif
         } // trimming
     }

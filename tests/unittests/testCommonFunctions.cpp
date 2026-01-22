@@ -114,13 +114,13 @@ TEST(CommonFunctions, IsPointInsideShape)
 
 TEST(CommonFunctions, LinspaceWithBreaks)
 {
-    std::vector<double> breaks;
+    std::vector<Standard_Real> breaks;
     breaks.push_back(0.25);
     breaks.push_back(0.49);
     breaks.push_back(0.62);
     breaks.push_back(0.);
     breaks.push_back(1.0);
-    std::vector<double> res = LinspaceWithBreaks(0., 1., 11, breaks);
+    std::vector<Standard_Real> res = LinspaceWithBreaks(0., 1., 11, breaks);
     ASSERT_EQ(12, res.size());
     EXPECT_NEAR(0.00, res[0], 1e-10);
     EXPECT_NEAR(0.10, res[1], 1e-10);

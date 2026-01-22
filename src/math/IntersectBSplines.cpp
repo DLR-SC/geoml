@@ -69,15 +69,15 @@ namespace
     class Intervall
     {
     public:
-        Intervall(double mmin, double mmax)
+        Intervall(Standard_Real mmin, Standard_Real mmax)
             : min(mmin), max(mmax)
         {}
-        double min;
-        double max;
+        Standard_Real min;
+        Standard_Real max;
         
         bool operator==(const Intervall& other) const
         {
-            const double EPS = 1e-15;
+            const Standard_Real EPS = 1e-15;
             return fabs(min - other.min) < EPS && fabs(max - other.max) < EPS;
         }
     };
@@ -88,8 +88,8 @@ namespace
         BoundingBox(const Handle(Geom_BSplineCurve) curve)
             : range(curve->FirstParameter(), curve->LastParameter())
         {
-            low.x = low.y = low.z = std::numeric_limits<double>::max();
-            high.x = high.y = high.z = -std::numeric_limits<double>::max();
+            low.x = low.y = low.z = std::numeric_limits<Standard_Real>::max();
+            high.x = high.y = high.z = -std::numeric_limits<Standard_Real>::max();
             // compute min / max from control points
             for (Standard_Integer i = 1; i <= curve->NbPoles(); ++i) {
                 gp_XYZ p = curve->Pole(i).XYZ();
@@ -98,7 +98,7 @@ namespace
             }
         }
         
-        bool Intersects(const BoundingBox& other, double eps) const
+        bool Intersects(const BoundingBox& other, Standard_Real eps) const
         {
             geoml::Point min = maxCoords(low, other.low);
             geoml::Point max = minCoords(high, other.high);
@@ -126,14 +126,14 @@ namespace
 
     // Computes the total curvature of the curve
     // A curvature of 1 is equivalent to a straight line
-    double curvature(const Handle(Geom_BSplineCurve)& curve)
+    Standard_Real curvature(const Handle(Geom_BSplineCurve)& curve)
     {
-        double len = curve->Pole(1).Distance(curve->Pole(curve->NbPoles()));
-        double total = 0.;
+        Standard_Real len = curve->Pole(1).Distance(curve->Pole(curve->NbPoles()));
+        Standard_Real total = 0.;
         for (Standard_Integer i = 1; i < curve->NbPoles(); ++i) {
             gp_Pnt p1 = curve->Pole(i);
             gp_Pnt p2 = curve->Pole(i+1);
-            double dist = p1.Distance(p2);
+            Standard_Real dist = p1.Distance(p2);
             total += dist;
         }
         
@@ -151,7 +151,7 @@ namespace
 
     
     /// Computes possible ranges of intersections by a bracketing approach
-    std::list<BoundingBoxPair> getRangesOfIntersection(const Handle(Geom_BSplineCurve) curve1, const Handle(Geom_BSplineCurve) curve2, double tolerance)
+    std::list<BoundingBoxPair> getRangesOfIntersection(const Handle(Geom_BSplineCurve) curve1, const Handle(Geom_BSplineCurve) curve2, Standard_Real tolerance)
     {
         BoundingBox h1(curve1);
         BoundingBox h2(curve2);
@@ -161,17 +161,17 @@ namespace
             return {};
         }
         
-        double c1_curvature = curvature(curve1);
-        double c2_curvature = curvature(curve2);
-        double max_curvature = 1.0005;
+        Standard_Real c1_curvature = curvature(curve1);
+        Standard_Real c2_curvature = curvature(curve2);
+        Standard_Real max_curvature = 1.0005;
         
         // If both curves are linear enough, we can stop refining
         if (c1_curvature <= max_curvature && c2_curvature <= max_curvature) {
             return {BoundingBoxPair(h1, h2)};
         }
         
-        double curve1MidParm = 0.5*(curve1->FirstParameter() + curve1->LastParameter());
-        double curve2MidParm = 0.5*(curve2->FirstParameter() + curve2->LastParameter());
+        Standard_Real curve1MidParm = 0.5*(curve1->FirstParameter() + curve1->LastParameter());
+        Standard_Real curve2MidParm = 0.5*(curve2->FirstParameter() + curve2->LastParameter());
         
         if (c1_curvature > max_curvature && c2_curvature > max_curvature) {
             // Refine both curves by splitting them in the parametric center
@@ -244,45 +244,45 @@ namespace
         }
 
         // Reparametrization function R -> [0,1]
-        static double activate(double z)
+        static Standard_Real activate(Standard_Real z)
         {
             return 0.5 * (sin(z) + 1.);
         }
 
         // Derivative of reparametrization function
-        static double d_activate(double z)
+        static Standard_Real d_activate(Standard_Real z)
         {
             return 0.5 * cos(z);
         }
 
-        double getUParam(double x0) const
+        Standard_Real getUParam(Standard_Real x0) const
         {
-            double umin = m_c1->FirstParameter();
-            double umax = m_c1->LastParameter();
+            Standard_Real umin = m_c1->FirstParameter();
+            Standard_Real umax = m_c1->LastParameter();
 
             return activate(x0)*(umax - umin) + umin;
         }
 
-        double getVParam(double x1) const
+        Standard_Real getVParam(Standard_Real x1) const
         {
-            double vmin = m_c2->FirstParameter();
-            double vmax = m_c2->LastParameter();
+            Standard_Real vmin = m_c2->FirstParameter();
+            Standard_Real vmax = m_c2->LastParameter();
 
             return activate(x1)*(vmax - vmin) + vmin;
         }
 
-        double d_getUParam(double x0) const
+        Standard_Real d_getUParam(Standard_Real x0) const
         {
-            double umin = m_c1->FirstParameter();
-            double umax = m_c1->LastParameter();
+            Standard_Real umin = m_c1->FirstParameter();
+            Standard_Real umax = m_c1->LastParameter();
 
             return d_activate(x0)*(umax - umin);
         }
 
-        double d_getVParam(double x1) const
+        Standard_Real d_getVParam(Standard_Real x1) const
         {
-            double vmin = m_c2->FirstParameter();
-            double vmax = m_c2->LastParameter();
+            Standard_Real vmin = m_c2->FirstParameter();
+            Standard_Real vmax = m_c2->LastParameter();
 
             return d_activate(x1)*(vmax - vmin);
         }
@@ -291,8 +291,8 @@ namespace
         {
 
             // We use a reparametrization trick to ensure that u is in [umin, umax] and v in [vmin, vmax]
-            double u = getUParam(X.Value(1));
-            double v = getVParam(X.Value(2));
+            Standard_Real u = getUParam(X.Value(1));
+            Standard_Real v = getVParam(X.Value(2));
 
             gp_Pnt p1, p2;
             gp_Vec d1, d2;
@@ -318,7 +318,7 @@ namespace geoml
 {
 
 
-std::vector<geoml::CurveIntersectionResult> IntersectBSplines(const Handle(Geom_BSplineCurve) curve1, const Handle(Geom_BSplineCurve) curve2, double tolerance)
+std::vector<geoml::CurveIntersectionResult> IntersectBSplines(const Handle(Geom_BSplineCurve) curve1, const Handle(Geom_BSplineCurve) curve2, Standard_Real tolerance)
 {
     auto hulls = getRangesOfIntersection(curve1, curve2, tolerance);
     
@@ -341,7 +341,7 @@ std::vector<geoml::CurveIntersectionResult> IntersectBSplines(const Handle(Geom_
     curve2_ints.unique();
     
     auto is_adjacent = [](const BoundingBox& b1, const BoundingBox& b2) {
-        const double EPS = 1e-15;
+        const Standard_Real EPS = 1e-15;
         return fabs(b1.range.max - b2.range.min) < EPS;
     };
     
@@ -389,10 +389,10 @@ std::vector<geoml::CurveIntersectionResult> IntersectBSplines(const Handle(Geom_
         }
 
         // convert parameter space of optimized into u/v curve parameters
-        double u = obj.getUParam(optimizer.Location().Value(1));
-        double v = obj.getVParam(optimizer.Location().Value(2));
+        Standard_Real u = obj.getUParam(optimizer.Location().Value(1));
+        Standard_Real v = obj.getVParam(optimizer.Location().Value(2));
 
-        double distance = c1->Value(u).Distance(c2->Value(v));
+        Standard_Real distance = c1->Value(u).Distance(c2->Value(v));
         if (distance < std::max(1e-10, tolerance)) {
             CurveIntersectionResult result;
             result.parmOnCurve1 = u;

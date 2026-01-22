@@ -83,7 +83,7 @@ inline void from_string(const std::string& s, int& t)
 }
 
 template <>
-inline void from_string(const std::string& s, double& t)
+inline void from_string(const std::string& s, Standard_Real& t)
 {
     try {
         t = std::stod(s);

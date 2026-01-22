@@ -25,7 +25,7 @@ namespace geoml
 {
 
 // Constructor
-Point::Point(double xval, double yval, double zval)
+Point::Point(Standard_Real xval, Standard_Real yval, Standard_Real zval)
     : x(xval)
     , y(yval)
     , z(zval)
@@ -92,7 +92,7 @@ Point& Point::operator-=(const Point& aPoint)
     return *this;
 }
 
-Point Point::operator*(double s) const
+Point Point::operator*(Standard_Real s) const
 {
     Point p;
     p.x = x*s;
@@ -101,12 +101,12 @@ Point Point::operator*(double s) const
     return p;
 }
 
-double Point::norm2Sqr() const 
+Standard_Real Point::norm2Sqr() const 
 {
     return x*x+y*y+z*z;
 }
 
-double Point::norm2() const 
+Standard_Real Point::norm2() const 
 {
     return sqrt(x*x + y*y + z*z);
 }
@@ -128,7 +128,7 @@ void Point::Dump(std::ostream& aStream) const
     aStream << "Point: (" << x << ", " << y << ", " << z << ")";
 }
 
-double Point::inner_prod(const Point& a, const Point& b) 
+Standard_Real Point::inner_prod(const Point& a, const Point& b) 
 {
     return a.x*b.x + a.y*b.y + a.z*b.z;
 }
@@ -143,7 +143,7 @@ Point Point::cross_prod(const Point& a, const Point& b)
 }
 
 // scalar projection of a vector a onto a nonzero vector b
-double Point::scalar_projection(const Point& a, const Point& b)
+Standard_Real Point::scalar_projection(const Point& a, const Point& b)
 {
     return Point::inner_prod(a,b)/b.norm2();
 }
@@ -154,12 +154,12 @@ Point Point::vector_projection(const Point& a, const Point& b)
     return b * (Point::inner_prod(a,b)/b.norm2Sqr());
 }
 
-double Point::distance2(const Point &p) const 
+Standard_Real Point::distance2(const Point &p) const 
 {
     return (x-p.x)*(x-p.x) + (y-p.y)*(y-p.y) + (z-p.z)*(z-p.z);
 }
 
-void Point::getMinMax(double & min, double & max) const 
+void Point::getMinMax(Standard_Real & min, Standard_Real & max) const 
 {
     min = x;
     if (y < min) {

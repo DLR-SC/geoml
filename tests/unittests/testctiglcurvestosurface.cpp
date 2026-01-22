@@ -71,8 +71,8 @@ TEST(CurvesToSurface, testSkinnedBSplineSurface)
     // now test the skinned surface
     for (int u_idx = 0; u_idx < 100; ++u_idx) {
         for (int v_idx = 0; v_idx < 100; ++v_idx) {
-            double u_value = u_idx / 100.;
-            double v_value = v_idx / 100.;
+            Standard_Real u_value = u_idx / 100.;
+            Standard_Real v_value = v_idx / 100.;
 
             gp_Pnt surface_point = skinnedSurface->Value(u_value, v_value);
             gp_Pnt point_curve1 = curve1->Value(u_value);
@@ -99,8 +99,8 @@ TEST(SplineAlgorithms, curvesToSurfaceContinuous)
     std::vector<Handle(Geom_Curve)> curves;
     for (TopExp_Explorer exp(shape_u, TopAbs_EDGE); exp.More(); exp.Next()) {
         TopoDS_Edge curve_edge = TopoDS::Edge(exp.Current());
-        double beginning = 0;
-        double end = 1;
+        Standard_Real beginning = 0;
+        Standard_Real end = 1;
         Handle(Geom_Curve) curve = BRep_Tool::Curve(curve_edge, beginning, end);
         Handle(Geom_BSplineCurve) spline = GeomConvert::CurveToBSplineCurve(curve);
         curves.push_back(spline);
@@ -109,12 +109,12 @@ TEST(SplineAlgorithms, curvesToSurfaceContinuous)
     CurvesToSurface skinner(curves, true);
     Handle(Geom_BSplineSurface) surface = skinner.Surface();
 
-    double umin, umax, vmin, vmax;
+    Standard_Real umin, umax, vmin, vmax;
     surface->Bounds(umin, umax, vmin, vmax);
     EXPECT_TRUE(surface->DN(umin, vmin, 0, 0).IsEqual(surface->DN(umin, vmax, 0, 0), 1e-10, 1e-6));
     EXPECT_TRUE(surface->DN(umin, vmin, 0, 1).IsEqual(surface->DN(umin, vmax, 0, 1), 1e-10, 1e-6));
 
-    double umean = 0.5 * (umin + umax);
+    Standard_Real umean = 0.5 * (umin + umax);
     EXPECT_TRUE(surface->DN(umean, vmin, 0, 0).IsEqual(surface->DN(umean, vmax, 0, 0), 1e-10, 1e-6));
     EXPECT_TRUE(surface->DN(umean, vmin, 0, 1).IsEqual(surface->DN(umean, vmax, 0, 1), 1e-10, 1e-6));
 
@@ -129,8 +129,8 @@ TEST(BSplineAlgorithms, curvesToSurfaceBug)
 {
 
     std::vector<Handle(Geom_Curve)> profileCurves;
-    double xmin=1e6;
-    double xmax=-1e6;
+    Standard_Real xmin=1e6;
+    Standard_Real xmax=-1e6;
     for (int i = 5; i<9; ++i) {
 
         std::stringstream ss;
@@ -153,10 +153,10 @@ TEST(BSplineAlgorithms, curvesToSurfaceBug)
     surfaceSkinner.SetMaxDegree(1);
     Handle(Geom_BSplineSurface) surface = surfaceSkinner.Surface();
 
-    double umin, umax, vmin, vmax;
+    Standard_Real umin, umax, vmin, vmax;
     surface->Bounds(umin, umax, vmin, vmax);
 
-    double u = umin + 0.999*(umax-umin);
+    Standard_Real u = umin + 0.999*(umax-umin);
     gp_Vec p = surface->DN(u, vmin + 0.95*(vmax-vmin), 0, 0);
     EXPECT_TRUE(p.X() <= xmax);
     EXPECT_TRUE(p.X() >= xmin);

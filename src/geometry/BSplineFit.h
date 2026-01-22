@@ -46,21 +46,21 @@ public:
 
 
     /// Fits the given points by a B-spline
-    GEOML_EXPORT error Fit(const TColgp_Array1OfPnt& points, const std::vector<double>& parameters);
+    GEOML_EXPORT error Fit(const TColgp_Array1OfPnt& points, const std::vector<Standard_Real>& parameters);
 
     /// Fits the given points by a B-spline using the centripetal parameterization scheme (alpha=0.5)
-    GEOML_EXPORT error Fit(const TColgp_Array1OfPnt& points, double alpha=1.0);
+    GEOML_EXPORT error Fit(const TColgp_Array1OfPnt& points, Standard_Real alpha=1.0);
 
     /// Fits, by optimizing the fit parameters
     /// This is an iterative algorithm and requires more time than the other fit algorithms
-    GEOML_EXPORT error FitOptimal(const TColgp_Array1OfPnt& points, double alpha=1.0, double eps=1.0E-3, int maxIter=100);
+    GEOML_EXPORT error FitOptimal(const TColgp_Array1OfPnt& points, Standard_Real alpha=1.0, Standard_Real eps=1.0E-3, int maxIter=100);
 
     /// Returns the resulting curve. Returns
     /// Null in case of an error
     GEOML_EXPORT Handle_Geom_BSplineCurve Curve() const;
 
     /// Computes the maximum error of the fit
-    GEOML_EXPORT double GetMaxError();
+    GEOML_EXPORT Standard_Real GetMaxError();
 
 
 private:
@@ -75,7 +75,7 @@ private:
     void computeKnots();
 
     /// Calculates curve parameter t_k [0, 1], which corresponds to the arc lengths
-    void computeParameters(double alpha);
+    void computeParameters(Standard_Real alpha);
 
     /// Recalculates the curve parameters t_k after the
     /// control points are fitted to achieve an even better fit.
@@ -97,12 +97,12 @@ private:
     TColStd_Array1OfReal _knots;
 
     /// parameters at which the curve is sampled
-    std::vector<double> t;
+    std::vector<Standard_Real> t;
 
     /// curve coordinates to be fitted by the B-spline
-    std::vector<double> _px;
-    std::vector<double> _py;
-    std::vector<double> _pz;
+    std::vector<Standard_Real> _px;
+    std::vector<Standard_Real> _py;
+    std::vector<Standard_Real> _pz;
 
 };
 

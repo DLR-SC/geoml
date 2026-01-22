@@ -27,7 +27,7 @@ class MockOptions : public geoml::COptionList
 public:
     MockOptions()
     {
-        AddOption<double>("my_double", 0.0);
+        AddOption<Standard_Real>("my_double", 0.0);
         AddOption<std::string>("my_string", "Hallo");
     }
 };
@@ -45,15 +45,15 @@ TEST(OptionList, AddGetSet)
 {
     MockOptions options;
 
-    double v1 = options.Get<double>("my_double");
+    Standard_Real v1 = options.Get<Standard_Real>("my_double");
     EXPECT_NEAR(0.0, v1, 1e-10);
 
     options.SetDouble("my_double", 10.);
-    v1 = options.Get<double>("my_double");
+    v1 = options.Get<Standard_Real>("my_double");
     EXPECT_NEAR(10.0, v1, 1e-10);
 
     options.SetFromString("my_double", "20.");
-    v1 = options.Get<double>("my_double");
+    v1 = options.Get<Standard_Real>("my_double");
     EXPECT_NEAR(20.0, v1, 1e-10);
 
     std::string v2 = options.Get<std::string>("my_string");
@@ -81,7 +81,7 @@ TEST(OptionList, AddGetSet)
     // no such option
     EXPECT_THROW(options.Get<int>("my_new_double"), geoml::Error);
 
-    // cannot convert "welt" to a double
+    // cannot convert "welt" to a Standard_Real
     EXPECT_THROW(options.SetFromString("my_doublee", "welt"), geoml::Error);
 }
 
@@ -94,7 +94,7 @@ TEST(OptionList, DISABLED_OptionNames)
     EXPECT_STREQ("my_double", options.GetOptionName(0).c_str());
     EXPECT_STREQ("my_string", options.GetOptionName(1).c_str());
 
-    EXPECT_STREQ("double", options.GetOptionType(0).c_str());
+    EXPECT_STREQ("Standard_Real", options.GetOptionType(0).c_str());
 }
 
 TEST(OptionList, HasOption)
@@ -117,7 +117,7 @@ TEST(OptionList, Merged)
     EXPECT_TRUE(options.HasOption("my_double"));
     EXPECT_TRUE(options.HasOption("my_int"));
 
-    double v1 = options.Get<double>("my_double");
+    Standard_Real v1 = options.Get<Standard_Real>("my_double");
     EXPECT_NEAR(0.0, v1, 1e-10);
 
     int v2 = options.Get<int>("my_int");

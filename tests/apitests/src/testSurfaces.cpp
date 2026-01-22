@@ -42,8 +42,8 @@ std::vector<Handle(Geom_Curve)> read_curves(const std::string& brepFile, bool& o
     std::vector<Handle(Geom_Curve)> curves;
     for (Explorer.Init(shape_u, TopAbs_EDGE); Explorer.More(); Explorer.Next()) {
         const auto& edge = TopoDS::Edge(Explorer.Current());
-        double beginning = 0;
-        double end = 1;
+        Standard_Real beginning = 0;
+        Standard_Real end = 1;
         curves.push_back(BRep_Tool::Curve(edge, beginning, end));
     }
 
@@ -198,12 +198,12 @@ gp_Vec vec (0., 0., 1.);
 TopoDS_Shape face = geoml::revolving_shape(edge, pnt, vec); 
 
 // calculate area of a cylinder with radius 1 and hight 4:
-double expected_surface_area = 2 * M_PI * 1 * 4; 
+Standard_Real expected_surface_area = 2 * M_PI * 1 * 4; 
 
 // calculate intersection area
 GProp_GProps props = GProp_GProps();
 BRepGProp::SurfaceProperties(face, props);
-double area_surf = props.Mass();
+Standard_Real area_surf = props.Mass();
 
 EXPECT_NEAR(area_surf, expected_surface_area, 1e-1);
 

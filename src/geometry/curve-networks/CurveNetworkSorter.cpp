@@ -29,7 +29,7 @@ namespace
     // returns the column index if the maximum of i-th row
     size_t maxRowIndex(const math_Matrix& m, size_t irow)
     {
-        double max = DBL_MIN;
+        Standard_Real max = DBL_MIN;
         size_t jmax = 0;
 
         for (Standard_Integer jcol = 0; jcol < m.ColNumber(); ++jcol) {
@@ -45,7 +45,7 @@ namespace
     // returns the row index if the maximum of i-th col
     size_t maxColIndex(const math_Matrix& m, size_t jcol)
     {
-        double max = DBL_MIN;
+        Standard_Real max = DBL_MIN;
         size_t imax = 0;
 
         for (Standard_Integer irow = 0; irow < m.RowNumber(); ++irow) {
@@ -61,7 +61,7 @@ namespace
     // returns the column index if the minimum of i-th row
     size_t minRowIndex(const math_Matrix& m, size_t irow)
     {
-        double min = DBL_MAX;
+        Standard_Real min = DBL_MAX;
         size_t jmin = 0;
 
         for (Standard_Integer jcol = 0; jcol < m.ColNumber(); ++jcol) {
@@ -77,7 +77,7 @@ namespace
     // returns the column index if the minimum of i-th row
     size_t minColIndex(const math_Matrix& m, size_t jcol)
     {
-        double min = DBL_MAX;
+        Standard_Real min = DBL_MAX;
         size_t imin = 0;
 
         for (Standard_Integer irow = 0; irow < m.RowNumber(); ++irow) {

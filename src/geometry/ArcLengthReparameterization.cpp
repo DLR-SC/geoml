@@ -37,20 +37,20 @@ public:
         // intentionally empty
     }
 
-    double getParameter(double arcLength);
+    Standard_Real getParameter(Standard_Real arcLength);
 
     // returns the total length of the spline
-    double getTotalLength();
+    Standard_Real getTotalLength();
 
-    double valueX(double t) override {
+    Standard_Real valueX(Standard_Real t) override {
         return getParameter(t);
     }
 
-    double valueY(double t) override
+    Standard_Real valueY(Standard_Real t) override
     {
         return 0.;
     }
-    double valueZ(double t) override
+    Standard_Real valueZ(Standard_Real t) override
     {
         return 0.;
     }
@@ -59,7 +59,7 @@ private:
     GeomAdaptor_Curve _curve;
 };
 
-double BSplineArcLength::getParameter(double arcLength)
+Standard_Real BSplineArcLength::getParameter(Standard_Real arcLength)
 {
     GCPnts_AbscissaPoint algo(_curve, arcLength, _curve.FirstParameter());
     if (algo.IsDone()) {
@@ -70,7 +70,7 @@ double BSplineArcLength::getParameter(double arcLength)
     }
 }
 
-double BSplineArcLength::getTotalLength()
+Standard_Real BSplineArcLength::getTotalLength()
 {
     return GCPnts_AbscissaPoint::Length(_curve);
 }
@@ -86,7 +86,7 @@ bool ReparametrizeCurveByArclen::isInitialized() const
     return _isInitialized;
 }
 
-double ReparametrizeCurveByArclen::parameter(double arcLength) const
+Standard_Real ReparametrizeCurveByArclen::parameter(Standard_Real arcLength) const
 {
     if (!isInitialized()) {
         throw Error("ReparametrizeCurveByArclen is not initialized", geoml::MATH_ERROR);
@@ -95,7 +95,7 @@ double ReparametrizeCurveByArclen::parameter(double arcLength) const
     return _reparCurve->Value(arcLength).X();
 }
 
-double ReparametrizeCurveByArclen::totalLength() const
+Standard_Real ReparametrizeCurveByArclen::totalLength() const
 {
     if (!isInitialized()) {
         throw Error("ReparametrizeCurveByArclen is not initialized", geoml::MATH_ERROR);
@@ -104,7 +104,7 @@ double ReparametrizeCurveByArclen::totalLength() const
     return _totalLength;
 }
 
-void ReparametrizeCurveByArclen::init(const Handle(Geom_BSplineCurve) curve, double accuracy)
+void ReparametrizeCurveByArclen::init(const Handle(Geom_BSplineCurve) curve, Standard_Real accuracy)
 {
     _isInitialized = false;
 

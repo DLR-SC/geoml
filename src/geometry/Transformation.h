@@ -49,16 +49,16 @@ public:
     GEOML_EXPORT Transformation& operator=(const Transformation&);
 
     // Converts degree to radian, utility function
-    GEOML_EXPORT static double DegreeToRadian(double degree);
+    GEOML_EXPORT static Standard_Real DegreeToRadian(Standard_Real degree);
 
     // Converts radian to degree, utility function
-    GEOML_EXPORT static double RadianToDegree(double radian);
+    GEOML_EXPORT static Standard_Real RadianToDegree(Standard_Real radian);
 
     // Sets matrix to identity matrix
     GEOML_EXPORT void SetIdentity();
 
     // Sets a value of the transformation matrix by row/col
-    GEOML_EXPORT void SetValue(int row, int col, double value);
+    GEOML_EXPORT void SetValue(int row, int col, Standard_Real value);
 
     // Returns the current transformation as gp_GTrsf object
     GEOML_EXPORT gp_GTrsf Get_gp_GTrsf() const;
@@ -72,18 +72,18 @@ public:
     GEOML_EXPORT void PreMultiply(const Transformation& aTrans);
 
     // Adds a translation to the matrix
-    GEOML_EXPORT void AddTranslation(double tx, double ty, double tz);
+    GEOML_EXPORT void AddTranslation(Standard_Real tx, Standard_Real ty, Standard_Real tz);
 
     // Adds a scaling transformation to the matrix
-    GEOML_EXPORT void AddScaling(double sx, double sy, double sz);
+    GEOML_EXPORT void AddScaling(Standard_Real sx, Standard_Real sy, Standard_Real sz);
 
     // Adds a rotation around the x,y,z axis to the matrix
-    GEOML_EXPORT void AddRotationX(double degreeX);
-    GEOML_EXPORT void AddRotationY(double degreeY);
-    GEOML_EXPORT void AddRotationZ(double degreeZ);
+    GEOML_EXPORT void AddRotationX(Standard_Real degreeX);
+    GEOML_EXPORT void AddRotationY(Standard_Real degreeY);
+    GEOML_EXPORT void AddRotationZ(Standard_Real degreeZ);
 
     // Adds a rotation in intrinsic x-y'-z'' Euler convention to the matrix
-    GEOML_EXPORT void AddRotationIntrinsicXYZ(double phi, double theta, double psi);
+    GEOML_EXPORT void AddRotationIntrinsicXYZ(Standard_Real phi, Standard_Real theta, Standard_Real psi);
 
     // Adds projection on xy plane by setting the z coordinate to 0
     GEOML_EXPORT void AddProjectionOnXYPlane();
@@ -130,7 +130,7 @@ public:
     // Decompose the Transformation into the three operations
     // scale first, rotate second (extr. Euler as defined in CPACS),
     // translate third
-    GEOML_EXPORT void Decompose(double scale[3], double rotation[3], double translation[3]) const;
+    GEOML_EXPORT void Decompose(Standard_Real scale[3], Standard_Real rotation[3], Standard_Real translation[3]) const;
 
     // Default copy constructor and assignment operator are correct
     // since memberwise copy is enough for this class.
@@ -139,12 +139,12 @@ public:
     GEOML_EXPORT friend std::ostream& operator<<(std::ostream& os, const Transformation& t);
 
     // Getter for matrix values
-    GEOML_EXPORT double GetValue(int row, int col) const;
+    GEOML_EXPORT Standard_Real GetValue(int row, int col) const;
 
 private:
     bool IsUniform() const;
 
-    double m_matrix[4][4];
+    Standard_Real m_matrix[4][4];
 };
 
 GEOML_EXPORT Transformation operator*(const Transformation& a, const Transformation& b);

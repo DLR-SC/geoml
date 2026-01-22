@@ -138,25 +138,25 @@ private:
          * @brief UMin returns the starting u parameter of this face
          * @return the starting u parameter of this face
          */
-        double UMin() const { return umin; };
+        Standard_Real UMin() const { return umin; };
 
         /**
          * @brief UMax returns the ending u parameter of this face
          * @return the ending u parameter of this face
          */
-        double UMax() const { return umax; };
+        Standard_Real UMax() const { return umax; };
 
         /**
          * @brief VMin returns the starting v parameter of this face
          * @return the starting v parameter of this face
          */
-        double VMin() const { return vmin; };
+        Standard_Real VMin() const { return vmin; };
 
         /**
          * @brief VMax returns the ending v parameter of this face
          * @return the ending v parameter of this face
          */
-        double VMax() const { return vmax; };
+        Standard_Real VMax() const { return vmax; };
 
         /**
          * @brief GetAnnotation returns the custom annotation associated with this face
@@ -168,7 +168,7 @@ private:
     private:
         TopoDS_Face face;
         gp_Pnt u0v0, u1v0, u0v1, u1v1; // corner points
-        double umin, umax, vmin, vmax; // parametric bounds
+        Standard_Real umin, umax, vmin, vmax; // parametric bounds
 
         AnnotatedFace* Neg_u_Neighbor {nullptr};
         AnnotatedFace* Pos_u_Neighbor {nullptr};
@@ -258,10 +258,10 @@ public:
      * @param row_ranges a reference to a vector for storing the v-parameter ranges
      * @param col_ranges a reference to a vector for storing the u-parameter ranges
      */
-    void GetParameterRanges(std::vector<double>& row_ranges, std::vector<double>& col_ranges)
+    void GetParameterRanges(std::vector<Standard_Real>& row_ranges, std::vector<Standard_Real>& col_ranges)
     {
-        row_ranges = std::vector<double>(nrows, 0.);
-        col_ranges = std::vector<double>(ncols, 0.);
+        row_ranges = std::vector<Standard_Real>(nrows, 0.);
+        col_ranges = std::vector<Standard_Real>(ncols, 0.);
 
         int j = 0;
         for (auto row = Root(); row; row = row->VNext()) {
@@ -354,7 +354,7 @@ private:
     size_t root_idx {0};
     size_t nrows {0};
     size_t ncols {0};
-    double m_sqr_dist_tol {1e-4};
+    Standard_Real m_sqr_dist_tol {1e-4};
 };
 
 } //namespace tgil

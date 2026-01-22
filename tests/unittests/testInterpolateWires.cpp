@@ -159,8 +159,8 @@ TEST_P(CurveNetworkCoons, testFromBRep)
     std::vector<Handle(Geom_BSplineCurve)> splines_u_vector;
     for (Explorer.Init(shape_u, TopAbs_EDGE); Explorer.More(); Explorer.Next()) {
         TopoDS_Edge curve_edge = TopoDS::Edge(Explorer.Current());
-        double beginning = 0;
-        double end = 1;
+        Standard_Real beginning = 0;
+        Standard_Real end = 1;
         Handle(Geom_Curve) curve = BRep_Tool::Curve(curve_edge, beginning, end);
         Handle(Geom_BSplineCurve) spline = GeomConvert::CurveToBSplineCurve(curve);
         
@@ -193,8 +193,8 @@ TEST_P(CurveNetworkCoons, testFromBRep)
     std::vector<Handle(Geom_BSplineCurve)> splines_v_vector;
     for (Explorer.Init(shape_v, TopAbs_EDGE); Explorer.More(); Explorer.Next()) {
         TopoDS_Edge curve_edge = TopoDS::Edge(Explorer.Current());
-        double beginning = 0;
-        double end = 1;
+        Standard_Real beginning = 0;
+        Standard_Real end = 1;
         Handle(Geom_Curve) curve = BRep_Tool::Curve(curve_edge, beginning, end);
         Handle(Geom_BSplineCurve) spline = GeomConvert::CurveToBSplineCurve(curve);
 

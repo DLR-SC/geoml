@@ -122,17 +122,17 @@ TEST(Math, QuadrilateralArea)
 TEST(Math, CSTCurve)
 {
     // Sample coefficients for shape function
-    std::vector<double> Br;
+    std::vector<Standard_Real> Br;
     Br.push_back(0.4);
     Br.push_back(1.0);
     Br.push_back(0.8);
     Br.push_back(10.2);
     
     // Constant sample coefficients for shape function
-    std::vector<double> B1(10,1.0);
+    std::vector<Standard_Real> B1(10,1.0);
     // Sample exponents for class function
-    double N1=0.1;
-    double N2=0.5;
+    Standard_Real N1=0.1;
+    Standard_Real N2=0.5;
 
     // check that shape function is constant for B constant
     ASSERT_NEAR(1.0, geoml::shape_function(B1, 0.0), 1e-7);
@@ -346,9 +346,9 @@ TEST(Math, Transform_Decompose)
     // trivial test
     geoml::Transformation transformation;
 
-    double S[3] = {0., 0., 0.};
-    double R[3] = {0., 0., 0.};
-    double T[3] = {0., 0., 0.};
+    Standard_Real S[3] = {0., 0., 0.};
+    Standard_Real R[3] = {0., 0., 0.};
+    Standard_Real T[3] = {0., 0., 0.};
     transformation.Decompose(S, R, T);
 
     EXPECT_NEAR(S[0], 1., 1e-8);
@@ -380,9 +380,9 @@ TEST(Math, Transform_Decompose2)
     EXPECT_NEAR(resultV.Z(), expectV.Z(), 1e-8 );
 
     // but decomposing the rotation seems to output the X,Y,Z extrinsic angle
-    double S[3] = {0., 0., 0.};
-    double R[3] = {0., 0., 0.};
-    double T[3] = {0., 0., 0.};
+    Standard_Real S[3] = {0., 0., 0.};
+    Standard_Real R[3] = {0., 0., 0.};
+    Standard_Real T[3] = {0., 0., 0.};
     rot.Decompose(S, R, T);
 
     // so if we put back this value in transformation

@@ -29,8 +29,8 @@ namespace geoml
 
 struct CurveIntersectionResult
 {
-    double parmOnCurve1;
-    double parmOnCurve2;
+    Standard_Real parmOnCurve1;
+    Standard_Real parmOnCurve2;
     Point point;
 };
 
@@ -44,7 +44,7 @@ struct CurveIntersectionResult
  * intersect each other. If so, this process is repeated until the curve segment is almost a line segment.
  * This result is used to locally optimize into a true minimum.
  */
-GEOML_EXPORT std::vector<CurveIntersectionResult> IntersectBSplines(const Handle(Geom_BSplineCurve) curve1, const Handle(Geom_BSplineCurve) curve2, double tolerance=1e-5);
+GEOML_EXPORT std::vector<CurveIntersectionResult> IntersectBSplines(const Handle(Geom_BSplineCurve) curve1, const Handle(Geom_BSplineCurve) curve2, Standard_Real tolerance=1e-5);
 
 } // namespace geoml
 

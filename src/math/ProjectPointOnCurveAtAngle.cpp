@@ -35,7 +35,7 @@
 
 namespace 
 {
-    gp_Vec rotateAx(const gp_Vec& v, const gp_Dir& refNormal, double angle)
+    gp_Vec rotateAx(const gp_Vec& v, const gp_Dir& refNormal, Standard_Real angle)
     {
         gp_Trsf transform;
         transform.SetRotation(gp_Ax1(gp_Pnt(0,0,0), refNormal), angle);
@@ -46,8 +46,8 @@ namespace
     }
     
     geoml::ValueWithDerivative objFun(const gp_Pnt& m_pointToProject,
-                                     double u, Handle(Geom_Curve) m_curve,
-                                     const gp_Dir& m_refNormal, double m_angle)
+                                     Standard_Real u, Handle(Geom_Curve) m_curve,
+                                     const gp_Dir& m_refNormal, Standard_Real m_angle)
     {
         // Compute point, tangent and second derivative
         gp_Pnt c; gp_Vec c1; gp_Vec c2;
@@ -75,7 +75,7 @@ namespace
     public:
         ProjectObjective(const gp_Pnt& p,
                          const Handle(Geom_Curve)& curve,
-                         double angle,
+                         Standard_Real angle,
                          gp_Dir planeRefNormal)
             : m_curve(curve)
             , m_angle(angle)
@@ -102,7 +102,7 @@ namespace
 
         virtual  Standard_Boolean Values (const math_Vector& X, Standard_Real& F, math_Vector& G) override
         {
-            double u = X.Value(1);
+            Standard_Real u = X.Value(1);
 
             geoml::ValueWithDerivative result = objFun(m_pointToProject, u, m_curve, m_refNormal, m_angle);
 
@@ -115,7 +115,7 @@ namespace
 
     private:
         const Handle(Geom_Curve) m_curve;
-        const double m_angle;
+        const Standard_Real m_angle;
         const gp_Dir m_refNormal;
         const gp_Pnt m_pointToProject;
     };
@@ -128,8 +128,8 @@ ValueWithDerivative distancePlanePoint_deriv(gp_Dir planeNormal, gp_Vec planeNor
                                              gp_Pnt pointOnPlane, gp_Vec pointOnPlane_deriv,
                                              gp_Pnt p)
 {
-    double distance = (pointOnPlane.XYZ() - p.XYZ()).Dot(planeNormal.XYZ());
-    double distance_deriv = (pointOnPlane.XYZ() - p.XYZ()).Dot(planeNormal_deriv.XYZ()) 
+    Standard_Real distance = (pointOnPlane.XYZ() - p.XYZ()).Dot(planeNormal.XYZ());
+    Standard_Real distance_deriv = (pointOnPlane.XYZ() - p.XYZ()).Dot(planeNormal_deriv.XYZ()) 
                           + pointOnPlane_deriv.XYZ().Dot(planeNormal.XYZ());
 
     return ValueWithDerivative(distance, distance_deriv);
@@ -140,8 +140,8 @@ void normalize(gp_Vec& v, gp_Vec& v_deriv)
     gp_Vec vCopy(v);
     gp_Vec vCopy_deriv(v_deriv);
     
-    double length = vCopy.Magnitude();
-    double length_deriv = vCopy_deriv.XYZ().Dot(vCopy.XYZ()) / length;
+    Standard_Real length = vCopy.Magnitude();
+    Standard_Real length_deriv = vCopy_deriv.XYZ().Dot(vCopy.XYZ()) / length;
 
     v = vCopy.Normalized();
     v_deriv = vCopy_deriv.XYZ() / length - vCopy.XYZ() / (length * length) * length_deriv;
@@ -150,7 +150,7 @@ void normalize(gp_Vec& v, gp_Vec& v_deriv)
 
 ProjectPointOnCurveAtAngle::ProjectPointOnCurveAtAngle(const gp_Pnt& p,
                                                                  const Handle(Geom_Curve)& curve,
-                                                                 double angle,
+                                                                 Standard_Real angle,
                                                                  const gp_Dir& planeRefNormal)
     : m_curve(curve)
     , m_angle(angle)
@@ -176,7 +176,7 @@ gp_Pnt geoml::ProjectPointOnCurveAtAngle::Point(int i) const
     return m_curve->Value(resultParameter.at(i-1));
 }
 
-double geoml::ProjectPointOnCurveAtAngle::Parameter(int i) const
+Standard_Real geoml::ProjectPointOnCurveAtAngle::Parameter(int i) const
 {
     if (!IsDone()) {
             throw Error("Error computing ProjectPointOnCurveAtAngle::Point");
@@ -198,17 +198,17 @@ void geoml::ProjectPointOnCurveAtAngle::Compute() const
         return;
     }
 
-    double umin = m_curve->FirstParameter();
-    double umax = m_curve->LastParameter();
+    Standard_Real umin = m_curve->FirstParameter();
+    Standard_Real umax = m_curve->LastParameter();
     
     int nSamples = 10;
     
-    for (double u = umin; u <= umax; u += (umax-umin)/ (double)(nSamples - 1)) {
+    for (Standard_Real u = umin; u <= umax; u += (umax-umin)/ (Standard_Real)(nSamples - 1)) {
         FindPoint(u);
     }
 
     // sort accordining to distance of point
-    std::sort(resultParameter.begin(), resultParameter.end(), [this](const double& parm1, const double& parm2) {
+    std::sort(resultParameter.begin(), resultParameter.end(), [this](const Standard_Real& parm1, const Standard_Real& parm2) {
         // p1 > p2 ?
         gp_Pnt p1 = m_curve->Value(parm1);
         gp_Pnt p2 = m_curve->Value(parm2);
@@ -219,7 +219,7 @@ void geoml::ProjectPointOnCurveAtAngle::Compute() const
     m_hasComputed = true;
 }
 
-void geoml::ProjectPointOnCurveAtAngle::FindPoint(double ustart) const
+void geoml::ProjectPointOnCurveAtAngle::FindPoint(Standard_Real ustart) const
 {
     ProjectObjective objFun(m_pointToProject, m_curve, m_angle, m_refNormal);
 
@@ -241,7 +241,7 @@ void geoml::ProjectPointOnCurveAtAngle::FindPoint(double ustart) const
     AddSolution(optimizer.Location().Value(1), 1e-4 * (m_curve->LastParameter() - m_curve->FirstParameter()));
 }
 
-void geoml::ProjectPointOnCurveAtAngle::AddSolution(double value, double tol) const
+void geoml::ProjectPointOnCurveAtAngle::AddSolution(Standard_Real value, Standard_Real tol) const
 {
     // check if really a solution
     // get distance of plane to point
@@ -250,7 +250,7 @@ void geoml::ProjectPointOnCurveAtAngle::AddSolution(double value, double tol) co
         return;
     }
 
-    auto parm_it = std::find_if(resultParameter.begin(), resultParameter.end(), [&](double v) {
+    auto parm_it = std::find_if(resultParameter.begin(), resultParameter.end(), [&](Standard_Real v) {
         return fabs(v-value) < tol;
     });
     

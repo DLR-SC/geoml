@@ -39,21 +39,21 @@ namespace
 class helper_function_find
 {
 public:
-    helper_function_find(double val, double tolerance = 1e-15)
+    helper_function_find(Standard_Real val, Standard_Real tolerance = 1e-15)
         : _val(val), _tol(tolerance)
     {}
 
     // helper function for std::unique
-    bool operator()(double a)
+    bool operator()(Standard_Real a)
     {
         return (fabs(_val - a) < _tol);
     }
 private:
-    double _val;
-    double _tol;
+    Standard_Real _val;
+    Standard_Real _tol;
 };
 
-void insertKnot(double knot, int count, int degree, std::vector<double>& knots, std::vector<int>& mults, double tol = 1e-5)
+void insertKnot(Standard_Real knot, int count, int degree, std::vector<Standard_Real>& knots, std::vector<int>& mults, Standard_Real tol = 1e-5)
 {
     if (knot < knots.front() || knot > knots.back()) {
         throw geoml::Error("knot out of range");
@@ -111,7 +111,7 @@ void BSplineApproxInterp::InterpolatePoint(size_t pointIndex, bool withKink)
     }
 }
 
-double BSplineApproxInterp::maxDistanceOfBoundingBox(const TColgp_Array1OfPnt& points) const
+Standard_Real BSplineApproxInterp::maxDistanceOfBoundingBox(const TColgp_Array1OfPnt& points) const
 {
     gp_Pnt max(-DBL_MAX, -DBL_MAX, -DBL_MAX);
     gp_Pnt min(DBL_MAX, DBL_MAX, DBL_MAX);
@@ -133,8 +133,8 @@ bool BSplineApproxInterp::isClosed() const
     if (!m_C2Continuous) {
         return false;
     }
-    double maxDistance = maxDistanceOfBoundingBox(m_pnts);
-    double error = 1e-12*maxDistance;
+    Standard_Real maxDistance = maxDistanceOfBoundingBox(m_pnts);
+    Standard_Real error = 1e-12*maxDistance;
     return m_pnts.Value(m_pnts.Lower()).IsEqual(m_pnts.Value(m_pnts.Upper()), error);
 }
 
@@ -145,10 +145,10 @@ bool BSplineApproxInterp::firstAndLastInterpolated() const
     return first && last;
 }
 
-std::vector<double> BSplineApproxInterp::computeParameters(double alpha) const
+std::vector<Standard_Real> BSplineApproxInterp::computeParameters(Standard_Real alpha) const
 {
-    double sum = 0.0;
-    std::vector<double> t;
+    Standard_Real sum = 0.0;
+    std::vector<Standard_Real> t;
 
     size_t nPoints = static_cast<size_t>(m_pnts.Length());
     t.resize(nPoints);
@@ -157,13 +157,13 @@ std::vector<double> BSplineApproxInterp::computeParameters(double alpha) const
     // calc total arc length: dt^2 = dx^2 + dy^2
     for (size_t i = 1; i < nPoints; i++) {
         Standard_Integer idx = static_cast<Standard_Integer>(i);
-        double len2 = m_pnts.Value(idx).SquareDistance(m_pnts.Value(idx + 1));
+        Standard_Real len2 = m_pnts.Value(idx).SquareDistance(m_pnts.Value(idx + 1));
         sum += pow(len2, alpha / 2.);
         t[i] = sum;
     }
 
     // normalize parameter with maximum
-    double tmax = t[nPoints - 1];
+    Standard_Real tmax = t[nPoints - 1];
     for (size_t i = 1; i < nPoints; i++) {
         t[i] /= tmax;
     }
@@ -173,15 +173,15 @@ std::vector<double> BSplineApproxInterp::computeParameters(double alpha) const
     return t;
 }
 
-void BSplineApproxInterp::computeKnots(int ncp, const std::vector<double>& parms, std::vector<double>& knots, std::vector<int>& mults) const
+void BSplineApproxInterp::computeKnots(int ncp, const std::vector<Standard_Real>& parms, std::vector<Standard_Real>& knots, std::vector<int>& mults) const
 {
     int order = m_degree + 1;
     if (ncp < order) {
         throw Error("Number of control points to small!", geoml::MATH_ERROR);
     }
 
-    double umin = *std::min_element(parms.begin(), parms.end());
-    double umax = *std::max_element(parms.begin(), parms.end());
+    Standard_Real umin = *std::min_element(parms.begin(), parms.end());
+    Standard_Real umax = *std::max_element(parms.begin(), parms.end());
 
     knots.resize(static_cast<size_t>(ncp - m_degree + 1));
     mults.resize(static_cast<size_t>(ncp - m_degree + 1));
@@ -194,7 +194,7 @@ void BSplineApproxInterp::computeKnots(int ncp, const std::vector<double>& parms
     size_t N = (static_cast<size_t>(ncp - order));
     // set uniform knot distribution
     for (size_t i = 1; i <= N; ++i ) {
-        knots[i] = umin + (umax - umin) * double(i) / double(N + 1);
+        knots[i] = umin + (umax - umin) * Standard_Real(i) / Standard_Real(N + 1);
         mults[i] = 1;
     }
 
@@ -208,9 +208,9 @@ void BSplineApproxInterp::computeKnots(int ncp, const std::vector<double>& parms
     }
 }
 
-ApproxResult BSplineApproxInterp::FitCurve(const std::vector<double>& initialParms) const
+ApproxResult BSplineApproxInterp::FitCurve(const std::vector<Standard_Real>& initialParms) const
 {
-    std::vector<double> parms;
+    std::vector<Standard_Real> parms;
     // compute initial parameters, if initialParms emtpy
     if (initialParms.empty()) {
         parms = computeParameters(0.5);
@@ -224,7 +224,7 @@ ApproxResult BSplineApproxInterp::FitCurve(const std::vector<double>& initialPar
     }
 
     // Compute knots from parameters
-    std::vector<double> knots;
+    std::vector<Standard_Real> knots;
     std::vector<int> mults;
     computeKnots(m_ncp, parms,
                  knots, mults);
@@ -233,9 +233,9 @@ ApproxResult BSplineApproxInterp::FitCurve(const std::vector<double>& initialPar
     return solve(parms, OccFArray(knots)->Array1(), OccIArray(mults)->Array1());
 }
 
-ApproxResult BSplineApproxInterp::FitCurveOptimal(const std::vector<double>& initialParms, int maxIter) const
+ApproxResult BSplineApproxInterp::FitCurveOptimal(const std::vector<Standard_Real>& initialParms, int maxIter) const
 {
-    std::vector<double> parms;
+    std::vector<Standard_Real> parms;
     // compute initial parameters, if initialParms emtpy
     if (initialParms.empty()) {
         parms = computeParameters(0.5);
@@ -249,7 +249,7 @@ ApproxResult BSplineApproxInterp::FitCurveOptimal(const std::vector<double>& ini
     }
 
     // Compute knots from parameters
-    std::vector<double> knots;
+    std::vector<Standard_Real> knots;
     std::vector<int> mults;
     computeKnots(m_ncp, parms,
                  knots, mults);
@@ -262,7 +262,7 @@ ApproxResult BSplineApproxInterp::FitCurveOptimal(const std::vector<double>& ini
 
     // solve system
     ApproxResult result = solve(parms, occKnots->Array1(), occMults->Array1());
-    double old_error = result.error * 2.;
+    Standard_Real old_error = result.error * 2.;
 
     while(result.error > 0 && (old_error - result.error) / std::max(result.error, 1e-6) > 1e-3 && iteration < maxIter) {
         old_error = result.error;
@@ -276,17 +276,17 @@ ApproxResult BSplineApproxInterp::FitCurveOptimal(const std::vector<double>& ini
     return result;
 }
 
-ProjectResult BSplineApproxInterp::projectOnCurve(const gp_Pnt& pnt, const Handle(Geom_Curve) &curve, double initial_Parm) const
+ProjectResult BSplineApproxInterp::projectOnCurve(const gp_Pnt& pnt, const Handle(Geom_Curve) &curve, Standard_Real initial_Parm) const
 {
     const int maxIter = 10; // maximum No of iterations
-    const double eps  = 1.0E-6; // accuracy of arc length parameter
+    const Standard_Real eps  = 1.0E-6; // accuracy of arc length parameter
 
-    double t = initial_Parm;
+    Standard_Real t = initial_Parm;
 
     // newton step
-    double dt = 0;
+    Standard_Real dt = 0;
 
-    double f = 0;
+    Standard_Real f = 0;
 
     int iter = 0; // iteration counter
     do { // Newton iteration to get a better t parameter
@@ -300,12 +300,12 @@ ProjectResult BSplineApproxInterp::projectOnCurve(const gp_Pnt& pnt, const Handl
         // compute objective function and their derivative
         f = pnt.SquareDistance(p.XYZ());
 
-        double df = (p.XYZ() - pnt.XYZ()).Dot(dp.XYZ());
-        double d2f = (p.XYZ() - pnt.XYZ()).Dot(d2p.XYZ()) + dp.SquareMagnitude();
+        Standard_Real df = (p.XYZ() - pnt.XYZ()).Dot(dp.XYZ());
+        Standard_Real d2f = (p.XYZ() - pnt.XYZ()).Dot(d2p.XYZ()) + dp.SquareMagnitude();
 
         // newton iterate
         dt = -df / d2f;
-        double t_new = t + dt;
+        Standard_Real t_new = t + dt;
 
         // if parameter out of range reset it to the start value
         if (t_new < curve->FirstParameter() || t_new > curve->LastParameter()) {
@@ -321,7 +321,7 @@ ProjectResult BSplineApproxInterp::projectOnCurve(const gp_Pnt& pnt, const Handl
     return ProjectResult(t, sqrt(f));
 }
 
-math_Matrix BSplineApproxInterp::getContinuityMatrix(int nCtrPnts, int contin_cons, const std::vector<double>& params, const TColStd_Array1OfReal& flatKnots) const
+math_Matrix BSplineApproxInterp::getContinuityMatrix(int nCtrPnts, int contin_cons, const std::vector<Standard_Real>& params, const TColStd_Array1OfReal& flatKnots) const
 {
     math_Matrix continuity_entries(1, contin_cons, 1, nCtrPnts);
     continuity_entries.Init(0.);
@@ -347,7 +347,7 @@ math_Matrix BSplineApproxInterp::getContinuityMatrix(int nCtrPnts, int contin_co
     return continuity_entries;
 }
 
-ApproxResult BSplineApproxInterp::solve(const std::vector<double>& params, const TColStd_Array1OfReal& knots, const TColStd_Array1OfInteger& mults) const
+ApproxResult BSplineApproxInterp::solve(const std::vector<Standard_Real>& params, const TColStd_Array1OfReal& knots, const TColStd_Array1OfInteger& mults) const
 {
 
     // compute flat knots to solve system
@@ -489,13 +489,13 @@ ApproxResult BSplineApproxInterp::solve(const std::vector<double>& params, const
     result.curve = new Geom_BSplineCurve(poles, knots, mults, m_degree, false);
 
     // compute error
-    double max_error = 0.;
+    Standard_Real max_error = 0.;
     for (std::vector<size_t>::const_iterator it_idx = m_indexOfApproximated.begin(); it_idx != m_indexOfApproximated.end(); ++it_idx) {
         Standard_Integer ipnt = static_cast<Standard_Integer>(*it_idx + 1);
         const gp_Pnt& p = m_pnts.Value(ipnt);
-        double par = params[*it_idx];
+        Standard_Real par = params[*it_idx];
 
-        double error = result.curve->Value(par).Distance(p);
+        Standard_Real error = result.curve->Value(par).Distance(p);
         max_error = std::max(max_error, error);
     }
     result.error = max_error;
@@ -507,7 +507,7 @@ ApproxResult BSplineApproxInterp::solve(const std::vector<double>& params, const
  * @brief Recalculates the curve parameters t_k after the
  * control points are fitted to achieve an even better fit.
  */
-void BSplineApproxInterp::optimizeParameters(const Handle(Geom_Curve)& curve, std::vector<double>& m_t) const
+void BSplineApproxInterp::optimizeParameters(const Handle(Geom_Curve)& curve, std::vector<Standard_Real>& m_t) const
 {
     // optimize each parameter by finding it's position on the curve
     for (std::vector<size_t>::const_iterator it_idx = m_indexOfApproximated.begin(); it_idx != m_indexOfApproximated.end(); ++it_idx) {

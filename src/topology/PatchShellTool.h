@@ -47,7 +47,7 @@ public:
      * @param tolerance the tolerance used in the OpenCascade functions
      *
      */
-    GEOML_EXPORT explicit PatchShellTool(TopoDS_Shape const& shell, double tolerance = 1e-6);
+    GEOML_EXPORT explicit PatchShellTool(TopoDS_Shape const& shell, Standard_Real tolerance = 1e-6);
 
     /**
      * @brief Determine, whether the resulting shape shall be a solid or a closed shell
@@ -94,7 +94,7 @@ private:
 
     // some parameters
     bool   _makeSolid    = true;
-    double _tolerance    = 1e-6;
+    Standard_Real _tolerance    = 1e-6;
     bool   _hasPerformed = false;
 
 };

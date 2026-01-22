@@ -15,7 +15,7 @@ TEST(Test_Array2d, simple_Array2d_test)
 
 geoml::Array2d<int> vec2d_int (5,4);
 
-geoml::Array2d<double> my_vec2d_double (2,5);
+geoml::Array2d<Standard_Real> my_vec2d_double (2,5);
 
 EXPECT_EQ(vec2d_int.at(3,2), 0);
 

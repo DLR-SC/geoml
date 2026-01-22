@@ -32,7 +32,7 @@
 
 namespace
 {
-    void CutSurfaceAtUVParametersImpl(Handle(Geom_Surface) surface, std::vector<double> uparams, std::vector<double> vparams, TopoDS_Shell& shell)
+    void CutSurfaceAtUVParametersImpl(Handle(Geom_Surface) surface, std::vector<Standard_Real> uparams, std::vector<Standard_Real> vparams, TopoDS_Shell& shell)
     {
         if (surface.IsNull()) {
             return;
@@ -44,14 +44,14 @@ namespace
         Standard_Real u1, u2, v1, v2;
         surface->Bounds(u1, u2, v1, v2);
 
-        const double tol=1e-6;
+        const Standard_Real tol=1e-6;
 
-        auto process_params = [tol](std::vector<double>& params, double min, double max) {
+        auto process_params = [tol](std::vector<Standard_Real>& params, Standard_Real min, Standard_Real max) {
             if (params.empty()) {
                 params = {min, max};
             }
             else {
-                params.erase(std::remove_if(std::begin(params), std::end(params), [min, max](double par) {
+                params.erase(std::remove_if(std::begin(params), std::end(params), [min, max](Standard_Real par) {
                    return par < min || par > max;
                 }), params.end());
 
@@ -89,7 +89,7 @@ namespace
 namespace geoml
 {
 
-TopoDS_Shape TopoAlgorithms::CutShellAtUVParameters(TopoDS_Shape const& shape, std::vector<double> uparams, std::vector<double> vparams)
+TopoDS_Shape TopoAlgorithms::CutShellAtUVParameters(TopoDS_Shape const& shape, std::vector<Standard_Real> uparams, std::vector<Standard_Real> vparams)
 {
 
     bool cutInUDirection = (uparams.size() > 0);
@@ -135,7 +135,7 @@ TopoDS_Shape TopoAlgorithms::CutShellAtKinks(TopoDS_Shape const& shape)
     return std::move(cutShape);
 }
 
-TopoDS_Shell TopoAlgorithms::CutSurfaceAtUVParameters(Handle(Geom_Surface) surface, std::vector<double> uparams, std::vector<double> vparams)
+TopoDS_Shell TopoAlgorithms::CutSurfaceAtUVParameters(Handle(Geom_Surface) surface, std::vector<Standard_Real> uparams, std::vector<Standard_Real> vparams)
 {
     if (!surface) {
         throw Error("Null pointer surface in TopoAlgorithms::CutSurfaceAtUVParameters", geoml::NULL_POINTER);
@@ -148,7 +148,7 @@ TopoDS_Shell TopoAlgorithms::CutSurfaceAtUVParameters(Handle(Geom_Surface) surfa
     return shell;
 }
 
-void TopoAlgorithms::CutSurfaceAtUVParameters(Handle(Geom_Surface) surface, std::vector<double> uparams, std::vector<double> vparams, TopoDS_Shell& shell)
+void TopoAlgorithms::CutSurfaceAtUVParameters(Handle(Geom_Surface) surface, std::vector<Standard_Real> uparams, std::vector<Standard_Real> vparams, TopoDS_Shell& shell)
 {
     if (!surface) {
         throw Error("Null pointer surface in TopoAlgorithms::CutSurfaceAtUVParameters", geoml::NULL_POINTER);
@@ -188,7 +188,7 @@ bool TopoAlgorithms::IsDegenerated(const TopoDS_Wire& wire)
 {
     bool isDegen = Standard_True;
 
-    double length = 0.;
+    Standard_Real length = 0.;
     TopoDS_Iterator iter(wire);
     for (; iter.More(); iter.Next())
     {

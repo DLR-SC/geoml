@@ -52,7 +52,7 @@ class BSplineAlgorithms
 public:
 
     /// Tolerance for closed curve detection
-    GEOML_EXPORT static const double REL_TOL_CLOSED;
+    GEOML_EXPORT static const Standard_Real REL_TOL_CLOSED;
 
     /**
      * @brief computeParamsBSplineCurve:
@@ -62,7 +62,7 @@ public:
      * @param alpha:
      *          Exponent for the computation of the parameters; alpha=0.5 means, that this method uses the centripetal method
      */
-    GEOML_EXPORT static std::vector<double> computeParamsBSplineCurve(const Handle(TColgp_HArray1OfPnt)& points, double alpha=0.5);
+    GEOML_EXPORT static std::vector<Standard_Real> computeParamsBSplineCurve(const Handle(TColgp_HArray1OfPnt)& points, Standard_Real alpha=0.5);
 
     /**
      * @brief computeParamsBSplineCurve:
@@ -76,7 +76,7 @@ public:
      * @param umax:
      *          Last parameter of the curve
      */
-    GEOML_EXPORT static std::vector<double> computeParamsBSplineCurve(const Handle(TColgp_HArray1OfPnt)& points, double umin, double umax, double alpha=0.5);
+    GEOML_EXPORT static std::vector<Standard_Real> computeParamsBSplineCurve(const Handle(TColgp_HArray1OfPnt)& points, Standard_Real umin, Standard_Real umax, Standard_Real alpha=0.5);
     
     /**
      * @brief Computes a full blown bspline basis matrix of size (params.Length(), flatKnots.Length() + degree + 1)
@@ -96,15 +96,15 @@ public:
      *          Exponent for the computation of the parameters; alpha=0.5 means, that this method uses the centripetal method
      * @return  a std::pair of Handle(TColStd_HArray1OfReal) of the parameters in u- and in v-direction
      */
-    GEOML_EXPORT static std::pair<std::vector<double>, std::vector<double> >
-    computeParamsBSplineSurf(const TColgp_Array2OfPnt& points, double alpha=0.5);
+    GEOML_EXPORT static std::pair<std::vector<Standard_Real>, std::vector<Standard_Real> >
+    computeParamsBSplineSurf(const TColgp_Array2OfPnt& points, Standard_Real alpha=0.5);
 
     /**
      * @brief Matches the parameter range of all b-splines to the parameter range of the first b-spline
      *
      * @param bsplines The splines to be matched (in/out)
      */
-    GEOML_EXPORT static void matchParameterRange(const std::vector<Handle(Geom_BSplineCurve) >& bsplines, double tolerance=1e-15);
+    GEOML_EXPORT static void matchParameterRange(const std::vector<Handle(Geom_BSplineCurve) >& bsplines, Standard_Real tolerance=1e-15);
 
     /**
      * @brief Matches the degree of all b-splines by raising the degree to the maximum degree
@@ -121,7 +121,7 @@ public:
      *          vector of B-splines that could have a different knot vector
      * @return the given vector of B-splines with a common knot vector, the B-spline geometry isn't changed
      */
-    GEOML_EXPORT static std::vector<Handle(Geom_BSplineCurve)> createCommonKnotsVectorCurve(const std::vector<Handle(Geom_BSplineCurve)>& splines_vector, double tol);
+    GEOML_EXPORT static std::vector<Handle(Geom_BSplineCurve)> createCommonKnotsVectorCurve(const std::vector<Handle(Geom_BSplineCurve)>& splines_vector, Standard_Real tol);
 
     /**
      * @brief createCommonKnotsVectorSurface:
@@ -143,12 +143,12 @@ public:
     /**
      * Changes the parameter range of the b-spline curve
      */
-    GEOML_EXPORT static void reparametrizeBSpline(Geom_BSplineCurve& spline, double umin, double umax, double tol=1e-15);
+    GEOML_EXPORT static void reparametrizeBSpline(Geom_BSplineCurve& spline, Standard_Real umin, Standard_Real umax, Standard_Real tol=1e-15);
 
     /**
      * Changes the parameter range of the b-spline surfae
      */
-    GEOML_EXPORT static void reparametrizeBSpline(Geom_BSplineSurface& spline, double umin, double umax, double vmin, double vmax, double tol);
+    GEOML_EXPORT static void reparametrizeBSpline(Geom_BSplineSurface& spline, Standard_Real umin, Standard_Real umax, Standard_Real vmin, Standard_Real vmax, Standard_Real tol);
 
     /**
      * Reparametrizes the B-Spline such that the knot distribution is uniform and the number of
@@ -170,8 +170,8 @@ public:
      * @return
      *          the continuously reparametrized given B-spline
      */
-    GEOML_EXPORT static ApproxResult reparametrizeBSplineContinuouslyApprox(const Handle(Geom_BSplineCurve) spline, const std::vector<double>& old_parameters,
-                                                                                const std::vector<double>& new_parameters, size_t n_control_pnts);
+    GEOML_EXPORT static ApproxResult reparametrizeBSplineContinuouslyApprox(const Handle(Geom_BSplineCurve) spline, const std::vector<Standard_Real>& old_parameters,
+                                                                                const std::vector<Standard_Real>& new_parameters, size_t n_control_pnts);
 
     /**
      * @brief flipSurface:
@@ -201,8 +201,8 @@ public:
      *          B-spline surface which interpolates the given points with the given parameters
      */
     GEOML_EXPORT static Handle(Geom_BSplineSurface) pointsToSurface(const TColgp_Array2OfPnt& points,
-                                                                   const std::vector<double>& uParams,
-                                                                   const std::vector<double>& vParams,
+                                                                   const std::vector<Standard_Real>& uParams,
+                                                                   const std::vector<Standard_Real>& vParams,
                                                                    bool uContinuousIfClosed, bool vContinuousIfClosed);
 
     /**
@@ -217,7 +217,7 @@ public:
      * @return:
      *          intersections of spline1 with spline2 as a vector of (parameter of spline1, parameter of spline2)-pairs
      */
-    GEOML_EXPORT static std::vector<std::pair<double, double> > intersections(const Handle(Geom_BSplineCurve) spline1, const Handle(Geom_BSplineCurve) spline2, double tolerance=3e-4);
+    GEOML_EXPORT static std::vector<std::pair<Standard_Real, Standard_Real> > intersections(const Handle(Geom_BSplineCurve) spline1, const Handle(Geom_BSplineCurve) spline2, Standard_Real tolerance=3e-4);
 
     /**
      * @brief scale:
@@ -227,7 +227,7 @@ public:
      * @return:
      *          the scale
      */
-    GEOML_EXPORT static double scale(const std::vector<Handle(Geom_BSplineCurve)>& splines_vector);
+    GEOML_EXPORT static Standard_Real scale(const std::vector<Handle(Geom_BSplineCurve)>& splines_vector);
 
     /**
      * @brief scale:
@@ -237,22 +237,22 @@ public:
      * @return:
      *          the scale
      */
-    GEOML_EXPORT static double scale(const Handle(Geom_BSplineCurve)& spline);
+    GEOML_EXPORT static Standard_Real scale(const Handle(Geom_BSplineCurve)& spline);
 
     /// Returns the scale of the point matrix
-    GEOML_EXPORT static double scale(const TColgp_Array2OfPnt& points);
+    GEOML_EXPORT static Standard_Real scale(const TColgp_Array2OfPnt& points);
 
     /// Returns the scale of the point list by searching for the largest distance between two points
-    GEOML_EXPORT static double scale(const TColgp_Array1OfPnt& points);
+    GEOML_EXPORT static Standard_Real scale(const TColgp_Array1OfPnt& points);
 
     /**
      * Returns positions, where the curve has kinks (C1 Discontinuities)
      */
-    GEOML_EXPORT static std::vector<double> getKinkParameters(const Handle(Geom_BSplineCurve)& curve);
+    GEOML_EXPORT static std::vector<Standard_Real> getKinkParameters(const Handle(Geom_BSplineCurve)& curve);
 
     struct SurfaceKinks{
-        std::vector<double> u;
-        std::vector<double> v;
+        std::vector<Standard_Real> u;
+        std::vector<Standard_Real> v;
     };
 
     /**
@@ -262,26 +262,26 @@ public:
 
 
     /// Checks, whether the point matrix points is closed in u direction
-    GEOML_EXPORT static bool isUDirClosed(const TColgp_Array2OfPnt& points, double tolerance);
+    GEOML_EXPORT static bool isUDirClosed(const TColgp_Array2OfPnt& points, Standard_Real tolerance);
 
     /// Checks, whether the point matrix points is closed in u direction
-    GEOML_EXPORT static bool isVDirClosed(const TColgp_Array2OfPnt& points, double tolerance);
+    GEOML_EXPORT static bool isVDirClosed(const TColgp_Array2OfPnt& points, Standard_Real tolerance);
 
     /**
      * Computes the knot vector for curve interpolation using parameter averaging
      * This is required to prevent singular systems during interpolation.
      */
-    GEOML_EXPORT static std::vector<double> knotsFromCurveParameters(std::vector<double>& params, unsigned int degree, bool closedCurve);
+    GEOML_EXPORT static std::vector<Standard_Real> knotsFromCurveParameters(std::vector<Standard_Real>& params, unsigned int degree, bool closedCurve);
 
     /// Trims a bspline surface
-    GEOML_EXPORT static Handle(Geom_BSplineSurface) trimSurface(const Handle(Geom_Surface)& surface, double umin, double umax, double vmin, double vmax);
+    GEOML_EXPORT static Handle(Geom_BSplineSurface) trimSurface(const Handle(Geom_Surface)& surface, Standard_Real umin, Standard_Real umax, Standard_Real vmin, Standard_Real vmax);
 
     /// Trims a bspline curve
-    GEOML_EXPORT static Handle(Geom_BSplineCurve) trimCurve(const Handle(Geom_BSplineCurve)& curve, double umin, double umax);
+    GEOML_EXPORT static Handle(Geom_BSplineCurve) trimCurve(const Handle(Geom_BSplineCurve)& curve, Standard_Real umin, Standard_Real umax);
 
     /// Concatenates a list of bspline curves
     GEOML_EXPORT static Handle(Geom_BSplineCurve) concatCurves(std::vector<Handle(Geom_BSplineCurve)> curves,
-                                                              bool parByLength=true, double tolerance = 1e-6);
+                                                              bool parByLength=true, Standard_Real tolerance = 1e-6);
 
     /**
      * @brief Concatenates two surfaces in u direction
@@ -298,7 +298,7 @@ public:
      * To achieve parametric continuity, the surfaces must be
      * re-parametrized accordingly before
      */
-    GEOML_EXPORT static Handle(Geom_BSplineSurface) concatSurfacesUDir(Handle(Geom_BSplineSurface) bspl1, Handle(Geom_BSplineSurface) bspl2, double space_tol=1e-5);
+    GEOML_EXPORT static Handle(Geom_BSplineSurface) concatSurfacesUDir(Handle(Geom_BSplineSurface) bspl1, Handle(Geom_BSplineSurface) bspl2, Standard_Real space_tol=1e-5);
 
     /**
      * @ brief Changes the knot sequence to be uniform after calling the function

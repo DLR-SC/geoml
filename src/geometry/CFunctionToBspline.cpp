@@ -44,8 +44,8 @@ namespace
         }
 
         math_Vector cx, cy, cz;
-        double umin, umax;
-        double error;
+        Standard_Real umin, umax;
+        Standard_Real error;
     };
     
     /// returns a slice of v, i.e. v[low:high]
@@ -81,7 +81,7 @@ public:
     {
     }
 
-    double value(double t) override
+    Standard_Real value(Standard_Real t) override
     {
         switch (_dir) {
         case X:
@@ -105,9 +105,9 @@ class CFunctionToBspline::CFunctionToBsplineImpl
 {
 public:
     CFunctionToBsplineImpl(MathFunc3d& func,
-                           double umin, double umax,
+                           Standard_Real umin, Standard_Real umax,
                            int degree,
-                           double tolerance,
+                           Standard_Real tolerance,
                            int maxDepth)
         : _xfunc(func, FuncAdaptor::X),
           _yfunc(func, FuncAdaptor::Y),
@@ -124,23 +124,23 @@ public:
     Handle(Geom_BSplineCurve) Curve();
     
     /// approximates the curve in the subrange [a, b]
-    std::vector<ChebSegment> approxSegment(double a, double b, int depth);
+    std::vector<ChebSegment> approxSegment(Standard_Real a, Standard_Real b, int depth);
     
     /// smooth concatenation the bspline curves to one curve
     Handle(Geom_BSplineCurve) concatC1(const std::vector<Handle(Geom_BSplineCurve)>& curves);
     
     /// members
     FuncAdaptor _xfunc, _yfunc, _zfunc;
-    double _umin, _umax, _tol, _err;
+    Standard_Real _umin, _umax, _tol, _err;
     int _maxDepth, _degree;
 };
 
 // ---------------- Interfacing class -------------------------- // 
 
 CFunctionToBspline::CFunctionToBspline(MathFunc3d& func,
-                                       double umin, double umax,
+                                       Standard_Real umin, Standard_Real umax,
                                        int degree,
-                                       double tolerance,
+                                       Standard_Real tolerance,
                                        int maxDepth)
 {
     pimpl = new CFunctionToBsplineImpl(func, umin, umax, degree, tolerance, maxDepth);
@@ -158,7 +158,7 @@ Handle(Geom_BSplineCurve) CFunctionToBspline::Curve()
 
 // ---------------- Implementation class -------------------------- // 
 
-std::vector<ChebSegment> CFunctionToBspline::CFunctionToBsplineImpl::approxSegment(double umin, double umax, int depth)
+std::vector<ChebSegment> CFunctionToBspline::CFunctionToBsplineImpl::approxSegment(Standard_Real umin, Standard_Real umax, int depth)
 {
     // to estimate the error, we do a chebycheff approximation at higher
     // degree and evaluate the coefficients
@@ -168,13 +168,13 @@ std::vector<ChebSegment> CFunctionToBspline::CFunctionToBsplineImpl::approxSegme
     const math_Vector cz = cheb_approx(_zfunc, K+1, umin, umax);
     
     // estimate error
-    double errx=0., erry = 0., errz = 0.;
+    Standard_Real errx=0., erry = 0., errz = 0.;
     for (int i = _degree+1; i < K+1; ++i) {
         errx += fabs(cx(i));
         erry += fabs(cy(i));
         errz += fabs(cz(i));
     }
-    const double error = std::sqrt(errx*errx + erry*erry + errz*errz);
+    const Standard_Real error = std::sqrt(errx*errx + erry*erry + errz*errz);
     
     if (error < _tol || depth >= _maxDepth) {
         // we can use this approximation, store to structure
@@ -191,7 +191,7 @@ std::vector<ChebSegment> CFunctionToBspline::CFunctionToBsplineImpl::approxSegme
     }
     else {
         // we have to split the range in two parts and do the approximation for each of them
-        const double alpha = 0.5;
+        const Standard_Real alpha = 0.5;
         std::vector<ChebSegment> list1 = approxSegment(umin, umin + (umax-umin)*alpha, depth + 1);
         std::vector<ChebSegment> list2 = approxSegment(umin + (umax-umin)*alpha, umax, depth + 1);
         // combine lists
@@ -212,7 +212,7 @@ Handle(Geom_BSplineCurve) CFunctionToBspline::CFunctionToBsplineImpl::Curve()
     
     // get estimated error and create bspline segments
     std::vector<Handle(Geom_BSplineCurve)> curves;
-    double errTotal = 0.;
+    Standard_Real errTotal = 0.;
     std::vector<ChebSegment>::iterator it = segments.begin();
     for (; it != segments.end(); ++it) {
         // get control points
@@ -264,7 +264,7 @@ Handle(Geom_BSplineCurve) CFunctionToBspline::CFunctionToBsplineImpl::Curve()
     return result;
 }
 
-double CFunctionToBspline::ApproxError()
+Standard_Real CFunctionToBspline::ApproxError()
 {
     return pimpl->_err;
 }

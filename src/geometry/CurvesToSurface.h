@@ -59,7 +59,7 @@ public:
      * @param continuousIfClosed Make a C2 continuous surface at the start/end junction if the first and last curve are the same
      */
     GEOML_EXPORT explicit CurvesToSurface(const std::vector<Handle(Geom_Curve) >& splines_vector,
-                                              const std::vector<double>& parameters,
+                                              const std::vector<Standard_Real>& parameters,
                                               bool continuousIfClosed = false);
     /**
      * @brief sets the maximum interpolation degree of the splines in skinning direction
@@ -71,7 +71,7 @@ public:
     /**
      * @brief returns the parameters at the profile curves
      */
-    GEOML_EXPORT std::vector<double> GetParameters() const
+    GEOML_EXPORT std::vector<Standard_Real> GetParameters() const
     {
         return _parameters;
     }
@@ -95,7 +95,7 @@ private:
 
     std::vector<Handle(Geom_BSplineCurve) > _inputCurves;
     std::vector<Handle(Geom_BSplineCurve) > _compatibleSplines;
-    std::vector<double> _parameters;
+    std::vector<Standard_Real> _parameters;
     bool _continuousIfClosed = false;
     bool _hasPerformed = false;
     int _maxDegree = 3;

@@ -32,18 +32,18 @@
 namespace
 {
 
-Handle(TColStd_HArray1OfReal) toArray(const std::vector<double>& vector)
+Handle(TColStd_HArray1OfReal) toArray(const std::vector<Standard_Real>& vector)
 {
     Handle(TColStd_HArray1OfReal) array = new TColStd_HArray1OfReal(1, static_cast<int>(vector.size()));
     int ipos                            = 1;
-    for (std::vector<double>::const_iterator it = vector.begin(); it != vector.end(); ++it, ipos++) {
+    for (std::vector<Standard_Real>::const_iterator it = vector.begin(); it != vector.end(); ++it, ipos++) {
         array->SetValue(ipos, *it);
     }
 
     return array;
 }
 
-void clamp(Handle(Geom_BSplineCurve) & curve, double min, double max)
+void clamp(Handle(Geom_BSplineCurve) & curve, Standard_Real min, Standard_Real max)
 {
 
     Handle(Geom_Curve) c = new Geom_TrimmedCurve(curve, min, max);
@@ -77,7 +77,7 @@ PointsToBSplineInterpolation::PointsToBSplineInterpolation(const Handle(TColgp_H
 }
 
 PointsToBSplineInterpolation::PointsToBSplineInterpolation(const Handle(TColgp_HArray1OfPnt) & points,
-                                                                     const std::vector<double>& parameters,
+                                                                     const std::vector<Standard_Real>& parameters,
                                                                      unsigned int maxDegree, bool continuousIfClosed)
     : m_pnts(points)
     , m_params(parameters)
@@ -105,9 +105,9 @@ Handle(Geom_BSplineCurve) PointsToBSplineInterpolation::Curve() const
 {
     int degree = static_cast<int>(Degree());
 
-    std::vector<double> params = m_params;
+    std::vector<Standard_Real> params = m_params;
 
-    std::vector<double> knots =
+    std::vector<Standard_Real> knots =
         BSplineAlgorithms::knotsFromCurveParameters(params, static_cast<unsigned int>(degree), isClosed());
 
     if (isClosed()) {
@@ -216,12 +216,12 @@ Handle(Geom_BSplineCurve) PointsToBSplineInterpolation::Curve() const
     return result;
 }
 
-double PointsToBSplineInterpolation::maxDistanceOfBoundingBox(const TColgp_Array1OfPnt& points) const
+Standard_Real PointsToBSplineInterpolation::maxDistanceOfBoundingBox(const TColgp_Array1OfPnt& points) const
 {
-    double maxDistance = 0.;
+    Standard_Real maxDistance = 0.;
     for (int i = points.Lower(); i <= points.Upper(); ++i) {
         for (int j = points.Lower(); j <= points.Upper(); ++j) {
-            double dist = points.Value(i).Distance(points.Value(j));
+            Standard_Real dist = points.Value(i).Distance(points.Value(j));
             maxDistance = std::max(maxDistance, dist);
         }
     }
@@ -230,8 +230,8 @@ double PointsToBSplineInterpolation::maxDistanceOfBoundingBox(const TColgp_Array
 
 bool PointsToBSplineInterpolation::isClosed() const
 {
-    double maxDistance = maxDistanceOfBoundingBox(m_pnts->Array1());
-    double error       = 1e-6 * maxDistance;
+    Standard_Real maxDistance = maxDistanceOfBoundingBox(m_pnts->Array1());
+    Standard_Real error       = 1e-6 * maxDistance;
     return m_pnts->Value(m_pnts->Lower()).IsEqual(m_pnts->Value(m_pnts->Upper()), error) && m_C2Continuous;
 }
 
@@ -245,7 +245,7 @@ PointsToBSplineInterpolation::operator Handle(Geom_BSplineCurve)() const
     return Curve();
 }
 
-const std::vector<double>& PointsToBSplineInterpolation::Parameters() const
+const std::vector<Standard_Real>& PointsToBSplineInterpolation::Parameters() const
 {
     return m_params;
 }

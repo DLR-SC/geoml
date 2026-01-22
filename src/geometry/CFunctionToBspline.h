@@ -48,9 +48,9 @@ public:
      * @param maxDepth Maximum depth of curve splitting -> Influences resulting segment number
      */
     CFunctionToBspline(MathFunc3d& f,
-                       double umin, double umax,
+                       Standard_Real umin, Standard_Real umax,
                        int degree,
-                       double tolerance=1e-5,
+                       Standard_Real tolerance=1e-5,
                        int maxDepth = 10);
 
     ~CFunctionToBspline();
@@ -59,7 +59,7 @@ public:
     Handle(Geom_BSplineCurve) Curve();
 
     /// returns the error made by spline approximation
-    double ApproxError();
+    Standard_Real ApproxError();
 
 private:
     class CFunctionToBsplineImpl;

@@ -76,7 +76,7 @@ TEST_F(TestArcLengthReparameterization, accuracy)
     GeomAdaptor_Curve adaptor(curve);
 
     // total Length
-    double totalLen = GCPnts_AbscissaPoint::Length(adaptor);
+    Standard_Real totalLen = GCPnts_AbscissaPoint::Length(adaptor);
 
     EXPECT_NEAR(totalLen, repa.totalLength(), 1e-6);
 
@@ -87,10 +87,10 @@ TEST_F(TestArcLengthReparameterization, accuracy)
     // at parameter 0.3, the the curve is roughly halved
     EXPECT_NEAR(0.3, repa.parameter(totalLen*0.5), 1e-2);
 
-    for (double parm = 0.0; parm <= 1.0; parm += 0.05) {
-        double arcLength = GCPnts_AbscissaPoint::Length(adaptor, 0.0, parm);
+    for (Standard_Real parm = 0.0; parm <= 1.0; parm += 0.05) {
+        Standard_Real arcLength = GCPnts_AbscissaPoint::Length(adaptor, 0.0, parm);
 
-        double parmComputed = repa.parameter(arcLength);
+        Standard_Real parmComputed = repa.parameter(arcLength);
 
         ASSERT_NEAR(parm, parmComputed, 1e-4);
     }

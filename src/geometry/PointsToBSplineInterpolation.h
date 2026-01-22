@@ -40,7 +40,7 @@ public:
                                               unsigned int maxDegree = 3, bool continuousIfClosed = false);
 
     GEOML_EXPORT PointsToBSplineInterpolation(const Handle(TColgp_HArray1OfPnt) & points,
-                                              const std::vector<double>& parameters, unsigned int maxDegree = 3,
+                                              const std::vector<Standard_Real>& parameters, unsigned int maxDegree = 3,
                                               bool continuousIfClosed = false);
 
     /// Returns the interpolation curve
@@ -49,7 +49,7 @@ public:
     GEOML_EXPORT operator Handle(Geom_BSplineCurve)() const;
 
     /// Returns the parameters of the interpolated points
-    GEOML_EXPORT const std::vector<double>& Parameters() const;
+    GEOML_EXPORT const std::vector<Standard_Real>& Parameters() const;
 
     /// Returns the degree of the b-spline interpolation
     GEOML_EXPORT unsigned int Degree() const;
@@ -57,7 +57,7 @@ public:
 private:
     /// computes the maximum distance of the given points
     /// TODO: move to bsplinealgorithms::scale
-    double maxDistanceOfBoundingBox(const TColgp_Array1OfPnt& points) const;
+    Standard_Real maxDistanceOfBoundingBox(const TColgp_Array1OfPnt& points) const;
 
     bool isClosed() const;
 
@@ -66,7 +66,7 @@ private:
     /// curve coordinates to be fitted by the B-spline
     const Handle(TColgp_HArray1OfPnt) m_pnts;
 
-    std::vector<double> m_params;
+    std::vector<Standard_Real> m_params;
 
     /// degree of the B-spline
     int m_degree;

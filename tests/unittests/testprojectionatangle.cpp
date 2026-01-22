@@ -89,8 +89,8 @@ protected:
 
 TEST_F(TestProjectionAtAngleSimple, consistency)
 {
-    for (double angle=45.; angle<=135; angle += 5) {
-        double yExpected = 1./tan(Radians(angle));
+    for (Standard_Real angle=45.; angle<=135; angle += 5) {
+        Standard_Real yExpected = 1./tan(Radians(angle));
         geoml::ProjectPointOnCurveAtAngle proj(pnt, curve, Radians(angle), gp_Dir(0, 0, 1));
         
         ASSERT_TRUE(proj.IsDone());

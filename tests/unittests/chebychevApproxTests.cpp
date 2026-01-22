@@ -40,7 +40,7 @@ protected:
 
 namespace
 {
-    typedef double (*MathFunc)(double t, void* obj);
+    typedef Standard_Real (*MathFunc)(Standard_Real t, void* obj);
 
     class MathFuncAdapter : public geoml::MathFunc1d
     {
@@ -51,7 +51,7 @@ namespace
         {
         }
 
-        double value(double t) override
+        Standard_Real value(Standard_Real t) override
         {
             return _func(t, _p);
         }
@@ -62,24 +62,24 @@ namespace
     };
 
     // some functions to approximate
-    double parabola(double x, void*)
+    Standard_Real parabola(Standard_Real x, void*)
     {
         return x*x;
     }
     
-    double line(double x, void*)
+    Standard_Real line(Standard_Real x, void*)
     {
         return -5.*x;
     }
     
-    double shifted_parabola(double x, void*)
+    Standard_Real shifted_parabola(Standard_Real x, void*)
     {
         return 2.*(x-4.)*(x-4.) - 1.;
     }
     
-    double cubic_with_parameter(double x, void* p)
+    Standard_Real cubic_with_parameter(Standard_Real x, void* p)
     {
-        double par = *(double*)p;
+        Standard_Real par = *(Standard_Real*)p;
         return par*x*x*x;
     }
 
@@ -124,7 +124,7 @@ TEST_F(ChebychevApproxTests, shifted_parabola)
 
 TEST_F(ChebychevApproxTests, cubic_with_parameter)
 {
-    double parm = 7.;
+    Standard_Real parm = 7.;
     MathFuncAdapter adapt(cubic_with_parameter, &parm);
     math_Vector v = geoml::cheb_approx(adapt, 10, -1., 1.);
     ASSERT_NEAR(0.0, v(0), 1e-12);

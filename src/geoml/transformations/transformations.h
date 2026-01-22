@@ -27,7 +27,7 @@ namespace geoml
  * @param factor The factor applied to the direction for the translation (default: 1.0)
  * @return TopoDS_Shape 
  */
-GEOML_API_EXPORT TopoDS_Shape translate(TopoDS_Shape const& origin, gp_Vec const& direction, double factor = 1.0);
+GEOML_API_EXPORT TopoDS_Shape translate(TopoDS_Shape const& origin, gp_Vec const& direction, Standard_Real factor = 1.0);
 
 /**
  * @brief Creates a translated copy of a gp_Pnt. The translation is performed along a
@@ -38,7 +38,7 @@ GEOML_API_EXPORT TopoDS_Shape translate(TopoDS_Shape const& origin, gp_Vec const
  * @param factor The factor applied to the direction for the translation (default: 1.0)
  * @return gp_Pnt 
  */
-GEOML_API_EXPORT gp_Pnt translate(gp_Pnt const& origin, gp_Vec const& direction, double factor = 1.0);
+GEOML_API_EXPORT gp_Pnt translate(gp_Pnt const& origin, gp_Vec const& direction, Standard_Real factor = 1.0);
 
 /**
  * @brief Creates a translated copy of an std::vector of gp_Pnts. The translation is performed along a
@@ -49,7 +49,7 @@ GEOML_API_EXPORT gp_Pnt translate(gp_Pnt const& origin, gp_Vec const& direction,
  * @param factor The factor applied to the direction for the translation (default: 1.0)
  * @return std::vector<gp_Pnt> 
  */
-GEOML_API_EXPORT std::vector<gp_Pnt> translate(std::vector<gp_Pnt> const& origin, gp_Vec const& direction, double factor = 1.0);
+GEOML_API_EXPORT std::vector<gp_Pnt> translate(std::vector<gp_Pnt> const& origin, gp_Vec const& direction, Standard_Real factor = 1.0);
 
 /**
  * @brief Creates repeated copies of an input shape by repeatedly transforming the shape 

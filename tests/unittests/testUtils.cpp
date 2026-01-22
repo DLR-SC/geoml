@@ -34,7 +34,7 @@
 #include <TopoDS.hxx>
 
 // save x-y data
-void outputXY(const int & i, const double& x, const double&y, const std::string& filename)
+void outputXY(const int & i, const Standard_Real& x, const Standard_Real&y, const std::string& filename)
 {
     std::ofstream out;
     if (i>0) {
@@ -46,7 +46,7 @@ void outputXY(const int & i, const double& x, const double&y, const std::string&
     out << std::setprecision(17) << std::scientific  << x << "\t" << y << std::endl;
     out.close();
 } 
-void outputXYVector(const int& i, const double& x, const double& y, const double& vx, const double& vy, const std::string& filename)
+void outputXYVector(const int& i, const Standard_Real& x, const Standard_Real& y, const Standard_Real& vx, const Standard_Real& vy, const std::string& filename)
 {
     std::ofstream out;
     if (i>0) {
@@ -85,7 +85,7 @@ Handle(Geom_BSplineCurve) LoadBSplineCurve(const std::string& filename)
         return nullptr;
     }
 
-    double umin, umax;
+    Standard_Real umin, umax;
     return Handle(Geom_BSplineCurve)::DownCast(BRep_Tool::Curve(TopoDS::Edge(e), umin, umax));
 }
 

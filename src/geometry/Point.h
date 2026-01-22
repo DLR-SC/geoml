@@ -37,7 +37,7 @@ class Point
 
 public:
     // Constructor
-    GEOML_EXPORT Point(double xval = 0.0, double yval = 0.0, double zval = 0.0);
+    GEOML_EXPORT Point(Standard_Real xval = 0.0, Standard_Real yval = 0.0, Standard_Real zval = 0.0);
 
     // Copy constructor
     GEOML_EXPORT Point(const Point& aPoint);
@@ -60,13 +60,13 @@ public:
     GEOML_EXPORT Point& operator-=(const Point& aPoint);
 
     // Scaling of points
-    GEOML_EXPORT Point operator*(double) const;
+    GEOML_EXPORT Point operator*(Standard_Real) const;
 
     // returns a'*a
-    GEOML_EXPORT double norm2Sqr() const;
+    GEOML_EXPORT Standard_Real norm2Sqr() const;
 
     // returns the length of the vector
-    GEOML_EXPORT double norm2() const;
+    GEOML_EXPORT Standard_Real norm2() const;
 
     // Virtual Destructor
     GEOML_EXPORT virtual ~Point();
@@ -78,26 +78,26 @@ public:
     GEOML_EXPORT void Dump(std::ostream& aStream) const;
 
     // scalar product
-    GEOML_EXPORT static double inner_prod(const Point& aPoint, const Point& bPoint);
+    GEOML_EXPORT static Standard_Real inner_prod(const Point& aPoint, const Point& bPoint);
 
     // cross product
     GEOML_EXPORT static Point cross_prod(const Point& a, const Point& b);
 
     // scalar projection of a vector a onto a nonzero vector b
-    GEOML_EXPORT static double scalar_projection(const Point& a, const Point& b);
+    GEOML_EXPORT static Standard_Real scalar_projection(const Point& a, const Point& b);
 
     // vector projection of a vector a onto a nonzero vector b
     GEOML_EXPORT static Point vector_projection(const Point& a, const Point& b);
 
     // square distance to another point
-    GEOML_EXPORT double distance2(const Point& point) const;
+    GEOML_EXPORT Standard_Real distance2(const Point& point) const;
 
     // returns minimum and maximum component
-    GEOML_EXPORT void getMinMax(double & min, double & max) const;
+    GEOML_EXPORT void getMinMax(Standard_Real & min, Standard_Real & max) const;
 
-    double x;
-    double y;
-    double z;
+    Standard_Real x;
+    Standard_Real y;
+    Standard_Real z;
 };
 
 } // end namespace geoml

@@ -65,7 +65,7 @@ GEOML_EXPORT CurvesToSurface::CurvesToSurface(std::vector<Handle(Geom_Curve) > c
 }
 
 GEOML_EXPORT CurvesToSurface::CurvesToSurface(std::vector<Handle(Geom_Curve) > const& splines_vector,
-                                                       std::vector<double> const& parameters,
+                                                       std::vector<Standard_Real> const& parameters,
                                                        bool continuousIfClosed)
     : _parameters(parameters)
     , _continuousIfClosed(continuousIfClosed)
@@ -107,7 +107,7 @@ GEOML_EXPORT void CurvesToSurface::CalculateParameters(std::vector<Handle(Geom_B
         }
     }
 
-    std::pair<std::vector<double>, std::vector<double> > parameters
+    std::pair<std::vector<Standard_Real>, std::vector<Standard_Real> > parameters
         = BSplineAlgorithms::computeParamsBSplineSurf(controlPoints);
     _parameters = parameters.second;
 }
@@ -120,7 +120,7 @@ GEOML_EXPORT void CurvesToSurface::Perform()
     }
 
     // check if all curves are closed
-    double tolerance = BSplineAlgorithms::scale(_inputCurves) * BSplineAlgorithms::REL_TOL_CLOSED;
+    Standard_Real tolerance = BSplineAlgorithms::scale(_inputCurves) * BSplineAlgorithms::REL_TOL_CLOSED;
     bool makeClosed = _continuousIfClosed & _inputCurves.front()->IsEqual(_inputCurves.back(), tolerance);
 
     size_t nCurves = _inputCurves.size();

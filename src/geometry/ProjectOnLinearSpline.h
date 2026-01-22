@@ -39,7 +39,7 @@ public:
     GEOML_EXPORT gp_Pnt Point();
 
     /// Returns the curve parameter of the projected point
-    GEOML_EXPORT double Parameter();
+    GEOML_EXPORT Standard_Real Parameter();
 
     GEOML_EXPORT ~ProjectOnLinearSpline();
 
@@ -49,7 +49,7 @@ private:
     Handle(Geom_BSplineCurve) _curve;
     bool   _isDone;
     gp_Pnt _pProj, _point;
-    double _param;
+    Standard_Real _param;
 };
 
 }

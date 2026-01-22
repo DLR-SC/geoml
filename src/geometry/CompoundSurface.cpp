@@ -22,7 +22,7 @@
 namespace geoml
 {
 
-CompoundSurface::CompoundSurface(const std::vector<Handle(Geom_BoundedSurface)>& surfaces, const std::vector<double>& uparams)
+CompoundSurface::CompoundSurface(const std::vector<Handle(Geom_BoundedSurface)>& surfaces, const std::vector<Standard_Real>& uparams)
     : m_surfaces(surfaces)
     , m_uparams(uparams)
 {
@@ -35,18 +35,18 @@ CompoundSurface::CompoundSurface(const std::vector<Handle(Geom_BoundedSurface)>&
     }
 }
 
-gp_Pnt CompoundSurface::Value(double u, double v) const
+gp_Pnt CompoundSurface::Value(Standard_Real u, Standard_Real v) const
 {
-    double tol = 1e-12;
+    Standard_Real tol = 1e-12;
     for (size_t idx = 0; idx < m_surfaces.size(); ++idx) {
         if (m_uparams[idx] - tol <= u && u <= m_uparams[idx+1] + tol) {
             const auto& surface = m_surfaces[idx];
 
-            double u1, u2, v1, v2;
+            Standard_Real u1, u2, v1, v2;
             surface->Bounds(u1, u2, v1, v2);
 
-            double us = u1 + (u - m_uparams[idx])/(m_uparams[idx+1]-m_uparams[idx])*(u2 - u1);
-            double vs = (1.-v) * v1 + v*v2;
+            Standard_Real us = u1 + (u - m_uparams[idx])/(m_uparams[idx+1]-m_uparams[idx])*(u2 - u1);
+            Standard_Real vs = (1.-v) * v1 + v*v2;
             return surface->Value(us, vs);
         }
     }

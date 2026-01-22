@@ -38,7 +38,7 @@
 #include <TopTools_IndexedMapOfShape.hxx>
 #include <GeomConvert.hxx>
 
-Handle(Geom_BSplineCurve) createBSpline(const std::vector<gp_Pnt>& poles, const std::vector<double>& knots, int degree)
+Handle(Geom_BSplineCurve) createBSpline(const std::vector<gp_Pnt>& poles, const std::vector<Standard_Real>& knots, int degree)
 {
    auto occ_poles = OccArray(poles);
    auto seq = OccFArray(knots);
@@ -65,15 +65,15 @@ TEST(BSplineAlgorithms, testComputeParamsBSplineCurve)
     controlPoints->SetValue(4, gp_Pnt(4, 0, 0));
 
     // compute centripetal parameters by the method that shall be tested here
-    double alpha = 0.5;
-    std::vector<double> parameters = BSplineAlgorithms::computeParamsBSplineCurve(controlPoints, alpha);
+    Standard_Real alpha = 0.5;
+    std::vector<Standard_Real> parameters = BSplineAlgorithms::computeParamsBSplineCurve(controlPoints, alpha);
 
     // compute right parameters by hand
     TColStd_Array1OfReal right_parameters(1, 4);
-    double first_to_second = pow(controlPoints->Value(1).SquareDistance(controlPoints->Value(2)), 0.5);
-    double second_to_third = pow(controlPoints->Value(2).SquareDistance(controlPoints->Value(3)), 0.5);
-    double third_to_fourth = pow(controlPoints->Value(3).SquareDistance(controlPoints->Value(4)), 0.5);
-    double polygon_length_alpha = pow(first_to_second, alpha) + pow(second_to_third, alpha) + pow(third_to_fourth, alpha);
+    Standard_Real first_to_second = pow(controlPoints->Value(1).SquareDistance(controlPoints->Value(2)), 0.5);
+    Standard_Real second_to_third = pow(controlPoints->Value(2).SquareDistance(controlPoints->Value(3)), 0.5);
+    Standard_Real third_to_fourth = pow(controlPoints->Value(3).SquareDistance(controlPoints->Value(4)), 0.5);
+    Standard_Real polygon_length_alpha = pow(first_to_second, alpha) + pow(second_to_third, alpha) + pow(third_to_fourth, alpha);
 
     right_parameters(1) = 0;
     right_parameters(2) = pow(first_to_second, alpha) / polygon_length_alpha;
@@ -550,7 +550,7 @@ TEST(BSplineAlgorithms, testReparametrizeBSplineContinuouslyApprox)
 
     Handle(Geom_BSplineCurve) spline = new Geom_BSplineCurve(controlPoints, knots, mults, degree);
 
-    std::vector<double> old_parameters(7, 0.);
+    std::vector<Standard_Real> old_parameters(7, 0.);
     old_parameters[0] = 0.;
     old_parameters[1] = 0.2;
     old_parameters[2] = 0.4;
@@ -559,7 +559,7 @@ TEST(BSplineAlgorithms, testReparametrizeBSplineContinuouslyApprox)
     old_parameters[5] = 0.8;
     old_parameters[6] = 1.;
 
-    std::vector<double> new_parameters(7, 0.);
+    std::vector<Standard_Real> new_parameters(7, 0.);
     new_parameters[0] = 0.;
     new_parameters[1] = 0.1;
     new_parameters[2] = 0.2;
@@ -625,12 +625,12 @@ TEST(BSplineAlgorithms, testReparametrizeBSplineContinuouslyApproxWithKink)
     mults(3) = 4;
 
     Handle(Geom_BSplineCurve) spline = new Geom_BSplineCurve(controlPoints, knots, mults, degree);
-    std::vector<double> oldParms;
+    std::vector<Standard_Real> oldParms;
     oldParms.push_back(0.);
     oldParms.push_back(0.5);
     oldParms.push_back(1.0);
 
-    std::vector<double> newParms = oldParms;
+    std::vector<Standard_Real> newParms = oldParms;
     newParms[1] = 0.6;
     Handle(Geom_BSplineCurve) splineRepar = geoml::BSplineAlgorithms::reparametrizeBSplineContinuouslyApprox(spline, oldParms, newParms, 5).curve;
     BRepTools::Write(BRepBuilderAPI_MakeEdge(spline).Edge(), "TestData/bugs/505/original_spline.brep");
@@ -685,7 +685,7 @@ TEST(BSplineAlgorithms, reparametrizeBSplineNiceKnots)
 
             // create circular spline
             Handle(TColgp_HArray1OfPnt) pnt2 = new TColgp_HArray1OfPnt(1, nPoints);
-            double dAngle = 2.*M_PI / static_cast<double>(nPoints - 1);
+            Standard_Real dAngle = 2.*M_PI / static_cast<Standard_Real>(nPoints - 1);
             for (int i = 0; i < nPoints; ++i) {
                 pnt2->SetValue(i + 1, gp_Pnt(cos(i*dAngle),
                                             0.,
@@ -699,7 +699,7 @@ TEST(BSplineAlgorithms, reparametrizeBSplineNiceKnots)
             EXPECT_EQ(GeomAbs_QuasiUniform, bspline->KnotDistribution());
 
             // check, that nuber segments is power of two
-            double knotdist = bspline->Knot(2) - bspline->Knot(1);
+            Standard_Real knotdist = bspline->Knot(2) - bspline->Knot(1);
             EXPECT_TRUE(knotdist > 0);
             EXPECT_TRUE(fabs(fmod(log2(knotdist), 1)) < 1e-4);
         }
@@ -816,7 +816,7 @@ TEST(BSplineAlgorithms, testInterpolatingSurface)
         }
     }
 
-    std::pair<std::vector<double>, std::vector<double> > parameters = BSplineAlgorithms::computeParamsBSplineSurf(points);
+    std::pair<std::vector<Standard_Real>, std::vector<Standard_Real> > parameters = BSplineAlgorithms::computeParamsBSplineSurf(points);
 
     Handle(Geom_BSplineSurface) interpolatingSurf = BSplineAlgorithms::pointsToSurface(points, parameters.first, parameters.second, false, false);
 
@@ -943,14 +943,14 @@ TEST(BSplineAlgorithms, testCreateGordonSurface)
     compatible_splines_v_vector.push_back(spline_v5);
 
     // intersection point parameters of v-directional curve with u-directional curves:
-    std::vector<double> intersection_params_v;
+    std::vector<Standard_Real> intersection_params_v;
     intersection_params_v.push_back(0.);
     intersection_params_v.push_back(3. / 5.);
     intersection_params_v.push_back(4. / 5.);
     intersection_params_v.push_back(1.);
 
     // intersection point parameters of u-directional curve with v-directional curves:
-    std::vector<double> intersection_params_u;
+    std::vector<Standard_Real> intersection_params_u;
     intersection_params_u.push_back(0.);
     intersection_params_u.push_back(0.5 - std::sqrt(0.1));
     intersection_params_u.push_back(0.5 - std::sqrt(0.05));
@@ -960,12 +960,12 @@ TEST(BSplineAlgorithms, testCreateGordonSurface)
     Handle(Geom_BSplineSurface) gordonSurface = GordonSurfaceBuilder(compatible_splines_u_vector, compatible_splines_v_vector,
                                                                           intersection_params_u, intersection_params_v, 1e-6).SurfaceGordon();
 
-    double tolerance = 1e-12;
+    Standard_Real tolerance = 1e-12;
     // after creating the test surface above, now test it:
     for (int u_idx = 0; u_idx <= 100; ++u_idx) {
         for (int v_idx = 0; v_idx <= 100; ++v_idx) {
-            double u_value = u_idx / 100.;
-            double v_value = v_idx / 100.;
+            Standard_Real u_value = u_idx / 100.;
+            Standard_Real v_value = v_idx / 100.;
 
             gp_Pnt surface_point = gordonSurface->Value(u_value, v_value);
             gp_Pnt point_curve1 = spline_u1->Value(u_value);  // represents y(z) = (z - 0.5)^2 with offset -1 in x-direction
@@ -1010,7 +1010,7 @@ TEST(BSplineAlgorithms, testIntersectionFinder)
 
     Handle(Geom_BSplineCurve) spline_v = new Geom_BSplineCurve(controlPoints_v, knots, mults, degree);
 
-    std::vector<std::pair<double, double> > intersection_vector = BSplineAlgorithms::intersections(spline_u, spline_v);
+    std::vector<std::pair<Standard_Real, Standard_Real> > intersection_vector = BSplineAlgorithms::intersections(spline_u, spline_v);
 
     // splines should intersect at u = 0.5 + std::sqrt(0.1) and v = 4. / 5
     ASSERT_NEAR(intersection_vector[0].first, 0.5 + std::sqrt(0.1), 1e-13);
@@ -1224,8 +1224,8 @@ TEST(BSplineAlgorithms, testCreateGordonSurfaceGeneral)
     // after creating the test surface above, now test it:
     for (int u_idx = 0; u_idx <= 100; ++u_idx) {
         for (int v_idx = 0; v_idx <= 100; ++v_idx) {
-            double u_value = u_idx / 100.;
-            double v_value = v_idx / 100.;
+            Standard_Real u_value = u_idx / 100.;
+            Standard_Real v_value = v_idx / 100.;
 
             gp_Pnt surface_point = gordonSurface->Value(u_value, v_value);
             gp_Pnt point_curve1 = spline_u1->Value(u_value);  // represents y(z) = (z - 0.5)^2 with offset -1 in x-direction
@@ -1254,8 +1254,8 @@ TEST(BSplineAlgorithms, testIntersectionFinderClosed)
     std::vector<Handle(Geom_BSplineCurve)> splines_u_vector;
     for (Explorer.Init(shape_u, TopAbs_EDGE); Explorer.More(); Explorer.Next()) {
         TopoDS_Edge curve_edge = TopoDS::Edge(Explorer.Current());
-        double beginning = 0;
-        double end = 1;
+        Standard_Real beginning = 0;
+        Standard_Real end = 1;
         Handle(Geom_Curve) curve = BRep_Tool::Curve(curve_edge, beginning, end);
         Handle(Geom_BSplineCurve) spline = GeomConvert::CurveToBSplineCurve(curve);
         splines_u_vector.push_back(spline);
@@ -1277,14 +1277,14 @@ TEST(BSplineAlgorithms, testIntersectionFinderClosed)
     std::vector<Handle(Geom_BSplineCurve)> splines_v_vector;
     for (Explorer.Init(shape_v, TopAbs_EDGE); Explorer.More(); Explorer.Next()) {
         TopoDS_Edge curve_edge = TopoDS::Edge(Explorer.Current());
-        double beginning = 0;
-        double end = 1;
+        Standard_Real beginning = 0;
+        Standard_Real end = 1;
         Handle(Geom_Curve) curve = BRep_Tool::Curve(curve_edge, beginning, end);
         Handle(Geom_BSplineCurve) spline = GeomConvert::CurveToBSplineCurve(curve);
         splines_v_vector.push_back(spline);
     }
 
-    std::vector<std::pair<double, double> > intersection_params_vector = BSplineAlgorithms::intersections(splines_u_vector[5], splines_v_vector[2]);
+    std::vector<std::pair<Standard_Real, Standard_Real> > intersection_params_vector = BSplineAlgorithms::intersections(splines_u_vector[5], splines_v_vector[2]);
 }
 
 /// Regression with occt 7.4.0
@@ -1352,7 +1352,7 @@ TEST(BSplineAlgorithms, findKinks)
 
     Handle(Geom_BSplineCurve) curve = new Geom_BSplineCurve(pnts, knots, mults, degree, false);
 
-    std::vector<double> kinks = geoml::BSplineAlgorithms::getKinkParameters(curve);
+    std::vector<Standard_Real> kinks = geoml::BSplineAlgorithms::getKinkParameters(curve);
     ASSERT_EQ(1, kinks.size());
     EXPECT_NEAR(0.7, kinks[0], 1e-10);
 
@@ -1365,7 +1365,7 @@ TEST(BSplineAlgorithms, findKinks)
 
 TEST(BSplineAlgorithms, knotsFromParams)
 {
-    std::vector<double> params;
+    std::vector<Standard_Real> params;
     params.push_back(0.);
     params.push_back(0.25);
     params.push_back(0.5);
@@ -1373,7 +1373,7 @@ TEST(BSplineAlgorithms, knotsFromParams)
     params.push_back(1.0);
 
     unsigned int degree = 2;
-    std::vector<double> knots = geoml::BSplineAlgorithms::knotsFromCurveParameters(params, degree, false);
+    std::vector<Standard_Real> knots = geoml::BSplineAlgorithms::knotsFromCurveParameters(params, degree, false);
     ASSERT_EQ(8, knots.size());
     EXPECT_NEAR(0., knots[0], 1e-10);
     EXPECT_NEAR(0., knots[1], 1e-10);
@@ -1401,7 +1401,7 @@ TEST(BSplineAlgorithms, knotsFromParams)
 
 TEST(BSplineAlgorithms, knotsFromParamsClosed)
 {
-    std::vector<double> params;
+    std::vector<Standard_Real> params;
     params.push_back(0.);
     params.push_back(0.0625);
     params.push_back(0.125);
@@ -1417,7 +1417,7 @@ TEST(BSplineAlgorithms, knotsFromParamsClosed)
     params.push_back(1.0);
 
     unsigned int degree = 3;
-    std::vector<double> knots = geoml::BSplineAlgorithms::knotsFromCurveParameters(params, degree, true);
+    std::vector<Standard_Real> knots = geoml::BSplineAlgorithms::knotsFromCurveParameters(params, degree, true);
     ASSERT_EQ(19, knots.size());
     EXPECT_NEAR(-0.1875, knots[0], 1e-10);
     EXPECT_NEAR(-0.125, knots[1], 1e-10);
@@ -1467,7 +1467,7 @@ TEST(BSplineAlgorithms, trimSurfaceBug)
 
     surface = BSplineAlgorithms::trimSurface(surface, 0., 1., 0.49999999999999988898, 0.6666666666666666296);
 
-    double u1, u2, v1, v2;
+    Standard_Real u1, u2, v1, v2;
     surface->Bounds(u1, u2, v1, v2);
 
     EXPECT_NEAR(0., u1, 1e-10);
@@ -1499,8 +1499,8 @@ protected:
         splines_u_vector.clear();
         for (Explorer.Init(shape_u, TopAbs_EDGE); Explorer.More(); Explorer.Next()) {
             TopoDS_Edge curve_edge = TopoDS::Edge(Explorer.Current());
-            double beginning = 0;
-            double end = 1;
+            Standard_Real beginning = 0;
+            Standard_Real end = 1;
             Handle(Geom_Curve) curve = BRep_Tool::Curve(curve_edge, beginning, end);
             Handle(Geom_BSplineCurve) spline = GeomConvert::CurveToBSplineCurve(curve);
             splines_u_vector.push_back(spline);
@@ -1522,8 +1522,8 @@ protected:
         splines_v_vector.clear();
         for (Explorer.Init(shape_v, TopAbs_EDGE); Explorer.More(); Explorer.Next()) {
             TopoDS_Edge curve_edge = TopoDS::Edge(Explorer.Current());
-            double beginning = 0;
-            double end = 1;
+            Standard_Real beginning = 0;
+            Standard_Real end = 1;
             Handle(Geom_Curve) curve = BRep_Tool::Curve(curve_edge, beginning, end);
             Handle(Geom_BSplineCurve) spline = GeomConvert::CurveToBSplineCurve(curve);
             splines_v_vector.push_back(spline);
@@ -1572,7 +1572,7 @@ TEST_P(GordonSurface, testIntersectionRegressions)
     auto readIntersections = [](const std::string& filename) {
         auto mat = readMatrix(filename);
 
-        std::vector<std::pair<double, double>> intersections;
+        std::vector<std::pair<Standard_Real, Standard_Real>> intersections;
 
         for (int i=1; i<=mat.UpperRow(); ++i) {
             intersections.push_back({mat(i, 1), mat(i, 2)});
@@ -1581,7 +1581,7 @@ TEST_P(GordonSurface, testIntersectionRegressions)
         return intersections;
     };
 
-    double spatialTol = 1e-3;
+    Standard_Real spatialTol = 1e-3;
 
     unsigned int iprofile=0;
     for (auto profile : splines_u_vector) {
@@ -1591,7 +1591,7 @@ TEST_P(GordonSurface, testIntersectionRegressions)
             auto profileBspl = Handle(Geom_BSplineCurve)::DownCast(profile);
             auto guideBspl = Handle(Geom_BSplineCurve)::DownCast(guide);
 
-            double splines_scale = (BSplineAlgorithms::scale(profileBspl) + BSplineAlgorithms::scale(guideBspl)) / 2.;
+            Standard_Real splines_scale = (BSplineAlgorithms::scale(profileBspl) + BSplineAlgorithms::scale(guideBspl)) / 2.;
 
             auto intersections = BSplineAlgorithms::intersections(profileBspl, guideBspl, spatialTol / splines_scale);
 
@@ -1607,8 +1607,8 @@ TEST_P(GordonSurface, testIntersectionRegressions)
 
             // check that each old intersection is found
             for (auto refInter : referenceInters) {
-                bool found = std::find_if(std::begin(intersections), std::end(intersections), [&](const std::pair<double, double>& result) {
-                    double tol = 1e-5;
+                bool found = std::find_if(std::begin(intersections), std::end(intersections), [&](const std::pair<Standard_Real, Standard_Real>& result) {
+                    Standard_Real tol = 1e-5;
                     return std::fabs(refInter.first - result.first) <= tol && std::fabs(refInter.second - result.second) <= tol;
                 }) != std::end(intersections);
 
@@ -1690,7 +1690,7 @@ TEST_F(TestConcatSurfaces, concatUDir)
 {
     auto result = geoml::BSplineAlgorithms::concatSurfacesUDir(s1, s2);
 
-    double u1, u2, v1, v2;
+    Standard_Real u1, u2, v1, v2;
     result->Bounds(u1, u2, v1, v2);
     EXPECT_NEAR(0.0, u1, 1e-15);
     EXPECT_NEAR(2.0, u2, 1e-15);
@@ -1738,7 +1738,7 @@ TEST_F(TestConcatSurfaces, concatWithParams)
 
     auto result = concatter.Surface();
 
-    double u1, u2, v1, v2;
+    Standard_Real u1, u2, v1, v2;
     result->Bounds(u1, u2, v1, v2);
 
     EXPECT_NEAR(0.0, u1, 1e-15);
@@ -1757,7 +1757,7 @@ TEST_F(TestConcatSurfaces, concatWithParamsApprox)
 
     auto result = concatter.Surface();
 
-    double u1, u2, v1, v2;
+    Standard_Real u1, u2, v1, v2;
     result->Bounds(u1, u2, v1, v2);
 
     EXPECT_NEAR(0.0, u1, 1e-15);

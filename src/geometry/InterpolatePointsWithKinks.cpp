@@ -91,7 +91,7 @@ namespace
         return result;
     }
 
-    std::vector<double> computeParams(const Handle(TColgp_HArray1OfPnt)& pnts, geoml::ParamMap& params, double alpha)
+    std::vector<Standard_Real> computeParams(const Handle(TColgp_HArray1OfPnt)& pnts, geoml::ParamMap& params, Standard_Real alpha)
     {
         auto initial_params = geoml::BSplineAlgorithms::computeParamsBSplineCurve(pnts, alpha);
 
@@ -104,8 +104,8 @@ namespace
             params[n_pnts - 1] = 1.;
         }
 
-        std::vector<double> kink_params_new;
-        std::vector<double> kink_params_old;
+        std::vector<Standard_Real> kink_params_new;
+        std::vector<Standard_Real> kink_params_old;
 
         for (const auto& p : params) {
             kink_params_new.push_back(p.second);
@@ -113,9 +113,9 @@ namespace
         }
 
         // Perform linear interpolation to get the new parameters
-        std::vector<double> new_params;
+        std::vector<Standard_Real> new_params;
         std::transform(std::begin(initial_params), std::end(initial_params),
-                       std::back_inserter(new_params), [&](double p) {
+                       std::back_inserter(new_params), [&](Standard_Real p) {
            return  geoml::Interpolate(kink_params_old, kink_params_new, p);
         });
 
@@ -130,7 +130,7 @@ namespace geoml
 InterpolatePointsWithKinks::InterpolatePointsWithKinks(const Handle(TColgp_HArray1OfPnt) & points,
                                                                 const std::vector<unsigned int>& kinkIndices,
                                                                 const ParamMap& parameters,
-                                                                double alpha,
+                                                                Standard_Real alpha,
                                                                 unsigned int maxDegree)
     : m_pnts(points)
     , m_kinks(kinkIndices)
@@ -146,7 +146,7 @@ Handle(Geom_BSplineCurve) InterpolatePointsWithKinks::Curve() const
     return m_result->curve;
 }
 
-std::vector<double> InterpolatePointsWithKinks::Parameters() const
+std::vector<Standard_Real> InterpolatePointsWithKinks::Parameters() const
 {
     return m_result->parameters;
 }
@@ -196,7 +196,7 @@ void InterpolatePointsWithKinks::ComputeResult(Result& result) const
 
     // create a continuous spline from the last to the first kink
     if (make_continuous && kinks.size() > 0) {
-        double offset = new_params.front() - new_params.back();
+        Standard_Real offset = new_params.front() - new_params.back();
 
         auto last_kink_idx = kinks.back();
         auto first_kink_idx = kinks.front();
@@ -205,7 +205,7 @@ void InterpolatePointsWithKinks::ComputeResult(Result& result) const
                           slice(m_pnts, 2, first_kink_idx + 1));
 
         auto left_parms = slice(new_params, last_kink_idx,  new_params.size()-1);
-        std::transform(std::begin(left_parms), std::end(left_parms), std::begin(left_parms), [offset](double p) {
+        std::transform(std::begin(left_parms), std::end(left_parms), std::begin(left_parms), [offset](Standard_Real p) {
             return p + offset;
         });
         auto right_parms = slice(new_params, 1, first_kink_idx);
@@ -214,7 +214,7 @@ void InterpolatePointsWithKinks::ComputeResult(Result& result) const
 
         auto lower_curve = PointsToBSplineInterpolation(pnts, the_pars, m_maxDegree, false).Curve();
 
-        double param_to_split = new_params.front();
+        Standard_Real param_to_split = new_params.front();
         auto last = BSplineAlgorithms::trimCurve(lower_curve, lower_curve->FirstParameter(), param_to_split);
         auto first = BSplineAlgorithms::trimCurve(lower_curve, param_to_split, lower_curve->LastParameter());
         // shift parametrization of the last curve to the end of the parameter range

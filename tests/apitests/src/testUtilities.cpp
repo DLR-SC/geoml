@@ -104,7 +104,7 @@ EXPECT_NEAR(geoml::extract_control_point_vector_in_U_direction(test_surface,1).a
 
 }
 
-geoml::ShapePredicate is_near_ref_point(gp_Pnt ref_point, double tolerance)
+geoml::ShapePredicate is_near_ref_point(gp_Pnt ref_point, Standard_Real tolerance)
 {
     return geoml::ShapePredicate([=](geoml::Shape const& s)
     { 
@@ -202,15 +202,15 @@ TEST(Test_make_fillet, simple_make_fillet_test)
     // compute the areas of the different faces
     GProp_GProps surfaceProperties_selected_face;
     BRepGProp::SurfaceProperties(selected_face, surfaceProperties_selected_face);
-    double area_selected_face = surfaceProperties_selected_face.Mass();
+    Standard_Real area_selected_face = surfaceProperties_selected_face.Mass();
 
     GProp_GProps surfaceProperties_des_of_selected_face;
     BRepGProp::SurfaceProperties(des_of_selected_face, surfaceProperties_des_of_selected_face);
-    double area_des_of_selected_face = surfaceProperties_des_of_selected_face.Mass();
+    Standard_Real area_des_of_selected_face = surfaceProperties_des_of_selected_face.Mass();
 
     GProp_GProps surfaceProperties_cut_face;
     BRepGProp::SurfaceProperties(cut_face, surfaceProperties_cut_face);
-    double area_cut_face = surfaceProperties_cut_face.Mass();
+    Standard_Real area_cut_face = surfaceProperties_cut_face.Mass();
 
     EXPECT_NEAR(area_cut_face, area_selected_face - area_des_of_selected_face, 1e-5);
 

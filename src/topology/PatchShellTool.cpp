@@ -40,7 +40,7 @@ namespace
 
 namespace geoml {
 
-PatchShellTool::PatchShellTool(TopoDS_Shape const& shell, double tol)
+PatchShellTool::PatchShellTool(TopoDS_Shape const& shell, Standard_Real tol)
  : _inputShell(shell)
  , _tolerance(tol)
 {}

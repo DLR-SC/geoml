@@ -90,7 +90,7 @@ void BSplineFit::initSystem(math_Matrix& A, math_Vector& rhsx, math_Vector& rhsy
     for (size_t k=0; k<nPoints; ++k ) {
 
         // set curve parameter
-        double tk = t[k];
+        Standard_Real tk = t[k];
 
         int basis_start_index;
 #if OCC_VERSION_HEX >= VERSION_HEX_CODE(7,1,0)
@@ -104,8 +104,8 @@ void BSplineFit::initSystem(math_Matrix& A, math_Vector& rhsx, math_Vector& rhsy
         int stop  = std::min(n_vars + 1, max(1, basis_start_index + order));
 
         // first and last basis element
-        double N0 = 0.;
-        double N1 = 0.;
+        Standard_Real N0 = 0.;
+        Standard_Real N1 = 0.;
 
         if (basis_start_index == 0) {
             N0 = bspl_basis.Value(1,1);
@@ -156,7 +156,7 @@ void BSplineFit::computeKnots()
     int N = _ncp - order;
     // set uniform knot distribution
     for (int i=1; i<=N; ++i ) {
-        _knots.SetValue(order + i, double(i)/double(N+1));
+        _knots.SetValue(order + i, Standard_Real(i)/Standard_Real(N+1));
     }
 
     // fill multiplicity at end
@@ -171,9 +171,9 @@ void BSplineFit::computeKnots()
   * @brief Calculates curve parameter t_k [0, 1], which
   * corresponds to the arc lengths
   */
- void BSplineFit::computeParameters(double alpha)
+ void BSplineFit::computeParameters(Standard_Real alpha)
  {
-     double sum = 0.0;
+     Standard_Real sum = 0.0;
 
      size_t nPoints = _px.size();
      t.resize(nPoints, 0.);
@@ -181,7 +181,7 @@ void BSplineFit::computeKnots()
 
      // calc total arc length: dt^2 = dx^2 + dy^2
      for (size_t i=0; i<nPoints-1; i++) {
-         double len2 = (_px[i]-_px[i+1])*(_px[i]-_px[i+1])
+         Standard_Real len2 = (_px[i]-_px[i+1])*(_px[i]-_px[i+1])
                  + (_py[i]-_py[i+1])*(_py[i]-_py[i+1])
                  + (_pz[i]-_pz[i+1])*(_pz[i]-_pz[i+1]);
          sum += pow(len2, alpha/2.);
@@ -189,7 +189,7 @@ void BSplineFit::computeKnots()
      }
 
      // normalize parameter with maximum
-     double tmax = t[nPoints-1];
+     Standard_Real tmax = t[nPoints-1];
      for (size_t i=0; i<nPoints; i++) {
          t[i] /= tmax;
      }
@@ -206,21 +206,21 @@ void BSplineFit::computeKnots()
  void BSplineFit::optimizeParameters()
  {
      const int maxIter = 500;  // maximum No of iterations
-     const double eps = 1.0E-6;  // accuracy of arc length parameter
+     const Standard_Real eps = 1.0E-6;  // accuracy of arc length parameter
 
-     double max_error = 0.;
+     Standard_Real max_error = 0.;
 
      const size_t nPoints = _px.size();
 
      // optimize each inner parameter t_k
      for (size_t k=1; k<nPoints-2;  k++) {
-         double f = 0;
+         Standard_Real f = 0;
 
          // get old curve parameter value
-         double tk = t[k];
+         Standard_Real tk = t[k];
 
          // newton step
-         double dt = 0;
+         Standard_Real dt = 0;
 
          int iter = 0; // iteration counter
          do {  // Newton iteration to get a better t parameter
@@ -235,11 +235,11 @@ void BSplineFit::computeKnots()
                     + (p.Y()-_py[k])*(p.Y()-_py[k])
                     + (p.Z()-_pz[k])*(p.Z()-_pz[k]));
 
-             double df  = (p.X()-_px[k])*dp.X()
+             Standard_Real df  = (p.X()-_px[k])*dp.X()
                         + (p.Y()-_py[k])*dp.Y()
                         + (p.Z()-_pz[k])*dp.Z();
 
-             double d2f = (p.X()-_px[k])*d2p.X() + (p.Y()-_py[k])*d2p.Y() + (p.Z()-_pz[k])*d2p.Z()
+             Standard_Real d2f = (p.X()-_px[k])*d2p.X() + (p.Y()-_py[k])*d2p.Y() + (p.Z()-_pz[k])*d2p.Z()
                         + dp.X()*dp.X() + dp.Y()*dp.Y() + dp.Z()*dp.Z();
 
              // newton iterate
@@ -266,9 +266,9 @@ void BSplineFit::computeKnots()
 
 
 /** computes maximum error of the fit */
-double BSplineFit::GetMaxError()
+Standard_Real BSplineFit::GetMaxError()
 {
-    double max_error = 0.0;
+    Standard_Real max_error = 0.0;
 
     const size_t nPoints = _px.size();
 
@@ -276,11 +276,11 @@ double BSplineFit::GetMaxError()
     for (size_t k=0; k<nPoints; k++ ) {
 
         // get curve parameter
-        double tk = t[k];
+        Standard_Real tk = t[k];
         // get corresponding point from Bezier spline
         gp_Pnt x = _curve->Value(tk);
 
-        double err =  (_px[k]-x.X())*(_px[k]-x.X()) + (_py[k]-x.Y())*(_py[k]-x.Y()) + (_pz[k]-x.Z())*(_pz[k]-x.Z());
+        Standard_Real err =  (_px[k]-x.X())*(_px[k]-x.X()) + (_py[k]-x.Y())*(_py[k]-x.Y()) + (_pz[k]-x.Z())*(_pz[k]-x.Z());
         err = sqrt(err);
 
         if (err > max_error) {
@@ -293,7 +293,7 @@ double BSplineFit::GetMaxError()
 
 
 /** Fits given points by a Bezier spline with boundary conditions: match boundary points */
-BSplineFit::error BSplineFit::Fit( const TColgp_Array1OfPnt& points, const std::vector<double>& parameters)
+BSplineFit::error BSplineFit::Fit( const TColgp_Array1OfPnt& points, const std::vector<Standard_Real>& parameters)
 {
     copyPoints( points );
     t = parameters;
@@ -302,7 +302,7 @@ BSplineFit::error BSplineFit::Fit( const TColgp_Array1OfPnt& points, const std::
 
 }
 
-BSplineFit::error BSplineFit::Fit(const TColgp_Array1OfPnt &points, double alpha)
+BSplineFit::error BSplineFit::Fit(const TColgp_Array1OfPnt &points, Standard_Real alpha)
 {
     copyPoints(points);
     computeParameters(alpha);
@@ -310,11 +310,11 @@ BSplineFit::error BSplineFit::Fit(const TColgp_Array1OfPnt &points, double alpha
     return fitCurve();
 }
 
-BSplineFit::error BSplineFit::FitOptimal(const TColgp_Array1OfPnt &points, double alpha, double tolerance, int maxIter)
+BSplineFit::error BSplineFit::FitOptimal(const TColgp_Array1OfPnt &points, Standard_Real alpha, Standard_Real tolerance, int maxIter)
 {
     int iter = 0;
-    double residuum = 0.;
-    double cumSum = 0., cumSumOld = 0.;
+    Standard_Real residuum = 0.;
+    Standard_Real cumSum = 0., cumSumOld = 0.;
 
     copyPoints(points);
     computeParameters(alpha);

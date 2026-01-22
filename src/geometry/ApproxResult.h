@@ -27,7 +27,7 @@ namespace geoml
 struct ApproxResult
 {
     Handle(Geom_BSplineCurve) curve;
-    double error;
+    Standard_Real error;
 };
 
 } // namespace geoml

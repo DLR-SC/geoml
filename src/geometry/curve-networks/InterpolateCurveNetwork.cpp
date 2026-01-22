@@ -37,7 +37,7 @@ namespace geoml
 
 InterpolateCurveNetwork::InterpolateCurveNetwork(const std::vector<Handle (Geom_Curve)> &profiles,
                                                            const std::vector<Handle (Geom_Curve)> &guides,
-                                                           double spatialTol)
+                                                           Standard_Real spatialTol)
     : m_hasPerformed(false)
     , m_spatialTol(spatialTol)
 {
@@ -74,7 +74,7 @@ void InterpolateCurveNetwork::ComputeIntersections(math_Matrix& intersection_par
 
     for (int spline_u_idx = 0; spline_u_idx < static_cast<int>(profiles.size()); ++spline_u_idx) {
         for (int spline_v_idx = 0; spline_v_idx < static_cast<int>(guides.size()); ++spline_v_idx) {
-            std::vector<std::pair<double, double> > currentIntersections = BSplineAlgorithms::intersections(profiles[static_cast<size_t>(spline_u_idx)],
+            std::vector<std::pair<Standard_Real, Standard_Real> > currentIntersections = BSplineAlgorithms::intersections(profiles[static_cast<size_t>(spline_u_idx)],
                                                                                                                  guides[static_cast<size_t>(spline_v_idx)],
                                                                                                                  m_spatialTol);
 
@@ -187,18 +187,18 @@ void InterpolateCurveNetwork::MakeCurvesCompatible()
     // eliminate small inaccuracies of the intersection parameters:
     EliminateInaccuraciesNetworkIntersections(m_profiles, m_guides, intersection_params_u, intersection_params_v);
 
-    std::vector<double> newParametersProfiles;
+    std::vector<Standard_Real> newParametersProfiles;
     for (int spline_v_idx = 1; spline_v_idx <= nGuides; ++spline_v_idx) {
-        double sum = 0;
+        Standard_Real sum = 0;
         for (int spline_u_idx = 1; spline_u_idx <= nProfiles; ++spline_u_idx) {
             sum += intersection_params_u(spline_u_idx - 1, spline_v_idx - 1);
         }
         newParametersProfiles.push_back(sum / nProfiles);
     }
 
-    std::vector<double> newParametersGuides;
+    std::vector<Standard_Real> newParametersGuides;
     for (int spline_u_idx = 1; spline_u_idx <= nProfiles; ++spline_u_idx) {
-        double sum = 0;
+        Standard_Real sum = 0;
         for (int spline_v_idx = 1; spline_v_idx <= nGuides; ++spline_v_idx) {
             sum += intersection_params_v(spline_u_idx - 1, spline_v_idx - 1);
         }
@@ -236,7 +236,7 @@ void InterpolateCurveNetwork::MakeCurvesCompatible()
     // reparametrize u-directional B-splines
     for (int spline_u_idx = 0; spline_u_idx < nProfiles; ++spline_u_idx) {
 
-        std::vector<double> oldParametersProfile;
+        std::vector<Standard_Real> oldParametersProfile;
         for (int spline_v_idx = 0; spline_v_idx < nGuides; ++spline_v_idx) {
             oldParametersProfile.push_back(intersection_params_u(spline_u_idx, spline_v_idx));
         }
@@ -266,7 +266,7 @@ void InterpolateCurveNetwork::MakeCurvesCompatible()
     // reparametrize v-directional B-splines
     for (int spline_v_idx = 0; spline_v_idx < nGuides; ++spline_v_idx) {
 
-        std::vector<double> oldParameterGuide;
+        std::vector<Standard_Real> oldParameterGuide;
         for (int spline_u_idx = 0; spline_u_idx < nProfiles; ++spline_u_idx) {
             oldParameterGuide.push_back(intersection_params_v(spline_u_idx, spline_v_idx));
         }
@@ -378,14 +378,14 @@ Handle(Geom_BSplineSurface) InterpolateCurveNetwork::SurfaceIntersections()
     return m_tensorProdSurf;
 }
 
-std::vector<double> InterpolateCurveNetwork::ParametersProfiles()
+std::vector<Standard_Real> InterpolateCurveNetwork::ParametersProfiles()
 {
     Perform();
 
     return m_intersectionParamsV;
 }
 
-std::vector<double> InterpolateCurveNetwork::ParametersGuides()
+std::vector<Standard_Real> InterpolateCurveNetwork::ParametersGuides()
 {
     Perform();
 
@@ -411,7 +411,7 @@ void InterpolateCurveNetwork::Perform()
     m_hasPerformed = true;
 }
 
-Handle(Geom_BSplineSurface) curveNetworkToSurface(const std::vector<Handle (Geom_Curve)> &profiles, const std::vector<Handle (Geom_Curve)> &guides, double tol)
+Handle(Geom_BSplineSurface) curveNetworkToSurface(const std::vector<Handle (Geom_Curve)> &profiles, const std::vector<Handle (Geom_Curve)> &guides, Standard_Real tol)
 {
     return InterpolateCurveNetwork(profiles, guides, tol).Surface();
 }

@@ -37,7 +37,7 @@ public:
      * @param vparams  V-Parameters to cut
      * @return The shape at cutted params
      */
-    GEOML_EXPORT static TopoDS_Shape CutShellAtUVParameters(const TopoDS_Shape &shape, std::vector<double> uparams, std::vector<double> vparams);
+    GEOML_EXPORT static TopoDS_Shape CutShellAtUVParameters(const TopoDS_Shape &shape, std::vector<Standard_Real> uparams, std::vector<Standard_Real> vparams);
 
     /**
      * @brief Cuts the surface at the specified parameters into a shell
@@ -46,9 +46,9 @@ public:
      * @param vparams  V-Parameters to cut
      * @return The surface cut into a shell
      */
-    GEOML_EXPORT static TopoDS_Shell CutSurfaceAtUVParameters(Handle(Geom_Surface) surface, std::vector<double> uparams, std::vector<double> vparams);
+    GEOML_EXPORT static TopoDS_Shell CutSurfaceAtUVParameters(Handle(Geom_Surface) surface, std::vector<Standard_Real> uparams, std::vector<Standard_Real> vparams);
 
-    GEOML_EXPORT static void CutSurfaceAtUVParameters(Handle(Geom_Surface) surface, std::vector<double> uparams, std::vector<double> vparams, TopoDS_Shell& shell);
+    GEOML_EXPORT static void CutSurfaceAtUVParameters(Handle(Geom_Surface) surface, std::vector<Standard_Real> uparams, std::vector<Standard_Real> vparams, TopoDS_Shell& shell);
 
 
     /**

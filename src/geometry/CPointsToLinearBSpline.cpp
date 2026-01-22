@@ -39,11 +39,11 @@ Handle(Geom_BSplineCurve) CPointsToLinearBSpline::Curve() const
     // compute total length and copy control points
     int icp = 1;
     gp_Pnt lastP = _points[0];
-    double totalLen = 0.;
+    Standard_Real totalLen = 0.;
     TColgp_Array1OfPnt cp(1, ncp);
     for (iter = _points.begin(); iter != _points.end(); ++iter) {
         gp_Pnt p = *iter;
-        double segLen = p.Distance(lastP);
+        Standard_Real segLen = p.Distance(lastP);
         totalLen += segLen;
         cp.SetValue(icp++, p);
         lastP = p;
@@ -54,7 +54,7 @@ Handle(Geom_BSplineCurve) CPointsToLinearBSpline::Curve() const
     TColStd_Array1OfInteger mults(1, ncp);
 
     lastP = _points[0];
-    double lastKnot = 0;
+    Standard_Real lastKnot = 0;
     for (int i = 1; i <= ncp; ++i) {
         if (i == 1 || i == ncp) {
             mults.SetValue(i,2);
@@ -63,7 +63,7 @@ Handle(Geom_BSplineCurve) CPointsToLinearBSpline::Curve() const
             mults.SetValue(i,1);
         }
 
-        double knot = cp.Value(i).Distance(lastP)/totalLen + lastKnot;
+        Standard_Real knot = cp.Value(i).Distance(lastP)/totalLen + lastKnot;
         knots.SetValue(i, knot);
 
         lastKnot = knot;

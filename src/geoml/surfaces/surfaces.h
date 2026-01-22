@@ -39,7 +39,7 @@ namespace geoml
 GEOML_API_EXPORT Handle(Geom_BSplineSurface)
 interpolate_curve_network(const std::vector<Handle(Geom_Curve)>& ucurves,
                           const std::vector<Handle(Geom_Curve)>& vcurves,
-                          double tolerance);
+                          Standard_Real tolerance);
 
 /**
  * @brief Interpolates the curves by a B-spline surface in v-direction

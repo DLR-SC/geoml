@@ -131,13 +131,13 @@ namespace
 {
     struct IsSame
     {
-        IsSame(double tolerance) : _tol(tolerance) {}
-        bool operator() (double first, double second)
+        IsSame(Standard_Real tolerance) : _tol(tolerance) {}
+        bool operator() (Standard_Real first, Standard_Real second)
         {
             return (fabs(first-second)<_tol);
         }
 
-        double _tol;
+        Standard_Real _tol;
     };
 
 } // anonymous namespace
@@ -197,7 +197,7 @@ unsigned int GetNumberOfSubshapes(const TopoDS_Shape &shape)
 // Gets a point on the wire line in dependence of a parameter alpha with
 // 0.0 <= alpha <= 1.0. For alpha = 0.0 this is the line starting point,
 // for alpha = 1.0 the last point on the intersection line.
-gp_Pnt WireGetPoint(const TopoDS_Wire& wire, double alpha)
+gp_Pnt WireGetPoint(const TopoDS_Wire& wire, Standard_Real alpha)
 {
     gp_Pnt point;
     gp_Vec tangent;
@@ -205,7 +205,7 @@ gp_Pnt WireGetPoint(const TopoDS_Wire& wire, double alpha)
     return point;
 }
 
-void WireGetPointTangent(const TopoDS_Wire& wire, double alpha, gp_Pnt& point, gp_Vec& tangent)
+void WireGetPointTangent(const TopoDS_Wire& wire, Standard_Real alpha, gp_Pnt& point, gp_Vec& tangent)
 {
     if (alpha < 0.0 || alpha > 1.0) {
         throw geoml::Error("Parameter alpha not in the range 0.0 <= alpha <= 1.0 in WireGetPointTangent");
@@ -221,7 +221,7 @@ void WireGetPointTangent(const TopoDS_Wire& wire, double alpha, gp_Pnt& point, g
      else {
          GCPnts_AbscissaPoint algo(aCompoundCurve, len*alpha, aCompoundCurve.FirstParameter());
          if (algo.IsDone()) {
-             double par = algo.Parameter();
+             Standard_Real par = algo.Parameter();
              aCompoundCurve.D1( par, point, tangent );
              // normalize tangent to length of the curve
              tangent = len*tangent/tangent.Magnitude();
@@ -233,7 +233,7 @@ void WireGetPointTangent(const TopoDS_Wire& wire, double alpha, gp_Pnt& point, g
 
 }
 
-gp_Pnt EdgeGetPoint(const TopoDS_Edge& edge, double alpha)
+gp_Pnt EdgeGetPoint(const TopoDS_Edge& edge, Standard_Real alpha)
 {
     gp_Pnt point;
     gp_Vec tangent;
@@ -241,7 +241,7 @@ gp_Pnt EdgeGetPoint(const TopoDS_Edge& edge, double alpha)
     return point;
 }
 
-void EdgeGetPointTangent(const TopoDS_Edge& edge, double alpha, gp_Pnt& point, gp_Vec& tangent)
+void EdgeGetPointTangent(const TopoDS_Edge& edge, Standard_Real alpha, gp_Pnt& point, gp_Vec& tangent)
 {
     if (alpha < 0.0 || alpha > 1.0) {
           throw geoml::Error("Parameter alpha not in the range 0.0 <= alpha <= 1.0 in EdgeGetPointTangent");
@@ -256,7 +256,7 @@ void EdgeGetPointTangent(const TopoDS_Edge& edge, double alpha, gp_Pnt& point, g
     }
     GCPnts_AbscissaPoint algo(adaptorCurve, len*alpha, umin);
     if (algo.IsDone()) {
-        double par = algo.Parameter();
+        Standard_Real par = algo.Parameter();
         adaptorCurve.D1( par, point, tangent );
         // normalize tangent to length of the curve
         tangent = len*tangent/tangent.Magnitude();
@@ -271,10 +271,10 @@ Standard_Real ProjectPointOnWire(const TopoDS_Wire& wire, gp_Pnt p)
     return ProjectPointOnWireAtAngle(wire, p, gp_Dir(1,0,0), M_PI/2.);
 }
 
-Standard_Real ProjectPointOnWireAtAngle(const TopoDS_Wire &wire, gp_Pnt p, gp_Dir rotationAxisAroundP, double angle)
+Standard_Real ProjectPointOnWireAtAngle(const TopoDS_Wire &wire, gp_Pnt p, gp_Dir rotationAxisAroundP, Standard_Real angle)
 {
-    double smallestDist = DBL_MAX;
-    double alpha  = 0.;
+    Standard_Real smallestDist = DBL_MAX;
+    Standard_Real alpha  = 0.;
     int edgeIndex = 0;
 
     // find edge with closest dist to point p
@@ -306,7 +306,7 @@ Standard_Real ProjectPointOnWireAtAngle(const TopoDS_Wire &wire, gp_Pnt p, gp_Di
 
     // compute partial length of wire until projection point is reached
     wireExplorer.Init(wire);
-    double partLength = 0.;
+    Standard_Real partLength = 0.;
     for (int iwire = 0; iwire <= edgeIndex; ++iwire) {
         Standard_Real firstParam;
         Standard_Real lastParam;
@@ -322,7 +322,7 @@ Standard_Real ProjectPointOnWireAtAngle(const TopoDS_Wire &wire, gp_Pnt p, gp_Di
     }
 
     // return relative coordinate
-    double normalizedLength = partLength/GetLength(wire);
+    Standard_Real normalizedLength = partLength/GetLength(wire);
     if (normalizedLength > 1.0) {
         normalizedLength = 1.0;
     }
@@ -339,8 +339,8 @@ gp_Pnt2d ProjectPointOnPlane(gp_Pln pln, gp_Pnt p)
     gp_Ax1 xAx = pln.XAxis();
     gp_Ax1 yAx = pln.YAxis();
 
-    double px = (p.XYZ() - xAx.Location().XYZ()) * xAx.Direction().XYZ();
-    double py = (p.XYZ() - yAx.Location().XYZ()) * yAx.Direction().XYZ();
+    Standard_Real px = (p.XYZ() - xAx.Location().XYZ()) * xAx.Direction().XYZ();
+    Standard_Real py = (p.XYZ() - yAx.Location().XYZ()) * yAx.Direction().XYZ();
 
     return gp_Pnt2d(px,py);
 }
@@ -369,7 +369,7 @@ gp_Pnt ProjectPointOnShape(const TopoDS_Shape &shape, const gp_Pnt &point, const
 
 std::optional<UVResult> GetFaceAndUV(TopoDS_Shape const& shape,
                                        gp_Pnt const& pnt,
-                                       double tol)
+                                       Standard_Real tol)
 {
     std::optional<UVResult> res;
     //find a face that contains the point and query the uv coordinates
@@ -395,10 +395,10 @@ std::optional<UVResult> GetFaceAndUV(TopoDS_Shape const& shape,
 }
 
 TopoDS_Face TrimFace(TopoDS_Face const& face,
-                     double umin,
-                     double umax,
-                     double vmin,
-                     double vmax)
+                     Standard_Real umin,
+                     Standard_Real umax,
+                     Standard_Real vmin,
+                     Standard_Real vmax)
 {
     Handle(Geom_Surface) surf = BRep_Tool::Surface(face);
     Handle(Geom_BSplineSurface) trimmed_surf
@@ -448,7 +448,7 @@ gp_Pnt GetCentralFacePoint(const TopoDS_Face& face)
                 );
 
     TopExp_Explorer exp (face,TopAbs_EDGE);
-    std::list<double> intersections;
+    std::list<Standard_Real> intersections;
     for (; exp.More(); exp.Next()) {
         TopoDS_Edge edge = TopoDS::Edge(exp.Current());
         Standard_Real first, last;
@@ -465,7 +465,7 @@ gp_Pnt GetCentralFacePoint(const TopoDS_Face& face)
     }
 
     // remove duplicate solutions defined by tolerance
-    double tolerance = 1e-5;
+    Standard_Real tolerance = 1e-5;
     intersections.sort();
     intersections.unique(IsSame((vmax-vmin)*tolerance));
 
@@ -473,9 +473,9 @@ gp_Pnt GetCentralFacePoint(const TopoDS_Face& face)
     // also the number of sections should be even - else something is really strange
     //assert(intersections.size() % 2 == 0);
     if (intersections.size() >= 2) {
-        std::list<double>::iterator it = intersections.begin();
-        double int1 = *it++;
-        double int2 = *it;
+        std::list<Standard_Real>::iterator it = intersections.begin();
+        Standard_Real int1 = *it++;
+        Standard_Real int2 = *it;
         vmean = (int1 + int2)/2.;
     }
 
@@ -586,12 +586,12 @@ IntStatus IntersectLinePlane(gp_Pnt p1, gp_Pnt p2, gp_Pln plane, gp_Pnt& result)
     gp_Vec normal = plane.Axis().Direction();
     gp_Pnt center = plane.Axis().Location();
 
-    double denominator = gp_Vec(p2.XYZ() - p1.XYZ())*normal;
+    Standard_Real denominator = gp_Vec(p2.XYZ() - p1.XYZ())*normal;
     if (fabs(denominator) < 1e-8) {
         return NoIntersection;
     }
 
-    double alpha = gp_Vec(center.XYZ() - p1.XYZ())*normal / denominator ;
+    Standard_Real alpha = gp_Vec(center.XYZ() - p1.XYZ())*normal / denominator ;
     result = p1.XYZ() + alpha*(p2.XYZ()-p1.XYZ());
 
     if (alpha >= 0. && alpha <= 1.) {
@@ -608,9 +608,9 @@ IntStatus IntersectLinePlane(gp_Pnt p1, gp_Pnt p2, gp_Pln plane, gp_Pnt& result)
 
 // Returns the coordinates of the bounding box of the shape
 void GetShapeExtension(const TopoDS_Shape& shape,
-                       double& minx, double& maxx,
-                       double& miny, double& maxy,
-                       double& minz, double& maxz)
+                       Standard_Real& minx, Standard_Real& maxx,
+                       Standard_Real& miny, Standard_Real& maxy,
+                       Standard_Real& minz, Standard_Real& maxz)
 {
     Bnd_Box boundingBox;
     BRepBndLib::Add(shape, boundingBox);
@@ -664,7 +664,7 @@ TopoDS_Face GetFace(const TopoDS_Shape &shape, int iFace)
 
 Handle(Geom_BSplineCurve) GetBSplineCurve(const TopoDS_Edge& e)
 {
-    double u1, u2;
+    Standard_Real u1, u2;
     Handle(Geom_Curve) curve = BRep_Tool::Curve(e, u1, u2);
     curve = new Geom_TrimmedCurve(curve, u1, u2);
     
@@ -674,11 +674,11 @@ Handle(Geom_BSplineCurve) GetBSplineCurve(const TopoDS_Edge& e)
 }
 
 namespace {
-    bool GetIntersectionPoint_impl(const TopoDS_Face& face, const TopoDS_Edge& edge, gp_Pnt& dst, double tolerance)
+    bool GetIntersectionPoint_impl(const TopoDS_Face& face, const TopoDS_Edge& edge, gp_Pnt& dst, Standard_Real tolerance)
     {
         BRepIntCurveSurface_Inter faceCurveInter;
 
-        double umin = 0., umax = 0.;
+        Standard_Real umin = 0., umax = 0.;
         const Handle(Geom_Curve)& curve = BRep_Tool::Curve(edge, umin, umax);
 
         faceCurveInter.Init(face, GeomAdaptor_Curve(curve, umin, umax), tolerance);
@@ -700,7 +700,7 @@ namespace {
     }
 }
 
-bool GetIntersectionPoint(const TopoDS_Face& face, const TopoDS_Edge& edge, gp_Pnt& dst, double tolerance)
+bool GetIntersectionPoint(const TopoDS_Face& face, const TopoDS_Edge& edge, gp_Pnt& dst, Standard_Real tolerance)
 {
     const bool intersection = GetIntersectionPoint_impl(face, edge, dst, tolerance);
     if (!intersection) {
@@ -710,7 +710,7 @@ bool GetIntersectionPoint(const TopoDS_Face& face, const TopoDS_Edge& edge, gp_P
 }
 
 
-bool GetIntersectionPoint(const TopoDS_Face& face, const TopoDS_Wire& wire, gp_Pnt& dst, double tolerance)
+bool GetIntersectionPoint(const TopoDS_Face& face, const TopoDS_Wire& wire, gp_Pnt& dst, Standard_Real tolerance)
 {
     DEBUG_SCOPE(debug);
     debug.addShape(face, "face");
@@ -727,7 +727,7 @@ bool GetIntersectionPoint(const TopoDS_Face& face, const TopoDS_Wire& wire, gp_P
     return false;
 }
 
-GEOML_EXPORT bool GetIntersectionPoint(const TopoDS_Wire& wire1, const TopoDS_Wire& wire2, intersectionPointList& intersectionPoints, const double tolerance)
+GEOML_EXPORT bool GetIntersectionPoint(const TopoDS_Wire& wire1, const TopoDS_Wire& wire2, intersectionPointList& intersectionPoints, const Standard_Real tolerance)
 {
     BRepExtrema_ExtCC Intersector;
 
@@ -868,7 +868,7 @@ gp_Pnt GetFirstPoint(const TopoDS_Wire& w)
 
 gp_Pnt GetFirstPoint(const TopoDS_Edge& e)
 {
-    double u1, u2;
+    Standard_Real u1, u2;
     Handle_Geom_Curve c = BRep_Tool::Curve(e, u1, u2);
 
     if (e.Orientation() == TopAbs_REVERSED) {
@@ -898,7 +898,7 @@ gp_Pnt GetLastPoint(const TopoDS_Wire& w)
 
 gp_Pnt GetLastPoint(const TopoDS_Edge& e)
 {
-    double u1, u2;
+    Standard_Real u1, u2;
     Handle_Geom_Curve c = BRep_Tool::Curve(e, u1, u2);
 
     if (e.Orientation() == TopAbs_REVERSED) {
@@ -1402,7 +1402,7 @@ TopoDS_Shape CutShapes(const TopoDS_Shape& shape1, const TopoDS_Shape& shape2)
 TopoDS_Shape SplitShape(const TopoDS_Shape& src, const TopoDS_Shape& tool)
 {
 #if OCC_VERSION_HEX >= VERSION_HEX_CODE(6,9,0)
-    double fuzzyValue = Precision::Confusion();
+    Standard_Real fuzzyValue = Precision::Confusion();
     const int c_tries = 3;
 #endif
 
@@ -1557,7 +1557,7 @@ gp_Pnt GetCenterOfMass(const TopoDS_Shape &shape)
 
      if (LProps.Mass() < 1e-13) {
          // Fallback using center of boundary box, fixes #551
-         double minx, maxx, miny, maxy, minz, maxz;
+         Standard_Real minx, maxx, miny, maxy, minz, maxz;
          GetShapeExtension(shape, minx, maxx,
                            miny, maxy,
                            minz, maxz);
@@ -1570,14 +1570,14 @@ gp_Pnt GetCenterOfMass(const TopoDS_Shape &shape)
      return centerPoint;
 }
 
-double GetArea(const TopoDS_Shape &shape)
+Standard_Real GetArea(const TopoDS_Shape &shape)
 {
     // get surface properties of the shape
      GProp_GProps SProps;
      BRepGProp::SurfaceProperties(shape, SProps);
 
      // compute the area of the shape or the area that is framed by the shape
-     double area = SProps.Mass();
+     Standard_Real area = SProps.Mass();
 
      return area;
 }
@@ -1650,7 +1650,7 @@ TopoDS_Shape RemoveDuplicateEdges(const TopoDS_Shape& shape)
 
 bool IsPointInsideShape(const TopoDS_Shape &solid, gp_Pnt point, Bnd_Box const* bounding_box)
 {
-    double tol = 1e-3;
+    Standard_Real tol = 1e-3;
     // check if solid
     if (solid.ShapeType() != TopAbs_SOLID) {
         throw geoml::Error("The shape is not a solid");
@@ -1709,22 +1709,22 @@ bool IsPointAbovePlane(const gp_Pln& pln, gp_Pnt point)
     return gp_Vec(pln.Location(), point).Dot(gp_Vec(pln.Axis().Direction())) > 0;
 }
 
-std::vector<double> LinspaceWithBreaks(double umin, double umax, size_t n_values, const std::vector<double>& breaks)
+std::vector<Standard_Real> LinspaceWithBreaks(Standard_Real umin, Standard_Real umax, size_t n_values, const std::vector<Standard_Real>& breaks)
 {
-    double du = (umax - umin) / static_cast<double>(n_values - 1);
+    Standard_Real du = (umax - umin) / static_cast<Standard_Real>(n_values - 1);
 
-    std::vector<double> result(n_values);
+    std::vector<Standard_Real> result(n_values);
     for (int i = 0; i < n_values; ++i) {
         result[i] = i * du + umin;
     }
 
     // now insert the break
 
-    double eps = 0.3;
+    Standard_Real eps = 0.3;
     // remove points, that are closer to each break point than du*eps
-    for (std::vector<double>::const_iterator it = breaks.begin(); it != breaks.end(); ++it) {
-        double breakpoint = *it;
-        std::vector<double>::iterator pos = std::find_if(result.begin(), result.end(), geoml::IsInsideTolerance(breakpoint, du*eps));
+    for (std::vector<Standard_Real>::const_iterator it = breaks.begin(); it != breaks.end(); ++it) {
+        Standard_Real breakpoint = *it;
+        std::vector<Standard_Real>::iterator pos = std::find_if(result.begin(), result.end(), geoml::IsInsideTolerance(breakpoint, du*eps));
         if (pos != result.end()) {
             // point found, replace it
             *pos = breakpoint;
@@ -1755,7 +1755,7 @@ T Clamp(T val, T min, T max)
     return std::max(min, std::min(val, max));
 }
 
-double Clamp(double val, double min, double max)
+Standard_Real Clamp(Standard_Real val, Standard_Real min, Standard_Real max)
 {
     return Clamp<>(val, min, max);
 }
@@ -1813,7 +1813,7 @@ Handle(TColgp_HArray1OfPnt) OccArray(const std::vector<geoml::Point>& pnts)
     return result;
 }
 
-Handle(TColStd_HArray1OfReal) OccFArray(const std::vector<double>& vector)
+Handle(TColStd_HArray1OfReal) OccFArray(const std::vector<Standard_Real>& vector)
 {
     Handle(TColStd_HArray1OfReal) array = new TColStd_HArray1OfReal(1, static_cast<int>(vector.size()));
     int ipos = 1;
@@ -1860,12 +1860,12 @@ bool IsFaceBetweenPoints(const TopoDS_Face& face, gp_Pnt p1, gp_Pnt p2)
     return gp_Vec(p1Proj, p1).Dot(gp_Vec(p2Proj, p2)) < 0.;
 }
 
-double Mix(double x, double y, double a)
+Standard_Real Mix(Standard_Real x, Standard_Real y, Standard_Real a)
 {
     return x*(1.-a) +   y*a;
 }
 
-double NormalizeAngleDeg(double angleDeg)
+Standard_Real NormalizeAngleDeg(Standard_Real angleDeg)
 {
     angleDeg = fmod(angleDeg, 360.);
     if (angleDeg < 0.)

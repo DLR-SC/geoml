@@ -38,20 +38,20 @@ class ReparametrizeCurveByArclen
 public:
     GEOML_EXPORT ReparametrizeCurveByArclen();
 
-    GEOML_EXPORT void init(const Handle(Geom_BSplineCurve) curve, double accuracy=1e-5);
+    GEOML_EXPORT void init(const Handle(Geom_BSplineCurve) curve, Standard_Real accuracy=1e-5);
 
     GEOML_EXPORT bool isInitialized() const;
 
     /// Returns the curve parameter for the given arc length
-    GEOML_EXPORT double parameter(double arcLength) const;
+    GEOML_EXPORT Standard_Real parameter(Standard_Real arcLength) const;
 
-    GEOML_EXPORT double totalLength() const;
+    GEOML_EXPORT Standard_Real totalLength() const;
 
 private:
     Handle(Geom_BSplineCurve) _reparCurve;
 
     bool _isInitialized;
-    double _totalLength;
+    Standard_Real _totalLength;
 };
 
 } // namespace geoml

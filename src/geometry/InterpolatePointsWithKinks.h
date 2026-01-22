@@ -28,7 +28,7 @@
 namespace geoml
 {
 
-using ParamMap = std::map<unsigned int, double>;
+using ParamMap = std::map<unsigned int, Standard_Real>;
 
 /**
  * @brief This algorithm allows to interpolate a list of points
@@ -44,24 +44,24 @@ public:
     GEOML_EXPORT InterpolatePointsWithKinks(const Handle(TColgp_HArray1OfPnt) & points,
                                             const std::vector<unsigned int>& kinkIndices,
                                             const ParamMap& parameters,
-                                            double alpha = 0.5,
+                                            Standard_Real alpha = 0.5,
                                             unsigned int maxDegree=3);
 
 
     GEOML_EXPORT Handle(Geom_BSplineCurve) Curve() const;
-    GEOML_EXPORT std::vector<double> Parameters() const;
+    GEOML_EXPORT std::vector<Standard_Real> Parameters() const;
 
 
 private:
     const Handle(TColgp_HArray1OfPnt) & m_pnts;
     std::vector<unsigned int> m_kinks;
     ParamMap m_params;
-    double m_alpha;
+    Standard_Real m_alpha;
     unsigned int m_maxDegree;
 
     struct Result {
         Handle(Geom_BSplineCurve) curve;
-        std::vector<double> parameters;
+        std::vector<Standard_Real> parameters;
     };
 
     void ComputeResult(Result& result) const;

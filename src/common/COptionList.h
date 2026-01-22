@@ -57,9 +57,9 @@ public:
         }
     }
 
-    double GetDouble(const std::string& name) const
+    Standard_Real GetDouble(const std::string& name) const
     {
-        return Get<double>(name);
+        return Get<Standard_Real>(name);
     }
 
     int GetInt(const std::string& name) const
@@ -99,7 +99,7 @@ public:
         }
     }
 
-    void SetDouble(const std::string& name, double value)
+    void SetDouble(const std::string& name, Standard_Real value)
     {
         Set(name, value);
     }
