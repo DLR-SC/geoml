@@ -67,11 +67,11 @@ void insertKnot(Standard_Real knot, int count, int degree, std::vector<Standard_
             pos++;
         }
         knots.insert(knots.begin() + pos, knot);
-        mults.insert(mults.begin() + pos, std::min(count, degree));
+        mults.insert(mults.begin() + pos, Min(count, degree));
     }
     else {
         // knot found, increase multiplicity
-        mults[pos] = std::min(mults[pos] + count, degree);
+        mults[pos] = Min(mults[pos] + count, degree);
     }
 }
 
@@ -121,9 +121,9 @@ Standard_Real BSplineApproxInterp::maxDistanceOfBoundingBox(const TColgp_Array1O
         max.SetY(std::max(max.Y(), p.Y()));
         max.SetZ(std::max(max.Z(), p.Z()));
 
-        min.SetX(std::min(min.X(), p.X()));
-        min.SetY(std::min(min.Y(), p.Y()));
-        min.SetZ(std::min(min.Z(), p.Z()));
+        min.SetX(Min(min.X(), p.X()));
+        min.SetY(Min(min.Y(), p.Y()));
+        min.SetZ(Min(min.Z(), p.Z()));
     }
     return max.Distance(min);
 }
@@ -264,7 +264,7 @@ ApproxResult BSplineApproxInterp::FitCurveOptimal(const std::vector<Standard_Rea
     ApproxResult result = solve(parms, occKnots->Array1(), occMults->Array1());
     Standard_Real old_error = result.error * 2.;
 
-    while(result.error > 0 && (old_error - result.error) / std::max(result.error, 1e-6) > 1e-3 && iteration < maxIter) {
+    while(result.error > 0 && (old_error - result.error) / Max(result.error, 1e-6) > 1e-3 && iteration < maxIter) {
         old_error = result.error;
 
         optimizeParameters(result.curve, parms);

@@ -78,21 +78,21 @@ TEST_F(TestArcLengthReparameterization, accuracy)
     // total Length
     Standard_Real totalLen = GCPnts_AbscissaPoint::Length(adaptor);
 
-    EXPECT_NEAR(totalLen, repa.totalLength(), 1e-6);
+    EXPECT_NEAR(totalLen.getValue(), repa.totalLength().getValue(), 1e-6);
 
     // check limits
-    EXPECT_NEAR(0., repa.parameter(0.), 1e-4);
-    EXPECT_NEAR(1., repa.parameter(totalLen), 1e-4);
+    EXPECT_NEAR(0., repa.parameter(0.).getValue(), 1e-4);
+    EXPECT_NEAR(1., repa.parameter(totalLen).getValue(), 1e-4);
 
     // at parameter 0.3, the the curve is roughly halved
-    EXPECT_NEAR(0.3, repa.parameter(totalLen*0.5), 1e-2);
+    EXPECT_NEAR(0.3, repa.parameter(totalLen*0.5).getValue(), 1e-2);
 
     for (Standard_Real parm = 0.0; parm <= 1.0; parm += 0.05) {
         Standard_Real arcLength = GCPnts_AbscissaPoint::Length(adaptor, 0.0, parm);
 
         Standard_Real parmComputed = repa.parameter(arcLength);
 
-        ASSERT_NEAR(parm, parmComputed, 1e-4);
+        ASSERT_NEAR(parm.getValue(), parmComputed.getValue(), 1e-4);
     }
 
 }
@@ -100,7 +100,7 @@ TEST_F(TestArcLengthReparameterization, accuracy)
 TEST_F(TestArcLengthReparameterization, notInititalized)
 {
     geoml::ReparametrizeCurveByArclen repa;
-    ASSERT_THROW(repa.parameter(0.), geoml::Error);
+    ASSERT_THROW(repa.parameter(0.).getValue(), geoml::Error);
     
-    ASSERT_THROW(repa.totalLength(), geoml::Error);
+    ASSERT_THROW(repa.totalLength().getValue(), geoml::Error);
 }

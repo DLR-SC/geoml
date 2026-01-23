@@ -95,7 +95,7 @@ TEST_F(TestProjectionAtAngleSimple, consistency)
         
         ASSERT_TRUE(proj.IsDone());
         EXPECT_EQ(1, proj.NbPoints());
-        EXPECT_NEAR(0, proj.Point(1).Distance(gp_Pnt(0., yExpected, 0.)), 1e-8);
+        EXPECT_NEAR(0, proj.Point(1).Distance(gp_Pnt(0., yExpected, 0.)).getValue(), 1e-8);
     }
 }
 
@@ -111,8 +111,8 @@ TEST_F(TestProjectionAtAngleReference,  degree150)
 
     ASSERT_TRUE(proj.IsDone());
     ASSERT_EQ(1, proj.NbPoints());
-    ASSERT_NEAR(0.09729067568753146, proj.Parameter(1), 1e-8);
-    ASSERT_NEAR(0., proj.Point(1).Distance(gp_Pnt(0.47384196, 0.53063481, 0.)), 1e-8);
+    ASSERT_NEAR(0.09729067568753146, proj.Parameter(1).getValue(), 1e-8);
+    ASSERT_NEAR(0., proj.Point(1).Distance(gp_Pnt(0.47384196, 0.53063481, 0.)).getValue(), 1e-8);
 }
 
 TEST_F(TestProjectionAtAngleReference,  degree90)
@@ -121,8 +121,8 @@ TEST_F(TestProjectionAtAngleReference,  degree90)
 
     ASSERT_TRUE(proj.IsDone());
     ASSERT_EQ(1, proj.NbPoints());
-    ASSERT_NEAR(0.32724554955847557, proj.Parameter(1), 1e-8);
-    ASSERT_NEAR(0., proj.Point(1).Distance(gp_Pnt(0.81857595, 1.46111384, 0.)), 1e-8);
+    ASSERT_NEAR(0.32724554955847557, proj.Parameter(1).getValue(), 1e-8);
+    ASSERT_NEAR(0., proj.Point(1).Distance(gp_Pnt(0.81857595, 1.46111384, 0.)).getValue(), 1e-8);
 }
 
 TEST_F(TestProjectionAtAngleReference,  degree20)
@@ -140,9 +140,9 @@ TEST_F(TestProjectionAtAngleReference,  degree80Hard)
 
     ASSERT_TRUE(proj.IsDone());
     ASSERT_EQ(2, proj.NbPoints());
-    ASSERT_NEAR(0.30237394284100144, proj.Parameter(1), 1e-8);
-    ASSERT_NEAR(0., proj.Point(1).Distance(gp_Pnt(0.82766784, 1.37624785, 0.)), 1e-8);
+    ASSERT_NEAR(0.30237394284100144, proj.Parameter(1).getValue(), 1e-8);
+    ASSERT_NEAR(0., proj.Point(1).Distance(gp_Pnt(0.82766784, 1.37624785, 0.)).getValue(), 1e-8);
 
-    ASSERT_NEAR(0.8548541018623607, proj.Parameter(2), 1e-8);
-    ASSERT_NEAR(0., proj.Point(2).Distance(gp_Pnt(-0.78388606, 3.24329725, 0.)), 1e-8);
+    ASSERT_NEAR(0.8548541018623607, proj.Parameter(2).getValue(), 1e-8);
+    ASSERT_NEAR(0., proj.Point(2).Distance(gp_Pnt(-0.78388606, 3.24329725, 0.)).getValue(), 1e-8);
 }

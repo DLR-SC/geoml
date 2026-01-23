@@ -101,7 +101,7 @@ void BSplineFit::initSystem(math_Matrix& A, math_Vector& rhsx, math_Vector& rhsy
         basis_start_index--;
 
         int start = std::max(1, basis_start_index);
-        int stop  = std::min(n_vars + 1, max(1, basis_start_index + order));
+        int stop  = Min(n_vars + 1, max(1, basis_start_index + order));
 
         // first and last basis element
         Standard_Real N0 = 0.;

@@ -23,9 +23,9 @@ TEST(Test_translate, simple_translate_gp_Pnt_test)
 
     gp_Pnt translated_point = geoml::translate(test_point, translation_vector);
 
-    EXPECT_NEAR(translated_point.X(), test_point.X() + 1., 1e-5);
-    EXPECT_NEAR(translated_point.Y(), test_point.Y() + 0.5, 1e-5);
-    EXPECT_NEAR(translated_point.Z(), test_point.Z() + 0., 1e-5);
+    EXPECT_NEAR(translated_point.X().getValue(), test_point.X().getValue() + 1., 1e-5);
+    EXPECT_NEAR(translated_point.Y().getValue(), test_point.Y().getValue() + 0.5, 1e-5);
+    EXPECT_NEAR(translated_point.Z().getValue(), test_point.Z().getValue() + 0., 1e-5);
 
 }
 
@@ -46,9 +46,9 @@ TEST(Test_translate, simple_translate_TopoDS_Shape_test)
     TopoDS_Vertex vertex = TopoDS::Vertex(explorer.Current());
     gp_Pnt vertexPoint = BRep_Tool::Pnt(vertex);
     
-    EXPECT_NEAR(vertexPoint.X(), test_point.X() + 1., 1e-5);
-    EXPECT_NEAR(vertexPoint.Y(), test_point.Y() + 0.5, 1e-5);
-    EXPECT_NEAR(vertexPoint.Z(), test_point.Z() + 0., 1e-5);
+    EXPECT_NEAR(vertexPoint.X().getValue(), test_point.X().getValue() + 1., 1e-5);
+    EXPECT_NEAR(vertexPoint.Y().getValue(), test_point.Y().getValue() + 0.5, 1e-5);
+    EXPECT_NEAR(vertexPoint.Z().getValue(), test_point.Z().getValue() + 0., 1e-5);
 
 }
 
@@ -64,13 +64,13 @@ TEST(Test_translate, simple_translate_vector_gp_Pnt_test)
 
     std::vector<gp_Pnt> translated_points = geoml::translate(vec, translation_vector);
 
-    EXPECT_NEAR(translated_points.at(0).X(), test_point_1.X() + 1., 1e-5);
-    EXPECT_NEAR(translated_points.at(0).Y(), test_point_1.Y() + 0.5, 1e-5);
-    EXPECT_NEAR(translated_points.at(0).Z(), test_point_1.Z() + 0., 1e-5);
+    EXPECT_NEAR(translated_points.at(0).X().getValue(), test_point_1.X().getValue() + 1., 1e-5);
+    EXPECT_NEAR(translated_points.at(0).Y().getValue(), test_point_1.Y().getValue() + 0.5, 1e-5);
+    EXPECT_NEAR(translated_points.at(0).Z().getValue(), test_point_1.Z().getValue() + 0., 1e-5);
 
-    EXPECT_NEAR(translated_points.at(1).X(), test_point_2.X() + 1., 1e-5);
-    EXPECT_NEAR(translated_points.at(1).Y(), test_point_2.Y() + 0.5, 1e-5);
-    EXPECT_NEAR(translated_points.at(1).Z(), test_point_2.Z() + 0., 1e-5);
+    EXPECT_NEAR(translated_points.at(1).X().getValue(), test_point_2.X().getValue() + 1., 1e-5);
+    EXPECT_NEAR(translated_points.at(1).Y().getValue(), test_point_2.Y().getValue() + 0.5, 1e-5);
+    EXPECT_NEAR(translated_points.at(1).Z().getValue(), test_point_2.Z().getValue() + 0., 1e-5);
 
 }
 
@@ -88,9 +88,9 @@ TEST(Test_Transform, simple_Transform_test)
 
     gp_Pnt moved_pnt = my_trsf_3(test_pnt);
 
-    EXPECT_NEAR(moved_pnt.X(), 1., 1e-5);
-    EXPECT_NEAR(moved_pnt.Y(), 6.1, 1e-5);
-    EXPECT_NEAR(moved_pnt.Z(), 21.9, 1e-5);
+    EXPECT_NEAR(moved_pnt.X().getValue(), 1., 1e-5);
+    EXPECT_NEAR(moved_pnt.Y().getValue(), 6.1, 1e-5);
+    EXPECT_NEAR(moved_pnt.Z().getValue(), 21.9, 1e-5);
 
 }
 
@@ -124,9 +124,9 @@ TEST(Test_repeat_shapes, repeat_a_point)
 
         gp_Pnt point = BRep_Tool::Pnt(vertex); 
 
-        EXPECT_NEAR(point.X(), test_pnt.X(), 1e-5);
-        EXPECT_NEAR(point.Y(), test_pnt.Y(), 1e-5);
-        EXPECT_NEAR(point.Z(), test_pnt.Z(), 1e-5);
+        EXPECT_NEAR(point.X().getValue(), test_pnt.X().getValue(), 1e-5);
+        EXPECT_NEAR(point.Y().getValue(), test_pnt.Y().getValue(), 1e-5);
+        EXPECT_NEAR(point.Z().getValue(), test_pnt.Z().getValue(), 1e-5);
 
         test_pnt.Translate(trsf_vec); 
 

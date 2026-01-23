@@ -95,7 +95,7 @@ void InterpolateCurveNetwork::ComputeIntersections(math_Matrix& intersection_par
                 if (profiles[0]->IsClosed()) {
 
                     if (spline_v_idx == 0) {
-                        intersection_params_u(spline_u_idx, spline_v_idx) = std::min(currentIntersections[0].first, currentIntersections[1].first);
+                        intersection_params_u(spline_u_idx, spline_v_idx) = Min(currentIntersections[0].first, currentIntersections[1].first);
                     }
                     else if (spline_v_idx == static_cast<int>(guides.size() - 1)) {
                         intersection_params_u(spline_u_idx, spline_v_idx) = std::max(currentIntersections[0].first, currentIntersections[1].first);
@@ -109,7 +109,7 @@ void InterpolateCurveNetwork::ComputeIntersections(math_Matrix& intersection_par
                 if (guides[0]->IsClosed()) {
 
                     if (spline_u_idx == 0) {
-                        intersection_params_v(spline_u_idx, spline_v_idx) = std::min(currentIntersections[0].second, currentIntersections[1].second);
+                        intersection_params_v(spline_u_idx, spline_v_idx) = Min(currentIntersections[0].second, currentIntersections[1].second);
                     }
                     else if (spline_u_idx == static_cast<int>(profiles.size() - 1)) {
                         intersection_params_v(spline_u_idx, spline_v_idx) = std::max(currentIntersections[0].second, currentIntersections[1].second);
@@ -242,20 +242,20 @@ void InterpolateCurveNetwork::MakeCurvesCompatible()
         }
 
         // eliminate small inaccuracies at the first knot
-        if (std::abs(oldParametersProfile.front()) < 1e-5) {
+        if (Abs(oldParametersProfile.front()) < 1e-5) {
             oldParametersProfile.front() = 0;
         }
 
-        if (std::abs(newParametersProfiles.front()) < 1e-5) {
+        if (Abs(newParametersProfiles.front()) < 1e-5) {
             newParametersProfiles.front() = 0;
         }
 
         // eliminate small inaccuracies at the last knot
-        if (std::abs(oldParametersProfile.back() - 1) < 1e-5) {
+        if (Abs(oldParametersProfile.back() - 1) < 1e-5) {
             oldParametersProfile.back() = 1;
         }
 
-        if (std::abs(newParametersProfiles.back() - 1) < 1e-5) {
+        if (Abs(newParametersProfiles.back() - 1) < 1e-5) {
             newParametersProfiles.back() = 1;
         }
 
@@ -272,20 +272,20 @@ void InterpolateCurveNetwork::MakeCurvesCompatible()
         }
 
         // eliminate small inaccuracies at the first knot
-        if (std::abs(oldParameterGuide.front()) < 1e-5) {
+        if (Abs(oldParameterGuide.front()) < 1e-5) {
             oldParameterGuide.front() = 0;
         }
 
-        if (std::abs(newParametersGuides.front()) < 1e-5) {
+        if (Abs(newParametersGuides.front()) < 1e-5) {
             newParametersGuides.front() = 0;
         }
 
         // eliminate small inaccuracies at the last knot
-        if (std::abs(oldParameterGuide.back() - 1) < 1e-5) {
+        if (Abs(oldParameterGuide.back() - 1) < 1e-5) {
             oldParameterGuide.back() = 1;
         }
 
-        if (std::abs(newParametersGuides.back() - 1) < 1e-5) {
+        if (Abs(newParametersGuides.back() - 1) < 1e-5) {
             newParametersGuides.back() = 1;
         }
 
@@ -309,8 +309,8 @@ void InterpolateCurveNetwork::EliminateInaccuraciesNetworkIntersections(const st
 
     // first intersection
     for (Standard_Integer spline_u_idx = 0; spline_u_idx < nProfiles; ++spline_u_idx) {
-        if (std::abs(intersection_params_u(spline_u_idx, 0) - sortedProfiles[0]->Knot(1)) < 0.001) {
-            if (std::abs(sortedProfiles[0]->Knot(1)) < 1e-10) {
+        if (Abs(intersection_params_u(spline_u_idx, 0) - sortedProfiles[0]->Knot(1)) < 0.001) {
+            if (Abs(sortedProfiles[0]->Knot(1)) < 1e-10) {
                 intersection_params_u(spline_u_idx, 0) = 0;
             }
             else {
@@ -320,8 +320,8 @@ void InterpolateCurveNetwork::EliminateInaccuraciesNetworkIntersections(const st
     }
 
     for (Standard_Integer spline_v_idx = 0; spline_v_idx < nGuides; ++spline_v_idx) {
-        if (std::abs(intersection_params_v(0, spline_v_idx) - sortedGuides[0]->Knot(1)) < 0.001) {
-            if (std::abs(sortedGuides[0]->Knot(1)) < 1e-10) {
+        if (Abs(intersection_params_v(0, spline_v_idx) - sortedGuides[0]->Knot(1)) < 0.001) {
+            if (Abs(sortedGuides[0]->Knot(1)) < 1e-10) {
                 intersection_params_v(0, spline_v_idx) = 0;
             }
             else {
@@ -332,13 +332,13 @@ void InterpolateCurveNetwork::EliminateInaccuraciesNetworkIntersections(const st
 
     // last intersection
     for (Standard_Integer spline_u_idx = 0; spline_u_idx < nProfiles; ++spline_u_idx) {
-        if (std::abs(intersection_params_u(spline_u_idx, nGuides - 1) - sortedProfiles[0]->Knot(sortedProfiles[0]->NbKnots())) < 0.001) {
+        if (Abs(intersection_params_u(spline_u_idx, nGuides - 1) - sortedProfiles[0]->Knot(sortedProfiles[0]->NbKnots())) < 0.001) {
             intersection_params_u(spline_u_idx, nGuides - 1) = sortedProfiles[0]->Knot(sortedProfiles[0]->NbKnots());
         }
     }
 
     for (Standard_Integer spline_v_idx = 0; spline_v_idx < nGuides; ++spline_v_idx) {
-        if (std::abs(intersection_params_v(nProfiles - 1, spline_v_idx) - sortedGuides[0]->Knot(sortedGuides[0]->NbKnots())) < 0.001) {
+        if (Abs(intersection_params_v(nProfiles - 1, spline_v_idx) - sortedGuides[0]->Knot(sortedGuides[0]->NbKnots())) < 0.001) {
             intersection_params_v(nProfiles - 1, spline_v_idx) = sortedGuides[0]->Knot(sortedGuides[0]->NbKnots());
         }
     }

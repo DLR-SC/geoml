@@ -46,15 +46,15 @@ TEST(OptionList, AddGetSet)
     MockOptions options;
 
     Standard_Real v1 = options.Get<Standard_Real>("my_double");
-    EXPECT_NEAR(0.0, v1, 1e-10);
+    EXPECT_NEAR(0.0, v1.getValue(), 1e-10);
 
     options.SetDouble("my_double", 10.);
     v1 = options.Get<Standard_Real>("my_double");
-    EXPECT_NEAR(10.0, v1, 1e-10);
+    EXPECT_NEAR(10.0, v1.getValue(), 1e-10);
 
     options.SetFromString("my_double", "20.");
     v1 = options.Get<Standard_Real>("my_double");
-    EXPECT_NEAR(20.0, v1, 1e-10);
+    EXPECT_NEAR(20.0, v1.getValue(), 1e-10);
 
     std::string v2 = options.Get<std::string>("my_string");
     EXPECT_STREQ("Hallo", v2.c_str());
@@ -118,7 +118,7 @@ TEST(OptionList, Merged)
     EXPECT_TRUE(options.HasOption("my_int"));
 
     Standard_Real v1 = options.Get<Standard_Real>("my_double");
-    EXPECT_NEAR(0.0, v1, 1e-10);
+    EXPECT_NEAR(0.0, v1.getValue(), 1e-10);
 
     int v2 = options.Get<int>("my_int");
     EXPECT_EQ(10, v2);

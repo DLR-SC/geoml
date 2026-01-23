@@ -52,20 +52,20 @@ TEST(BSplines, pointsToLinear)
     Handle(Geom_BSplineCurve) curve;
     ASSERT_NO_THROW(curve = geoml::CPointsToLinearBSpline(points));
     
-    ASSERT_NEAR(0, curve->Value(0.  ).Distance(gp_Pnt(0,0,0)), 1e-10);
-    ASSERT_NEAR(0, curve->Value(0.5 ).Distance(gp_Pnt(2,0,0)), 1e-10);
-    ASSERT_NEAR(0, curve->Value(0.75).Distance(gp_Pnt(2,1,0)), 1e-10);
-    ASSERT_NEAR(0, curve->Value(1.  ).Distance(gp_Pnt(1,1,0)), 1e-10);
+    ASSERT_NEAR(0, curve->Value(0.  ).Distance(gp_Pnt(0,0,0)).getValue(), 1e-10);
+    ASSERT_NEAR(0, curve->Value(0.5 ).Distance(gp_Pnt(2,0,0)).getValue(), 1e-10);
+    ASSERT_NEAR(0, curve->Value(0.75).Distance(gp_Pnt(2,1,0)).getValue(), 1e-10);
+    ASSERT_NEAR(0, curve->Value(1.  ).Distance(gp_Pnt(1,1,0)).getValue(), 1e-10);
     
     gp_Pnt p; gp_Vec v;
     curve->D1(0.25, p, v);
-    ASSERT_NEAR(v.Magnitude(), v*gp_Vec(1,0,0), 1e-10);
+    ASSERT_NEAR(v.Magnitude().getValue(), (v*gp_Vec(1,0,0)).getValue(), 1e-10);
     
     curve->D1(0.6, p, v);
-    ASSERT_NEAR(v.Magnitude(), v*gp_Vec(0,1,0), 1e-10);
+    ASSERT_NEAR(v.Magnitude().getValue(), (v*gp_Vec(0,1,0)).getValue(), 1e-10);
     
     curve->D1(0.8, p, v);
-    ASSERT_NEAR(v.Magnitude(), v*gp_Vec(-1,0,0), 1e-10);
+    ASSERT_NEAR(v.Magnitude().getValue(), (v*gp_Vec(-1,0,0)).getValue(), 1e-10);
 }
 
 // tests the bspline basis matrix function with derivative = 0
@@ -87,21 +87,21 @@ TEST(BSplines, bSplineMatDeriv0)
     math_Matrix A = geoml::BSplineAlgorithms::bsplineBasisMat(2, knots, params);
 
     // compare with python implementation
-    EXPECT_NEAR(A.Value(1,1), 1., 1e-10);
-    EXPECT_NEAR(A.Value(1,2), 0., 1e-10);
-    EXPECT_NEAR(A.Value(1,3), 0., 1e-10);
+    EXPECT_NEAR(A.Value(1,1).getValue(), 1., 1e-10);
+    EXPECT_NEAR(A.Value(1,2).getValue(), 0., 1e-10);
+    EXPECT_NEAR(A.Value(1,3).getValue(), 0., 1e-10);
 
-    EXPECT_NEAR(A.Value(2,1), 4.444444444444445308e-01, 1e-10);
-    EXPECT_NEAR(A.Value(2,2), 4.444444444444444753e-01, 1e-10);
-    EXPECT_NEAR(A.Value(2,3), 1.111111111111111049e-01, 1e-10);
+    EXPECT_NEAR(A.Value(2,1).getValue(), 4.444444444444445308e-01, 1e-10);
+    EXPECT_NEAR(A.Value(2,2).getValue(), 4.444444444444444753e-01, 1e-10);
+    EXPECT_NEAR(A.Value(2,3).getValue(), 1.111111111111111049e-01, 1e-10);
 
-    EXPECT_NEAR(A.Value(3,1), 1.111111111111111327e-01, 1e-10);
-    EXPECT_NEAR(A.Value(3,2), 4.444444444444444753e-01, 1e-10);
-    EXPECT_NEAR(A.Value(3,3), 4.444444444444444198e-01, 1e-10);
+    EXPECT_NEAR(A.Value(3,1).getValue(), 1.111111111111111327e-01, 1e-10);
+    EXPECT_NEAR(A.Value(3,2).getValue(), 4.444444444444444753e-01, 1e-10);
+    EXPECT_NEAR(A.Value(3,3).getValue(), 4.444444444444444198e-01, 1e-10);
 
-    EXPECT_NEAR(A.Value(4,1), 0., 1e-10);
-    EXPECT_NEAR(A.Value(4,2), 0., 1e-10);
-    EXPECT_NEAR(A.Value(4,3), 1., 1e-10);
+    EXPECT_NEAR(A.Value(4,1).getValue(), 0., 1e-10);
+    EXPECT_NEAR(A.Value(4,2).getValue(), 0., 1e-10);
+    EXPECT_NEAR(A.Value(4,3).getValue(), 1., 1e-10);
 }
 
 // tests the bspline basis matrix function with derivative = 1
@@ -123,21 +123,21 @@ TEST(BSplines, bSplineMatDeriv1)
     math_Matrix A = geoml::BSplineAlgorithms::bsplineBasisMat(2, knots, params, 1);
 
     // compare with python implementation
-    EXPECT_NEAR(A.Value(1,1), -2., 1e-10);
-    EXPECT_NEAR(A.Value(1,2), 2., 1e-10);
-    EXPECT_NEAR(A.Value(1,3), 0., 1e-10);
+    EXPECT_NEAR(A.Value(1,1).getValue(), -2., 1e-10);
+    EXPECT_NEAR(A.Value(1,2).getValue(), 2., 1e-10);
+    EXPECT_NEAR(A.Value(1,3).getValue(), 0., 1e-10);
 
-    EXPECT_NEAR(A.Value(2,1), -1.333333333333333481e+00, 1e-10);
-    EXPECT_NEAR(A.Value(2,2), 6.666666666666668517e-01, 1e-10);
-    EXPECT_NEAR(A.Value(2,3), 6.666666666666666297e-01, 1e-10);
+    EXPECT_NEAR(A.Value(2,1).getValue(), -1.333333333333333481e+00, 1e-10);
+    EXPECT_NEAR(A.Value(2,2).getValue(), 6.666666666666668517e-01, 1e-10);
+    EXPECT_NEAR(A.Value(2,3).getValue(), 6.666666666666666297e-01, 1e-10);
 
-    EXPECT_NEAR(A.Value(3,1), -6.666666666666667407e-01, 1e-10);
-    EXPECT_NEAR(A.Value(3,2), -6.666666666666665186e-01, 1e-10);
-    EXPECT_NEAR(A.Value(3,3), 1.333333333333333259e+00, 1e-10);
+    EXPECT_NEAR(A.Value(3,1).getValue(), -6.666666666666667407e-01, 1e-10);
+    EXPECT_NEAR(A.Value(3,2).getValue(), -6.666666666666665186e-01, 1e-10);
+    EXPECT_NEAR(A.Value(3,3).getValue(), 1.333333333333333259e+00, 1e-10);
 
-    EXPECT_NEAR(A.Value(4,1), 0., 1e-10);
-    EXPECT_NEAR(A.Value(4,2), -2., 1e-10);
-    EXPECT_NEAR(A.Value(4,3), 2., 1e-10);
+    EXPECT_NEAR(A.Value(4,1).getValue(), 0., 1e-10);
+    EXPECT_NEAR(A.Value(4,2).getValue(), -2., 1e-10);
+    EXPECT_NEAR(A.Value(4,3).getValue(), 2., 1e-10);
 }
 
 class BSplineInterpolation : public ::testing::Test
@@ -188,16 +188,16 @@ TEST_F(BSplineInterpolation, approxAndInterpolate)
     app.InterpolatePoint(100);
     geoml::ApproxResult result = app.FitCurve(parms);
     // Value from different splinelib implementation
-    EXPECT_NEAR(0.01317089, result.error, 1e-5);
-    EXPECT_NEAR(0.0, result.curve->Value(parms[0]).Distance(pnts.Value(1)), 1e-10);
-    EXPECT_NEAR(0.0, result.curve->Value(parms[50]).Distance(pnts.Value(51)), 1e-10);
-    EXPECT_NEAR(0.0, result.curve->Value(parms[100]).Distance(pnts.Value(101)), 1e-10);
+    EXPECT_NEAR(0.01317089, result.error.getValue(), 1e-5);
+    EXPECT_NEAR(0.0, result.curve->Value(parms[0]).Distance(pnts.Value(1)).getValue(), 1e-10);
+    EXPECT_NEAR(0.0, result.curve->Value(parms[50]).Distance(pnts.Value(51)).getValue(), 1e-10);
+    EXPECT_NEAR(0.0, result.curve->Value(parms[100]).Distance(pnts.Value(101)).getValue(), 1e-10);
 
     result = app.FitCurveOptimal(parms);
-    EXPECT_NEAR(0.000393704, result.error, 1e-5);
-    EXPECT_NEAR(0.0, result.curve->Value(parms[0]).Distance(pnts.Value(1)), 1e-10);
-    EXPECT_NEAR(0.0, result.curve->Value(parms[50]).Distance(pnts.Value(51)), 1e-10);
-    EXPECT_NEAR(0.0, result.curve->Value(parms[100]).Distance(pnts.Value(101)), 1e-10);
+    EXPECT_NEAR(0.000393704, result.error.getValue(), 1e-5);
+    EXPECT_NEAR(0.0, result.curve->Value(parms[0]).Distance(pnts.Value(1)).getValue(), 1e-10);
+    EXPECT_NEAR(0.0, result.curve->Value(parms[50]).Distance(pnts.Value(51)).getValue(), 1e-10);
+    EXPECT_NEAR(0.0, result.curve->Value(parms[100]).Distance(pnts.Value(101)).getValue(), 1e-10);
 
     StoreResult("TestData/analysis/BSplineInterpolation-approxAndInterpolate.brep", result.curve, pnts);
 }
@@ -396,10 +396,10 @@ TEST_F(BSplineInterpolation, approxOnly)
     geoml::BSplineApproxInterp app(pnts, 15, 3);
     geoml::ApproxResult result = app.FitCurve(parms);
     // Value from different splinelib implementation
-    EXPECT_NEAR(0.01898, result.error, 1e-5);
+    EXPECT_NEAR(0.01898, result.error.getValue(), 1e-5);
 
     result = app.FitCurveOptimal(parms);
-    EXPECT_NEAR(0.00238, result.error, 1e-5);
+    EXPECT_NEAR(0.00238, result.error.getValue(), 1e-5);
 
     StoreResult("TestData/analysis/BSplineInterpolation-approxOnly.brep", result.curve, pnts);
 }
@@ -410,9 +410,9 @@ TEST_F(BSplineInterpolation, gordonIssue)
     app.InterpolatePoint(0);
     app.InterpolatePoint(100);
     geoml::ApproxResult result = app.FitCurve(parms);
-    EXPECT_NEAR(0.0, result.curve->Value(parms[0]).Distance(pnts.Value(1)), 1e-10);
-    EXPECT_NEAR(0.0, result.curve->Value(parms[100]).Distance(pnts.Value(101)), 1e-10);
-    EXPECT_NEAR(0.0055298, result.error, 1e-5);
+    EXPECT_NEAR(0.0, result.curve->Value(parms[0]).Distance(pnts.Value(1)).getValue(), 1e-10);
+    EXPECT_NEAR(0.0, result.curve->Value(parms[100]).Distance(pnts.Value(101)).getValue(), 1e-10);
+    EXPECT_NEAR(0.0055298, result.error.getValue(), 1e-5);
 
     StoreResult("TestData/analysis/BSplineInterpolation-gordonIssue.brep", result.curve, pnts);
 }
@@ -424,8 +424,8 @@ TEST_F(BSplineInterpolation, ownParms)
     app.InterpolatePoint(100);
     geoml::ApproxResult result = app.FitCurve(parms);
     result = app.FitCurveOptimal();
-    EXPECT_NEAR(0.0, result.curve->Value(parms[0]).Distance(pnts.Value(1)), 1e-10);
-    EXPECT_NEAR(0.0, result.curve->Value(parms[100]).Distance(pnts.Value(101)), 1e-10);
+    EXPECT_NEAR(0.0, result.curve->Value(parms[0]).Distance(pnts.Value(1)).getValue(), 1e-10);
+    EXPECT_NEAR(0.0, result.curve->Value(parms[100]).Distance(pnts.Value(101)).getValue(), 1e-10);
 
     StoreResult("TestData/analysis/BSplineInterpolation-ownParms.brep", result.curve, pnts);
 }
@@ -437,8 +437,8 @@ TEST_F(BSplineInterpolation, tipKink)
     app.InterpolatePoint(50, true);
     app.InterpolatePoint(100);
     geoml::ApproxResult result = app.FitCurveOptimal();
-    EXPECT_NEAR(0.0, result.curve->Value(parms[0]).Distance(pnts.Value(1)), 1e-10);
-    EXPECT_NEAR(0.0, result.curve->Value(parms[100]).Distance(pnts.Value(101)), 1e-10);
+    EXPECT_NEAR(0.0, result.curve->Value(parms[0]).Distance(pnts.Value(1)).getValue(), 1e-10);
+    EXPECT_NEAR(0.0, result.curve->Value(parms[100]).Distance(pnts.Value(101)).getValue(), 1e-10);
 
     StoreResult("TestData/analysis/BSplineInterpolation-tipKink.brep", result.curve, pnts);
 }
@@ -543,9 +543,9 @@ TEST_F(BSplineInterpolation, withKinksSlit)
     EXPECT_TRUE(ArraysMatch({0.5}, kinkParams, InTolerance(tol)));
 
     auto paramsVec = interpolator.Parameters();
-    EXPECT_NEAR(0.0, paramsVec[0], tol);
-    EXPECT_NEAR(0.5, paramsVec[2], tol);
-    EXPECT_NEAR(1.0, paramsVec[4], tol);
+    EXPECT_NEAR(0.0, paramsVec[0].getValue(), tol.getValue());
+    EXPECT_NEAR(0.5, paramsVec[2].getValue(), tol.getValue());
+    EXPECT_NEAR(1.0, paramsVec[4].getValue(), tol.getValue());
 
     gp_Pnt p; gp_Vec d_start, d_end;
     curve->D1(0., p, d_start);
@@ -581,9 +581,9 @@ TEST_F(BSplineInterpolation, withKinksSmooth)
     EXPECT_TRUE(kinkParams.empty());
 
     auto paramsVec = interpolator.Parameters();
-    EXPECT_NEAR(0.0, paramsVec[0], tol);
-    EXPECT_NEAR(0.5, paramsVec[2], tol);
-    EXPECT_NEAR(1.0, paramsVec[4], tol);
+    EXPECT_NEAR(0.0, paramsVec[0].getValue(), tol.getValue());
+    EXPECT_NEAR(0.5, paramsVec[2].getValue(), tol.getValue());
+    EXPECT_NEAR(1.0, paramsVec[4].getValue(), tol.getValue());
 
     gp_Pnt p; gp_Vec d_start, d_end;
     curve->D1(0., p, d_start);
@@ -621,7 +621,7 @@ TEST_F(BSplineInterpolation, interpolationContinuous)
         const std::vector<Standard_Real>& params = app.Parameters();
         for (int iparm = 0; iparm < params.size(); ++iparm) {
             gp_Pnt p = result->Value(params[iparm]);
-            EXPECT_NEAR(0., p.Distance(pnt2->Value(iparm + 1)), 1e-10);
+            EXPECT_NEAR(0., p.Distance(pnt2->Value(iparm + 1)).getValue(), 1e-10);
         }
 
         std::stringstream str;
@@ -657,7 +657,7 @@ TEST_F(BSplineInterpolation, interpolationDiscontinuous)
         const std::vector<Standard_Real>& params = app.Parameters();
         for (int iparm = 0; iparm < params.size(); ++iparm) {
             gp_Pnt p = result->Value(params[iparm]);
-            EXPECT_NEAR(0., p.Distance(pnt2->Value(iparm + 1)), 1e-10);
+            EXPECT_NEAR(0., p.Distance(pnt2->Value(iparm + 1)).getValue(), 1e-10);
         }
 
         std::stringstream str;
@@ -683,7 +683,7 @@ TEST_F(BSplineInterpolation, interpolationLinear)
     const std::vector<Standard_Real>& params = app.Parameters();
     for (int iparm = 0; iparm < params.size(); ++iparm) {
         gp_Pnt p = result->Value(params[iparm]);
-        EXPECT_NEAR(0., p.Distance(pnt2->Value(iparm + 1)), 1e-10);
+        EXPECT_NEAR(0., p.Distance(pnt2->Value(iparm + 1)).getValue(), 1e-10);
     }
 
     std::stringstream str;
@@ -719,8 +719,8 @@ TEST_F(BSplineInterpolation, interpolationClosedIssue1)
     EXPECT_EQ(3, curve->Degree());
 
     // check first and second derivative
-    EXPECT_NEAR(0., (curve->DN(0., 1) - curve->DN(1., 1)).Magnitude(), 1e-10);
-    EXPECT_NEAR(0., (curve->DN(0., 2) - curve->DN(1., 2)).Magnitude(), 1e-10);
+    EXPECT_NEAR(0., (curve->DN(0., 1) - curve->DN(1., 1)).Magnitude().getValue(), 1e-10);
+    EXPECT_NEAR(0., (curve->DN(0., 2) - curve->DN(1., 2)).Magnitude().getValue(), 1e-10);
 
     std::stringstream str;
     str << "TestData/analysis/BSplineInterpolation-interpolationClosedIssue1.brep";
@@ -747,7 +747,7 @@ TEST_F(BSplineInterpolation, errorParamsNotResized)
     
     BSplineFit fit(3, 8);
     ASSERT_EQ(BSplineFit::NoError, fit.FitOptimal(pnts, 1.));
-    EXPECT_NEAR(0., fit.GetMaxError(), 2e-3);
+    EXPECT_NEAR(0., fit.GetMaxError().getValue(), 2e-3);
     
     StoreResult("TestData/analysis/BSplineFit-errorParamsNotResized.brep", fit.Curve(), pnts);
 }

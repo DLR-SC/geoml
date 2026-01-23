@@ -27,7 +27,7 @@ void BlendCurveConnection::compute_blend_parameter()
 
     Standard_Real distance_last_point_on_curve_to_near_connection_point = m_curve->Value(m_curve_last_param).SquareDistance(m_near_connection_point);
 
-    if (std::abs(distance_first_point_on_curve_to_near_connection_point - distance_last_point_on_curve_to_near_connection_point) < Precision::SquareConfusion())
+    if (Abs(distance_first_point_on_curve_to_near_connection_point - distance_last_point_on_curve_to_near_connection_point) < Precision::SquareConfusion())
     { 
         throw geoml::Error("near_connection_point has the same distance to both vertices of the edge", GENERIC_ERROR);
     }
@@ -61,11 +61,11 @@ gp_Pnt BlendCurve::control_point_2(BlendCurveConnection &side)
         return first_point.Translated(beta * first_derivative);
     };
 
-    if (std::abs (side.m_curve_blend_param - side.m_curve_last_param) < Precision::PConfusion())
+    if (Abs (side.m_curve_blend_param - side.m_curve_last_param) < Precision::PConfusion())
     {
         return control_point_2_formula(side.m_blend_point, side.m_beta, sign * side.m_first_derivative_curve);
     }
-    else if (std::abs(side.m_curve_blend_param - side.m_curve_first_param) < Precision::PConfusion())
+    else if (Abs(side.m_curve_blend_param - side.m_curve_first_param) < Precision::PConfusion())
     {
         return control_point_2_formula(side.m_blend_point, side.m_beta, -sign * side.m_first_derivative_curve); 
     }
@@ -92,13 +92,13 @@ gp_Pnt BlendCurve::control_point_3(BlendCurveConnection &side)
         return first_point.Translated(h1 + h2);
     };
 
-    if (std::abs (side.m_curve_blend_param - side.m_curve_last_param) < Precision::PConfusion())
+    if (Abs (side.m_curve_blend_param - side.m_curve_last_param) < Precision::PConfusion())
     {
-        return control_point_3_formula(side.m_blend_point, side.m_beta, sign * side.m_gamma, side.m_first_derivative_curve, side.m_second_derivative_curve, m_degree);
+        return control_point_3_formula(side.m_blend_point, side.m_beta, Standard_Real(sign * side.m_gamma), side.m_first_derivative_curve, side.m_second_derivative_curve, m_degree);
     }
-    else if (std::abs(side.m_curve_blend_param - side.m_curve_first_param) < Precision::PConfusion())
+    else if (Abs(side.m_curve_blend_param - side.m_curve_first_param) < Precision::PConfusion())
     {
-        return control_point_3_formula(side.m_blend_point, side.m_beta, -sign * side.m_gamma, side.m_first_derivative_curve, side.m_second_derivative_curve, m_degree); 
+        return control_point_3_formula(side.m_blend_point, side.m_beta, Standard_Real(-sign * side.m_gamma), side.m_first_derivative_curve, side.m_second_derivative_curve, m_degree); 
     }
     else
     {

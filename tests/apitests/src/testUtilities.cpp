@@ -97,10 +97,10 @@ EXPECT_EQ(test_surface->NbUPoles(), 3); // this together with the previous line 
 EXPECT_EQ(geoml::extract_control_point_vector_in_U_direction(test_surface,1).size(), 3); 
 EXPECT_EQ(geoml::extract_control_point_vector_in_V_direction(test_surface,1).size(), 2); 
 
-EXPECT_NEAR(geoml::extract_control_point_vector_in_U_direction(test_surface,0).at(2).Y(), 2., 1e-5);
-EXPECT_NEAR(geoml::extract_control_point_vector_in_U_direction(test_surface,1).at(2).Y(), 2., 1e-5);
-EXPECT_NEAR(geoml::extract_control_point_vector_in_V_direction(test_surface,0).at(1).Y(), 0., 1e-5);
-EXPECT_NEAR(geoml::extract_control_point_vector_in_U_direction(test_surface,1).at(0).Y(), 0., 1e-5);
+EXPECT_NEAR(geoml::extract_control_point_vector_in_U_direction(test_surface,0).at(2).Y().getValue(), 2., 1e-5);
+EXPECT_NEAR(geoml::extract_control_point_vector_in_U_direction(test_surface,1).at(2).Y().getValue(), 2., 1e-5);
+EXPECT_NEAR(geoml::extract_control_point_vector_in_V_direction(test_surface,0).at(1).Y().getValue(), 0., 1e-5);
+EXPECT_NEAR(geoml::extract_control_point_vector_in_U_direction(test_surface,1).at(0).Y().getValue(), 0., 1e-5);
 
 }
 
@@ -212,8 +212,8 @@ TEST(Test_make_fillet, simple_make_fillet_test)
     BRepGProp::SurfaceProperties(cut_face, surfaceProperties_cut_face);
     Standard_Real area_cut_face = surfaceProperties_cut_face.Mass();
 
-    EXPECT_NEAR(area_cut_face, area_selected_face - area_des_of_selected_face, 1e-5);
+    EXPECT_NEAR(area_cut_face.getValue(), (area_selected_face - area_des_of_selected_face).getValue(), 1e-5);
 
     // make sure that area_cut_face is not zero
-    EXPECT_NEAR(area_selected_face - area_des_of_selected_face, 0.4275, 1e-3);
+    EXPECT_NEAR((area_selected_face - area_des_of_selected_face).getValue(), 0.4275, 1e-3);
 }

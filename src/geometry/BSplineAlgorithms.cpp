@@ -203,7 +203,7 @@ namespace
             const SplineAdapter& curSpline = splines_vector[spline_idx];
             Standard_Real begin_param_dir_surface = curSpline.getKnot(1);
             Standard_Real end_param_dir_surface = curSpline.getKnot(curSpline.getNKnots());
-            if (std::abs(begin_param_dir_surface - begin_param_dir) > par_tolerance || std::abs(end_param_dir_surface - end_param_dir) > par_tolerance) {
+            if (Abs(begin_param_dir_surface - begin_param_dir) > par_tolerance || Abs(end_param_dir_surface - end_param_dir) > par_tolerance) {
                 return false;
             }
         }
@@ -247,7 +247,7 @@ namespace
             const SplineAdapter& spline = *splineIt;
             for (int iKnot = 1; iKnot < spline.getNKnots(); ++iKnot) {
                 Standard_Real knotDist = spline.getKnot(iKnot+1) - spline.getKnot(iKnot);
-                par_tolerance = std::min(par_tolerance, knotDist / 2.);
+                par_tolerance = Min(par_tolerance, knotDist / 2.);
             }
         }
 
@@ -786,7 +786,7 @@ Standard_Real BSplineAlgorithms::scale(const Handle(Geom_BSplineCurve)& spline)
 
 void BSplineAlgorithms::reparametrizeBSpline(Geom_BSplineCurve& spline, Standard_Real umin, Standard_Real umax, Standard_Real tol)
 {
-    if (std::abs(spline.Knot(1) - umin) > tol || std::abs(spline.Knot(spline.NbKnots()) - umax) > tol) {
+    if (Abs(spline.Knot(1) - umin) > tol || Abs(spline.Knot(spline.NbKnots()) - umax) > tol) {
         TColStd_Array1OfReal aKnots (1, spline.NbKnots());
         spline.Knots (aKnots);
         BSplCLib::Reparametrize (umin, umax, aKnots);
@@ -796,14 +796,14 @@ void BSplineAlgorithms::reparametrizeBSpline(Geom_BSplineCurve& spline, Standard
 
 void BSplineAlgorithms::reparametrizeBSpline(Geom_BSplineSurface& spline, Standard_Real umin, Standard_Real umax, Standard_Real vmin, Standard_Real vmax, Standard_Real tol)
 {
-    if (std::abs(spline.UKnot(1) - umin) > tol || std::abs(spline.UKnot(spline.NbUKnots()) - umax) > tol) {
+    if (Abs(spline.UKnot(1) - umin) > tol || Abs(spline.UKnot(spline.NbUKnots()) - umax) > tol) {
         TColStd_Array1OfReal aKnots (1, spline.NbUKnots());
         spline.UKnots (aKnots);
         BSplCLib::Reparametrize (umin, umax, aKnots);
         spline.SetUKnots (aKnots);
     }
 
-    if (std::abs(spline.VKnot(1) - vmin) > tol || std::abs(spline.VKnot(spline.NbVKnots()) - vmax) > tol) {
+    if (Abs(spline.VKnot(1) - vmin) > tol || Abs(spline.VKnot(spline.NbVKnots()) - vmax) > tol) {
         TColStd_Array1OfReal aKnots (1, spline.NbVKnots());
         spline.VKnots (aKnots);
         BSplCLib::Reparametrize (vmin, vmax, aKnots);
@@ -1159,7 +1159,7 @@ Handle(Geom_BSplineSurface) BSplineAlgorithms::concatSurfacesUDir(Handle(Geom_BS
     Standard_Real umin2, umax2, vmin2, vmax2;
     bspl2->Bounds(umin2, umax2, vmin2, vmax2);
 
-    if (std::abs(umax1 - umin2) > param_tol) {
+    if (Abs(umax1 - umin2) > param_tol) {
         std::stringstream str;
         str << "Surfaces do not follow in u-parametric direction in BSplineAlgorithms::concatSurfacesUDir. ";
         str << "Surface 1 ends at " << umax1 << ", Surface 2 begins at " << umin2 << "!";

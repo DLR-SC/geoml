@@ -37,29 +37,29 @@ TEST(Transformation, transformSurface)
     auto c2   = geoml::PointsToBSplineInterpolation(pnts2).Curve();
     auto surf = geoml::CurvesToSurface({c1, c2}).Surface();
 
-    EXPECT_EQ(0.0, surf->Value(0., 0.).Distance(gp_Pnt(0., 0., 0.)));
-    EXPECT_EQ(0.0, surf->Value(1., 1.).Distance(gp_Pnt(1., 1., 0.)));
+    EXPECT_EQ(0.0, surf->Value(0., 0.).Distance(gp_Pnt(0., 0., 0.)).getValue());
+    EXPECT_EQ(0.0, surf->Value(1., 1.).Distance(gp_Pnt(1., 1., 0.)).getValue());
     
     geoml::Transformation transl;
     transl.AddTranslation(0, 0, 1.);
 
     auto surfTrans = transl.Transform(surf);
 
-    EXPECT_NEAR(0.0, surfTrans->Value(0., 0.).Distance(gp_Pnt(0., 0., 1.)), 1e-12);
-    EXPECT_NEAR(0.0, surfTrans->Value(1., 1.).Distance(gp_Pnt(1., 1., 1.)), 1e-12);
+    EXPECT_NEAR(0.0, surfTrans->Value(0., 0.).Distance(gp_Pnt(0., 0., 1.)).getValue(), 1e-12);
+    EXPECT_NEAR(0.0, surfTrans->Value(1., 1.).Distance(gp_Pnt(1., 1., 1.)).getValue(), 1e-12);
     
     geoml::Transformation rot;
     rot.AddRotationZ(90.);
 
     auto surfRot = rot.Transform(surf);
-    EXPECT_NEAR(0.0, surfRot->Value(0., 0.).Distance(gp_Pnt(0., 0., 0.)), 1e-12);
-    EXPECT_NEAR(0.0, surfRot->Value(1., 1.).Distance(gp_Pnt(-1., 1., 0.)), 1e-12);
+    EXPECT_NEAR(0.0, surfRot->Value(0., 0.).Distance(gp_Pnt(0., 0., 0.)).getValue(), 1e-12);
+    EXPECT_NEAR(0.0, surfRot->Value(1., 1.).Distance(gp_Pnt(-1., 1., 0.)).getValue(), 1e-12);
     
     
     geoml::Transformation scale;
     scale.AddScaling(2, 0.5, 1.);
 
     auto surfScale = scale.Transform(surf);
-    EXPECT_NEAR(0.0, surfScale->Value(0., 0.).Distance(gp_Pnt(0., 0., 0.)), 1e-12);
-    EXPECT_NEAR(0.0, surfScale->Value(1., 1.).Distance(gp_Pnt(2., 0.5, 0.)), 1e-12);
+    EXPECT_NEAR(0.0, surfScale->Value(0., 0.).Distance(gp_Pnt(0., 0., 0.)).getValue(), 1e-12);
+    EXPECT_NEAR(0.0, surfScale->Value(1., 1.).Distance(gp_Pnt(2., 0.5, 0.)).getValue(), 1e-12);
 }

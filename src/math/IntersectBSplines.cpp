@@ -393,7 +393,7 @@ std::vector<geoml::CurveIntersectionResult> IntersectBSplines(const Handle(Geom_
         Standard_Real v = obj.getVParam(optimizer.Location().Value(2));
 
         Standard_Real distance = c1->Value(u).Distance(c2->Value(v));
-        if (distance < std::max(1e-10, tolerance)) {
+        if (distance < Max(1e-10, tolerance)) {
             CurveIntersectionResult result;
             result.parmOnCurve1 = u;
             result.parmOnCurve2 = v;

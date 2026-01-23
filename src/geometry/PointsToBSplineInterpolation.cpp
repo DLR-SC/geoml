@@ -256,7 +256,7 @@ unsigned int PointsToBSplineInterpolation::Degree() const
     if (isClosed()) {
         maxDegree -= 1;
     }
-    int degree = std::min(maxDegree, m_degree);
+    int degree = Min(maxDegree, m_degree);
     assert(degree > 0);
     return static_cast<unsigned int>(degree);
 }

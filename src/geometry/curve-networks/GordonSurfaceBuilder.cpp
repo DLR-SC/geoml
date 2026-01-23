@@ -32,8 +32,8 @@ namespace
 {
     void assertRange(const Handle(Geom_Curve)& curve, Standard_Real umin, Standard_Real umax, Standard_Real tol=1e-7)
     {
-        if (std::abs(curve->FirstParameter() - umin) > tol || std::abs(curve->LastParameter() - umax) > tol) {
-            throw geoml::Error("Curve not in range [" + std::to_string(umin) + ", " + std::to_string(umax) + "].");
+        if (Abs(curve->FirstParameter() - umin) > tol || Abs(curve->LastParameter() - umax) > tol) {
+            throw geoml::Error("Curve not in range [" + std::to_string(umin.getValue()) + ", " + std::to_string(umax.getValue()) + "].");
         }
     }
 }
@@ -225,11 +225,11 @@ void GordonSurfaceBuilder::CheckCurveNetworkCompatibility(const std::vector<Hand
     // find out the 'average' scale of the B-splines in order to being able to handle a more approximate dataset and find its intersections
     Standard_Real splines_scale = 0.5 * (BSplineAlgorithms::scale(profiles)+ BSplineAlgorithms::scale(guides));
 
-    if (std::abs(intersection_params_spline_u.front()) > splines_scale * tol || std::abs(intersection_params_spline_u.back() - 1.) > splines_scale * tol) {
+    if (Abs(intersection_params_spline_u.front()) > splines_scale * tol || Abs(intersection_params_spline_u.back() - 1.) > splines_scale * tol) {
         throw geoml::Error("WARNING: B-splines in u-direction mustn't stick out, spline network must be 'closed'!");
     }
 
-    if (std::abs(intersection_params_spline_v.front()) > splines_scale * tol || std::abs(intersection_params_spline_v.back() - 1.) > splines_scale * tol) {
+    if (Abs(intersection_params_spline_v.front()) > splines_scale * tol || Abs(intersection_params_spline_v.back() - 1.) > splines_scale * tol) {
         throw geoml::Error("WARNING: B-splines in v-direction mustn't stick out, spline network must be 'closed'!");
     }
 

@@ -19,6 +19,7 @@
 #include "geoml_internal.h"
 #include <stdexcept>
 #include <cmath>
+#include <Standard_Real.hxx>
 
 /*
  * Define tests here

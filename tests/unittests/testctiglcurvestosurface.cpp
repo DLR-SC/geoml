@@ -79,9 +79,9 @@ TEST(CurvesToSurface, testSkinnedBSplineSurface)
             gp_Pnt point_curve2 = curve2->Value(u_value);
             gp_Pnt right_point(point_curve1.X() * (1 - v_value) + point_curve2.X() * v_value, point_curve1.Y() * (1 - v_value) + point_curve2.Y() * v_value, point_curve1.Z() * (1 - v_value) + point_curve2.Z() * v_value);
 
-            ASSERT_NEAR(surface_point.X(), right_point.X(), 1e-15);
-            ASSERT_NEAR(surface_point.Y(), right_point.Y(), 1e-15);
-            ASSERT_NEAR(surface_point.Z(), right_point.Z(), 1e-15);
+            ASSERT_NEAR(surface_point.X().getValue(), right_point.X().getValue(), 1e-15);
+            ASSERT_NEAR(surface_point.Y().getValue(), right_point.Y().getValue(), 1e-15);
+            ASSERT_NEAR(surface_point.Z().getValue(), right_point.Z().getValue(), 1e-15);
         }
     }
 }

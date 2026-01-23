@@ -42,26 +42,26 @@ TEST(Misc, WireGetPoint)
     wireBuilder.Add(BRepBuilderAPI_MakeEdge(p1, p2));
     wireBuilder.Add(BRepBuilderAPI_MakeEdge(p2, p3));
     
-    ASSERT_NEAR(4.0, GetLength(wireBuilder.Wire()), 1e-7);
+    ASSERT_NEAR(4.0, GetLength(wireBuilder.Wire()).getValue(), 1e-7);
     gp_Pnt p1_ = WireGetPoint(wireBuilder.Wire(), 0.0);
     gp_Pnt p2_ = WireGetPoint(wireBuilder.Wire(), 0.25);
     gp_Pnt p3_ = WireGetPoint(wireBuilder.Wire(), 1.0);
     
-    ASSERT_NEAR(0.0, p1_.Distance(p1), 1e-7);
-    ASSERT_NEAR(0.0, p2_.Distance(p2), 1e-7);
-    ASSERT_NEAR(0.0, p3_.Distance(p3), 1e-7);
+    ASSERT_NEAR(0.0, p1_.Distance(p1).getValue(), 1e-7);
+    ASSERT_NEAR(0.0, p2_.Distance(p2).getValue(), 1e-7);
+    ASSERT_NEAR(0.0, p3_.Distance(p3).getValue(), 1e-7);
     
     p1_ = WireGetPoint(wireBuilder.Wire(), 0.0);
     p2_ = WireGetPoint(wireBuilder.Wire(), 0.25);
     p3_ = WireGetPoint(wireBuilder.Wire(), 1.0);
     
-    ASSERT_NEAR(0.0, p1_.Distance(p1), 1e-7);
-    ASSERT_NEAR(0.0, p2_.Distance(p2), 1e-7);
-    ASSERT_NEAR(0.0, p3_.Distance(p3), 1e-7);
+    ASSERT_NEAR(0.0, p1_.Distance(p1).getValue(), 1e-7);
+    ASSERT_NEAR(0.0, p2_.Distance(p2).getValue(), 1e-7);
+    ASSERT_NEAR(0.0, p3_.Distance(p3).getValue(), 1e-7);
     
-    ASSERT_NEAR(0.0 , ProjectPointOnWire(wireBuilder.Wire(), p1_), 1e-7);
-    ASSERT_NEAR(0.25, ProjectPointOnWire(wireBuilder.Wire(), p2_), 1e-7);
-    ASSERT_NEAR(1.0 , ProjectPointOnWire(wireBuilder.Wire(), p3_), 1e-7);
+    ASSERT_NEAR(0.0 , ProjectPointOnWire(wireBuilder.Wire(), p1_).getValue(), 1e-7);
+    ASSERT_NEAR(0.25, ProjectPointOnWire(wireBuilder.Wire(), p2_).getValue(), 1e-7);
+    ASSERT_NEAR(1.0 , ProjectPointOnWire(wireBuilder.Wire(), p3_).getValue(), 1e-7);
 }
 
 TEST(Misc, GetPointOnCirc)
@@ -79,23 +79,23 @@ TEST(Misc, GetPointOnCirc)
     gp_Pnt p4(-M_PI/2., 1, 0);
     gp_Pnt p5(-M_PI, 1, 0);
     
-    ASSERT_NEAR(0.0, p1.Distance(WireGetPoint(wire,0.00)), 1e-7);
-    ASSERT_NEAR(0.0, p2.Distance(WireGetPoint(wire,0.25)), 1e-7);
-    ASSERT_NEAR(0.0, p3.Distance(WireGetPoint(wire,0.50)), 1e-7);
-    ASSERT_NEAR(0.0, p4.Distance(WireGetPoint(wire,0.75)), 1e-7);
-    ASSERT_NEAR(0.0, p5.Distance(WireGetPoint(wire,1.00)), 1e-7);
+    ASSERT_NEAR(0.0, p1.Distance(WireGetPoint(wire,0.00)).getValue(), 1e-7);
+    ASSERT_NEAR(0.0, p2.Distance(WireGetPoint(wire,0.25)).getValue(), 1e-7);
+    ASSERT_NEAR(0.0, p3.Distance(WireGetPoint(wire,0.50)).getValue(), 1e-7);
+    ASSERT_NEAR(0.0, p4.Distance(WireGetPoint(wire,0.75)).getValue(), 1e-7);
+    ASSERT_NEAR(0.0, p5.Distance(WireGetPoint(wire,1.00)).getValue(), 1e-7);
 
-    ASSERT_NEAR(0.0, p1.Distance(WireGetPoint(wire,0.00)), 1e-7);
-    ASSERT_NEAR(0.0, p2.Distance(WireGetPoint(wire,0.25)), 1e-7);
-    ASSERT_NEAR(0.0, p3.Distance(WireGetPoint(wire,0.50)), 1e-7);
-    ASSERT_NEAR(0.0, p4.Distance(WireGetPoint(wire,0.75)), 1e-7);
-    ASSERT_NEAR(0.0, p5.Distance(WireGetPoint(wire,1.00)), 1e-7);
+    ASSERT_NEAR(0.0, p1.Distance(WireGetPoint(wire,0.00)).getValue(), 1e-7);
+    ASSERT_NEAR(0.0, p2.Distance(WireGetPoint(wire,0.25)).getValue(), 1e-7);
+    ASSERT_NEAR(0.0, p3.Distance(WireGetPoint(wire,0.50)).getValue(), 1e-7);
+    ASSERT_NEAR(0.0, p4.Distance(WireGetPoint(wire,0.75)).getValue(), 1e-7);
+    ASSERT_NEAR(0.0, p5.Distance(WireGetPoint(wire,1.00)).getValue(), 1e-7);
     
-    ASSERT_NEAR(0.00, ProjectPointOnWire(wire, p1), 1e-7);
-    ASSERT_NEAR(0.25, ProjectPointOnWire(wire, p2), 1e-7);
-    ASSERT_NEAR(0.50, ProjectPointOnWire(wire, p3), 1e-7);
-    ASSERT_NEAR(0.75, ProjectPointOnWire(wire, p4), 1e-7);
-    ASSERT_NEAR(1.00, ProjectPointOnWire(wire, p5), 1e-7);
+    ASSERT_NEAR(0.00, ProjectPointOnWire(wire, p1).getValue(), 1e-7);
+    ASSERT_NEAR(0.25, ProjectPointOnWire(wire, p2).getValue(), 1e-7);
+    ASSERT_NEAR(0.50, ProjectPointOnWire(wire, p3).getValue(), 1e-7);
+    ASSERT_NEAR(0.75, ProjectPointOnWire(wire, p4).getValue(), 1e-7);
+    ASSERT_NEAR(1.00, ProjectPointOnWire(wire, p5).getValue(), 1e-7);
 }
 
 // As the boost library has been removed after stripping down from TiGL, this test has been disabled since it uses the boost library.

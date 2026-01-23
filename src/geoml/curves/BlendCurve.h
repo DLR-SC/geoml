@@ -124,7 +124,7 @@ private:
     
     std::vector<gp_Pnt> m_control_point_vector;
 
-    Standard_Real m_degree;
+    Standard_Integer m_degree;
 
     gp_Pnt m_blend_point_start;
     gp_Pnt m_blend_point_end;

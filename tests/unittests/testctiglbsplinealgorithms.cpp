@@ -81,10 +81,10 @@ TEST(BSplineAlgorithms, testComputeParamsBSplineCurve)
     right_parameters(4) = 1;
 
     // assure that computed parameters are right
-    ASSERT_NEAR(parameters[0], right_parameters(1), 1e-15);
-    ASSERT_NEAR(parameters[1], right_parameters(2), 1e-15);
-    ASSERT_NEAR(parameters[2], right_parameters(3), 1e-15);
-    ASSERT_NEAR(parameters[3], right_parameters(4), 1e-15);
+    ASSERT_NEAR(parameters[0].getValue(), right_parameters(1).getValue(), 1e-15);
+    ASSERT_NEAR(parameters[1].getValue(), right_parameters(2).getValue(), 1e-15);
+    ASSERT_NEAR(parameters[2].getValue(), right_parameters(3).getValue(), 1e-15);
+    ASSERT_NEAR(parameters[3].getValue(), right_parameters(4).getValue(), 1e-15);
 }
 
 TEST(BSplineAlgorithms, testComputeParamsBSplineSurface)
@@ -220,13 +220,13 @@ TEST(BSplineAlgorithms, testCreateCommonKnotsVectorCurve)
     TColStd_Array1OfInteger computed_multiplicities(1, 7);
     modified_splines_vector[0]->Multiplicities(computed_multiplicities);
 
-    ASSERT_NEAR(right_knot_vector(1), computed_knot_vector(1), 1e-15);
-    ASSERT_NEAR(right_knot_vector(2), computed_knot_vector(2), 1e-15);
-    ASSERT_NEAR(right_knot_vector(3), computed_knot_vector(3), 1e-15);
-    ASSERT_NEAR(right_knot_vector(4), computed_knot_vector(4), 1e-15);
-    ASSERT_NEAR(right_knot_vector(5), computed_knot_vector(5), 1e-15);
-    ASSERT_NEAR(right_knot_vector(6), computed_knot_vector(6), 1e-15);
-    ASSERT_NEAR(right_knot_vector(7), computed_knot_vector(7), 1e-15);
+    ASSERT_NEAR(right_knot_vector(1).getValue(), computed_knot_vector(1).getValue(), 1e-15);
+    ASSERT_NEAR(right_knot_vector(2).getValue(), computed_knot_vector(2).getValue(), 1e-15);
+    ASSERT_NEAR(right_knot_vector(3).getValue(), computed_knot_vector(3).getValue(), 1e-15);
+    ASSERT_NEAR(right_knot_vector(4).getValue(), computed_knot_vector(4).getValue(), 1e-15);
+    ASSERT_NEAR(right_knot_vector(5).getValue(), computed_knot_vector(5).getValue(), 1e-15);
+    ASSERT_NEAR(right_knot_vector(6).getValue(), computed_knot_vector(6).getValue(), 1e-15);
+    ASSERT_NEAR(right_knot_vector(7).getValue(), computed_knot_vector(7).getValue(), 1e-15);
 
 }
 
@@ -255,19 +255,19 @@ TEST(BSplineAlgorithms, testCreateCommonKnotsVectorTolerance)
     ASSERT_EQ(4, curves[0]->NbKnots());
     ASSERT_EQ(4, curves[1]->NbKnots());
 
-    EXPECT_NEAR(0.009, curves[0]->Knot(1), 1e-10);
-    EXPECT_NEAR(0.500, curves[0]->Knot(2), 1e-10);
-    EXPECT_NEAR(0.800, curves[0]->Knot(3), 1e-10);
-    EXPECT_NEAR(1.000, curves[0]->Knot(4), 1e-10);
+    EXPECT_NEAR(0.009, curves[0]->Knot(1).getValue(), 1e-10);
+    EXPECT_NEAR(0.500, curves[0]->Knot(2).getValue(), 1e-10);
+    EXPECT_NEAR(0.800, curves[0]->Knot(3).getValue(), 1e-10);
+    EXPECT_NEAR(1.000, curves[0]->Knot(4).getValue(), 1e-10);
     EXPECT_EQ(3, curves[0]->Multiplicity(1));
     EXPECT_EQ(2, curves[0]->Multiplicity(2));
     EXPECT_EQ(1, curves[0]->Multiplicity(3));
     EXPECT_EQ(3, curves[0]->Multiplicity(4));
 
-    EXPECT_NEAR(0.000, curves[1]->Knot(1), 1e-10);
-    EXPECT_NEAR(0.491, curves[1]->Knot(2), 1e-10);
-    EXPECT_NEAR(0.800, curves[1]->Knot(3), 1e-10);
-    EXPECT_NEAR(1.000, curves[1]->Knot(4), 1e-10);
+    EXPECT_NEAR(0.000, curves[1]->Knot(1).getValue(), 1e-10);
+    EXPECT_NEAR(0.491, curves[1]->Knot(2).getValue(), 1e-10);
+    EXPECT_NEAR(0.800, curves[1]->Knot(3).getValue(), 1e-10);
+    EXPECT_NEAR(1.000, curves[1]->Knot(4).getValue(), 1e-10);
     EXPECT_EQ(3, curves[1]->Multiplicity(1));
     EXPECT_EQ(2, curves[1]->Multiplicity(2));
     EXPECT_EQ(1, curves[1]->Multiplicity(3));
@@ -318,20 +318,20 @@ TEST(BSplineAlgorithms, testCreateCommonKnotsVectorToleranceBug)
     ASSERT_EQ(4, curves[0]->NbKnots());
     ASSERT_EQ(4, curves[1]->NbKnots());
 
-    EXPECT_NEAR(0.00, curves[0]->Knot(1), 1e-10);
-    EXPECT_NEAR(0.49, curves[0]->Knot(2), 1e-10);
-    EXPECT_NEAR(0.61, curves[0]->Knot(3), 1e-10);
-    EXPECT_NEAR(1.00, curves[0]->Knot(4), 1e-10);
+    EXPECT_NEAR(0.00, curves[0]->Knot(1).getValue(), 1e-10);
+    EXPECT_NEAR(0.49, curves[0]->Knot(2).getValue(), 1e-10);
+    EXPECT_NEAR(0.61, curves[0]->Knot(3).getValue(), 1e-10);
+    EXPECT_NEAR(1.00, curves[0]->Knot(4).getValue(), 1e-10);
     EXPECT_EQ(4, curves[0]->Multiplicity(1));
     EXPECT_EQ(1, curves[0]->Multiplicity(2));
     EXPECT_EQ(2, curves[0]->Multiplicity(3));
     EXPECT_EQ(4, curves[0]->Multiplicity(4));
 
 
-    EXPECT_NEAR(0.00, curves[1]->Knot(1), 1e-10);
-    EXPECT_NEAR(0.49, curves[1]->Knot(2), 1e-10);
-    EXPECT_NEAR(0.57, curves[1]->Knot(3), 1e-10);
-    EXPECT_NEAR(1.00, curves[1]->Knot(4), 1e-10);
+    EXPECT_NEAR(0.00, curves[1]->Knot(1).getValue(), 1e-10);
+    EXPECT_NEAR(0.49, curves[1]->Knot(2).getValue(), 1e-10);
+    EXPECT_NEAR(0.57, curves[1]->Knot(3).getValue(), 1e-10);
+    EXPECT_NEAR(1.00, curves[1]->Knot(4).getValue(), 1e-10);
     EXPECT_EQ(4, curves[1]->Multiplicity(1));
     EXPECT_EQ(1, curves[1]->Multiplicity(2));
     EXPECT_EQ(2, curves[1]->Multiplicity(3));
@@ -485,12 +485,12 @@ TEST(BSplineAlgorithms, testCreateCommonKnotsVectorSurface)
     TColStd_Array1OfInteger computed_mults_v(1, 6);
     modified_surfaces_vector[0]->VMultiplicities(computed_mults_v);
 
-    ASSERT_NEAR(computed_knot_vector_u(1), right_knot_vector_u(1), 1e-15);
-    ASSERT_NEAR(computed_knot_vector_u(2), right_knot_vector_u(2), 1e-15);
-    ASSERT_NEAR(computed_knot_vector_u(3), right_knot_vector_u(3), 1e-15);
-    ASSERT_NEAR(computed_knot_vector_u(4), right_knot_vector_u(4), 1e-15);
-    ASSERT_NEAR(computed_knot_vector_u(5), right_knot_vector_u(5), 1e-15);
-    ASSERT_NEAR(computed_knot_vector_u(6), right_knot_vector_u(6), 1e-15);
+    ASSERT_NEAR(computed_knot_vector_u(1).getValue(), right_knot_vector_u(1).getValue(), 1e-15);
+    ASSERT_NEAR(computed_knot_vector_u(2).getValue(), right_knot_vector_u(2).getValue(), 1e-15);
+    ASSERT_NEAR(computed_knot_vector_u(3).getValue(), right_knot_vector_u(3).getValue(), 1e-15);
+    ASSERT_NEAR(computed_knot_vector_u(4).getValue(), right_knot_vector_u(4).getValue(), 1e-15);
+    ASSERT_NEAR(computed_knot_vector_u(5).getValue(), right_knot_vector_u(5).getValue(), 1e-15);
+    ASSERT_NEAR(computed_knot_vector_u(6).getValue(), right_knot_vector_u(6).getValue(), 1e-15);
 
     ASSERT_NEAR(computed_mults_u(1), right_mult_u(1), 1e-15);
     ASSERT_NEAR(computed_mults_u(2), right_mult_u(2), 1e-15);
@@ -499,12 +499,12 @@ TEST(BSplineAlgorithms, testCreateCommonKnotsVectorSurface)
     ASSERT_NEAR(computed_mults_u(5), right_mult_u(5), 1e-15);
     ASSERT_NEAR(computed_mults_u(6), right_mult_u(6), 1e-15);
 
-    ASSERT_NEAR(computed_knot_vector_v(1), right_knot_vector_v(1), 1e-15);
-    ASSERT_NEAR(computed_knot_vector_v(2), right_knot_vector_v(2), 1e-15);
-    ASSERT_NEAR(computed_knot_vector_v(3), right_knot_vector_v(3), 1e-15);
-    ASSERT_NEAR(computed_knot_vector_v(4), right_knot_vector_v(4), 1e-15);
-    ASSERT_NEAR(computed_knot_vector_v(5), right_knot_vector_v(5), 1e-15);
-    ASSERT_NEAR(computed_knot_vector_v(6), right_knot_vector_v(6), 1e-15);
+    ASSERT_NEAR(computed_knot_vector_v(1).getValue(), right_knot_vector_v(1).getValue(), 1e-15);
+    ASSERT_NEAR(computed_knot_vector_v(2).getValue(), right_knot_vector_v(2).getValue(), 1e-15);
+    ASSERT_NEAR(computed_knot_vector_v(3).getValue(), right_knot_vector_v(3).getValue(), 1e-15);
+    ASSERT_NEAR(computed_knot_vector_v(4).getValue(), right_knot_vector_v(4).getValue(), 1e-15);
+    ASSERT_NEAR(computed_knot_vector_v(5).getValue(), right_knot_vector_v(5).getValue(), 1e-15);
+    ASSERT_NEAR(computed_knot_vector_v(6).getValue(), right_knot_vector_v(6).getValue(), 1e-15);
 
     ASSERT_NEAR(computed_mults_v(1), right_mult_v(1), 1e-15);
     ASSERT_NEAR(computed_mults_v(2), right_mult_v(2), 1e-15);
@@ -579,10 +579,10 @@ TEST(BSplineAlgorithms, testReparametrizeBSplineContinuouslyApprox)
 
     for (int i = test_point_params.Lower(); i <= test_point_params.Upper(); ++i) {
         for (size_t j = 0; j < old_parameters.size() - 1; ++j) {
-            if (std::abs(test_point_params(i) - old_parameters[j + 1]) < 1e-15) {
+            if (Abs(test_point_params(i) - old_parameters[j + 1]) < 1e-15) {
                 test_point_new_params(i) = new_parameters[j + 1];
             }
-            else if (std::abs(test_point_params(i) - old_parameters[0]) < 1e-15) {
+            else if (Abs(test_point_params(i) - old_parameters[0]) < 1e-15) {
                 test_point_new_params(i) = new_parameters[0];
             }
             else if (old_parameters[j + 1] > test_point_params(i) && test_point_params(i) > old_parameters[j]) {
@@ -595,9 +595,9 @@ TEST(BSplineAlgorithms, testReparametrizeBSplineContinuouslyApprox)
     for (size_t param_idx = 0; param_idx < old_parameters.size(); ++param_idx) {
         gp_Pnt old_point = spline->Value(old_parameters[param_idx]);
         gp_Pnt new_point = reparam_spline->Value(new_parameters[param_idx]);
-        ASSERT_NEAR(old_point.X(), new_point.X(), 1e-10);
-        ASSERT_NEAR(old_point.Y(), new_point.Y(), 1e-10);
-        ASSERT_NEAR(old_point.Z(), new_point.Z(), 1e-10);
+        ASSERT_NEAR(old_point.X().getValue(), new_point.X().getValue(), 1e-10);
+        ASSERT_NEAR(old_point.Y().getValue(), new_point.Y().getValue(), 1e-10);
+        ASSERT_NEAR(old_point.Z().getValue(), new_point.Z().getValue(), 1e-10);
     }
 }
 
@@ -636,7 +636,7 @@ TEST(BSplineAlgorithms, testReparametrizeBSplineContinuouslyApproxWithKink)
     BRepTools::Write(BRepBuilderAPI_MakeEdge(spline).Edge(), "TestData/bugs/505/original_spline.brep");
     BRepTools::Write(BRepBuilderAPI_MakeEdge(splineRepar).Edge(), "TestData/bugs/505/reparm_spline.brep");
 
-    EXPECT_NEAR(0.6, splineRepar->Knot(3), 1e-10);
+    EXPECT_NEAR(0.6, splineRepar->Knot(3).getValue(), 1e-10);
     EXPECT_EQ(3, splineRepar->Multiplicity(3));
 }
 
@@ -673,8 +673,8 @@ TEST(BSplineAlgorithms, reparametrizeBSpline)
     Handle(Geom_BSplineCurve) spline = new Geom_BSplineCurve(controlPoints, knots, mults, degree);
 
     BSplineAlgorithms::reparametrizeBSpline(*spline, -5, 5);
-    ASSERT_NEAR(spline->FirstParameter(), -5, 1e-10);
-    ASSERT_NEAR(spline->LastParameter(),  5, 1e-10);
+    ASSERT_NEAR(spline->FirstParameter().getValue(), -5, 1e-10);
+    ASSERT_NEAR(spline->LastParameter().getValue(),  5, 1e-10);
 }
 
 TEST(BSplineAlgorithms, reparametrizeBSplineNiceKnots)
@@ -701,7 +701,7 @@ TEST(BSplineAlgorithms, reparametrizeBSplineNiceKnots)
             // check, that nuber segments is power of two
             Standard_Real knotdist = bspline->Knot(2) - bspline->Knot(1);
             EXPECT_TRUE(knotdist > 0);
-            EXPECT_TRUE(fabs(fmod(log2(knotdist), 1)) < 1e-4);
+            EXPECT_TRUE(fabs(fmod(log2(knotdist.getValue()), 1)) < 1e-4);
         }
     }
 }
@@ -763,9 +763,9 @@ TEST(BSplineAlgorithms, testFlipSurface)
             gp_Pnt point = surface->Value(u_idx, v_idx);
             gp_Pnt same_point = flippedSurface->Value(v_idx, u_idx);
 
-            ASSERT_NEAR(point.X(), same_point.X(), 1e-15);
-            ASSERT_NEAR(point.Y(), same_point.Y(), 1e-15);
-            ASSERT_NEAR(point.Z(), same_point.Z(), 1e-15);
+            ASSERT_NEAR(point.X().getValue(), same_point.X().getValue(), 1e-15);
+            ASSERT_NEAR(point.Y().getValue(), same_point.Y().getValue(), 1e-15);
+            ASSERT_NEAR(point.Z().getValue(), same_point.Z().getValue(), 1e-15);
         }
     }
 }
@@ -824,9 +824,9 @@ TEST(BSplineAlgorithms, testInterpolatingSurface)
         for (unsigned int v_idx = 1; v_idx <= 100; ++v_idx) {
             gp_Pnt surf_pnt = surface->Value(u_idx / 100., v_idx / 100.);
             gp_Pnt interp_pnt = interpolatingSurf->Value(parameters.first[u_idx - 1], parameters.second[v_idx - 1]);
-            ASSERT_NEAR(interp_pnt.X(), surf_pnt.X(), 4e-15);
-            ASSERT_NEAR(interp_pnt.Y(), surf_pnt.Y(), 4e-15);
-            ASSERT_NEAR(interp_pnt.Z(), surf_pnt.Z(), 4e-15);
+            ASSERT_NEAR(interp_pnt.X().getValue(), surf_pnt.X().getValue(), 4e-15);
+            ASSERT_NEAR(interp_pnt.Y().getValue(), surf_pnt.Y().getValue(), 4e-15);
+            ASSERT_NEAR(interp_pnt.Z().getValue(), surf_pnt.Z().getValue(), 4e-15);
         }
     }
 }
@@ -972,9 +972,9 @@ TEST(BSplineAlgorithms, testCreateGordonSurface)
             gp_Pnt point_curve2 = spline_u4->Value(u_value);  // represents y(z) = (z - 0.5)^2 with offset 2 in x-direction
             gp_Pnt right_point(point_curve1.X() * (1. - v_value) + point_curve2.X() * v_value, point_curve1.Y() * (1. - v_value) + point_curve2.Y() * v_value, point_curve1.Z() * (1. - v_value) + point_curve2.Z() * v_value);
 
-            ASSERT_NEAR(surface_point.X(), right_point.X(), tolerance);
-            ASSERT_NEAR(surface_point.Y(), right_point.Y(), tolerance);
-            ASSERT_NEAR(surface_point.Z(), right_point.Z(), tolerance);
+            ASSERT_NEAR(surface_point.X().getValue(), right_point.X().getValue(), tolerance.getValue());
+            ASSERT_NEAR(surface_point.Y().getValue(), right_point.Y().getValue(), tolerance.getValue());
+            ASSERT_NEAR(surface_point.Z().getValue(), right_point.Z().getValue(), tolerance.getValue());
         }
     }
 
@@ -1013,8 +1013,8 @@ TEST(BSplineAlgorithms, testIntersectionFinder)
     std::vector<std::pair<Standard_Real, Standard_Real> > intersection_vector = BSplineAlgorithms::intersections(spline_u, spline_v);
 
     // splines should intersect at u = 0.5 + std::sqrt(0.1) and v = 4. / 5
-    ASSERT_NEAR(intersection_vector[0].first, 0.5 + std::sqrt(0.1), 1e-13);
-    ASSERT_NEAR(intersection_vector[0].second, 4. / 5, 1e-13);
+    ASSERT_NEAR(intersection_vector[0].first.getValue(), 0.5 + std::sqrt(0.1), 1e-13);
+    ASSERT_NEAR(intersection_vector[0].second.getValue(), 4. / 5, 1e-13);
 }
 /*
 TEST(BSplineAlgorithms, testSortBSpline)
@@ -1232,9 +1232,9 @@ TEST(BSplineAlgorithms, testCreateGordonSurfaceGeneral)
             gp_Pnt point_curve2 = spline_u4->Value(u_value);  // represents y(z) = (z - 0.5)^2 with offset 2 in x-direction
             gp_Pnt right_point(point_curve1.X() * (1. - v_value) + point_curve2.X() * v_value, point_curve1.Y() * (1. - v_value) + point_curve2.Y() * v_value, point_curve1.Z() * (1. - v_value) + point_curve2.Z() * v_value);
 
-            ASSERT_NEAR(surface_point.X(), right_point.X(), 1e-13);
-            ASSERT_NEAR(surface_point.Y(), right_point.Y(), 1e-13);
-            ASSERT_NEAR(surface_point.Z(), right_point.Z(), 1e-13);
+            ASSERT_NEAR(surface_point.X().getValue(), right_point.X().getValue(), 1e-13);
+            ASSERT_NEAR(surface_point.Y().getValue(), right_point.Y().getValue(), 1e-13);
+            ASSERT_NEAR(surface_point.Z().getValue(), right_point.Z().getValue(), 1e-13);
         }
     }
 }
@@ -1300,8 +1300,8 @@ TEST(BSplineAlgorithms, testIntersection_Bug783_1)
     ASSERT_EQ(1, result.size());
 
     // Result from OCCT 6.9.x
-    EXPECT_NEAR(0.25, result.front().first, 1e-6);
-    EXPECT_NEAR(0.215758, result.front().second, 1e-6);
+    EXPECT_NEAR(0.25, result.front().first.getValue(), 1e-6);
+    EXPECT_NEAR(0.215758, result.front().second.getValue(), 1e-6);
 }
 
 /// Regression with occt 7.4.0
@@ -1317,8 +1317,8 @@ TEST(BSplineAlgorithms, testIntersection_Bug783_2)
     ASSERT_EQ(1, result.size());
 
     // Result from OCCT 6.9.x
-    EXPECT_NEAR(0.25, result.front().first, 1e-6);
-    EXPECT_NEAR(0.0, result.front().second, 1e-6);
+    EXPECT_NEAR(0.25, result.front().first.getValue(), 1e-6);
+    EXPECT_NEAR(0.0, result.front().second.getValue(), 1e-6);
 }
 
 TEST(BSplineAlgorithms, findKinks)
@@ -1354,12 +1354,12 @@ TEST(BSplineAlgorithms, findKinks)
 
     std::vector<Standard_Real> kinks = geoml::BSplineAlgorithms::getKinkParameters(curve);
     ASSERT_EQ(1, kinks.size());
-    EXPECT_NEAR(0.7, kinks[0], 1e-10);
+    EXPECT_NEAR(0.7, kinks[0].getValue(), 1e-10);
 
     curve->InsertKnot(0.5, 3, 1e-10, true);
     kinks = geoml::BSplineAlgorithms::getKinkParameters(curve);
     ASSERT_EQ(1, kinks.size());
-    EXPECT_NEAR(0.7, kinks[0], 1e-10);
+    EXPECT_NEAR(0.7, kinks[0].getValue(), 1e-10);
 }
 
 
@@ -1375,27 +1375,27 @@ TEST(BSplineAlgorithms, knotsFromParams)
     unsigned int degree = 2;
     std::vector<Standard_Real> knots = geoml::BSplineAlgorithms::knotsFromCurveParameters(params, degree, false);
     ASSERT_EQ(8, knots.size());
-    EXPECT_NEAR(0., knots[0], 1e-10);
-    EXPECT_NEAR(0., knots[1], 1e-10);
-    EXPECT_NEAR(0., knots[2], 1e-10);
-    EXPECT_NEAR(0.375, knots[3], 1e-10);
-    EXPECT_NEAR(0.625, knots[4], 1e-10);
-    EXPECT_NEAR(1., knots[5], 1e-10);
-    EXPECT_NEAR(1., knots[6], 1e-10);
-    EXPECT_NEAR(1., knots[7], 1e-10);
+    EXPECT_NEAR(0., knots[0].getValue(), 1e-10);
+    EXPECT_NEAR(0., knots[1].getValue(), 1e-10);
+    EXPECT_NEAR(0., knots[2].getValue(), 1e-10);
+    EXPECT_NEAR(0.375, knots[3].getValue(), 1e-10);
+    EXPECT_NEAR(0.625, knots[4].getValue(), 1e-10);
+    EXPECT_NEAR(1., knots[5].getValue(), 1e-10);
+    EXPECT_NEAR(1., knots[6].getValue(), 1e-10);
+    EXPECT_NEAR(1., knots[7].getValue(), 1e-10);
 
     degree = 3;
     knots = geoml::BSplineAlgorithms::knotsFromCurveParameters(params, degree, false);
     ASSERT_EQ(9, knots.size());
-    EXPECT_NEAR(0., knots[0], 1e-10);
-    EXPECT_NEAR(0., knots[1], 1e-10);
-    EXPECT_NEAR(0., knots[2], 1e-10);
-    EXPECT_NEAR(0., knots[3], 1e-10);
-    EXPECT_NEAR(0.5, knots[4], 1e-10);
-    EXPECT_NEAR(1., knots[5], 1e-10);
-    EXPECT_NEAR(1., knots[6], 1e-10);
-    EXPECT_NEAR(1., knots[7], 1e-10);
-    EXPECT_NEAR(1., knots[8], 1e-10);
+    EXPECT_NEAR(0., knots[0].getValue(), 1e-10);
+    EXPECT_NEAR(0., knots[1].getValue(), 1e-10);
+    EXPECT_NEAR(0., knots[2].getValue(), 1e-10);
+    EXPECT_NEAR(0., knots[3].getValue(), 1e-10);
+    EXPECT_NEAR(0.5, knots[4].getValue(), 1e-10);
+    EXPECT_NEAR(1., knots[5].getValue(), 1e-10);
+    EXPECT_NEAR(1., knots[6].getValue(), 1e-10);
+    EXPECT_NEAR(1., knots[7].getValue(), 1e-10);
+    EXPECT_NEAR(1., knots[8].getValue(), 1e-10);
 
 }
 
@@ -1419,46 +1419,46 @@ TEST(BSplineAlgorithms, knotsFromParamsClosed)
     unsigned int degree = 3;
     std::vector<Standard_Real> knots = geoml::BSplineAlgorithms::knotsFromCurveParameters(params, degree, true);
     ASSERT_EQ(19, knots.size());
-    EXPECT_NEAR(-0.1875, knots[0], 1e-10);
-    EXPECT_NEAR(-0.125, knots[1], 1e-10);
-    EXPECT_NEAR(-0.0625, knots[2], 1e-10);
-    EXPECT_NEAR(0.0, knots[3], 1e-10);
-    EXPECT_NEAR(0.0625, knots[4], 1e-10);
-    EXPECT_NEAR(0.125, knots[5], 1e-10);
-    EXPECT_NEAR(0.1875, knots[6], 1e-10);
-    EXPECT_NEAR(0.25, knots[7], 1e-10);
-    EXPECT_NEAR(0.3125, knots[8], 1e-10);
-    EXPECT_NEAR(0.375, knots[9], 1e-10);
-    EXPECT_NEAR(0.5625, knots[10], 1e-10);
-    EXPECT_NEAR(0.625, knots[11], 1e-10);
-    EXPECT_NEAR(0.8125, knots[12], 1e-10);
-    EXPECT_NEAR(0.875, knots[13], 1e-10);
-    EXPECT_NEAR(0.9375, knots[14], 1e-10);
-    EXPECT_NEAR(1.0, knots[15], 1e-10);
-    EXPECT_NEAR(1.0625, knots[16], 1e-10);
-    EXPECT_NEAR(1.125, knots[17], 1e-10);
-    EXPECT_NEAR(1.1875, knots[18], 1e-10);
+    EXPECT_NEAR(-0.1875, knots[0].getValue(), 1e-10);
+    EXPECT_NEAR(-0.125, knots[1].getValue(), 1e-10);
+    EXPECT_NEAR(-0.0625, knots[2].getValue(), 1e-10);
+    EXPECT_NEAR(0.0, knots[3].getValue(), 1e-10);
+    EXPECT_NEAR(0.0625, knots[4].getValue(), 1e-10);
+    EXPECT_NEAR(0.125, knots[5].getValue(), 1e-10);
+    EXPECT_NEAR(0.1875, knots[6].getValue(), 1e-10);
+    EXPECT_NEAR(0.25, knots[7].getValue(), 1e-10);
+    EXPECT_NEAR(0.3125, knots[8].getValue(), 1e-10);
+    EXPECT_NEAR(0.375, knots[9].getValue(), 1e-10);
+    EXPECT_NEAR(0.5625, knots[10].getValue(), 1e-10);
+    EXPECT_NEAR(0.625, knots[11].getValue(), 1e-10);
+    EXPECT_NEAR(0.8125, knots[12].getValue(), 1e-10);
+    EXPECT_NEAR(0.875, knots[13].getValue(), 1e-10);
+    EXPECT_NEAR(0.9375, knots[14].getValue(), 1e-10);
+    EXPECT_NEAR(1.0, knots[15].getValue(), 1e-10);
+    EXPECT_NEAR(1.0625, knots[16].getValue(), 1e-10);
+    EXPECT_NEAR(1.125, knots[17].getValue(), 1e-10);
+    EXPECT_NEAR(1.1875, knots[18].getValue(), 1e-10);
 
     degree = 2;
     knots = geoml::BSplineAlgorithms::knotsFromCurveParameters(params, degree, true);
     ASSERT_EQ(17, knots.size());
-    EXPECT_NEAR(-0.125, knots[0], 1e-10);
-    EXPECT_NEAR(-0.0625, knots[1], 1e-10);
-    EXPECT_NEAR(0., knots[2], 1e-10);
-    EXPECT_NEAR(0.0625, knots[3], 1e-10);
-    EXPECT_NEAR(0.125, knots[4], 1e-10);
-    EXPECT_NEAR(0.1875, knots[5], 1e-10);
-    EXPECT_NEAR(0.25, knots[6], 1e-10);
-    EXPECT_NEAR(0.3125, knots[7], 1e-10);
-    EXPECT_NEAR(0.375, knots[8], 1e-10);
-    EXPECT_NEAR(0.5, knots[9], 1e-10);
-    EXPECT_NEAR(0.625, knots[10], 1e-10);
-    EXPECT_NEAR(0.75, knots[11], 1e-10);
-    EXPECT_NEAR(0.875, knots[12], 1e-10);
-    EXPECT_NEAR(0.9375, knots[13], 1e-10);
-    EXPECT_NEAR(1.0, knots[14], 1e-10);
-    EXPECT_NEAR(1.0625, knots[15], 1e-10);
-    EXPECT_NEAR(1.125, knots[16], 1e-10);
+    EXPECT_NEAR(-0.125, knots[0].getValue(), 1e-10);
+    EXPECT_NEAR(-0.0625, knots[1].getValue(), 1e-10);
+    EXPECT_NEAR(0., knots[2].getValue(), 1e-10);
+    EXPECT_NEAR(0.0625, knots[3].getValue(), 1e-10);
+    EXPECT_NEAR(0.125, knots[4].getValue(), 1e-10);
+    EXPECT_NEAR(0.1875, knots[5].getValue(), 1e-10);
+    EXPECT_NEAR(0.25, knots[6].getValue(), 1e-10);
+    EXPECT_NEAR(0.3125, knots[7].getValue(), 1e-10);
+    EXPECT_NEAR(0.375, knots[8].getValue(), 1e-10);
+    EXPECT_NEAR(0.5, knots[9].getValue(), 1e-10);
+    EXPECT_NEAR(0.625, knots[10].getValue(), 1e-10);
+    EXPECT_NEAR(0.75, knots[11].getValue(), 1e-10);
+    EXPECT_NEAR(0.875, knots[12].getValue(), 1e-10);
+    EXPECT_NEAR(0.9375, knots[13].getValue(), 1e-10);
+    EXPECT_NEAR(1.0, knots[14].getValue(), 1e-10);
+    EXPECT_NEAR(1.0625, knots[15].getValue(), 1e-10);
+    EXPECT_NEAR(1.125, knots[16].getValue(), 1e-10);
 }
 
 TEST(BSplineAlgorithms, trimSurfaceBug)
@@ -1470,10 +1470,10 @@ TEST(BSplineAlgorithms, trimSurfaceBug)
     Standard_Real u1, u2, v1, v2;
     surface->Bounds(u1, u2, v1, v2);
 
-    EXPECT_NEAR(0., u1, 1e-10);
-    EXPECT_NEAR(1., u2, 1e-10);
-    EXPECT_NEAR(0.5, v1, 1e-10);
-    EXPECT_NEAR(0.666666666666666666, v2, 1e-10);
+    EXPECT_NEAR(0., u1.getValue(), 1e-10);
+    EXPECT_NEAR(1., u2.getValue(), 1e-10);
+    EXPECT_NEAR(0.5, v1.getValue(), 1e-10);
+    EXPECT_NEAR(0.666666666666666666, v2.getValue(), 1e-10);
 
 }
 
@@ -1609,7 +1609,7 @@ TEST_P(GordonSurface, testIntersectionRegressions)
             for (auto refInter : referenceInters) {
                 bool found = std::find_if(std::begin(intersections), std::end(intersections), [&](const std::pair<Standard_Real, Standard_Real>& result) {
                     Standard_Real tol = 1e-5;
-                    return std::fabs(refInter.first - result.first) <= tol && std::fabs(refInter.second - result.second) <= tol;
+                    return Abs(refInter.first - result.first) <= tol && Abs(refInter.second - result.second) <= tol;
                 }) != std::end(intersections);
 
                 EXPECT_TRUE(found);
@@ -1692,13 +1692,13 @@ TEST_F(TestConcatSurfaces, concatUDir)
 
     Standard_Real u1, u2, v1, v2;
     result->Bounds(u1, u2, v1, v2);
-    EXPECT_NEAR(0.0, u1, 1e-15);
-    EXPECT_NEAR(2.0, u2, 1e-15);
-    EXPECT_NEAR(0.0, v1, 1e-15);
-    EXPECT_NEAR(1.0, v2, 1e-15);
+    EXPECT_NEAR(0.0, u1.getValue(), 1e-15);
+    EXPECT_NEAR(2.0, u2.getValue(), 1e-15);
+    EXPECT_NEAR(0.0, v1.getValue(), 1e-15);
+    EXPECT_NEAR(1.0, v2.getValue(), 1e-15);
 
-    EXPECT_NEAR(0.0, s1->Value(0.5, 0.5).Distance(result->Value(0.5, 0.5)), 1e-10);
-    EXPECT_NEAR(0.0, s2->Value(1.3, 0.3).Distance(result->Value(1.3, 0.3)), 1e-10);
+    EXPECT_NEAR(0.0, s1->Value(0.5, 0.5).Distance(result->Value(0.5, 0.5)).getValue(), 1e-10);
+    EXPECT_NEAR(0.0, s2->Value(1.3, 0.3).Distance(result->Value(1.3, 0.3)).getValue(), 1e-10);
 
     BRepTools::Write(BRepBuilderAPI_MakeFace(result, 1e-6).Face(), "TestData/concat_faces.brep");
 
@@ -1741,13 +1741,13 @@ TEST_F(TestConcatSurfaces, concatWithParams)
     Standard_Real u1, u2, v1, v2;
     result->Bounds(u1, u2, v1, v2);
 
-    EXPECT_NEAR(0.0, u1, 1e-15);
-    EXPECT_NEAR(4.0, u2, 1e-15);
-    EXPECT_NEAR(0.0, v1, 1e-15);
-    EXPECT_NEAR(1.0, v2, 1e-15);
+    EXPECT_NEAR(0.0, u1.getValue(), 1e-15);
+    EXPECT_NEAR(4.0, u2.getValue(), 1e-15);
+    EXPECT_NEAR(0.0, v1.getValue(), 1e-15);
+    EXPECT_NEAR(1.0, v2.getValue(), 1e-15);
 
-    EXPECT_NEAR(0.0, s1->Value(0.5, 0.5).Distance(result->Value(1.0, 0.5)), 1e-10);
-    EXPECT_NEAR(0.0, s2->Value(1.3, 0.3).Distance(result->Value(2.6, 0.3)), 1e-10);
+    EXPECT_NEAR(0.0, s1->Value(0.5, 0.5).Distance(result->Value(1.0, 0.5)).getValue(), 1e-10);
+    EXPECT_NEAR(0.0, s2->Value(1.3, 0.3).Distance(result->Value(2.6, 0.3)).getValue(), 1e-10);
 }
 
 TEST_F(TestConcatSurfaces, concatWithParamsApprox)
@@ -1760,13 +1760,13 @@ TEST_F(TestConcatSurfaces, concatWithParamsApprox)
     Standard_Real u1, u2, v1, v2;
     result->Bounds(u1, u2, v1, v2);
 
-    EXPECT_NEAR(0.0, u1, 1e-15);
-    EXPECT_NEAR(4.0, u2, 1e-15);
-    EXPECT_NEAR(0.0, v1, 1e-15);
-    EXPECT_NEAR(1.0, v2, 1e-15);
+    EXPECT_NEAR(0.0, u1.getValue(), 1e-15);
+    EXPECT_NEAR(4.0, u2.getValue(), 1e-15);
+    EXPECT_NEAR(0.0, v1.getValue(), 1e-15);
+    EXPECT_NEAR(1.0, v2.getValue(), 1e-15);
 
-    EXPECT_NEAR(0.0, s1->Value(0.5, 0.5).Distance(result->Value(1.0, 0.5)), 1e-10);
-    EXPECT_NEAR(0.0, s2->Value(1.3, 0.3).Distance(result->Value(2.6, 0.3)), 1e-10);
+    EXPECT_NEAR(0.0, s1->Value(0.5, 0.5).Distance(result->Value(1.0, 0.5)).getValue(), 1e-10);
+    EXPECT_NEAR(0.0, s2->Value(1.3, 0.3).Distance(result->Value(2.6, 0.3)).getValue(), 1e-10);
 }
 
 TEST_F(TestConcatSurfaces, concatToFewParams)
@@ -1788,17 +1788,17 @@ TEST(ApproxSurface, simple)
     EXPECT_EQ(3, surfApprox->NbUKnots());
     EXPECT_EQ(7, surfApprox->NbVKnots());
 
-    EXPECT_EQ(0., surfApprox->UKnot(1));
-    EXPECT_EQ(0.5, surfApprox->UKnot(2));
-    EXPECT_EQ(1.0, surfApprox->UKnot(3));
+    EXPECT_EQ(0., surfApprox->UKnot(1).getValue());
+    EXPECT_EQ(0.5, surfApprox->UKnot(2).getValue());
+    EXPECT_EQ(1.0, surfApprox->UKnot(3).getValue());
 
-    EXPECT_EQ(0., surfApprox->VKnot(1));
-    EXPECT_EQ(0.25, surfApprox->VKnot(2));
-    EXPECT_EQ(0.375, surfApprox->VKnot(3));
-    EXPECT_EQ(0.5, surfApprox->VKnot(4));
-    EXPECT_EQ(0.625, surfApprox->VKnot(5));
-    EXPECT_EQ(0.75, surfApprox->VKnot(6));
-    EXPECT_EQ(1.0, surfApprox->VKnot(7));
+    EXPECT_EQ(0., surfApprox->VKnot(1).getValue());
+    EXPECT_EQ(0.25, surfApprox->VKnot(2).getValue());
+    EXPECT_EQ(0.375, surfApprox->VKnot(3).getValue());
+    EXPECT_EQ(0.5, surfApprox->VKnot(4).getValue());
+    EXPECT_EQ(0.625, surfApprox->VKnot(5).getValue());
+    EXPECT_EQ(0.75, surfApprox->VKnot(6).getValue());
+    EXPECT_EQ(1.0, surfApprox->VKnot(7).getValue());
 
     // the resulting surface should match exactly the original one by design
     auto u = LinspaceWithBreaks(0, 1, 100, {});
@@ -1808,7 +1808,7 @@ TEST(ApproxSurface, simple)
         for (auto v_val : v) {
             auto pntApprox = surfApprox->Value(u_val, v_val);
             auto pntOrig = surfOrig->Value(u_val, v_val);
-            EXPECT_NEAR(0., pntApprox.Distance(pntOrig), 1e-13);
+            EXPECT_NEAR(0., pntApprox.Distance(pntOrig).getValue(), 1e-13);
         }
     }
 }

@@ -64,17 +64,17 @@ TEST(BSplineIntersection, ex1)
     }
 
     // Values from Python Code / Manually verified
-    EXPECT_NEAR(0.0, geoml::Point(9.025569161817309e-09, 3.7549883362060295e-09, 0.).distance2(results[0].point), 1e-8);
-    EXPECT_NEAR(0.0, geoml::Point(0.4822782514496766, 2.0792221838260083, 0.).distance2(results[1].point), 1e-8);
-    EXPECT_NEAR(0.0, geoml::Point(0.5299902542589878, 2.2428238892925423, 0.).distance2(results[2].point), 1e-8);
-    EXPECT_NEAR(0.0, geoml::Point(1.6759669326608981, 1.7749871436459341, 0.).distance2(results[3].point), 1e-8);
-    EXPECT_NEAR(0.0, geoml::Point(1.5024716597735064, 2.4876722466426440, 0.).distance2(results[4].point), 1e-8);
-    EXPECT_NEAR(0.0, geoml::Point(2.2970753765027037, 1.6912688966211170, 0.).distance2(results[5].point), 1e-8);
-    EXPECT_NEAR(0.0, geoml::Point(2.5367033831340510, 2.6767812240028290, 0.).distance2(results[6].point), 1e-8);
-    EXPECT_NEAR(0.0, geoml::Point(2.7425055392358964, 3.4184830133790154, 0.).distance2(results[7].point), 1e-8);
-    EXPECT_NEAR(0.0, geoml::Point(3.3861085187441030, 3.0046010587661650, 0.).distance2(results[8].point), 1e-8);
-    EXPECT_NEAR(0.0, geoml::Point(3.3346825588859490, 3.1899379238877654, 0.).distance2(results[9].point), 1e-8);
-    EXPECT_NEAR(0.0, geoml::Point(4.9999999788784610, 4.9999999788908305, 0.).distance2(results[10].point), 1e-8);
+    EXPECT_NEAR(0.0, geoml::Point(9.025569161817309e-09, 3.7549883362060295e-09, 0.).distance2(results[0].point).getValue(), 1e-8);
+    EXPECT_NEAR(0.0, geoml::Point(0.4822782514496766, 2.0792221838260083, 0.).distance2(results[1].point).getValue(), 1e-8);
+    EXPECT_NEAR(0.0, geoml::Point(0.5299902542589878, 2.2428238892925423, 0.).distance2(results[2].point).getValue(), 1e-8);
+    EXPECT_NEAR(0.0, geoml::Point(1.6759669326608981, 1.7749871436459341, 0.).distance2(results[3].point).getValue(), 1e-8);
+    EXPECT_NEAR(0.0, geoml::Point(1.5024716597735064, 2.4876722466426440, 0.).distance2(results[4].point).getValue(), 1e-8);
+    EXPECT_NEAR(0.0, geoml::Point(2.2970753765027037, 1.6912688966211170, 0.).distance2(results[5].point).getValue(), 1e-8);
+    EXPECT_NEAR(0.0, geoml::Point(2.5367033831340510, 2.6767812240028290, 0.).distance2(results[6].point).getValue(), 1e-8);
+    EXPECT_NEAR(0.0, geoml::Point(2.7425055392358964, 3.4184830133790154, 0.).distance2(results[7].point).getValue(), 1e-8);
+    EXPECT_NEAR(0.0, geoml::Point(3.3861085187441030, 3.0046010587661650, 0.).distance2(results[8].point).getValue(), 1e-8);
+    EXPECT_NEAR(0.0, geoml::Point(3.3346825588859490, 3.1899379238877654, 0.).distance2(results[9].point).getValue(), 1e-8);
+    EXPECT_NEAR(0.0, geoml::Point(4.9999999788784610, 4.9999999788908305, 0.).distance2(results[10].point).getValue(), 1e-8);
 }
 
 TEST(BSplineIntersection, ex2)
@@ -103,12 +103,12 @@ TEST(BSplineIntersection, ex2)
     for (auto result : results) {
         gp_Pnt p1 = c1->Value(result.parmOnCurve1);
         gp_Pnt p2 = c2->Value(result.parmOnCurve2);
-        EXPECT_LE(p1.Distance(p2), tolerance);
+        EXPECT_LE(p1.Distance(p2).getValue(), tolerance);
     }
     
-    EXPECT_NEAR(0.0, geoml::Point(0.975, 0.025, 0.).distance2(results[0].point), 1e-8);
-    EXPECT_NEAR(5.0, results[0].parmOnCurve1, 1e-8);
-    EXPECT_NEAR(5.0, results[0].parmOnCurve2, 1e-8);
+    EXPECT_NEAR(0.0, geoml::Point(0.975, 0.025, 0.).distance2(results[0].point).getValue(), 1e-8);
+    EXPECT_NEAR(5.0, results[0].parmOnCurve1.getValue(), 1e-8);
+    EXPECT_NEAR(5.0, results[0].parmOnCurve2.getValue(), 1e-8);
 
     // The true distance is 0.070711
 

@@ -63,30 +63,30 @@ TEST(CurveNetwork, alreadyOrdered)
 
     // check parameters
     math_Matrix us = sorter.ProfileIntersectionParms();
-    EXPECT_NEAR(0.0, us(0, 0), 1e-10);
-    EXPECT_NEAR(0.2, us(0, 1), 1e-10);
-    EXPECT_NEAR(1.0, us(0, 2), 1e-10);
+    EXPECT_NEAR(0.0, us(0, 0).getValue(), 1e-10);
+    EXPECT_NEAR(0.2, us(0, 1).getValue(), 1e-10);
+    EXPECT_NEAR(1.0, us(0, 2).getValue(), 1e-10);
 
-    EXPECT_NEAR(0.0, us(1, 0), 1e-10);
-    EXPECT_NEAR(0.6, us(1, 1), 1e-10);
-    EXPECT_NEAR(1.0, us(1, 2), 1e-10);
+    EXPECT_NEAR(0.0, us(1, 0).getValue(), 1e-10);
+    EXPECT_NEAR(0.6, us(1, 1).getValue(), 1e-10);
+    EXPECT_NEAR(1.0, us(1, 2).getValue(), 1e-10);
 
-    EXPECT_NEAR(0.0, us(2, 0), 1e-10);
-    EXPECT_NEAR(0.7, us(2, 1), 1e-10);
-    EXPECT_NEAR(1.0, us(2, 2), 1e-10);
+    EXPECT_NEAR(0.0, us(2, 0).getValue(), 1e-10);
+    EXPECT_NEAR(0.7, us(2, 1).getValue(), 1e-10);
+    EXPECT_NEAR(1.0, us(2, 2).getValue(), 1e-10);
 
     math_Matrix vs = sorter.GuideIntersectionParms();
-    EXPECT_NEAR(0.0, vs(0, 0), 1e-10);
-    EXPECT_NEAR(0.3, vs(1, 0), 1e-10);
-    EXPECT_NEAR(1.0, vs(2, 0), 1e-10);
+    EXPECT_NEAR(0.0, vs(0, 0).getValue(), 1e-10);
+    EXPECT_NEAR(0.3, vs(1, 0).getValue(), 1e-10);
+    EXPECT_NEAR(1.0, vs(2, 0).getValue(), 1e-10);
 
-    EXPECT_NEAR(0.0, vs(0, 1), 1e-10);
-    EXPECT_NEAR(0.4, vs(1, 1), 1e-10);
-    EXPECT_NEAR(1.0, vs(2, 1), 1e-10);
+    EXPECT_NEAR(0.0, vs(0, 1).getValue(), 1e-10);
+    EXPECT_NEAR(0.4, vs(1, 1).getValue(), 1e-10);
+    EXPECT_NEAR(1.0, vs(2, 1).getValue(), 1e-10);
 
-    EXPECT_NEAR(0.0, vs(0, 2), 1e-10);
-    EXPECT_NEAR(0.5, vs(1, 2), 1e-10);
-    EXPECT_NEAR(1.0, vs(2, 2), 1e-10);
+    EXPECT_NEAR(0.0, vs(0, 2).getValue(), 1e-10);
+    EXPECT_NEAR(0.5, vs(1, 2).getValue(), 1e-10);
+    EXPECT_NEAR(1.0, vs(2, 2).getValue(), 1e-10);
 }
 
 TEST(CurveNetwork, unorderedAndReversed)
@@ -129,30 +129,30 @@ TEST(CurveNetwork, unorderedAndReversed)
 
     // check parameters
     math_Matrix us = sorter.ProfileIntersectionParms();
-    EXPECT_NEAR(0.0, us(0, 0), 1e-10);
-    EXPECT_NEAR(0.2, us(0, 1), 1e-10);
-    EXPECT_NEAR(1.0, us(0, 2), 1e-10);
+    EXPECT_NEAR(0.0, us(0, 0).getValue(), 1e-10);
+    EXPECT_NEAR(0.2, us(0, 1).getValue(), 1e-10);
+    EXPECT_NEAR(1.0, us(0, 2).getValue(), 1e-10);
 
-    EXPECT_NEAR(0.0, us(1, 0), 1e-10);
-    EXPECT_NEAR(0.6, us(1, 1), 1e-10);
-    EXPECT_NEAR(1.0, us(1, 2), 1e-10);
+    EXPECT_NEAR(0.0, us(1, 0).getValue(), 1e-10);
+    EXPECT_NEAR(0.6, us(1, 1).getValue(), 1e-10);
+    EXPECT_NEAR(1.0, us(1, 2).getValue(), 1e-10);
 
-    EXPECT_NEAR(0.0, us(2, 0), 1e-10);
-    EXPECT_NEAR(0.7, us(2, 1), 1e-10);
-    EXPECT_NEAR(1.0, us(2, 2), 1e-10);
+    EXPECT_NEAR(0.0, us(2, 0).getValue(), 1e-10);
+    EXPECT_NEAR(0.7, us(2, 1).getValue(), 1e-10);
+    EXPECT_NEAR(1.0, us(2, 2).getValue(), 1e-10);
 
     math_Matrix vs = sorter.GuideIntersectionParms();
-    EXPECT_NEAR(0.0, vs(0, 0), 1e-10);
-    EXPECT_NEAR(0.3, vs(1, 0), 1e-10);
-    EXPECT_NEAR(1.0, vs(2, 0), 1e-10);
+    EXPECT_NEAR(0.0, vs(0, 0).getValue(), 1e-10);
+    EXPECT_NEAR(0.3, vs(1, 0).getValue(), 1e-10);
+    EXPECT_NEAR(1.0, vs(2, 0).getValue(), 1e-10);
 
-    EXPECT_NEAR(0.0, vs(0, 1), 1e-10);
-    EXPECT_NEAR(0.4, vs(1, 1), 1e-10);
-    EXPECT_NEAR(1.0, vs(2, 1), 1e-10);
+    EXPECT_NEAR(0.0, vs(0, 1).getValue(), 1e-10);
+    EXPECT_NEAR(0.4, vs(1, 1).getValue(), 1e-10);
+    EXPECT_NEAR(1.0, vs(2, 1).getValue(), 1e-10);
 
-    EXPECT_NEAR(0.0, vs(0, 2), 1e-10);
-    EXPECT_NEAR(0.5, vs(1, 2), 1e-10);
-    EXPECT_NEAR(1.0, vs(2, 2), 1e-10);
+    EXPECT_NEAR(0.0, vs(0, 2).getValue(), 1e-10);
+    EXPECT_NEAR(0.5, vs(1, 2).getValue(), 1e-10);
+    EXPECT_NEAR(1.0, vs(2, 2).getValue(), 1e-10);
 }
 
 TEST(CurveNetwork, unorderedCircular)
@@ -196,21 +196,21 @@ TEST(CurveNetwork, unorderedCircular)
 
     // check parameters
     math_Matrix us = sorter.ProfileIntersectionParms();
-    EXPECT_NEAR(0.0, us(0, 0), 1e-10);
-    EXPECT_NEAR(1.0, us(0, 1), 1e-10);
+    EXPECT_NEAR(0.0, us(0, 0).getValue(), 1e-10);
+    EXPECT_NEAR(1.0, us(0, 1).getValue(), 1e-10);
 
-    EXPECT_NEAR(0.0, us(1, 0), 1e-10);
-    EXPECT_NEAR(1.0, us(1, 1), 1e-10);
+    EXPECT_NEAR(0.0, us(1, 0).getValue(), 1e-10);
+    EXPECT_NEAR(1.0, us(1, 1).getValue(), 1e-10);
 
-    EXPECT_NEAR(0.0, us(2, 0), 1e-10);
-    EXPECT_NEAR(1.0, us(2, 1), 1e-10);
+    EXPECT_NEAR(0.0, us(2, 0).getValue(), 1e-10);
+    EXPECT_NEAR(1.0, us(2, 1).getValue(), 1e-10);
 
     math_Matrix vs = sorter.GuideIntersectionParms();
-    EXPECT_NEAR(0.0, vs(0, 0), 1e-10);
-    EXPECT_NEAR(0.4, vs(1, 0), 1e-10);
-    EXPECT_NEAR(1.0, vs(2, 0), 1e-10);
+    EXPECT_NEAR(0.0, vs(0, 0).getValue(), 1e-10);
+    EXPECT_NEAR(0.4, vs(1, 0).getValue(), 1e-10);
+    EXPECT_NEAR(1.0, vs(2, 0).getValue(), 1e-10);
 
-    EXPECT_NEAR(0.0, vs(0, 1), 1e-10);
-    EXPECT_NEAR(0.5, vs(1, 1), 1e-10);
-    EXPECT_NEAR(1.0, vs(2, 1), 1e-10);
+    EXPECT_NEAR(0.0, vs(0, 1).getValue(), 1e-10);
+    EXPECT_NEAR(0.5, vs(1, 1).getValue(), 1e-10);
+    EXPECT_NEAR(1.0, vs(2, 1).getValue(), 1e-10);
 }

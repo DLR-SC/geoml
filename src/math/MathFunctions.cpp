@@ -120,7 +120,7 @@ Standard_Real bernstein_poly_deriv(int k, int i, int n, Standard_Real x)
     }
     
     int jmin = std::max(0, i + k - n);
-    int jmax = std::min(i, k);
+    int jmax = Min(i, k);
     
     Standard_Real result = 0.;
     for (int j = jmin; j <= jmax; ++j) {

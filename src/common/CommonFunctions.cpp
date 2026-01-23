@@ -1757,7 +1757,11 @@ T Clamp(T val, T min, T max)
 
 Standard_Real Clamp(Standard_Real val, Standard_Real min, Standard_Real max)
 {
-    return Clamp<>(val, min, max);
+    if (min > max) {
+        throw geoml::Error("Minimum may not be larger than maximum in clamp!");
+    }
+    
+    return Max(min, Min(val, max));
 }
 
 int Clamp(int val, int min, int max)
@@ -1867,7 +1871,7 @@ Standard_Real Mix(Standard_Real x, Standard_Real y, Standard_Real a)
 
 Standard_Real NormalizeAngleDeg(Standard_Real angleDeg)
 {
-    angleDeg = fmod(angleDeg, 360.);
+    angleDeg = fmod(angleDeg.getValue(), 360.);
     if (angleDeg < 0.)
         angleDeg += 360.;
 

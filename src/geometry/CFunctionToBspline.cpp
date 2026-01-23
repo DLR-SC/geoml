@@ -174,7 +174,7 @@ std::vector<ChebSegment> CFunctionToBspline::CFunctionToBsplineImpl::approxSegme
         erry += fabs(cy(i));
         errz += fabs(cz(i));
     }
-    const Standard_Real error = std::sqrt(errx*errx + erry*erry + errz*errz);
+    const Standard_Real error = Sqrt(errx*errx + erry*erry + errz*errz);
     
     if (error < _tol || depth >= _maxDepth) {
         // we can use this approximation, store to structure
