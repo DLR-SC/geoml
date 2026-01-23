@@ -26,6 +26,7 @@
 #include <string>
 #include <algorithm>
 #include <sstream>
+#include <Standard_Real.hxx>
 
 namespace geoml
 {
@@ -92,6 +93,19 @@ inline void from_string(const std::string& s, double& t)
         throw geoml::Error("Cannot convert string to int");
     }
 }
+
+#if defined(GEOML_ADOLC_FORWARD) || defined(GEOML_ADOLC_REVERSE)
+template <>
+inline void from_string(const std::string& s, Standard_Real& t)
+{
+    try {
+        t = std::stod(s);
+    }
+    catch(std::exception&) {
+        throw geoml::Error("Cannot convert string to Standard_Real");
+    }
+}
+#endif
 
 template <>
 inline void from_string(const std::string& s, float& t)

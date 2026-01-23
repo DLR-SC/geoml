@@ -308,7 +308,7 @@ math_Vector cheb_approx(MathFunc1d& func, int N, Standard_Real a, Standard_Real 
 /// computes the chebycheff to monomial transformation matrix
 math_Matrix cheb_to_monomial(int N)
 {
-    math_Matrix matrix(0,N-1, 0, N-1, 0.);
+    math_Matrix matrix(0,N-1, 0, N-1, Standard_Real(0.));
     
     matrix(0,0) =1.;
     matrix(0,1) =-1.;
@@ -337,7 +337,7 @@ math_Matrix cheb_to_monomial(int N)
 */
 math_Matrix monimial_to_bezier(int N)
 {
-    math_Matrix matrix(0,N-1, 0, N-1, 0.);
+    math_Matrix matrix(0,N-1, 0, N-1, Standard_Real(0.));
     
     for (int j=0; j < N; ++j) {
         for (int i = j; i < N; ++i) {
