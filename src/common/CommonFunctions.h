@@ -64,7 +64,7 @@ struct IsInsideTolerance
 
     bool operator()(Standard_Real v)
     {
-        return (fabs(_a - v) <= _tol);
+        return (Abs(_a - v) <= _tol);
     }
 
     Standard_Real _a;

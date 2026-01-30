@@ -1,6 +1,7 @@
 #include "Matrix.h"
 
 #include <fstream>
+#include <iostream>
 
 void geoml::writeMatrix(const geoml::Matrix &x, const std::string &filename)
 {
@@ -18,8 +19,18 @@ void geoml::writeMatrix(const geoml::Matrix &x, const std::string &filename)
     uint32_t n_max = static_cast<uint32_t>(x.UpperCol());
     uint32_t sizes[4] = {m_min, m_max, n_min, n_max};
     fout.write((char*)&sizes[0], sizeof (uint32_t)*4);
-    fout.write((char*)&x.Value(x.LowerRow(), x.LowerCol()), sizeof(Standard_Real)*x.RowNumber()*x.ColNumber());
+    double* tmp = new double[x.RowNumber()*x.ColNumber()];
+ 
+    for (int i = x.LowerRow(); i <= x.UpperRow(); ++i) {
+        for (int j = x.LowerCol(); j <= x.UpperCol(); ++j) {
+            tmp[x.ColNumber() * (i - x.LowerRow()) + (j - x.LowerCol())] = x.Value(i, j).getValue();
+        }
+    } 
+
+    //fout.write((char*)&x.Value(x.LowerRow(), x.LowerCol()), sizeof(double)*x.RowNumber()*x.ColNumber());
+    fout.write((char*)tmp, sizeof(double)*x.RowNumber()*x.ColNumber());
     fout.close();
+    delete[] tmp;
 }
 
 geoml::Matrix geoml::readMatrix(const std::string &filename)
@@ -37,8 +48,22 @@ geoml::Matrix geoml::readMatrix(const std::string &filename)
     n_min = sizes[2];
     n_max = sizes[3];
     
+
     Matrix result(m_min, m_max, n_min, n_max);
-    fin.read((char*)&result(m_min, n_min), sizeof(Standard_Real)*result.RowNumber()*result.ColNumber());
+
+    double* tmp = new double[result.RowNumber()*result.ColNumber()];
+    
+    //fin.read((char*)&result(m_min, n_min), sizeof(double)*result.RowNumber()*result.ColNumber());
+    fin.read((char*)tmp, sizeof(double)*result.RowNumber()*result.ColNumber());
+
+    for (int i = result.LowerRow(); i <= result.UpperRow(); ++i) {
+        for (int j = result.LowerCol(); j <= result.UpperCol(); ++j) {
+            //tmp[matRef.ColNumber() * (i - matRef.LowerRow()) + (j - matRef.LowerCol())]
+            result.Value(i, j) = tmp[result.ColNumber() * (i - result.LowerRow()) + (j - result.LowerCol())];
+        }
+    } 
+
     fin.close();
+    delete[] tmp;
     return result;
 }

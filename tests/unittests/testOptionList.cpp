@@ -27,7 +27,7 @@ class MockOptions : public geoml::COptionList
 public:
     MockOptions()
     {
-        AddOption<Standard_Real>("my_double", 0.0);
+        AddOption<double>("my_double", 0.0);
         AddOption<std::string>("my_string", "Hallo");
     }
 };
@@ -45,15 +45,15 @@ TEST(OptionList, AddGetSet)
 {
     MockOptions options;
 
-    Standard_Real v1 = options.Get<Standard_Real>("my_double");
+    Standard_Real v1 = options.Get<double>("my_double");
     EXPECT_NEAR(0.0, v1.getValue(), 1e-10);
 
     options.SetDouble("my_double", 10.);
-    v1 = options.Get<Standard_Real>("my_double");
+    v1 = options.Get<double>("my_double");
     EXPECT_NEAR(10.0, v1.getValue(), 1e-10);
 
     options.SetFromString("my_double", "20.");
-    v1 = options.Get<Standard_Real>("my_double");
+    v1 = options.Get<double>("my_double");
     EXPECT_NEAR(20.0, v1.getValue(), 1e-10);
 
     std::string v2 = options.Get<std::string>("my_string");
@@ -117,7 +117,7 @@ TEST(OptionList, Merged)
     EXPECT_TRUE(options.HasOption("my_double"));
     EXPECT_TRUE(options.HasOption("my_int"));
 
-    Standard_Real v1 = options.Get<Standard_Real>("my_double");
+    Standard_Real v1 = options.Get<double>("my_double");
     EXPECT_NEAR(0.0, v1.getValue(), 1e-10);
 
     int v2 = options.Get<int>("my_int");

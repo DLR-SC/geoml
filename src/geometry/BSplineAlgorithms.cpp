@@ -575,8 +575,8 @@ void BSplineAlgorithms::matchParameterRange(std::vector<Handle(Geom_BSplineCurve
     Standard_Real umax = bsplines[0]->LastParameter();
     for (unsigned iP=1; iP<bsplines.size(); ++iP) {
         Handle(Geom_BSplineCurve) bspl = bsplines[iP];
-        if (fabs(bspl->FirstParameter() - umin) > tolerance ||
-            fabs(bspl->LastParameter() - umax) > tolerance ) {
+        if (Abs(bspl->FirstParameter() - umin) > tolerance ||
+            Abs(bspl->LastParameter() - umax) > tolerance ) {
             geoml::BSplineAlgorithms::reparametrizeBSpline(*bspl, umin, umax, tolerance);
         }
     }
@@ -613,7 +613,7 @@ ApproxResult BSplineAlgorithms::reparametrizeBSplineContinuouslyApprox(const Han
     Handle(TColgp_HArray1OfPnt2d) old_parameters_pnts = new TColgp_HArray1OfPnt2d(1, static_cast<Standard_Integer>(old_parameters.size()));
     for (size_t parameter_idx = 0; parameter_idx < old_parameters.size(); ++parameter_idx) {
         int occIdx = static_cast<int>(parameter_idx + 1);
-        old_parameters_pnts->SetValue(occIdx, gp_Pnt2d(old_parameters[parameter_idx], 0));
+        old_parameters_pnts->SetValue(occIdx, gp_Pnt2d(old_parameters[parameter_idx], 0.));
     }
 
     Geom2dAPI_Interpolate interpolationObject(old_parameters_pnts, OccFArray(new_parameters), false, 1e-15);

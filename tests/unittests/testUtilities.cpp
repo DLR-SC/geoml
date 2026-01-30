@@ -67,9 +67,16 @@ TEST(Misc, WireGetPoint)
 TEST(Misc, GetPointOnCirc)
 {
     // add a half circle
-    BRepBuilderAPI_MakeWire wireBuilder(BRepBuilderAPI_MakeEdge(gp_Circ(gp::XOY() ,1.), -M_PI/2, M_PI/2));
+
+    gp_Circ circ1 (gp::XOY() ,Standard_Real(1.));
+    TopoDS_Edge edge1 = BRepBuilderAPI_MakeEdge(circ1, -M_PI/2, M_PI/2).Edge();
+
+    BRepBuilderAPI_MakeWire wireBuilder(edge1);
     // add a line
-    wireBuilder.Add(BRepBuilderAPI_MakeEdge(gp_Pnt(0,1,0), gp_Pnt(-M_PI, 1, 0)));
+
+    TopoDS_Edge edge2 = BRepBuilderAPI_MakeEdge(gp_Pnt(0,1,0), gp_Pnt(-M_PI, 1, 0)).Edge();
+
+    wireBuilder.Add(edge2);
     const TopoDS_Wire& wire = wireBuilder.Wire();
     
     

@@ -38,6 +38,8 @@
 #include <TopTools_IndexedMapOfShape.hxx>
 #include <GeomConvert.hxx>
 
+#include<iostream>
+
 Handle(Geom_BSplineCurve) createBSpline(const std::vector<gp_Pnt>& poles, const std::vector<Standard_Real>& knots, int degree)
 {
    auto occ_poles = OccArray(poles);
@@ -97,7 +99,6 @@ TEST(BSplineAlgorithms, testComputeParamsBSplineSurface)
 TEST(BSplineAlgorithms, testCreateCommonKnotsVectorCurve)
 {
     // test for method createCommonKnotsVectorCurve
-
     // TODO B-spline knot insertion doesn't work on the parameter range boundaries
     // create first B-spline
     TColgp_Array1OfPnt controlPoints1(1, 4);
@@ -105,7 +106,6 @@ TEST(BSplineAlgorithms, testCreateCommonKnotsVectorCurve)
     controlPoints1(2) = gp_Pnt(1, 1, 0);
     controlPoints1(3) = gp_Pnt(3, -1, 0);
     controlPoints1(4) = gp_Pnt(4, 0, 0);
-
     TColStd_Array1OfReal Weights1(1, 4);
     Weights1(1) = 1;
     Weights1(2) = 1;
@@ -119,7 +119,6 @@ TEST(BSplineAlgorithms, testCreateCommonKnotsVectorCurve)
     TColStd_Array1OfInteger Multiplicities1(1, 2);
     Multiplicities1(1) = 4;
     Multiplicities1(2) = 4;
-
     Standard_Integer Degree1 = 3;
 
     Handle(Geom_BSplineCurve) bspline1 = new Geom_BSplineCurve(controlPoints1, Weights1, Knots1, Multiplicities1, Degree1);
@@ -134,7 +133,6 @@ TEST(BSplineAlgorithms, testCreateCommonKnotsVectorCurve)
     controlPoints2(2) = gp_Pnt(0, 1, 0);
     controlPoints2(3) = gp_Pnt(3, -1, 0);
     controlPoints2(4) = gp_Pnt(5, 0, 0);
-
     TColStd_Array1OfReal Weights2(1, 4);
     Weights2(1) = 1;
     Weights2(2) = 1;
@@ -152,10 +150,9 @@ TEST(BSplineAlgorithms, testCreateCommonKnotsVectorCurve)
     Standard_Integer Degree2 = 3;
 
     Handle(Geom_BSplineCurve) bspline2 = new Geom_BSplineCurve(controlPoints2, Weights2, Knots2, Multiplicities2, Degree2);
-
     bspline2->InsertKnot(0.5);
     bspline2->InsertKnot(0.7);
-    bspline2->InsertKnot(0.9, 2);
+    bspline2->InsertKnot(Standard_Real(0.9), Standard_Integer(2));
     // knot vector of bspline2 is now: [0, 0, 0, 0, 0.5, 0.7, 0.9, 0.9, 1, 1, 1, 1]
 
     // create third B-spline
@@ -171,7 +168,6 @@ TEST(BSplineAlgorithms, testCreateCommonKnotsVectorCurve)
     Weights3(2) = 1;
     Weights3(3) = 1;
     Weights3(4) = 1;
-
     TColStd_Array1OfReal Knots3(1, 2);
     Knots3(1) = 0.;
     Knots3(2) = 1;
@@ -179,16 +175,13 @@ TEST(BSplineAlgorithms, testCreateCommonKnotsVectorCurve)
     TColStd_Array1OfInteger Multiplicities3(1, 2);
     Multiplicities3(1) = 4;
     Multiplicities3(2) = 4;
-
     Standard_Integer Degree3 = 3;
 
     Handle(Geom_BSplineCurve) bspline3 = new Geom_BSplineCurve(controlPoints3, Weights3, Knots3, Multiplicities3, Degree3);
-
     bspline3->InsertKnot(1. / 3);
-    bspline3->InsertKnot(0.5, 3);
+    bspline3->InsertKnot(Standard_Real(0.5), Standard_Integer(3));
     bspline3->InsertKnot(2. / 3);
     // knot vector of bspline3 is now: [0, 0, 0, 0, 1./3, 0.5, 0.5, 0.5, 2./3, 1, 1, 1, 1]
-
     TColStd_Array1OfReal right_knot_vector(1, 7);
     right_knot_vector(1) = 0.;
     right_knot_vector(2) = 1. / 3;
@@ -206,20 +199,16 @@ TEST(BSplineAlgorithms, testCreateCommonKnotsVectorCurve)
     right_multiplicities(5) = 1;
     right_multiplicities(6) = 2;
     right_multiplicities(7) = 4;
-
     std::vector<Handle(Geom_BSplineCurve)> splines_vector;
     splines_vector.push_back(bspline1);
     splines_vector.push_back(bspline2);
     splines_vector.push_back(bspline3);
-
     std::vector<Handle(Geom_BSplineCurve)> modified_splines_vector = BSplineAlgorithms::createCommonKnotsVectorCurve(splines_vector, 1e-15);
-
     TColStd_Array1OfReal computed_knot_vector(1, 7);
     modified_splines_vector[0]->Knots(computed_knot_vector);
 
     TColStd_Array1OfInteger computed_multiplicities(1, 7);
     modified_splines_vector[0]->Multiplicities(computed_multiplicities);
-
     ASSERT_NEAR(right_knot_vector(1).getValue(), computed_knot_vector(1).getValue(), 1e-15);
     ASSERT_NEAR(right_knot_vector(2).getValue(), computed_knot_vector(2).getValue(), 1e-15);
     ASSERT_NEAR(right_knot_vector(3).getValue(), computed_knot_vector(3).getValue(), 1e-15);
@@ -227,7 +216,6 @@ TEST(BSplineAlgorithms, testCreateCommonKnotsVectorCurve)
     ASSERT_NEAR(right_knot_vector(5).getValue(), computed_knot_vector(5).getValue(), 1e-15);
     ASSERT_NEAR(right_knot_vector(6).getValue(), computed_knot_vector(6).getValue(), 1e-15);
     ASSERT_NEAR(right_knot_vector(7).getValue(), computed_knot_vector(7).getValue(), 1e-15);
-
 }
 
 TEST(BSplineAlgorithms, testCreateCommonKnotsVectorTolerance)
@@ -377,11 +365,11 @@ TEST(BSplineAlgorithms, testCreateCommonKnotsVectorSurface)
     unsigned int degree_v = 2;
 
     Handle(Geom_BSplineSurface) surface1 = new Geom_BSplineSurface(controlPoints1, knots_u, knots_v, mults_u, mults_v, degree_u, degree_v);
-    surface1->InsertUKnot(0.5, 2, 1e-15);
-    surface1->InsertUKnot(0.7, 1, 1e-15);
+    surface1->InsertUKnot(Standard_Real(0.5), Standard_Integer(2), Standard_Real(1e-15));
+    surface1->InsertUKnot(Standard_Real(0.7), Standard_Integer(1), Standard_Real(1e-15));
     // u knot vector is now: [0, 0, 0, 0, 0.5, 0.5, 0.7, 1, 1, 1, 1]
 
-    surface1->InsertVKnot(0.3, 3, 1e-15);
+    surface1->InsertVKnot(Standard_Real(0.3), Standard_Integer(3), Standard_Real(1e-15));
     // v knot vector is now: [0, 0, 0, 0.3, 0.3, 0.3, 1, 1, 1]
 
 
@@ -401,11 +389,11 @@ TEST(BSplineAlgorithms, testCreateCommonKnotsVectorSurface)
     controlPoints2(4, 3) = gp_Pnt(5, 0, 0);
 
     Handle(Geom_BSplineSurface) surface2 = new Geom_BSplineSurface(controlPoints2, knots_u, knots_v, mults_u, mults_v, degree_u, degree_v);
-    surface2->InsertUKnot(1. / 3, 1, 1e-15);
-    surface2->InsertUKnot(3. / 5, 1, 1e-15);
+    surface2->InsertUKnot(Standard_Real(1. / 3), Standard_Integer(1), Standard_Real(1e-15));
+    surface2->InsertUKnot(Standard_Real(3. / 5), Standard_Integer(1), Standard_Real(1e-15));
     // u knot vector is now: [0, 0, 0, 0, 1./3, 3./5, 1, 1, 1, 1]
 
-    surface2->InsertVKnot(0.6, 2, 1e-15, Standard_True);
+    surface2->InsertVKnot(Standard_Real(0.6), Standard_Integer(2), Standard_Real(1e-15), Standard_True);
     // v knot vector is now: [0, 0, 0, 0.6, 0.6, 1, 1, 1]
 
 
@@ -426,12 +414,12 @@ TEST(BSplineAlgorithms, testCreateCommonKnotsVectorSurface)
 
 
     Handle(Geom_BSplineSurface) surface3 = new Geom_BSplineSurface(controlPoints3, knots_u, knots_v, mults_u, mults_v, degree_u, degree_v);
-    surface3->InsertUKnot(0.7, 1, 1e-15);
+    surface3->InsertUKnot(Standard_Real(0.7), Standard_Integer(1), Standard_Real(1e-15));
     // u knot vector is now: [0, 0, 0, 0, 0.7, 1, 1, 1, 1]
 
-    surface3->InsertVKnot(0.2, 1, 1e-15);
-    surface3->InsertVKnot(0.3, 1, 1e-15);
-    surface3->InsertVKnot(0.9, 1, 1e-15);
+    surface3->InsertVKnot(Standard_Real(0.2), Standard_Integer(1), Standard_Real(1e-15));
+    surface3->InsertVKnot(Standard_Real(0.3), Standard_Integer(1), Standard_Real(1e-15));
+    surface3->InsertVKnot(Standard_Real(0.9), Standard_Integer(1), Standard_Real(1e-15));
     // v knot vector is now: [0, 0, 0, 0.2, 0.3, 0.9, 1, 1, 1]
 
     TColStd_Array1OfReal right_knot_vector_u(1, 6);
@@ -687,9 +675,9 @@ TEST(BSplineAlgorithms, reparametrizeBSplineNiceKnots)
             Handle(TColgp_HArray1OfPnt) pnt2 = new TColgp_HArray1OfPnt(1, nPoints);
             Standard_Real dAngle = 2.*M_PI / static_cast<Standard_Real>(nPoints - 1);
             for (int i = 0; i < nPoints; ++i) {
-                pnt2->SetValue(i + 1, gp_Pnt(cos(i*dAngle),
+                pnt2->SetValue(i + 1, gp_Pnt(Cos(i*dAngle),
                                             0.,
-                                            sin(i*dAngle)));
+                                            Sin(i*dAngle)));
             }
             auto bspline = geoml::PointsToBSplineInterpolation(pnt2, 3, make_close).Curve();
 
@@ -812,7 +800,7 @@ TEST(BSplineAlgorithms, testInterpolatingSurface)
     TColgp_Array2OfPnt points(1, 100, 1, 100);
     for (unsigned int u_idx = 1; u_idx <= 100; ++u_idx) {
         for (unsigned int v_idx = 1; v_idx <= 100; ++v_idx) {
-            points(u_idx, v_idx) = surface->Value(u_idx / 100., v_idx / 100.);
+            points(u_idx, v_idx) = surface->Value(Standard_Real(u_idx / 100.), Standard_Real(v_idx / 100.));
         }
     }
 
@@ -822,7 +810,7 @@ TEST(BSplineAlgorithms, testInterpolatingSurface)
 
     for (unsigned int u_idx = 1; u_idx <= 100; ++u_idx) {
         for (unsigned int v_idx = 1; v_idx <= 100; ++v_idx) {
-            gp_Pnt surf_pnt = surface->Value(u_idx / 100., v_idx / 100.);
+            gp_Pnt surf_pnt = surface->Value(Standard_Real(u_idx / 100.), Standard_Real(v_idx / 100.));
             gp_Pnt interp_pnt = interpolatingSurf->Value(parameters.first[u_idx - 1], parameters.second[v_idx - 1]);
             ASSERT_NEAR(interp_pnt.X().getValue(), surf_pnt.X().getValue(), 4e-15);
             ASSERT_NEAR(interp_pnt.Y().getValue(), surf_pnt.Y().getValue(), 4e-15);

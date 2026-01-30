@@ -21,19 +21,20 @@
 #include "common/CommonFunctions.h"
 #include "geometry/Transformation.h"
 
+
 TEST(Transformation, transformSurface)
 {
-    auto pnts1 = OccArray({
-        gp_Pnt(0., 0., 0.),
-        gp_Pnt(1., 0, 0.),
-    });
 
-    auto pnts2 = OccArray({
-        gp_Pnt(0., 1., 0.),
-        gp_Pnt(1., 1.0, 0.),
-    });
+    std::vector<gp_Pnt> pnts1_vec = {gp_Pnt(0., 0., 0.), gp_Pnt(1., 0, 0.)};
+    
+    auto pnts1 = OccArray(pnts1_vec);
+
+    std::vector<gp_Pnt> pnts2_vec = {gp_Pnt(0., 1., 0.), gp_Pnt(1., 1., 0.)};
+
+    auto pnts2 = OccArray(pnts2_vec);
 
     auto c1   = geoml::PointsToBSplineInterpolation(pnts1).Curve();
+
     auto c2   = geoml::PointsToBSplineInterpolation(pnts2).Curve();
     auto surf = geoml::CurvesToSurface({c1, c2}).Surface();
 
@@ -54,7 +55,6 @@ TEST(Transformation, transformSurface)
     auto surfRot = rot.Transform(surf);
     EXPECT_NEAR(0.0, surfRot->Value(0., 0.).Distance(gp_Pnt(0., 0., 0.)).getValue(), 1e-12);
     EXPECT_NEAR(0.0, surfRot->Value(1., 1.).Distance(gp_Pnt(-1., 1., 0.)).getValue(), 1e-12);
-    
     
     geoml::Transformation scale;
     scale.AddScaling(2, 0.5, 1.);

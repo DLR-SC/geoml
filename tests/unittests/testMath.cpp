@@ -448,9 +448,9 @@ TEST(Math, matrixIO)
     // This test checks matrix io routines by writing and reading a matrix
     // and comparing it to the reference values
 
-    auto randfloat = [](Standard_Real min, Standard_Real max) {
-        Standard_Real random = ((Standard_Real) std::rand()) / static_cast<Standard_Real>(RAND_MAX);
-        Standard_Real range = max - min;
+    auto randfloat = [](double min, double max) {
+        double random = ((double) std::rand()) / static_cast<double>(RAND_MAX);
+        double range = max - min;
         return (random*range) + min;
     };
     
@@ -462,8 +462,12 @@ TEST(Math, matrixIO)
         }
     }
 
-    geoml::writeMatrix(matRef, "tmpMatrix.mat");
-    auto mat = geoml::readMatrix("tmpMatrix.mat");
+    std::string filename = "tmpMatrix.mat";
+
+    geoml::writeMatrix(matRef, filename);
+    auto mat = geoml::readMatrix(filename);
+
+    //std::cout << "reading done" << mat.Value(1,1).getValue() << std::endl; 
 
     ASSERT_EQ(mat.LowerCol(), matRef.LowerCol());
     ASSERT_EQ(mat.UpperCol(), matRef.UpperCol());
@@ -472,7 +476,7 @@ TEST(Math, matrixIO)
 
     for (int i = matRef.LowerRow(); i <= matRef.UpperRow(); ++i) {
         for (int j = matRef.LowerCol(); j <= matRef.UpperCol(); ++j) {
-            EXPECT_EQ(matRef.Value(i, j), mat.Value(i, j));
+            EXPECT_EQ(matRef.Value(i, j).getValue(), mat.Value(i, j).getValue());
         }
     }
 }

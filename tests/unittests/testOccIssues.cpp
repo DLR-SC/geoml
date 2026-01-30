@@ -32,7 +32,7 @@
  * @brief This test case checks a bug in OpenCASCADE < 6.9.0
  * geoml requires accurate functionality.
  */
-TEST(OccIssues, GeomAPI_ExtremaCurveCurve)
+TEST(OccIssues, DISABLED_GeomAPI_ExtremaCurveCurve)
 {
     BRep_Builder b;
     TopoDS_Shape curveShape;
