@@ -24,3 +24,7 @@ endif()
 add_subdirectory(common)
 add_subdirectory(unittests)
 add_subdirectory(apitests)
+
+if(GEOML_USE_ADOLC)
+    add_subdirectory(adtests)
+endif()
