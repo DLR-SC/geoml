@@ -2,6 +2,7 @@
 #include <geoml/curves/curves.h>
 #include <geoml/geom_topo_conversions/geom_topo_conversions.h>
 #include <geoml/data_structures/Array2d.h>
+#include "common/ad_utility_function.h"
 
 #include <gtest/gtest.h>
 
@@ -205,7 +206,7 @@ GProp_GProps props = GProp_GProps();
 BRepGProp::SurfaceProperties(face, props);
 Standard_Real area_surf = props.Mass();
 
-EXPECT_NEAR(area_surf.getValue(), expected_surface_area.getValue(), 1e-1);
+EXPECT_NEAR(getPrimal(area_surf), getPrimal(expected_surface_area), 1e-1);
 
 }
 
@@ -268,33 +269,33 @@ gp_Pnt test_pt_00;
 
 test_surface->D0(0., 0., test_pt_00);
 
-EXPECT_NEAR(test_pt_00.X().getValue(),0., 1e-5);
-EXPECT_NEAR(test_pt_00.Y().getValue(),0., 1e-5);
-EXPECT_NEAR(test_pt_00.Z().getValue(),0., 1e-5);
+EXPECT_NEAR(getPrimal(test_pt_00.X()),0., 1e-5);
+EXPECT_NEAR(getPrimal(test_pt_00.Y()),0., 1e-5);
+EXPECT_NEAR(getPrimal(test_pt_00.Z()),0., 1e-5);
 
 gp_Pnt test_pt_20;
 
 test_surface->D0(1., 0., test_pt_20);
 
-EXPECT_NEAR(test_pt_20.X().getValue(),0., 1e-5);
-EXPECT_NEAR(test_pt_20.Y().getValue(),2., 1e-5);
-EXPECT_NEAR(test_pt_20.Z().getValue(),0., 1e-5);
+EXPECT_NEAR(getPrimal(test_pt_20.X()),0., 1e-5);
+EXPECT_NEAR(getPrimal(test_pt_20.Y()),2., 1e-5);
+EXPECT_NEAR(getPrimal(test_pt_20.Z()),0., 1e-5);
 
 gp_Pnt test_pt_01;
 
 test_surface->D0(0., 1., test_pt_01);
 
-EXPECT_NEAR(test_pt_01.X().getValue(),1., 1e-5);
-EXPECT_NEAR(test_pt_01.Y().getValue(),0., 1e-5);
-EXPECT_NEAR(test_pt_01.Z().getValue(),0., 1e-5);
+EXPECT_NEAR(getPrimal(test_pt_01.X()),1., 1e-5);
+EXPECT_NEAR(getPrimal(test_pt_01.Y()),0., 1e-5);
+EXPECT_NEAR(getPrimal(test_pt_01.Z()),0., 1e-5);
 
 gp_Pnt test_pt_21;
 
 test_surface->D0(1., 1., test_pt_21);
 
-EXPECT_NEAR(test_pt_21.X().getValue(),1., 1e-5);
-EXPECT_NEAR(test_pt_21.Y().getValue(),2., 1e-5);
-EXPECT_NEAR(test_pt_21.Z().getValue(),1., 1e-5);
+EXPECT_NEAR(getPrimal(test_pt_21.X()),1., 1e-5);
+EXPECT_NEAR(getPrimal(test_pt_21.Y()),2., 1e-5);
+EXPECT_NEAR(getPrimal(test_pt_21.Z()),1., 1e-5);
 
 }
 
@@ -315,33 +316,33 @@ TEST(Test_surface_from_4_points, simple_surface_from_4_points_test)
 
     my_surface->D0(u_min, v_min, test_pt_0);
 
-    EXPECT_NEAR(test_pt_0.X().getValue(),p_0.X().getValue(), 1e-5);
-    EXPECT_NEAR(test_pt_0.Y().getValue(),p_0.Y().getValue(), 1e-5);
-    EXPECT_NEAR(test_pt_0.Z().getValue(),p_0.Z().getValue(), 1e-5);
+    EXPECT_NEAR(getPrimal(test_pt_0.X()),getPrimal(p_0.X()), 1e-5);
+    EXPECT_NEAR(getPrimal(test_pt_0.Y()),getPrimal(p_0.Y()), 1e-5);
+    EXPECT_NEAR(getPrimal(test_pt_0.Z()),getPrimal(p_0.Z()), 1e-5);
 
     gp_Pnt test_pt_1;
 
     my_surface->D0(u_max, v_min, test_pt_1);
 
-    EXPECT_NEAR(test_pt_1.X().getValue(),p_1.X().getValue(), 1e-5);
-    EXPECT_NEAR(test_pt_1.Y().getValue(),p_1.Y().getValue(), 1e-5);
-    EXPECT_NEAR(test_pt_1.Z().getValue(),p_1.Z().getValue(), 1e-5);
+    EXPECT_NEAR(getPrimal(test_pt_1.X()),getPrimal(p_1.X()), 1e-5);
+    EXPECT_NEAR(getPrimal(test_pt_1.Y()),getPrimal(p_1.Y()), 1e-5);
+    EXPECT_NEAR(getPrimal(test_pt_1.Z()),getPrimal(p_1.Z()), 1e-5);
 
     gp_Pnt test_pt_2;
 
     my_surface->D0(u_max, v_max, test_pt_2);
 
-    EXPECT_NEAR(test_pt_2.X().getValue(),p_2.X().getValue(), 1e-5);
-    EXPECT_NEAR(test_pt_2.Y().getValue(),p_2.Y().getValue(), 1e-5);
-    EXPECT_NEAR(test_pt_2.Z().getValue(),p_2.Z().getValue(), 1e-5);
+    EXPECT_NEAR(getPrimal(test_pt_2.X()), getPrimal(p_2.X()), 1e-5);
+    EXPECT_NEAR(getPrimal(test_pt_2.Y()), getPrimal(p_2.Y()), 1e-5);
+    EXPECT_NEAR(getPrimal(test_pt_2.Z()), getPrimal(p_2.Z()), 1e-5);
 
     gp_Pnt test_pt_3;
 
     my_surface->D0(u_min, v_max, test_pt_3);
 
-    EXPECT_NEAR(test_pt_3.X().getValue(),p_3.X().getValue(), 1e-5);
-    EXPECT_NEAR(test_pt_3.Y().getValue(),p_3.Y().getValue(), 1e-5);
-    EXPECT_NEAR(test_pt_3.Z().getValue(),p_3.Z().getValue(), 1e-5);
+    EXPECT_NEAR(getPrimal(test_pt_3.X()), getPrimal(p_3.X()), 1e-5);
+    EXPECT_NEAR(getPrimal(test_pt_3.Y()), getPrimal(p_3.Y()), 1e-5);
+    EXPECT_NEAR(getPrimal(test_pt_3.Z()), getPrimal(p_3.Z()), 1e-5);
 
     // test the order of the four corner points - expect an anti-clockwise setup
     // in U,V-coordinates, this would mean: 
@@ -360,21 +361,21 @@ TEST(Test_surface_from_4_points, simple_surface_from_4_points_test)
     my_surface->D0(u_max, v_max, u_max_v_max_corner_point_of_my_surface);
     my_surface->D0(u_min, v_max, u_min_v_max_corner_point_of_my_surface);
 
-    EXPECT_NEAR(p_0.X().getValue(), u_min_v_min_corner_point_of_my_surface.X().getValue(), 1e-5);
-    EXPECT_NEAR(p_0.Y().getValue(), u_min_v_min_corner_point_of_my_surface.Y().getValue(), 1e-5);
-    EXPECT_NEAR(p_0.Z().getValue(), u_min_v_min_corner_point_of_my_surface.Z().getValue(), 1e-5);
+    EXPECT_NEAR(getPrimal(p_0.X()), getPrimal(u_min_v_min_corner_point_of_my_surface.X()), 1e-5);
+    EXPECT_NEAR(getPrimal(p_0.Y()), getPrimal(u_min_v_min_corner_point_of_my_surface.Y()), 1e-5);
+    EXPECT_NEAR(getPrimal(p_0.Z()), getPrimal(u_min_v_min_corner_point_of_my_surface.Z()), 1e-5);
 
-    EXPECT_NEAR(p_1.X().getValue(), u_max_v_min_corner_point_of_my_surface.X().getValue(), 1e-5);
-    EXPECT_NEAR(p_1.Y().getValue(), u_max_v_min_corner_point_of_my_surface.Y().getValue(), 1e-5);
-    EXPECT_NEAR(p_1.Z().getValue(), u_max_v_min_corner_point_of_my_surface.Z().getValue(), 1e-5);
+    EXPECT_NEAR(getPrimal(p_1.X()), getPrimal(u_max_v_min_corner_point_of_my_surface.X()), 1e-5);
+    EXPECT_NEAR(getPrimal(p_1.Y()), getPrimal(u_max_v_min_corner_point_of_my_surface.Y()), 1e-5);
+    EXPECT_NEAR(getPrimal(p_1.Z()), getPrimal(u_max_v_min_corner_point_of_my_surface.Z()), 1e-5);
 
-    EXPECT_NEAR(p_2.X().getValue(), u_max_v_max_corner_point_of_my_surface.X().getValue(), 1e-5);
-    EXPECT_NEAR(p_2.Y().getValue(), u_max_v_max_corner_point_of_my_surface.Y().getValue(), 1e-5);
-    EXPECT_NEAR(p_2.Z().getValue(), u_max_v_max_corner_point_of_my_surface.Z().getValue(), 1e-5);
+    EXPECT_NEAR(getPrimal(p_2.X()), getPrimal(u_max_v_max_corner_point_of_my_surface.X()), 1e-5);
+    EXPECT_NEAR(getPrimal(p_2.Y()), getPrimal(u_max_v_max_corner_point_of_my_surface.Y()), 1e-5);
+    EXPECT_NEAR(getPrimal(p_2.Z()), getPrimal(u_max_v_max_corner_point_of_my_surface.Z()), 1e-5);
 
-    EXPECT_NEAR(p_3.X().getValue(), u_min_v_max_corner_point_of_my_surface.X().getValue(), 1e-5);
-    EXPECT_NEAR(p_3.Y().getValue(), u_min_v_max_corner_point_of_my_surface.Y().getValue(), 1e-5);
-    EXPECT_NEAR(p_3.Z().getValue(), u_min_v_max_corner_point_of_my_surface.Z().getValue(), 1e-5);
+    EXPECT_NEAR(getPrimal(p_3.X()), getPrimal(u_min_v_max_corner_point_of_my_surface.X()), 1e-5);
+    EXPECT_NEAR(getPrimal(p_3.Y()), getPrimal(u_min_v_max_corner_point_of_my_surface.Y()), 1e-5);
+    EXPECT_NEAR(getPrimal(p_3.Z()), getPrimal(u_min_v_max_corner_point_of_my_surface.Z()), 1e-5);
 
 
 }
@@ -403,37 +404,37 @@ TEST(Test_face_from_4_points, simple_face_from_4_points_test)
 
     EXPECT_EQ(corner_points.size(), 8);
 
-    EXPECT_NEAR(corner_points.at(0).X().getValue(), 0., 1e-5);
-    EXPECT_NEAR(corner_points.at(0).Y().getValue(), 0., 1e-5);
-    EXPECT_NEAR(corner_points.at(0).Z().getValue(), 0., 1e-5);
+    EXPECT_NEAR(getPrimal(corner_points.at(0).X()), 0., 1e-5);
+    EXPECT_NEAR(getPrimal(corner_points.at(0).Y()), 0., 1e-5);
+    EXPECT_NEAR(getPrimal(corner_points.at(0).Z()), 0., 1e-5);
     
-    EXPECT_NEAR(corner_points.at(1).X().getValue(), 1., 1e-5);
-    EXPECT_NEAR(corner_points.at(1).Y().getValue(), 0., 1e-5);
-    EXPECT_NEAR(corner_points.at(1).Z().getValue(), 0., 1e-5);
+    EXPECT_NEAR(getPrimal(corner_points.at(1).X()), 1., 1e-5);
+    EXPECT_NEAR(getPrimal(corner_points.at(1).Y()), 0., 1e-5);
+    EXPECT_NEAR(getPrimal(corner_points.at(1).Z()), 0., 1e-5);
 
-    EXPECT_NEAR(corner_points.at(2).X().getValue(), 1., 1e-5);
-    EXPECT_NEAR(corner_points.at(2).Y().getValue(), 0., 1e-5);
-    EXPECT_NEAR(corner_points.at(2).Z().getValue(), 0., 1e-5);
+    EXPECT_NEAR(getPrimal(corner_points.at(2).X()), 1., 1e-5);
+    EXPECT_NEAR(getPrimal(corner_points.at(2).Y()), 0., 1e-5);
+    EXPECT_NEAR(getPrimal(corner_points.at(2).Z()), 0., 1e-5);
 
-    EXPECT_NEAR(corner_points.at(3).X().getValue(), 1., 1e-5);
-    EXPECT_NEAR(corner_points.at(3).Y().getValue(), 2., 1e-5);
-    EXPECT_NEAR(corner_points.at(3).Z().getValue(), 0., 1e-5);
+    EXPECT_NEAR(getPrimal(corner_points.at(3).X()), 1., 1e-5);
+    EXPECT_NEAR(getPrimal(corner_points.at(3).Y()), 2., 1e-5);
+    EXPECT_NEAR(getPrimal(corner_points.at(3).Z()), 0., 1e-5);
 
-    EXPECT_NEAR(corner_points.at(4).X().getValue(), 0., 1e-5);
-    EXPECT_NEAR(corner_points.at(4).Y().getValue(), 2., 1e-5);
-    EXPECT_NEAR(corner_points.at(4).Z().getValue(), 1., 1e-5);
+    EXPECT_NEAR(getPrimal(corner_points.at(4).X()), 0., 1e-5);
+    EXPECT_NEAR(getPrimal(corner_points.at(4).Y()), 2., 1e-5);
+    EXPECT_NEAR(getPrimal(corner_points.at(4).Z()), 1., 1e-5);
 
-    EXPECT_NEAR(corner_points.at(5).X().getValue(), 1., 1e-5);
-    EXPECT_NEAR(corner_points.at(5).Y().getValue(), 2., 1e-5);
-    EXPECT_NEAR(corner_points.at(5).Z().getValue(), 0., 1e-5);
+    EXPECT_NEAR(getPrimal(corner_points.at(5).X()), 1., 1e-5);
+    EXPECT_NEAR(getPrimal(corner_points.at(5).Y()), 2., 1e-5);
+    EXPECT_NEAR(getPrimal(corner_points.at(5).Z()), 0., 1e-5);
 
-    EXPECT_NEAR(corner_points.at(6).X().getValue(), 0., 1e-5);
-    EXPECT_NEAR(corner_points.at(6).Y().getValue(), 0., 1e-5);
-    EXPECT_NEAR(corner_points.at(6).Z().getValue(), 0., 1e-5);
+    EXPECT_NEAR(getPrimal(corner_points.at(6).X()), 0., 1e-5);
+    EXPECT_NEAR(getPrimal(corner_points.at(6).Y()), 0., 1e-5);
+    EXPECT_NEAR(getPrimal(corner_points.at(6).Z()), 0., 1e-5);
 
-    EXPECT_NEAR(corner_points.at(7).X().getValue(), 0., 1e-5);
-    EXPECT_NEAR(corner_points.at(7).Y().getValue(), 2., 1e-5);
-    EXPECT_NEAR(corner_points.at(7).Z().getValue(), 1., 1e-5);
+    EXPECT_NEAR(getPrimal(corner_points.at(7).X()), 0., 1e-5);
+    EXPECT_NEAR(getPrimal(corner_points.at(7).Y()), 2., 1e-5);
+    EXPECT_NEAR(getPrimal(corner_points.at(7).Z()), 1., 1e-5);
 
 
 }

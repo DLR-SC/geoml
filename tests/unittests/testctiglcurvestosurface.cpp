@@ -20,6 +20,7 @@
 
 #include <sstream>
 #include <common/CommonFunctions.h>
+#include "common/ad_utility_function.h"
 #include <Geom_BSplineCurve.hxx>
 
 namespace geoml
@@ -79,9 +80,9 @@ TEST(CurvesToSurface, testSkinnedBSplineSurface)
             gp_Pnt point_curve2 = curve2->Value(u_value);
             gp_Pnt right_point(point_curve1.X() * (1 - v_value) + point_curve2.X() * v_value, point_curve1.Y() * (1 - v_value) + point_curve2.Y() * v_value, point_curve1.Z() * (1 - v_value) + point_curve2.Z() * v_value);
 
-            ASSERT_NEAR(surface_point.X().getValue(), right_point.X().getValue(), 1e-15);
-            ASSERT_NEAR(surface_point.Y().getValue(), right_point.Y().getValue(), 1e-15);
-            ASSERT_NEAR(surface_point.Z().getValue(), right_point.Z().getValue(), 1e-15);
+            ASSERT_NEAR(getPrimal(surface_point.X()), getPrimal(right_point.X()), 1e-15);
+            ASSERT_NEAR(getPrimal(surface_point.Y()), getPrimal(right_point.Y()), 1e-15);
+            ASSERT_NEAR(getPrimal(surface_point.Z()), getPrimal(right_point.Z()), 1e-15);
         }
     }
 }

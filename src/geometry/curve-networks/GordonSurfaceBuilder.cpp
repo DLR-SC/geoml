@@ -24,6 +24,7 @@
 #include "CurvesToSurface.h"
 #include "common/CommonFunctions.h"
 #include <TColgp_Array2OfPnt.hxx>
+#include "common/ad_utility_function.h"
 
 #include <algorithm>
 #include <cassert>
@@ -33,7 +34,7 @@ namespace
     void assertRange(const Handle(Geom_Curve)& curve, Standard_Real umin, Standard_Real umax, Standard_Real tol=1e-7)
     {
         if (Abs(curve->FirstParameter() - umin) > tol || Abs(curve->LastParameter() - umax) > tol) {
-            throw geoml::Error("Curve not in range [" + std::to_string(umin.getValue()) + ", " + std::to_string(umax.getValue()) + "].");
+            throw geoml::Error("Curve not in range [" + std::to_string(getPrimal(umin)) + ", " + std::to_string(getPrimal(umax)) + "].");
         }
     }
 }

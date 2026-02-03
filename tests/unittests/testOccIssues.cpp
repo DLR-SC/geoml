@@ -20,6 +20,7 @@
 #include "test.h" // Brings in the GTest framework
 
 #include "common/CommonFunctions.h"
+#include "common/ad_utility_function.h"
 
 #include <GeomAPI_ExtremaCurveCurve.hxx>
 #include <BRep_Tool.hxx>
@@ -51,15 +52,15 @@ TEST(OccIssues, DISABLED_GeomAPI_ExtremaCurveCurve)
 
     gp_Pnt p1, p2;
     extrema.Points(1, p1, p2);
-    EXPECT_NEAR(c1->FirstParameter().getValue(), p1.Distance(p2).getValue(), 1e-4);
+    EXPECT_NEAR(getPrimal(c1->FirstParameter()), getPrimal(p1.Distance(p2)), 1e-4);
     Standard_Real u1, u2;
     extrema.Parameters(1, u1, u2);
-    EXPECT_NEAR(0.0, u1.getValue(), 1e-6);
-    EXPECT_NEAR(0.215758486, u2.getValue(), 1e-6);
+    EXPECT_NEAR(0.0, getPrimal(u1), 1e-6);
+    EXPECT_NEAR(0.215758486, getPrimal(u2), 1e-6);
 
     extrema.Points(2, p1, p2);
-    EXPECT_NEAR(0., p1.Distance(p2).getValue(), 1e-4);
+    EXPECT_NEAR(0., getPrimal(p1.Distance(p2)), 1e-4);
     extrema.Parameters(2, u1, u2);
-    EXPECT_NEAR(c1->LastParameter().getValue(), u1.getValue(), 1e-6);
-    EXPECT_NEAR(0.215758486, u2.getValue(), 1e-6);
+    EXPECT_NEAR(getPrimal(c1->LastParameter()), getPrimal(u1), 1e-6);
+    EXPECT_NEAR(0.215758486, getPrimal(u2), 1e-6);
 }

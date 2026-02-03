@@ -20,6 +20,7 @@
 #include "test.h" 
 #include "math/MathFunctions.h"
 #include "geoml/error.h"
+#include "common/ad_utility_function.h"
 
 /******************************************************************************/
 
@@ -89,20 +90,20 @@ TEST_F(ChebychevApproxTests, parabola)
 {
     MathFuncAdapter adapt(parabola, NULL);
     math_Vector v = geoml::cheb_approx(adapt, 4, -1., 1.);
-    ASSERT_NEAR(0.5, v(0).getValue(), 1e-12);
-    ASSERT_NEAR(0.0, v(1).getValue(), 1e-12);
-    ASSERT_NEAR(0.5, v(2).getValue(), 1e-12);
-    ASSERT_NEAR(0.0, v(3).getValue(), 1e-12);
+    ASSERT_NEAR(0.5, getPrimal(v(0)), 1e-12);
+    ASSERT_NEAR(0.0, getPrimal(v(1)), 1e-12);
+    ASSERT_NEAR(0.5, getPrimal(v(2)), 1e-12);
+    ASSERT_NEAR(0.0, getPrimal(v(3)), 1e-12);
 }
 
 TEST_F(ChebychevApproxTests, line)
 {
     MathFuncAdapter adapt(line, NULL);
     math_Vector v = geoml::cheb_approx(adapt, 4, -1., 1.);
-    ASSERT_NEAR(0.0, v(0).getValue(), 1e-12);
-    ASSERT_NEAR(-5., v(1).getValue(), 1e-12);
-    ASSERT_NEAR(0.0, v(2).getValue(), 1e-12);
-    ASSERT_NEAR(0.0, v(3).getValue(), 1e-12);
+    ASSERT_NEAR(0.0, getPrimal(v(0)), 1e-12);
+    ASSERT_NEAR(-5., getPrimal(v(1)), 1e-12);
+    ASSERT_NEAR(0.0, getPrimal(v(2)), 1e-12);
+    ASSERT_NEAR(0.0, getPrimal(v(3)), 1e-12);
 }
 
 TEST_F(ChebychevApproxTests, line_invalid)
@@ -116,10 +117,10 @@ TEST_F(ChebychevApproxTests, shifted_parabola)
 {
     MathFuncAdapter adapt(shifted_parabola, NULL);
     math_Vector v = geoml::cheb_approx(adapt, 4, 3., 5.);
-    ASSERT_NEAR(0.0, v(0).getValue(), 1e-12);
-    ASSERT_NEAR(0.0, v(1).getValue(), 1e-12);
-    ASSERT_NEAR(1.0, v(2).getValue(), 1e-12);
-    ASSERT_NEAR(0.0, v(3).getValue(), 1e-12);
+    ASSERT_NEAR(0.0, getPrimal(v(0)), 1e-12);
+    ASSERT_NEAR(0.0, getPrimal(v(1)), 1e-12);
+    ASSERT_NEAR(1.0, getPrimal(v(2)), 1e-12);
+    ASSERT_NEAR(0.0, getPrimal(v(3)), 1e-12);
 }
 
 TEST_F(ChebychevApproxTests, cubic_with_parameter)
@@ -127,14 +128,14 @@ TEST_F(ChebychevApproxTests, cubic_with_parameter)
     Standard_Real parm = 7.;
     MathFuncAdapter adapt(cubic_with_parameter, &parm);
     math_Vector v = geoml::cheb_approx(adapt, 10, -1., 1.);
-    ASSERT_NEAR(0.0, v(0).getValue(), 1e-12);
-    ASSERT_NEAR(0.75*parm.getValue(), v(1).getValue(), 1e-12);
-    ASSERT_NEAR(0.0    , v(2).getValue(), 1e-12);
-    ASSERT_NEAR(parm.getValue()/4., v(3).getValue(), 1e-12);
-    ASSERT_NEAR(0.0, v(4).getValue(), 1e-12);
-    ASSERT_NEAR(0.0, v(5).getValue(), 1e-12);
-    ASSERT_NEAR(0.0, v(6).getValue(), 1e-12);
-    ASSERT_NEAR(0.0, v(7).getValue(), 1e-12);
-    ASSERT_NEAR(0.0, v(8).getValue(), 1e-12);
-    ASSERT_NEAR(0.0, v(9).getValue(), 1e-12);
+    ASSERT_NEAR(0.0, getPrimal(v(0)), 1e-12);
+    ASSERT_NEAR(getPrimal(0.75*parm), getPrimal(v(1)), 1e-12);
+    ASSERT_NEAR(0.0    , getPrimal(v(2)), 1e-12);
+    ASSERT_NEAR(getPrimal(parm)/4., getPrimal(v(3)), 1e-12);
+    ASSERT_NEAR(0.0, getPrimal(v(4)), 1e-12);
+    ASSERT_NEAR(0.0, getPrimal(v(5)), 1e-12);
+    ASSERT_NEAR(0.0, getPrimal(v(6)), 1e-12);
+    ASSERT_NEAR(0.0, getPrimal(v(7)), 1e-12);
+    ASSERT_NEAR(0.0, getPrimal(v(8)), 1e-12);
+    ASSERT_NEAR(0.0, getPrimal(v(9)), 1e-12);
 }

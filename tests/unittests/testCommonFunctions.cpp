@@ -17,6 +17,7 @@
 */
 
 #include "common/CommonFunctions.h"
+#include "common/ad_utility_function.h"
 #include "test.h"
 #include "to_string.h"
 #include <BRep_Builder.hxx>
@@ -75,13 +76,13 @@ TEST(CommonFunctions, IntersectLinePlane)
 
     gp_Pnt result;
     ASSERT_EQ(BetweenPoints, IntersectLinePlane(gp_Pnt(0., 0., 0.), gp_Pnt(0., 4., 0.), plane, result));
-    ASSERT_NEAR(0., result.Distance(gp_Pnt(0., 2., 0)).getValue(), 1e-10);
+    ASSERT_NEAR(0., getPrimal(result.Distance(gp_Pnt(0., 2., 0))), 1e-10);
 
     ASSERT_EQ(OutsideBefore, IntersectLinePlane(gp_Pnt(1., 3., 0.), gp_Pnt(1., 4., 0.), plane, result));
-    ASSERT_NEAR(0., result.Distance(gp_Pnt(1., 2., 0)).getValue(), 1e-10);
+    ASSERT_NEAR(0., getPrimal(result.Distance(gp_Pnt(1., 2., 0))), 1e-10);
 
     ASSERT_EQ(OutsideAfter, IntersectLinePlane(gp_Pnt(1., 0., 0.), gp_Pnt(1., 1., 0.), plane, result));
-    ASSERT_NEAR(0., result.Distance(gp_Pnt(1., 2., 0)).getValue(), 1e-10);
+    ASSERT_NEAR(0., getPrimal(result.Distance(gp_Pnt(1., 2., 0))), 1e-10);
 
     ASSERT_EQ(NoIntersection, IntersectLinePlane(gp_Pnt(1., 3., 0.), gp_Pnt(10., 3., 0.), plane, result));
 }
@@ -122,18 +123,18 @@ TEST(CommonFunctions, LinspaceWithBreaks)
     breaks.push_back(1.0);
     std::vector<Standard_Real> res = LinspaceWithBreaks(0., 1., 11, breaks);
     ASSERT_EQ(12, res.size());
-    EXPECT_NEAR(0.00, res[0].getValue(), 1e-10);
-    EXPECT_NEAR(0.10, res[1].getValue(), 1e-10);
-    EXPECT_NEAR(0.20, res[2].getValue(), 1e-10);
-    EXPECT_NEAR(0.25, res[3].getValue(), 1e-10);
-    EXPECT_NEAR(0.30, res[4].getValue(), 1e-10);
-    EXPECT_NEAR(0.40, res[5].getValue(), 1e-10);
-    EXPECT_NEAR(0.49, res[6].getValue(), 1e-10);
-    EXPECT_NEAR(0.62, res[7].getValue(), 1e-10);
-    EXPECT_NEAR(0.70, res[8].getValue(), 1e-10);
-    EXPECT_NEAR(0.80, res[9].getValue(), 1e-10);
-    EXPECT_NEAR(0.90, res[10].getValue(), 1e-10);
-    EXPECT_NEAR(1.00, res[11].getValue(), 1e-10);
+    EXPECT_NEAR(0.00, getPrimal(res[0]), 1e-10);
+    EXPECT_NEAR(0.10, getPrimal(res[1]), 1e-10);
+    EXPECT_NEAR(0.20, getPrimal(res[2]), 1e-10);
+    EXPECT_NEAR(0.25, getPrimal(res[3]), 1e-10);
+    EXPECT_NEAR(0.30, getPrimal(res[4]), 1e-10);
+    EXPECT_NEAR(0.40, getPrimal(res[5]), 1e-10);
+    EXPECT_NEAR(0.49, getPrimal(res[6]), 1e-10);
+    EXPECT_NEAR(0.62, getPrimal(res[7]), 1e-10);
+    EXPECT_NEAR(0.70, getPrimal(res[8]), 1e-10);
+    EXPECT_NEAR(0.80, getPrimal(res[9]), 1e-10);
+    EXPECT_NEAR(0.90, getPrimal(res[10]), 1e-10);
+    EXPECT_NEAR(1.00, getPrimal(res[11]), 1e-10);
 }
 
 TEST(CommonFunctions, ReplaceAdjacentWith)
@@ -221,39 +222,39 @@ TEST(CommonFunctions, projectPointOnPlane)
 
     gp_Pnt2d res;
     res = ProjectPointOnPlane(pln, p);
-    ASSERT_NEAR(0, res.X().getValue(), 1e-10);
-    ASSERT_NEAR(0, res.Y().getValue(), 1e-10);
+    ASSERT_NEAR(0, getPrimal(res.X()), 1e-10);
+    ASSERT_NEAR(0, getPrimal(res.Y()), 1e-10);
 
     p = gp_Pnt(2,0,3);
     res = ProjectPointOnPlane(pln, p);
-    ASSERT_NEAR(2, res.X().getValue(), 1e-10);
-    ASSERT_NEAR(0, res.Y().getValue(), 1e-10);
+    ASSERT_NEAR(2, getPrimal(res.X()), 1e-10);
+    ASSERT_NEAR(0, getPrimal(res.Y()), 1e-10);
 
     pln = gp_Pln(gp_Pnt(0,0,0), gp_Dir(0,1,0));
     res = ProjectPointOnPlane(pln, p);
-    ASSERT_NEAR(3, res.X().getValue(), 1e-10);
-    ASSERT_NEAR(2, res.Y().getValue(), 1e-10);
+    ASSERT_NEAR(3, getPrimal(res.X()), 1e-10);
+    ASSERT_NEAR(2, getPrimal(res.Y()), 1e-10);
 
     pln = gp_Pln(gp_Pnt(0,0,0), gp_Dir(-1,1,0));
     p = gp_Pnt(1,0,0);
     res = ProjectPointOnPlane(pln, p);
-    ASSERT_NEAR(sqrt(0.5), res.X().getValue(), 1e-10);
-    ASSERT_NEAR(0, res.Y().getValue(), 1e-10);
+    ASSERT_NEAR(sqrt(0.5), getPrimal(res.X()), 1e-10);
+    ASSERT_NEAR(0, getPrimal(res.Y()), 1e-10);
 
     pln = gp_Pln(gp_Pnt(1,0,0), gp_Dir(-1,1,0));
     p = gp_Pnt(1,0,0);
     res = ProjectPointOnPlane(pln, p);
-    ASSERT_NEAR(0, res.X().getValue(), 1e-10);
-    ASSERT_NEAR(0, res.Y().getValue(), 1e-10);
+    ASSERT_NEAR(0, getPrimal(res.X()), 1e-10);
+    ASSERT_NEAR(0, getPrimal(res.Y()), 1e-10);
 }
 
 TEST(CommonFunctions, normalizeAngleDeg)
 {
-    EXPECT_NEAR(0., NormalizeAngleDeg(0.).getValue(), 1e-9);
-    EXPECT_NEAR(0., NormalizeAngleDeg(360.).getValue(), 1e-9);
-    EXPECT_NEAR(270., NormalizeAngleDeg(270.).getValue(), 1e-9);
-    EXPECT_NEAR(270., NormalizeAngleDeg(-90.).getValue(), 1e-9);
-    EXPECT_NEAR(45., NormalizeAngleDeg(405.).getValue(), 1e-9);
+    EXPECT_NEAR(0., getPrimal(NormalizeAngleDeg(0.)), 1e-9);
+    EXPECT_NEAR(0., getPrimal(NormalizeAngleDeg(360.)), 1e-9);
+    EXPECT_NEAR(270., getPrimal(NormalizeAngleDeg(270.)), 1e-9);
+    EXPECT_NEAR(270., getPrimal(NormalizeAngleDeg(-90.)), 1e-9);
+    EXPECT_NEAR(45., getPrimal(NormalizeAngleDeg(405.)), 1e-9);
 }
 
 TEST(CommonFunctions, findIndex)

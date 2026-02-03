@@ -1,5 +1,7 @@
 #include "Matrix.h"
 
+#include "common/ad_utility_function.h"
+
 #include <fstream>
 #include <iostream>
 
@@ -23,7 +25,7 @@ void geoml::writeMatrix(const geoml::Matrix &x, const std::string &filename)
  
     for (int i = x.LowerRow(); i <= x.UpperRow(); ++i) {
         for (int j = x.LowerCol(); j <= x.UpperCol(); ++j) {
-            tmp[x.ColNumber() * (i - x.LowerRow()) + (j - x.LowerCol())] = x.Value(i, j).getValue();
+            tmp[x.ColNumber() * (i - x.LowerRow()) + (j - x.LowerCol())] = getPrimal(x.Value(i, j));
         }
     } 
 

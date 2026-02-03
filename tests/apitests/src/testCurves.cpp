@@ -4,6 +4,7 @@
 #include "geoml/data_structures/conversions.h"
 #include "geoml/Continuity.h"
 #include "geoml/geom_topo_conversions/geom_topo_conversions.h"
+#include "common/ad_utility_function.h"
 
 #include <gtest/gtest.h>
 
@@ -56,18 +57,18 @@ Handle(Geom_BSplineCurve) curve =
 
 // expect the start and end point of the curve to coincide
 EXPECT_NEAR(
-    curve->StartPoint().X().getValue(), 
-    curve->EndPoint().X().getValue(), 
+    getPrimal(curve->StartPoint().X()), 
+    getPrimal(curve->EndPoint().X()), 
     1e-5);
 
 EXPECT_NEAR(
-    curve->StartPoint().Y().getValue(), 
-    curve->EndPoint().Y().getValue(), 
+    getPrimal(curve->StartPoint().Y()), 
+    getPrimal(curve->EndPoint().Y()), 
     1e-5);
 
 EXPECT_NEAR(
-    curve->StartPoint().Z().getValue(), 
-    curve->EndPoint().Z().getValue(), 
+    getPrimal(curve->StartPoint().Z()), 
+    getPrimal(curve->EndPoint().Z()), 
     1e-5);
 
 // expect the curve to be non-rational, as all weights are set to 1
@@ -113,33 +114,33 @@ Handle(Geom_BSplineCurve) curve =
         degree);
 
 EXPECT_NEAR(
-    curve->StartPoint().X().getValue(), 
-    p1.X().getValue(), 
+    getPrimal(curve->StartPoint().X()), 
+    getPrimal(p1.X()), 
     1e-5);
 
 EXPECT_NEAR(
-    curve->StartPoint().Y().getValue(), 
-    p1.Y().getValue(), 
+    getPrimal(curve->StartPoint().Y()), 
+    getPrimal(p1.Y()), 
     1e-5);
 
 EXPECT_NEAR(
-    curve->StartPoint().Z().getValue(), 
-    p1.Z().getValue(), 
+    getPrimal(curve->StartPoint().Z()), 
+    getPrimal(p1.Z()), 
     1e-5);
 
 EXPECT_NEAR(
-    curve->EndPoint().X().getValue(), 
-    p5.X().getValue(), 
+    getPrimal(curve->EndPoint().X()), 
+    getPrimal(p5.X()), 
     1e-5);
 
 EXPECT_NEAR(
-    curve->EndPoint().Y().getValue(), 
-    p5.Y().getValue(), 
+    getPrimal(curve->EndPoint().Y()), 
+    getPrimal(p5.Y()), 
     1e-5);
 
 EXPECT_NEAR(
-    curve->EndPoint().Z().getValue(), 
-    p5.Z().getValue(), 
+    getPrimal(curve->EndPoint().Z()), 
+    getPrimal(p5.Z()), 
     1e-5);
 
 }
@@ -188,7 +189,7 @@ GeomAdaptor_Curve adaptorCurve(curve, umin, umax);
 Standard_Real length = GCPnts_AbscissaPoint::Length(adaptorCurve, umin, umax);
 
 // Expect the circumference of the circle.
-EXPECT_NEAR(length.getValue(), 12.566, 1e-3);
+EXPECT_NEAR(getPrimal(length), 12.566, 1e-3);
 EXPECT_EQ(curve->NbPoles(), 7);
 EXPECT_EQ(curve->NbKnots(), 4); // note, the number of knots OCC gives is not counting the multiplicities of the knots!
 EXPECT_FALSE(curve->IsPeriodic());
@@ -225,13 +226,13 @@ TEST(Test_interpolate_points_to_b_spline_curve, simple_interpolation_of_points)
     geoml::interpolate_points_to_b_spline_curve(input_points);
 
     // check if start and end points are interpolated
-    EXPECT_NEAR(curve->StartPoint().X().getValue(), pt_1.X().getValue(), 1e-5);
-    EXPECT_NEAR(curve->StartPoint().Y().getValue(), pt_1.Y().getValue(), 1e-5);
-    EXPECT_NEAR(curve->StartPoint().Z().getValue(), pt_1.Z().getValue(), 1e-5);
+    EXPECT_NEAR(getPrimal(curve->StartPoint().X()), getPrimal(pt_1.X()), 1e-5);
+    EXPECT_NEAR(getPrimal(curve->StartPoint().Y()), getPrimal(pt_1.Y()), 1e-5);
+    EXPECT_NEAR(getPrimal(curve->StartPoint().Z()), getPrimal(pt_1.Z()), 1e-5);
 
-    EXPECT_NEAR(curve->EndPoint().X().getValue(), pt_3.X().getValue(), 1e-5);
-    EXPECT_NEAR(curve->EndPoint().Y().getValue(), pt_3.Y().getValue(), 1e-5);
-    EXPECT_NEAR(curve->EndPoint().Z().getValue(), pt_3.Z().getValue(), 1e-5);
+    EXPECT_NEAR(getPrimal(curve->EndPoint().X()), getPrimal(pt_3.X()), 1e-5);
+    EXPECT_NEAR(getPrimal(curve->EndPoint().Y()), getPrimal(pt_3.Y()), 1e-5);
+    EXPECT_NEAR(getPrimal(curve->EndPoint().Z()), getPrimal(pt_3.Z()), 1e-5);
 
     // calculate the curve parameters of the interpolated points
     Handle(TColgp_HArray1OfPnt) points_col = new TColgp_HArray1OfPnt(1, input_points.size());
@@ -243,14 +244,14 @@ TEST(Test_interpolate_points_to_b_spline_curve, simple_interpolation_of_points)
     std::vector<Standard_Real> params = geoml::BSplineAlgorithms::computeParamsBSplineCurve(points_col);
     
     // check if the first and last points match with the right curve parameters
-    EXPECT_NEAR(params[0].getValue(), 0, 1e-5);
-    EXPECT_NEAR(params[2].getValue(), 1, 1e-5);
+    EXPECT_NEAR(getPrimal(params[0]), 0, 1e-5);
+    EXPECT_NEAR(getPrimal(params[2]), 1, 1e-5);
 
     // check if the second point is interpolated
     gp_Pnt sec_point = curve -> Value(params[1]);
     Standard_Real dist = pt_2.Distance(sec_point);
 
-    EXPECT_NEAR(dist.getValue(), 0, 1e-5);
+    EXPECT_NEAR(getPrimal(dist), 0, 1e-5);
 
 }
 
@@ -308,9 +309,9 @@ TEST(Test_interpolate_points_to_b_spline_curve, interpolation_custom_parameters)
 
     gp_Pnt test_point = curve->Value(0.9);
 
-    EXPECT_NEAR(test_point.X().getValue(), 1.0, 1e-5);
-    EXPECT_NEAR(test_point.Y().getValue(), 0.0, 1e-5);
-    EXPECT_NEAR(test_point.Z().getValue(), 0.0, 1e-5);
+    EXPECT_NEAR(getPrimal(test_point.X()), 1.0, 1e-5);
+    EXPECT_NEAR(getPrimal(test_point.Y()), 0.0, 1e-5);
+    EXPECT_NEAR(getPrimal(test_point.Z()), 0.0, 1e-5);
 
 }
 
@@ -410,13 +411,13 @@ TEST_F(CurvesToBlend, blend_curve_test_1)
 
     EXPECT_EQ(bezier_curve->NbPoles(), 2);
     
-    EXPECT_NEAR(bezier_curve->StartPoint().X().getValue(), 2., 1e-5);
-    EXPECT_NEAR(bezier_curve->StartPoint().Y().getValue(), 2., 1e-5);
-    EXPECT_NEAR(bezier_curve->StartPoint().Z().getValue(), 0., 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->StartPoint().X()), 2., 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->StartPoint().Y()), 2., 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->StartPoint().Z()), 0., 1e-5);
 
-    EXPECT_NEAR(bezier_curve->EndPoint().X().getValue(), 4., 1e-5);
-    EXPECT_NEAR(bezier_curve->EndPoint().Y().getValue(), 4., 1e-5);
-    EXPECT_NEAR(bezier_curve->EndPoint().Z().getValue(), 0., 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->EndPoint().X()), 4., 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->EndPoint().Y()), 4., 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->EndPoint().Z()), 0., 1e-5);
 }
 
 TEST_F(CurvesToBlend, blend_curve_test_2)
@@ -432,17 +433,17 @@ TEST_F(CurvesToBlend, blend_curve_test_2)
 
     EXPECT_EQ(bezier_curve->NbPoles(), 3);
 
-    EXPECT_NEAR(bezier_curve->StartPoint().X().getValue(), 2., 1e-5);
-    EXPECT_NEAR(bezier_curve->StartPoint().Y().getValue(), 2., 1e-5);
-    EXPECT_NEAR(bezier_curve->StartPoint().Z().getValue(), 0., 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->StartPoint().X()), 2., 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->StartPoint().Y()), 2., 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->StartPoint().Z()), 0., 1e-5);
 
-    EXPECT_NEAR(bezier_curve->EndPoint().X().getValue(), 4., 1e-5);
-    EXPECT_NEAR(bezier_curve->EndPoint().Y().getValue(), 4., 1e-5);
-    EXPECT_NEAR(bezier_curve->EndPoint().Z().getValue(), 0., 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->EndPoint().X()), 4., 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->EndPoint().Y()), 4., 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->EndPoint().Z()), 0., 1e-5);
 
-    EXPECT_NEAR(bezier_curve->Pole(2).X().getValue(), (last_point_start_curve.X() + first_derivative_start_curve_at_last_parameter.X()).getValue(), 1e-5);
-    EXPECT_NEAR(bezier_curve->Pole(2).Y().getValue(), (last_point_start_curve.Y() + first_derivative_start_curve_at_last_parameter.Y()).getValue(), 1e-5);
-    EXPECT_NEAR(bezier_curve->Pole(2).Z().getValue(), (last_point_start_curve.Z() + first_derivative_start_curve_at_last_parameter.Z()).getValue(), 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->Pole(2).X()), getPrimal(last_point_start_curve.X() + first_derivative_start_curve_at_last_parameter.X()), 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->Pole(2).Y()), getPrimal(last_point_start_curve.Y() + first_derivative_start_curve_at_last_parameter.Y()), 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->Pole(2).Z()), getPrimal(last_point_start_curve.Z() + first_derivative_start_curve_at_last_parameter.Z()), 1e-5);
 }
 
 TEST_F(CurvesToBlend, blend_curve_test_3)
@@ -458,17 +459,17 @@ TEST_F(CurvesToBlend, blend_curve_test_3)
 
     EXPECT_EQ(bezier_curve->NbPoles(), 3);
 
-    EXPECT_NEAR(bezier_curve->StartPoint().X().getValue(), 2., 1e-5);
-    EXPECT_NEAR(bezier_curve->StartPoint().Y().getValue(), 2., 1e-5);
-    EXPECT_NEAR(bezier_curve->StartPoint().Z().getValue(), 0., 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->StartPoint().X()), 2., 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->StartPoint().Y()), 2., 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->StartPoint().Z()), 0., 1e-5);
 
-    EXPECT_NEAR(bezier_curve->EndPoint().X().getValue(), 4., 1e-5);
-    EXPECT_NEAR(bezier_curve->EndPoint().Y().getValue(), 4., 1e-5);
-    EXPECT_NEAR(bezier_curve->EndPoint().Z().getValue(), 0., 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->EndPoint().X()), 4., 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->EndPoint().Y()), 4., 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->EndPoint().Z()), 0., 1e-5);
 
-    EXPECT_NEAR(bezier_curve->Pole(2).X().getValue(), (first_point_end_curve.X() - first_derivative_end_curve_at_first_parameter.X()).getValue(), 1e-5);
-    EXPECT_NEAR(bezier_curve->Pole(2).Y().getValue(), (first_point_end_curve.Y() - first_derivative_end_curve_at_first_parameter.Y()).getValue(), 1e-5);
-    EXPECT_NEAR(bezier_curve->Pole(2).Z().getValue(), (first_point_end_curve.Z() - first_derivative_end_curve_at_first_parameter.Z()).getValue(), 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->Pole(2).X()), getPrimal(first_point_end_curve.X() - first_derivative_end_curve_at_first_parameter.X()), 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->Pole(2).Y()), getPrimal(first_point_end_curve.Y() - first_derivative_end_curve_at_first_parameter.Y()), 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->Pole(2).Z()), getPrimal(first_point_end_curve.Z() - first_derivative_end_curve_at_first_parameter.Z()), 1e-5);
 }
 
 TEST_F(CurvesToBlend, blend_curve_test_4)
@@ -484,23 +485,23 @@ TEST_F(CurvesToBlend, blend_curve_test_4)
 
     EXPECT_EQ(bezier_curve->NbPoles(), 4);
 
-    EXPECT_NEAR(bezier_curve->StartPoint().X().getValue(), 2., 1e-5);
-    EXPECT_NEAR(bezier_curve->StartPoint().Y().getValue(), 2., 1e-5);
-    EXPECT_NEAR(bezier_curve->StartPoint().Z().getValue(), 0., 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->StartPoint().X()), 2., 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->StartPoint().Y()), 2., 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->StartPoint().Z()), 0., 1e-5);
 
-    EXPECT_NEAR(bezier_curve->EndPoint().X().getValue(), 4., 1e-5);
-    EXPECT_NEAR(bezier_curve->EndPoint().Y().getValue(), 4., 1e-5);
-    EXPECT_NEAR(bezier_curve->EndPoint().Z().getValue(), 0., 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->EndPoint().X()), 4., 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->EndPoint().Y()), 4., 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->EndPoint().Z()), 0., 1e-5);
 
-    EXPECT_NEAR(bezier_curve->Pole(2).X().getValue(), (last_point_start_curve.X() + first_derivative_start_curve_at_last_parameter.X()).getValue(), 1e-5);
-    EXPECT_NEAR(bezier_curve->Pole(2).Y().getValue(), (last_point_start_curve.Y() + first_derivative_start_curve_at_last_parameter.Y()).getValue(), 1e-5);
-    EXPECT_NEAR(bezier_curve->Pole(2).Z().getValue(), (last_point_start_curve.Z() + first_derivative_start_curve_at_last_parameter.Z()).getValue(), 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->Pole(2).X()), getPrimal(last_point_start_curve.X() + first_derivative_start_curve_at_last_parameter.X()), 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->Pole(2).Y()), getPrimal(last_point_start_curve.Y() + first_derivative_start_curve_at_last_parameter.Y()), 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->Pole(2).Z()), getPrimal(last_point_start_curve.Z() + first_derivative_start_curve_at_last_parameter.Z()), 1e-5);
 
     gp_Vec d_vec_curve_start = displacement_of_third_control_point(bezier_curve->Degree(), 1., 1., first_derivative_start_curve_at_last_parameter, second_derivative_start_curve_at_last_parameter);
 
-    EXPECT_NEAR(bezier_curve->Pole(3).X().getValue(), (last_point_start_curve.X() + 2 * first_derivative_start_curve_at_last_parameter.X() + d_vec_curve_start.X()).getValue(), 1e-5);
-    EXPECT_NEAR(bezier_curve->Pole(3).Y().getValue(), (last_point_start_curve.Y() + 2 * first_derivative_start_curve_at_last_parameter.Y() + d_vec_curve_start.Y()).getValue(), 1e-5);
-    EXPECT_NEAR(bezier_curve->Pole(3).Z().getValue(), (last_point_start_curve.Z() + 2 * first_derivative_start_curve_at_last_parameter.Z() + d_vec_curve_start.Z()).getValue(), 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->Pole(3).X()), getPrimal(last_point_start_curve.X() + 2 * first_derivative_start_curve_at_last_parameter.X() + d_vec_curve_start.X()), 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->Pole(3).Y()), getPrimal(last_point_start_curve.Y() + 2 * first_derivative_start_curve_at_last_parameter.Y() + d_vec_curve_start.Y()), 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->Pole(3).Z()), getPrimal(last_point_start_curve.Z() + 2 * first_derivative_start_curve_at_last_parameter.Z() + d_vec_curve_start.Z()), 1e-5);
 }
 
 TEST_F(CurvesToBlend, blend_curve_test_5)
@@ -516,23 +517,23 @@ TEST_F(CurvesToBlend, blend_curve_test_5)
 
     EXPECT_EQ(bezier_curve->NbPoles(), 4);
 
-    EXPECT_NEAR(bezier_curve->StartPoint().X().getValue(), 2., 1e-5);
-    EXPECT_NEAR(bezier_curve->StartPoint().Y().getValue(), 2., 1e-5);
-    EXPECT_NEAR(bezier_curve->StartPoint().Z().getValue(), 0., 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->StartPoint().X()), 2., 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->StartPoint().Y()), 2., 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->StartPoint().Z()), 0., 1e-5);
 
-    EXPECT_NEAR(bezier_curve->EndPoint().X().getValue(), 4., 1e-5);
-    EXPECT_NEAR(bezier_curve->EndPoint().Y().getValue(), 4., 1e-5);
-    EXPECT_NEAR(bezier_curve->EndPoint().Z().getValue(), 0., 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->EndPoint().X()), 4., 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->EndPoint().Y()), 4., 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->EndPoint().Z()), 0., 1e-5);
 
     gp_Vec d_vec_curve_end = displacement_of_third_control_point(bezier_curve->Degree(), 1., 1., first_derivative_end_curve_at_first_parameter, second_derivative_end_curve_at_first_parameter);
 
-    EXPECT_NEAR(bezier_curve->Pole(2).X().getValue(), (first_point_end_curve.X() - 2 * first_derivative_end_curve_at_first_parameter.X() + d_vec_curve_end.X()).getValue(), 1e-5);
-    EXPECT_NEAR(bezier_curve->Pole(2).Y().getValue(), (first_point_end_curve.Y() - 2 * first_derivative_end_curve_at_first_parameter.Y() + d_vec_curve_end.Y()).getValue(), 1e-5);
-    EXPECT_NEAR(bezier_curve->Pole(2).Z().getValue(), (first_point_end_curve.Z() - 2 * first_derivative_end_curve_at_first_parameter.Z() + d_vec_curve_end.Z()).getValue(), 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->Pole(2).X()), getPrimal(first_point_end_curve.X() - 2 * first_derivative_end_curve_at_first_parameter.X() + d_vec_curve_end.X()), 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->Pole(2).Y()), getPrimal(first_point_end_curve.Y() - 2 * first_derivative_end_curve_at_first_parameter.Y() + d_vec_curve_end.Y()), 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->Pole(2).Z()), getPrimal(first_point_end_curve.Z() - 2 * first_derivative_end_curve_at_first_parameter.Z() + d_vec_curve_end.Z()), 1e-5);
 
-    EXPECT_NEAR(bezier_curve->Pole(3).X().getValue(), (first_point_end_curve.X() - first_derivative_end_curve_at_first_parameter.X()).getValue(), 1e-5);
-    EXPECT_NEAR(bezier_curve->Pole(3).Y().getValue(), (first_point_end_curve.Y() - first_derivative_end_curve_at_first_parameter.Y()).getValue(), 1e-5);
-    EXPECT_NEAR(bezier_curve->Pole(3).Z().getValue(), (first_point_end_curve.Z() - first_derivative_end_curve_at_first_parameter.Z()).getValue(), 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->Pole(3).X()), getPrimal(first_point_end_curve.X() - first_derivative_end_curve_at_first_parameter.X()), 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->Pole(3).Y()), getPrimal(first_point_end_curve.Y() - first_derivative_end_curve_at_first_parameter.Y()), 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->Pole(3).Z()), getPrimal(first_point_end_curve.Z() - first_derivative_end_curve_at_first_parameter.Z()), 1e-5);
 }
 
 TEST_F(CurvesToBlend, blend_curve_test_6)
@@ -548,27 +549,27 @@ TEST_F(CurvesToBlend, blend_curve_test_6)
 
     EXPECT_EQ(bezier_curve->NbPoles(), 5);
 
-    EXPECT_NEAR(bezier_curve->StartPoint().X().getValue(), 2., 1e-5);
-    EXPECT_NEAR(bezier_curve->StartPoint().Y().getValue(), 2., 1e-5);
-    EXPECT_NEAR(bezier_curve->StartPoint().Z().getValue(), 0., 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->StartPoint().X()), 2., 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->StartPoint().Y()), 2., 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->StartPoint().Z()), 0., 1e-5);
 
-    EXPECT_NEAR(bezier_curve->EndPoint().X().getValue(), 4., 1e-5);
-    EXPECT_NEAR(bezier_curve->EndPoint().Y().getValue(), 4., 1e-5);
-    EXPECT_NEAR(bezier_curve->EndPoint().Z().getValue(), 0., 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->EndPoint().X()), 4., 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->EndPoint().Y()), 4., 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->EndPoint().Z()), 0., 1e-5);
 
-    EXPECT_NEAR(bezier_curve->Pole(2).X().getValue(), (last_point_start_curve.X() + first_derivative_start_curve_at_last_parameter.X()).getValue(), 1e-5);
-    EXPECT_NEAR(bezier_curve->Pole(2).Y().getValue(), (last_point_start_curve.Y() + first_derivative_start_curve_at_last_parameter.Y()).getValue(), 1e-5);
-    EXPECT_NEAR(bezier_curve->Pole(2).Z().getValue(), (last_point_start_curve.Z() + first_derivative_start_curve_at_last_parameter.Z()).getValue(), 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->Pole(2).X()), getPrimal(last_point_start_curve.X() + first_derivative_start_curve_at_last_parameter.X()), 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->Pole(2).Y()), getPrimal(last_point_start_curve.Y() + first_derivative_start_curve_at_last_parameter.Y()), 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->Pole(2).Z()), getPrimal(last_point_start_curve.Z() + first_derivative_start_curve_at_last_parameter.Z()), 1e-5);
 
     gp_Vec d_vec_curve_start = displacement_of_third_control_point(bezier_curve->Degree(), 1., 1., first_derivative_start_curve_at_last_parameter, second_derivative_start_curve_at_last_parameter);
 
-    EXPECT_NEAR(bezier_curve->Pole(3).X().getValue(), (last_point_start_curve.X() + 2 * first_derivative_start_curve_at_last_parameter.X() + d_vec_curve_start.X()).getValue(), 1e-5);
-    EXPECT_NEAR(bezier_curve->Pole(3).Y().getValue(), (last_point_start_curve.Y() + 2 * first_derivative_start_curve_at_last_parameter.Y() + d_vec_curve_start.Y()).getValue(), 1e-5);
-    EXPECT_NEAR(bezier_curve->Pole(3).Z().getValue(), (last_point_start_curve.Z() + 2 * first_derivative_start_curve_at_last_parameter.Z() + d_vec_curve_start.Z()).getValue(), 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->Pole(3).X()), getPrimal(last_point_start_curve.X() + 2 * first_derivative_start_curve_at_last_parameter.X() + d_vec_curve_start.X()), 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->Pole(3).Y()), getPrimal(last_point_start_curve.Y() + 2 * first_derivative_start_curve_at_last_parameter.Y() + d_vec_curve_start.Y()), 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->Pole(3).Z()), getPrimal(last_point_start_curve.Z() + 2 * first_derivative_start_curve_at_last_parameter.Z() + d_vec_curve_start.Z()), 1e-5);
 
-    EXPECT_NEAR(bezier_curve->Pole(4).X().getValue(), (first_point_end_curve.X() - first_derivative_end_curve_at_first_parameter.X()).getValue(), 1e-5);
-    EXPECT_NEAR(bezier_curve->Pole(4).Y().getValue(), (first_point_end_curve.Y() - first_derivative_end_curve_at_first_parameter.Y()).getValue(), 1e-5);
-    EXPECT_NEAR(bezier_curve->Pole(4).Z().getValue(), (first_point_end_curve.Z() - first_derivative_end_curve_at_first_parameter.Z()).getValue(), 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->Pole(4).X()), getPrimal(first_point_end_curve.X() - first_derivative_end_curve_at_first_parameter.X()), 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->Pole(4).Y()), getPrimal(first_point_end_curve.Y() - first_derivative_end_curve_at_first_parameter.Y()), 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->Pole(4).Z()), getPrimal(first_point_end_curve.Z() - first_derivative_end_curve_at_first_parameter.Z()), 1e-5);
 }
 
 TEST_F(CurvesToBlend, blend_curve_test_7)
@@ -584,27 +585,27 @@ TEST_F(CurvesToBlend, blend_curve_test_7)
 
     EXPECT_EQ(bezier_curve->NbPoles(), 5);
 
-    EXPECT_NEAR(bezier_curve->StartPoint().X().getValue(), 2., 1e-5);
-    EXPECT_NEAR(bezier_curve->StartPoint().Y().getValue(), 2., 1e-5);
-    EXPECT_NEAR(bezier_curve->StartPoint().Z().getValue(), 0., 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->StartPoint().X()), 2., 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->StartPoint().Y()), 2., 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->StartPoint().Z()), 0., 1e-5);
 
-    EXPECT_NEAR(bezier_curve->EndPoint().X().getValue(), 4., 1e-5);
-    EXPECT_NEAR(bezier_curve->EndPoint().Y().getValue(), 4., 1e-5);
-    EXPECT_NEAR(bezier_curve->EndPoint().Z().getValue(), 0., 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->EndPoint().X()), 4., 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->EndPoint().Y()), 4., 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->EndPoint().Z()), 0., 1e-5);
 
-    EXPECT_NEAR(bezier_curve->Pole(2).X().getValue(), (last_point_start_curve.X() + first_derivative_start_curve_at_last_parameter.X()).getValue(), 1e-5);
-    EXPECT_NEAR(bezier_curve->Pole(2).Y().getValue(), (last_point_start_curve.Y() + first_derivative_start_curve_at_last_parameter.Y()).getValue(), 1e-5);
-    EXPECT_NEAR(bezier_curve->Pole(2).Z().getValue(), (last_point_start_curve.Z() + first_derivative_start_curve_at_last_parameter.Z()).getValue(), 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->Pole(2).X()), getPrimal(last_point_start_curve.X() + first_derivative_start_curve_at_last_parameter.X()), 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->Pole(2).Y()), getPrimal(last_point_start_curve.Y() + first_derivative_start_curve_at_last_parameter.Y()), 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->Pole(2).Z()), getPrimal(last_point_start_curve.Z() + first_derivative_start_curve_at_last_parameter.Z()), 1e-5);
 
     gp_Vec d_vec_curve_end = displacement_of_third_control_point(bezier_curve->Degree(), 1., 1., first_derivative_end_curve_at_first_parameter, second_derivative_end_curve_at_first_parameter);
 
-    EXPECT_NEAR(bezier_curve->Pole(3).X().getValue(), (first_point_end_curve.X() - 2 * first_derivative_end_curve_at_first_parameter.X() + d_vec_curve_end.X()).getValue(), 1e-5);
-    EXPECT_NEAR(bezier_curve->Pole(3).Y().getValue(), (first_point_end_curve.Y() - 2 * first_derivative_end_curve_at_first_parameter.Y() + d_vec_curve_end.Y()).getValue(), 1e-5);
-    EXPECT_NEAR(bezier_curve->Pole(3).Z().getValue(), (first_point_end_curve.Z() - 2 * first_derivative_end_curve_at_first_parameter.Z() + d_vec_curve_end.Z()).getValue(), 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->Pole(3).X()), getPrimal(first_point_end_curve.X() - 2 * first_derivative_end_curve_at_first_parameter.X() + d_vec_curve_end.X()), 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->Pole(3).Y()), getPrimal(first_point_end_curve.Y() - 2 * first_derivative_end_curve_at_first_parameter.Y() + d_vec_curve_end.Y()), 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->Pole(3).Z()), getPrimal(first_point_end_curve.Z() - 2 * first_derivative_end_curve_at_first_parameter.Z() + d_vec_curve_end.Z()), 1e-5);
 
-    EXPECT_NEAR(bezier_curve->Pole(4).X().getValue(), (first_point_end_curve.X() - first_derivative_end_curve_at_first_parameter.X()).getValue(), 1e-5);
-    EXPECT_NEAR(bezier_curve->Pole(4).Y().getValue(), (first_point_end_curve.Y() - first_derivative_end_curve_at_first_parameter.Y()).getValue(), 1e-5);
-    EXPECT_NEAR(bezier_curve->Pole(4).Z().getValue(), (first_point_end_curve.Z() - first_derivative_end_curve_at_first_parameter.Z()).getValue(), 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->Pole(4).X()), getPrimal(first_point_end_curve.X() - first_derivative_end_curve_at_first_parameter.X()), 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->Pole(4).Y()), getPrimal(first_point_end_curve.Y() - first_derivative_end_curve_at_first_parameter.Y()), 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->Pole(4).Z()), getPrimal(first_point_end_curve.Z() - first_derivative_end_curve_at_first_parameter.Z()), 1e-5);
 }
 
 TEST_F(CurvesToBlend, blend_curve_test_8)
@@ -620,33 +621,33 @@ TEST_F(CurvesToBlend, blend_curve_test_8)
 
     EXPECT_EQ(bezier_curve->NbPoles(), 6);
 
-    EXPECT_NEAR(bezier_curve->StartPoint().X().getValue(), 2., 1e-5);
-    EXPECT_NEAR(bezier_curve->StartPoint().Y().getValue(), 2., 1e-5);
-    EXPECT_NEAR(bezier_curve->StartPoint().Z().getValue(), 0., 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->StartPoint().X()), 2., 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->StartPoint().Y()), 2., 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->StartPoint().Z()), 0., 1e-5);
 
-    EXPECT_NEAR(bezier_curve->EndPoint().X().getValue(), 4., 1e-5);
-    EXPECT_NEAR(bezier_curve->EndPoint().Y().getValue(), 4., 1e-5);
-    EXPECT_NEAR(bezier_curve->EndPoint().Z().getValue(), 0., 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->EndPoint().X()), 4., 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->EndPoint().Y()), 4., 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->EndPoint().Z()), 0., 1e-5);
 
-    EXPECT_NEAR(bezier_curve->Pole(2).X().getValue(), (last_point_start_curve.X() + first_derivative_start_curve_at_last_parameter.X()).getValue(), 1e-5);
-    EXPECT_NEAR(bezier_curve->Pole(2).Y().getValue(), (last_point_start_curve.Y() + first_derivative_start_curve_at_last_parameter.Y()).getValue(), 1e-5);
-    EXPECT_NEAR(bezier_curve->Pole(2).Z().getValue(), (last_point_start_curve.Z() + first_derivative_start_curve_at_last_parameter.Z()).getValue(), 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->Pole(2).X()), getPrimal(last_point_start_curve.X() + first_derivative_start_curve_at_last_parameter.X()), 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->Pole(2).Y()), getPrimal(last_point_start_curve.Y() + first_derivative_start_curve_at_last_parameter.Y()), 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->Pole(2).Z()), getPrimal(last_point_start_curve.Z() + first_derivative_start_curve_at_last_parameter.Z()), 1e-5);
 
     gp_Vec d_vec_curve_start = displacement_of_third_control_point(bezier_curve->Degree(), 1., 1., first_derivative_start_curve_at_last_parameter, second_derivative_start_curve_at_last_parameter);
 
-    EXPECT_NEAR(bezier_curve->Pole(3).X().getValue(), (last_point_start_curve.X() + 2 * first_derivative_start_curve_at_last_parameter.X() + d_vec_curve_start.X()).getValue(), 1e-5);
-    EXPECT_NEAR(bezier_curve->Pole(3).Y().getValue(), (last_point_start_curve.Y() + 2 * first_derivative_start_curve_at_last_parameter.Y() + d_vec_curve_start.Y()).getValue(), 1e-5);
-    EXPECT_NEAR(bezier_curve->Pole(3).Z().getValue(), (last_point_start_curve.Z() + 2 * first_derivative_start_curve_at_last_parameter.Z() + d_vec_curve_start.Z()).getValue(), 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->Pole(3).X()), getPrimal(last_point_start_curve.X() + 2 * first_derivative_start_curve_at_last_parameter.X() + d_vec_curve_start.X()), 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->Pole(3).Y()), getPrimal(last_point_start_curve.Y() + 2 * first_derivative_start_curve_at_last_parameter.Y() + d_vec_curve_start.Y()), 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->Pole(3).Z()), getPrimal(last_point_start_curve.Z() + 2 * first_derivative_start_curve_at_last_parameter.Z() + d_vec_curve_start.Z()), 1e-5);
 
     gp_Vec d_vec_curve_end = displacement_of_third_control_point(bezier_curve->Degree(), 1., 1., first_derivative_end_curve_at_first_parameter, second_derivative_end_curve_at_first_parameter);
 
-    EXPECT_NEAR(bezier_curve->Pole(4).X().getValue(), (first_point_end_curve.X() - 2 * first_derivative_end_curve_at_first_parameter.X() + d_vec_curve_end.X()).getValue(), 1e-5);
-    EXPECT_NEAR(bezier_curve->Pole(4).Y().getValue(), (first_point_end_curve.Y() - 2 * first_derivative_end_curve_at_first_parameter.Y() + d_vec_curve_end.Y()).getValue(), 1e-5);
-    EXPECT_NEAR(bezier_curve->Pole(4).Z().getValue(), (first_point_end_curve.Z() - 2 * first_derivative_end_curve_at_first_parameter.Z() + d_vec_curve_end.Z()).getValue(), 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->Pole(4).X()), getPrimal(first_point_end_curve.X() - 2 * first_derivative_end_curve_at_first_parameter.X() + d_vec_curve_end.X()), 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->Pole(4).Y()), getPrimal(first_point_end_curve.Y() - 2 * first_derivative_end_curve_at_first_parameter.Y() + d_vec_curve_end.Y()), 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->Pole(4).Z()), getPrimal(first_point_end_curve.Z() - 2 * first_derivative_end_curve_at_first_parameter.Z() + d_vec_curve_end.Z()), 1e-5);
 
-    EXPECT_NEAR(bezier_curve->Pole(5).X().getValue(), (first_point_end_curve.X() - first_derivative_end_curve_at_first_parameter.X()).getValue(), 1e-5);
-    EXPECT_NEAR(bezier_curve->Pole(5).Y().getValue(), (first_point_end_curve.Y() - first_derivative_end_curve_at_first_parameter.Y()).getValue(), 1e-5);
-    EXPECT_NEAR(bezier_curve->Pole(5).Z().getValue(), (first_point_end_curve.Z() - first_derivative_end_curve_at_first_parameter.Z()).getValue(), 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->Pole(5).X()), getPrimal(first_point_end_curve.X() - first_derivative_end_curve_at_first_parameter.X()), 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->Pole(5).Y()), getPrimal(first_point_end_curve.Y() - first_derivative_end_curve_at_first_parameter.Y()), 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->Pole(5).Z()), getPrimal(first_point_end_curve.Z() - first_derivative_end_curve_at_first_parameter.Z()), 1e-5);
 }
 
 TEST_F(CurvesToBlend, blend_curve_test_9)
@@ -662,17 +663,17 @@ TEST_F(CurvesToBlend, blend_curve_test_9)
 
     EXPECT_EQ(bezier_curve->NbPoles(), 3);
 
-    EXPECT_NEAR(bezier_curve->StartPoint().X().getValue(), 2., 1e-5);
-    EXPECT_NEAR(bezier_curve->StartPoint().Y().getValue(), 2., 1e-5);
-    EXPECT_NEAR(bezier_curve->StartPoint().Z().getValue(), 0., 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->StartPoint().X()), 2., 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->StartPoint().Y()), 2., 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->StartPoint().Z()), 0., 1e-5);
 
-    EXPECT_NEAR(bezier_curve->EndPoint().X().getValue(), 4., 1e-5);
-    EXPECT_NEAR(bezier_curve->EndPoint().Y().getValue(), 4., 1e-5);
-    EXPECT_NEAR(bezier_curve->EndPoint().Z().getValue(), 0., 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->EndPoint().X()), 4., 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->EndPoint().Y()), 4., 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->EndPoint().Z()), 0., 1e-5);
 
-    EXPECT_NEAR(bezier_curve->Pole(2).X().getValue(), (last_point_start_curve.X() - first_derivative_start_curve_at_last_parameter.X()).getValue(), 1e-5);
-    EXPECT_NEAR(bezier_curve->Pole(2).Y().getValue(), (last_point_start_curve.Y() - first_derivative_start_curve_at_last_parameter.Y()).getValue(), 1e-5);
-    EXPECT_NEAR(bezier_curve->Pole(2).Z().getValue(), (last_point_start_curve.Z() - first_derivative_start_curve_at_last_parameter.Z()).getValue(), 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->Pole(2).X()), getPrimal(last_point_start_curve.X() - first_derivative_start_curve_at_last_parameter.X()), 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->Pole(2).Y()), getPrimal(last_point_start_curve.Y() - first_derivative_start_curve_at_last_parameter.Y()), 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->Pole(2).Z()), getPrimal(last_point_start_curve.Z() - first_derivative_start_curve_at_last_parameter.Z()), 1e-5);
 }
 
 TEST_F(CurvesToBlend, blend_curve_test_10)
@@ -688,17 +689,17 @@ TEST_F(CurvesToBlend, blend_curve_test_10)
 
     EXPECT_EQ(bezier_curve->NbPoles(), 3);
 
-    EXPECT_NEAR(bezier_curve->StartPoint().X().getValue(), 2., 1e-5);
-    EXPECT_NEAR(bezier_curve->StartPoint().Y().getValue(), 2., 1e-5);
-    EXPECT_NEAR(bezier_curve->StartPoint().Z().getValue(), 0., 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->StartPoint().X()), 2., 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->StartPoint().Y()), 2., 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->StartPoint().Z()), 0., 1e-5);
 
-    EXPECT_NEAR(bezier_curve->EndPoint().X().getValue(), 4., 1e-5);
-    EXPECT_NEAR(bezier_curve->EndPoint().Y().getValue(), 4., 1e-5);
-    EXPECT_NEAR(bezier_curve->EndPoint().Z().getValue(), 0., 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->EndPoint().X()), 4., 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->EndPoint().Y()), 4., 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->EndPoint().Z()), 0., 1e-5);
 
-    EXPECT_NEAR(bezier_curve->Pole(2).X().getValue(), (first_point_end_curve.X() + first_derivative_end_curve_at_first_parameter.X()).getValue(), 1e-5);
-    EXPECT_NEAR(bezier_curve->Pole(2).Y().getValue(), (first_point_end_curve.Y() + first_derivative_end_curve_at_first_parameter.Y()).getValue(), 1e-5);
-    EXPECT_NEAR(bezier_curve->Pole(2).Z().getValue(), (first_point_end_curve.Z() + first_derivative_end_curve_at_first_parameter.Z()).getValue(), 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->Pole(2).X()), getPrimal(first_point_end_curve.X() + first_derivative_end_curve_at_first_parameter.X()), 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->Pole(2).Y()), getPrimal(first_point_end_curve.Y() + first_derivative_end_curve_at_first_parameter.Y()), 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->Pole(2).Z()), getPrimal(first_point_end_curve.Z() + first_derivative_end_curve_at_first_parameter.Z()), 1e-5);
 }
 
 TEST_F(CurvesToBlend, blend_curve_test_11)
@@ -714,23 +715,23 @@ TEST_F(CurvesToBlend, blend_curve_test_11)
 
     EXPECT_EQ(bezier_curve->NbPoles(), 4);
 
-    EXPECT_NEAR(bezier_curve->StartPoint().X().getValue(), 2., 1e-5);
-    EXPECT_NEAR(bezier_curve->StartPoint().Y().getValue(), 2., 1e-5);
-    EXPECT_NEAR(bezier_curve->StartPoint().Z().getValue(), 0., 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->StartPoint().X()), 2., 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->StartPoint().Y()), 2., 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->StartPoint().Z()), 0., 1e-5);
 
-    EXPECT_NEAR(bezier_curve->EndPoint().X().getValue(), 4., 1e-5);
-    EXPECT_NEAR(bezier_curve->EndPoint().Y().getValue(), 4., 1e-5);
-    EXPECT_NEAR(bezier_curve->EndPoint().Z().getValue(), 0., 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->EndPoint().X()), 4., 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->EndPoint().Y()), 4., 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->EndPoint().Z()), 0., 1e-5);
 
-    EXPECT_NEAR(bezier_curve->Pole(2).X().getValue(), (last_point_start_curve.X() - first_derivative_start_curve_at_last_parameter.X()).getValue(), 1e-5);
-    EXPECT_NEAR(bezier_curve->Pole(2).Y().getValue(), (last_point_start_curve.Y() - first_derivative_start_curve_at_last_parameter.Y()).getValue(), 1e-5);
-    EXPECT_NEAR(bezier_curve->Pole(2).Z().getValue(), (last_point_start_curve.Z() - first_derivative_start_curve_at_last_parameter.Z()).getValue(), 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->Pole(2).X()), getPrimal(last_point_start_curve.X() - first_derivative_start_curve_at_last_parameter.X()), 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->Pole(2).Y()), getPrimal(last_point_start_curve.Y() - first_derivative_start_curve_at_last_parameter.Y()), 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->Pole(2).Z()), getPrimal(last_point_start_curve.Z() - first_derivative_start_curve_at_last_parameter.Z()), 1e-5);
 
     gp_Vec d_vec_curve_start = displacement_of_third_control_point(bezier_curve->Degree(), 1., 1., first_derivative_start_curve_at_last_parameter, second_derivative_start_curve_at_last_parameter);
 
-    EXPECT_NEAR(bezier_curve->Pole(3).X().getValue(), (last_point_start_curve.X() - 2 * first_derivative_start_curve_at_last_parameter.X() + d_vec_curve_start.X()).getValue(), 1e-5);
-    EXPECT_NEAR(bezier_curve->Pole(3).Y().getValue(), (last_point_start_curve.Y() - 2 * first_derivative_start_curve_at_last_parameter.Y() + d_vec_curve_start.Y()).getValue(), 1e-5);
-    EXPECT_NEAR(bezier_curve->Pole(3).Z().getValue(), (last_point_start_curve.Z() - 2 * first_derivative_start_curve_at_last_parameter.Z() + d_vec_curve_start.Z()).getValue(), 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->Pole(3).X()), getPrimal(last_point_start_curve.X() - 2 * first_derivative_start_curve_at_last_parameter.X() + d_vec_curve_start.X()), 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->Pole(3).Y()), getPrimal(last_point_start_curve.Y() - 2 * first_derivative_start_curve_at_last_parameter.Y() + d_vec_curve_start.Y()), 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->Pole(3).Z()), getPrimal(last_point_start_curve.Z() - 2 * first_derivative_start_curve_at_last_parameter.Z() + d_vec_curve_start.Z()), 1e-5);
 }
 
 TEST_F(CurvesToBlend, blend_curve_test_12)
@@ -746,23 +747,23 @@ TEST_F(CurvesToBlend, blend_curve_test_12)
 
     EXPECT_EQ(bezier_curve->NbPoles(), 4);
 
-    EXPECT_NEAR(bezier_curve->StartPoint().X().getValue(), 2., 1e-5);
-    EXPECT_NEAR(bezier_curve->StartPoint().Y().getValue(), 2., 1e-5);
-    EXPECT_NEAR(bezier_curve->StartPoint().Z().getValue(), 0., 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->StartPoint().X()), 2., 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->StartPoint().Y()), 2., 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->StartPoint().Z()), 0., 1e-5);
 
-    EXPECT_NEAR(bezier_curve->EndPoint().X().getValue(), 4., 1e-5);
-    EXPECT_NEAR(bezier_curve->EndPoint().Y().getValue(), 4., 1e-5);
-    EXPECT_NEAR(bezier_curve->EndPoint().Z().getValue(), 0., 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->EndPoint().X()), 4., 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->EndPoint().Y()), 4., 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->EndPoint().Z()), 0., 1e-5);
 
     gp_Vec d_vec_curve_end = displacement_of_third_control_point(bezier_curve->Degree(), 1., 1., first_derivative_end_curve_at_first_parameter, second_derivative_end_curve_at_first_parameter);
 
-    EXPECT_NEAR(bezier_curve->Pole(2).X().getValue(), (first_point_end_curve.X() + 2 * first_derivative_end_curve_at_first_parameter.X() + d_vec_curve_end.X()).getValue(), 1e-5);
-    EXPECT_NEAR(bezier_curve->Pole(2).Y().getValue(), (first_point_end_curve.Y() + 2 * first_derivative_end_curve_at_first_parameter.Y() + d_vec_curve_end.Y()).getValue(), 1e-5);
-    EXPECT_NEAR(bezier_curve->Pole(2).Z().getValue(), (first_point_end_curve.Z() + 2 * first_derivative_end_curve_at_first_parameter.Z() + d_vec_curve_end.Z()).getValue(), 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->Pole(2).X()), getPrimal(first_point_end_curve.X() + 2 * first_derivative_end_curve_at_first_parameter.X() + d_vec_curve_end.X()), 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->Pole(2).Y()), getPrimal(first_point_end_curve.Y() + 2 * first_derivative_end_curve_at_first_parameter.Y() + d_vec_curve_end.Y()), 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->Pole(2).Z()), getPrimal(first_point_end_curve.Z() + 2 * first_derivative_end_curve_at_first_parameter.Z() + d_vec_curve_end.Z()), 1e-5);
 
-    EXPECT_NEAR(bezier_curve->Pole(3).X().getValue(), (first_point_end_curve.X() + first_derivative_end_curve_at_first_parameter.X()).getValue(), 1e-5);
-    EXPECT_NEAR(bezier_curve->Pole(3).Y().getValue(), (first_point_end_curve.Y() + first_derivative_end_curve_at_first_parameter.Y()).getValue(), 1e-5);
-    EXPECT_NEAR(bezier_curve->Pole(3).Z().getValue(), (first_point_end_curve.Z() + first_derivative_end_curve_at_first_parameter.Z()).getValue(), 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->Pole(3).X()), getPrimal(first_point_end_curve.X() + first_derivative_end_curve_at_first_parameter.X()), 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->Pole(3).Y()), getPrimal(first_point_end_curve.Y() + first_derivative_end_curve_at_first_parameter.Y()), 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->Pole(3).Z()), getPrimal(first_point_end_curve.Z() + first_derivative_end_curve_at_first_parameter.Z()), 1e-5);
 }
 
 TEST_F(CurvesToBlend, blend_curve_test_13)
@@ -778,33 +779,33 @@ TEST_F(CurvesToBlend, blend_curve_test_13)
 
     EXPECT_EQ(bezier_curve->NbPoles(), 6);
 
-    EXPECT_NEAR(bezier_curve->StartPoint().X().getValue(), 2., 1e-5);
-    EXPECT_NEAR(bezier_curve->StartPoint().Y().getValue(), 2., 1e-5);
-    EXPECT_NEAR(bezier_curve->StartPoint().Z().getValue(), 0., 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->StartPoint().X()), 2., 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->StartPoint().Y()), 2., 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->StartPoint().Z()), 0., 1e-5);
 
-    EXPECT_NEAR(bezier_curve->EndPoint().X().getValue(), 4., 1e-5);
-    EXPECT_NEAR(bezier_curve->EndPoint().Y().getValue(), 4., 1e-5);
-    EXPECT_NEAR(bezier_curve->EndPoint().Z().getValue(), 0., 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->EndPoint().X()), 4., 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->EndPoint().Y()), 4., 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->EndPoint().Z()), 0., 1e-5);
 
-    EXPECT_NEAR(bezier_curve->Pole(2).X().getValue(), (last_point_start_curve.X() - first_derivative_start_curve_at_last_parameter.X()).getValue(), 1e-5);
-    EXPECT_NEAR(bezier_curve->Pole(2).Y().getValue(), (last_point_start_curve.Y() - first_derivative_start_curve_at_last_parameter.Y()).getValue(), 1e-5);
-    EXPECT_NEAR(bezier_curve->Pole(2).Z().getValue(), (last_point_start_curve.Z() - first_derivative_start_curve_at_last_parameter.Z()).getValue(), 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->Pole(2).X()), getPrimal(last_point_start_curve.X() - first_derivative_start_curve_at_last_parameter.X()), 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->Pole(2).Y()), getPrimal(last_point_start_curve.Y() - first_derivative_start_curve_at_last_parameter.Y()), 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->Pole(2).Z()), getPrimal(last_point_start_curve.Z() - first_derivative_start_curve_at_last_parameter.Z()), 1e-5);
 
     gp_Vec d_vec_curve_start = displacement_of_third_control_point(bezier_curve->Degree(), 1., 1., first_derivative_start_curve_at_last_parameter, second_derivative_start_curve_at_last_parameter);
 
-    EXPECT_NEAR(bezier_curve->Pole(3).X().getValue(), (last_point_start_curve.X() - 2 * first_derivative_start_curve_at_last_parameter.X() + d_vec_curve_start.X()).getValue(), 1e-5);
-    EXPECT_NEAR(bezier_curve->Pole(3).Y().getValue(), (last_point_start_curve.Y() - 2 * first_derivative_start_curve_at_last_parameter.Y() + d_vec_curve_start.Y()).getValue(), 1e-5);
-    EXPECT_NEAR(bezier_curve->Pole(3).Z().getValue(), (last_point_start_curve.Z() - 2 * first_derivative_start_curve_at_last_parameter.Z() + d_vec_curve_start.Z()).getValue(), 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->Pole(3).X()), getPrimal(last_point_start_curve.X() - 2 * first_derivative_start_curve_at_last_parameter.X() + d_vec_curve_start.X()), 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->Pole(3).Y()), getPrimal(last_point_start_curve.Y() - 2 * first_derivative_start_curve_at_last_parameter.Y() + d_vec_curve_start.Y()), 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->Pole(3).Z()), getPrimal(last_point_start_curve.Z() - 2 * first_derivative_start_curve_at_last_parameter.Z() + d_vec_curve_start.Z()), 1e-5);
 
     gp_Vec d_vec_curve_end = displacement_of_third_control_point(bezier_curve->Degree(), 1., 1., first_derivative_end_curve_at_first_parameter, second_derivative_end_curve_at_first_parameter);
 
-    EXPECT_NEAR(bezier_curve->Pole(4).X().getValue(), (first_point_end_curve.X() + 2 * first_derivative_end_curve_at_first_parameter.X() + d_vec_curve_end.X()).getValue(), 1e-5);
-    EXPECT_NEAR(bezier_curve->Pole(4).Y().getValue(), (first_point_end_curve.Y() + 2 * first_derivative_end_curve_at_first_parameter.Y() + d_vec_curve_end.Y()).getValue(), 1e-5);
-    EXPECT_NEAR(bezier_curve->Pole(4).Z().getValue(), (first_point_end_curve.Z() + 2 * first_derivative_end_curve_at_first_parameter.Z() + d_vec_curve_end.Z()).getValue(), 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->Pole(4).X()), getPrimal(first_point_end_curve.X() + 2 * first_derivative_end_curve_at_first_parameter.X() + d_vec_curve_end.X()), 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->Pole(4).Y()), getPrimal(first_point_end_curve.Y() + 2 * first_derivative_end_curve_at_first_parameter.Y() + d_vec_curve_end.Y()), 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->Pole(4).Z()), getPrimal(first_point_end_curve.Z() + 2 * first_derivative_end_curve_at_first_parameter.Z() + d_vec_curve_end.Z()), 1e-5);
 
-    EXPECT_NEAR(bezier_curve->Pole(5).X().getValue(), (first_point_end_curve.X() + first_derivative_end_curve_at_first_parameter.X()).getValue(), 1e-5);
-    EXPECT_NEAR(bezier_curve->Pole(5).Y().getValue(), (first_point_end_curve.Y() + first_derivative_end_curve_at_first_parameter.Y()).getValue(), 1e-5);
-    EXPECT_NEAR(bezier_curve->Pole(5).Z().getValue(), (first_point_end_curve.Z() + first_derivative_end_curve_at_first_parameter.Z()).getValue(), 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->Pole(5).X()), getPrimal(first_point_end_curve.X() + first_derivative_end_curve_at_first_parameter.X()), 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->Pole(5).Y()), getPrimal(first_point_end_curve.Y() + first_derivative_end_curve_at_first_parameter.Y()), 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->Pole(5).Z()), getPrimal(first_point_end_curve.Z() + first_derivative_end_curve_at_first_parameter.Z()), 1e-5);
 }
 
 TEST_F(CurvesToBlend, blend_curve_test_14)
@@ -820,17 +821,17 @@ TEST_F(CurvesToBlend, blend_curve_test_14)
 
     EXPECT_EQ(bezier_curve->NbPoles(), 3);
 
-    EXPECT_NEAR(bezier_curve->StartPoint().X().getValue(), 2., 1e-5);
-    EXPECT_NEAR(bezier_curve->StartPoint().Y().getValue(), 2., 1e-5);
-    EXPECT_NEAR(bezier_curve->StartPoint().Z().getValue(), 0., 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->StartPoint().X()), 2., 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->StartPoint().Y()), 2., 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->StartPoint().Z()), 0., 1e-5);
 
-    EXPECT_NEAR(bezier_curve->EndPoint().X().getValue(), 4., 1e-5);
-    EXPECT_NEAR(bezier_curve->EndPoint().Y().getValue(), 4., 1e-5);
-    EXPECT_NEAR(bezier_curve->EndPoint().Z().getValue(), 0., 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->EndPoint().X()), 4., 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->EndPoint().Y()), 4., 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->EndPoint().Z()), 0., 1e-5);
 
-    EXPECT_NEAR(bezier_curve->Pole(2).X().getValue(), (last_point_start_curve.X() + 0.5 * first_derivative_start_curve_at_last_parameter.X()).getValue(), 1e-5);
-    EXPECT_NEAR(bezier_curve->Pole(2).Y().getValue(), (last_point_start_curve.Y() + 0.5 * first_derivative_start_curve_at_last_parameter.Y()).getValue(), 1e-5);
-    EXPECT_NEAR(bezier_curve->Pole(2).Z().getValue(), (last_point_start_curve.Z() + 0.5 * first_derivative_start_curve_at_last_parameter.Z()).getValue(), 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->Pole(2).X()), getPrimal(last_point_start_curve.X() + 0.5 * first_derivative_start_curve_at_last_parameter.X()), 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->Pole(2).Y()), getPrimal(last_point_start_curve.Y() + 0.5 * first_derivative_start_curve_at_last_parameter.Y()), 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->Pole(2).Z()), getPrimal(last_point_start_curve.Z() + 0.5 * first_derivative_start_curve_at_last_parameter.Z()), 1e-5);
 }
 
 TEST_F(CurvesToBlend, blend_curve_test_15)
@@ -846,17 +847,17 @@ TEST_F(CurvesToBlend, blend_curve_test_15)
 
     EXPECT_EQ(bezier_curve->NbPoles(), 3);
 
-    EXPECT_NEAR(bezier_curve->StartPoint().X().getValue(), 2., 1e-5);
-    EXPECT_NEAR(bezier_curve->StartPoint().Y().getValue(), 2., 1e-5);
-    EXPECT_NEAR(bezier_curve->StartPoint().Z().getValue(), 0., 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->StartPoint().X()), 2., 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->StartPoint().Y()), 2., 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->StartPoint().Z()), 0., 1e-5);
 
-    EXPECT_NEAR(bezier_curve->EndPoint().X().getValue(), 4., 1e-5);
-    EXPECT_NEAR(bezier_curve->EndPoint().Y().getValue(), 4., 1e-5);
-    EXPECT_NEAR(bezier_curve->EndPoint().Z().getValue(), 0., 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->EndPoint().X()), 4., 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->EndPoint().Y()), 4., 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->EndPoint().Z()), 0., 1e-5);
 
-    EXPECT_NEAR(bezier_curve->Pole(2).X().getValue(), (first_point_end_curve.X() - 0.5 * first_derivative_end_curve_at_first_parameter.X()).getValue(), 1e-5);
-    EXPECT_NEAR(bezier_curve->Pole(2).Y().getValue(), (first_point_end_curve.Y() - 0.5 * first_derivative_end_curve_at_first_parameter.Y()).getValue(), 1e-5);
-    EXPECT_NEAR(bezier_curve->Pole(2).Z().getValue(), (first_point_end_curve.Z() - 0.5 * first_derivative_end_curve_at_first_parameter.Z()).getValue(), 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->Pole(2).X()), getPrimal(first_point_end_curve.X() - 0.5 * first_derivative_end_curve_at_first_parameter.X()), 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->Pole(2).Y()), getPrimal(first_point_end_curve.Y() - 0.5 * first_derivative_end_curve_at_first_parameter.Y()), 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->Pole(2).Z()), getPrimal(first_point_end_curve.Z() - 0.5 * first_derivative_end_curve_at_first_parameter.Z()), 1e-5);
 }
 
 TEST_F(CurvesToBlend, blend_curve_test_16)
@@ -872,23 +873,23 @@ TEST_F(CurvesToBlend, blend_curve_test_16)
 
     EXPECT_EQ(bezier_curve->NbPoles(), 4);
 
-    EXPECT_NEAR(bezier_curve->StartPoint().X().getValue(), 2., 1e-5);
-    EXPECT_NEAR(bezier_curve->StartPoint().Y().getValue(), 2., 1e-5);
-    EXPECT_NEAR(bezier_curve->StartPoint().Z().getValue(), 0., 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->StartPoint().X()), 2., 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->StartPoint().Y()), 2., 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->StartPoint().Z()), 0., 1e-5);
 
-    EXPECT_NEAR(bezier_curve->EndPoint().X().getValue(), 4., 1e-5);
-    EXPECT_NEAR(bezier_curve->EndPoint().Y().getValue(), 4., 1e-5);
-    EXPECT_NEAR(bezier_curve->EndPoint().Z().getValue(), 0., 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->EndPoint().X()), 4., 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->EndPoint().Y()), 4., 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->EndPoint().Z()), 0., 1e-5);
 
-    EXPECT_NEAR(bezier_curve->Pole(2).X().getValue(), (last_point_start_curve.X() + 0.5 * first_derivative_start_curve_at_last_parameter.X()).getValue(), 1e-5);
-    EXPECT_NEAR(bezier_curve->Pole(2).Y().getValue(), (last_point_start_curve.Y() + 0.5 * first_derivative_start_curve_at_last_parameter.Y()).getValue(), 1e-5);
-    EXPECT_NEAR(bezier_curve->Pole(2).Z().getValue(), (last_point_start_curve.Z() + 0.5 * first_derivative_start_curve_at_last_parameter.Z()).getValue(), 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->Pole(2).X()), getPrimal(last_point_start_curve.X() + 0.5 * first_derivative_start_curve_at_last_parameter.X()), 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->Pole(2).Y()), getPrimal(last_point_start_curve.Y() + 0.5 * first_derivative_start_curve_at_last_parameter.Y()), 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->Pole(2).Z()), getPrimal(last_point_start_curve.Z() + 0.5 * first_derivative_start_curve_at_last_parameter.Z()), 1e-5);
 
     gp_Vec d_vec_curve_end = displacement_of_third_control_point(bezier_curve->Degree(), 0.5, 2., first_derivative_start_curve_at_last_parameter, second_derivative_start_curve_at_last_parameter);
 
-    EXPECT_NEAR(bezier_curve->Pole(3).X().getValue(), (last_point_start_curve.X() + 2 * 0.5 * 2 * first_derivative_start_curve_at_last_parameter.X() + d_vec_curve_end.X()).getValue(), 1e-5);
-    EXPECT_NEAR(bezier_curve->Pole(3).Y().getValue(), (last_point_start_curve.Y() + 2 * 0.5 * 2 * first_derivative_start_curve_at_last_parameter.Y() + d_vec_curve_end.Y()).getValue(), 1e-5);
-    EXPECT_NEAR(bezier_curve->Pole(3).Z().getValue(), (last_point_start_curve.Z() + 2 * 0.5 * 2 * first_derivative_start_curve_at_last_parameter.Z() + d_vec_curve_end.Z()).getValue(), 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->Pole(3).X()), getPrimal(last_point_start_curve.X() + 2 * 0.5 * 2 * first_derivative_start_curve_at_last_parameter.X() + d_vec_curve_end.X()), 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->Pole(3).Y()), getPrimal(last_point_start_curve.Y() + 2 * 0.5 * 2 * first_derivative_start_curve_at_last_parameter.Y() + d_vec_curve_end.Y()), 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->Pole(3).Z()), getPrimal(last_point_start_curve.Z() + 2 * 0.5 * 2 * first_derivative_start_curve_at_last_parameter.Z() + d_vec_curve_end.Z()), 1e-5);
 }
 
 TEST_F(CurvesToBlend, blend_curve_test_17)
@@ -904,23 +905,23 @@ TEST_F(CurvesToBlend, blend_curve_test_17)
 
     EXPECT_EQ(bezier_curve->NbPoles(), 4);
 
-    EXPECT_NEAR(bezier_curve->StartPoint().X().getValue(), 2., 1e-5);
-    EXPECT_NEAR(bezier_curve->StartPoint().Y().getValue(), 2., 1e-5);
-    EXPECT_NEAR(bezier_curve->StartPoint().Z().getValue(), 0., 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->StartPoint().X()), 2., 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->StartPoint().Y()), 2., 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->StartPoint().Z()), 0., 1e-5);
 
-    EXPECT_NEAR(bezier_curve->EndPoint().X().getValue(), 4., 1e-5);
-    EXPECT_NEAR(bezier_curve->EndPoint().Y().getValue(), 4., 1e-5);
-    EXPECT_NEAR(bezier_curve->EndPoint().Z().getValue(), 0., 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->EndPoint().X()), 4., 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->EndPoint().Y()), 4., 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->EndPoint().Z()), 0., 1e-5);
 
     gp_Vec d_vec_curve_end = displacement_of_third_control_point(bezier_curve->Degree(), 0.5, 2., first_derivative_end_curve_at_first_parameter, second_derivative_end_curve_at_first_parameter);
 
-    EXPECT_NEAR(bezier_curve->Pole(2).X().getValue(), (first_point_end_curve.X() - 2 * 0.5 * 2 * first_derivative_end_curve_at_first_parameter.X() + d_vec_curve_end.X()).getValue(), 1e-5);
-    EXPECT_NEAR(bezier_curve->Pole(2).Y().getValue(), (first_point_end_curve.Y() - 2 * 0.5 * 2 * first_derivative_end_curve_at_first_parameter.Y() + d_vec_curve_end.Y()).getValue(), 1e-5);
-    EXPECT_NEAR(bezier_curve->Pole(2).Z().getValue(), (first_point_end_curve.Z() - 2 * 0.5 * 2 * first_derivative_end_curve_at_first_parameter.Z() + d_vec_curve_end.Z()).getValue(), 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->Pole(2).X()), getPrimal(first_point_end_curve.X() - 2 * 0.5 * 2 * first_derivative_end_curve_at_first_parameter.X() + d_vec_curve_end.X()), 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->Pole(2).Y()), getPrimal(first_point_end_curve.Y() - 2 * 0.5 * 2 * first_derivative_end_curve_at_first_parameter.Y() + d_vec_curve_end.Y()), 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->Pole(2).Z()), getPrimal(first_point_end_curve.Z() - 2 * 0.5 * 2 * first_derivative_end_curve_at_first_parameter.Z() + d_vec_curve_end.Z()), 1e-5);
 
-    EXPECT_NEAR(bezier_curve->Pole(3).X().getValue(), (first_point_end_curve.X() - 0.5 * first_derivative_end_curve_at_first_parameter.X()).getValue(), 1e-5);
-    EXPECT_NEAR(bezier_curve->Pole(3).Y().getValue(), (first_point_end_curve.Y() - 0.5 * first_derivative_end_curve_at_first_parameter.Y()).getValue(), 1e-5);
-    EXPECT_NEAR(bezier_curve->Pole(3).Z().getValue(), (first_point_end_curve.Z() - 0.5 * first_derivative_end_curve_at_first_parameter.Z()).getValue(), 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->Pole(3).X()), getPrimal(first_point_end_curve.X() - 0.5 * first_derivative_end_curve_at_first_parameter.X()), 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->Pole(3).Y()), getPrimal(first_point_end_curve.Y() - 0.5 * first_derivative_end_curve_at_first_parameter.Y()), 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->Pole(3).Z()), getPrimal(first_point_end_curve.Z() - 0.5 * first_derivative_end_curve_at_first_parameter.Z()), 1e-5);
 }
 
 TEST_F(CurvesToBlend, blend_curve_test_18)
@@ -936,32 +937,32 @@ TEST_F(CurvesToBlend, blend_curve_test_18)
 
     EXPECT_EQ(bezier_curve->NbPoles(), 6);
 
-    EXPECT_NEAR(bezier_curve->StartPoint().X().getValue(), 2., 1e-5);
-    EXPECT_NEAR(bezier_curve->StartPoint().Y().getValue(), 2., 1e-5);
-    EXPECT_NEAR(bezier_curve->StartPoint().Z().getValue(), 0., 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->StartPoint().X()), 2., 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->StartPoint().Y()), 2., 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->StartPoint().Z()), 0., 1e-5);
 
-    EXPECT_NEAR(bezier_curve->EndPoint().X().getValue(), 4., 1e-5);
-    EXPECT_NEAR(bezier_curve->EndPoint().Y().getValue(), 4., 1e-5);
-    EXPECT_NEAR(bezier_curve->EndPoint().Z().getValue(), 0., 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->EndPoint().X()), 4., 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->EndPoint().Y()), 4., 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->EndPoint().Z()), 0., 1e-5);
 
-    EXPECT_NEAR(bezier_curve->Pole(2).X().getValue(), (last_point_start_curve.X() + 0.25 * first_derivative_start_curve_at_last_parameter.X()).getValue(), 1e-5);
-    EXPECT_NEAR(bezier_curve->Pole(2).Y().getValue(), (last_point_start_curve.Y() + 0.25 * first_derivative_start_curve_at_last_parameter.Y()).getValue(), 1e-5);
-    EXPECT_NEAR(bezier_curve->Pole(2).Z().getValue(), (last_point_start_curve.Z() + 0.25 * first_derivative_start_curve_at_last_parameter.Z()).getValue(), 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->Pole(2).X()), getPrimal(last_point_start_curve.X() + 0.25 * first_derivative_start_curve_at_last_parameter.X()), 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->Pole(2).Y()), getPrimal(last_point_start_curve.Y() + 0.25 * first_derivative_start_curve_at_last_parameter.Y()), 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->Pole(2).Z()), getPrimal(last_point_start_curve.Z() + 0.25 * first_derivative_start_curve_at_last_parameter.Z()), 1e-5);
 
     gp_Vec d_vec_curve_start = displacement_of_third_control_point(bezier_curve->Degree(), 0.25, 1., first_derivative_start_curve_at_last_parameter, second_derivative_start_curve_at_last_parameter);
 
-    EXPECT_NEAR(bezier_curve->Pole(3).X().getValue(), (last_point_start_curve.X() + 0.25 * 2 * first_derivative_start_curve_at_last_parameter.X() + d_vec_curve_start.X()).getValue(), 1e-5);
-    EXPECT_NEAR(bezier_curve->Pole(3).Y().getValue(), (last_point_start_curve.Y() + 0.25 * 2 * first_derivative_start_curve_at_last_parameter.Y() + d_vec_curve_start.Y()).getValue(), 1e-5);
-    EXPECT_NEAR(bezier_curve->Pole(3).Z().getValue(), (last_point_start_curve.Z() + 0.25 * 2 * first_derivative_start_curve_at_last_parameter.Z() + d_vec_curve_start.Z()).getValue(), 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->Pole(3).X()), getPrimal(last_point_start_curve.X() + 0.25 * 2 * first_derivative_start_curve_at_last_parameter.X() + d_vec_curve_start.X()), 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->Pole(3).Y()), getPrimal(last_point_start_curve.Y() + 0.25 * 2 * first_derivative_start_curve_at_last_parameter.Y() + d_vec_curve_start.Y()), 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->Pole(3).Z()), getPrimal(last_point_start_curve.Z() + 0.25 * 2 * first_derivative_start_curve_at_last_parameter.Z() + d_vec_curve_start.Z()), 1e-5);
 
     gp_Vec d_vec_curve_end = displacement_of_third_control_point(bezier_curve->Degree(), 1., 2., first_derivative_end_curve_at_first_parameter, second_derivative_end_curve_at_first_parameter);
 
-    EXPECT_NEAR(bezier_curve->Pole(4).X().getValue(), (first_point_end_curve.X() - 2 * 2 * first_derivative_end_curve_at_first_parameter.X() + d_vec_curve_end.X()).getValue(), 1e-5);
-    EXPECT_NEAR(bezier_curve->Pole(4).Y().getValue(), (first_point_end_curve.Y() - 2 * 2 * first_derivative_end_curve_at_first_parameter.Y() + d_vec_curve_end.Y()).getValue(), 1e-5);
-    EXPECT_NEAR(bezier_curve->Pole(4).Z().getValue(), (first_point_end_curve.Z() - 2 * 2 * first_derivative_end_curve_at_first_parameter.Z() + d_vec_curve_end.Z()).getValue(), 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->Pole(4).X()), getPrimal(first_point_end_curve.X() - 2 * 2 * first_derivative_end_curve_at_first_parameter.X() + d_vec_curve_end.X()), 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->Pole(4).Y()), getPrimal(first_point_end_curve.Y() - 2 * 2 * first_derivative_end_curve_at_first_parameter.Y() + d_vec_curve_end.Y()), 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->Pole(4).Z()), getPrimal(first_point_end_curve.Z() - 2 * 2 * first_derivative_end_curve_at_first_parameter.Z() + d_vec_curve_end.Z()), 1e-5);
    
-    EXPECT_NEAR(bezier_curve->Pole(5).X().getValue(), (first_point_end_curve.X() - first_derivative_end_curve_at_first_parameter.X()).getValue(), 1e-5);
-    EXPECT_NEAR(bezier_curve->Pole(5).Y().getValue(), (first_point_end_curve.Y() - first_derivative_end_curve_at_first_parameter.Y()).getValue(), 1e-5);
-    EXPECT_NEAR(bezier_curve->Pole(5).Z().getValue(), (first_point_end_curve.Z() - first_derivative_end_curve_at_first_parameter.Z()).getValue(), 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->Pole(5).X()), getPrimal(first_point_end_curve.X() - first_derivative_end_curve_at_first_parameter.X()), 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->Pole(5).Y()), getPrimal(first_point_end_curve.Y() - first_derivative_end_curve_at_first_parameter.Y()), 1e-5);
+    EXPECT_NEAR(getPrimal(bezier_curve->Pole(5).Z()), getPrimal(first_point_end_curve.Z() - first_derivative_end_curve_at_first_parameter.Z()), 1e-5);
 }
 

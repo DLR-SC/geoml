@@ -41,6 +41,7 @@
 #include "PNamedShape.h"
 #include "ProjectPointOnCurveAtAngle.h"
 #include "BSplineAlgorithms.h"
+#include "common/ad_utility_function.h"
 
 #include "Standard_Version.hxx"
 
@@ -1871,7 +1872,7 @@ Standard_Real Mix(Standard_Real x, Standard_Real y, Standard_Real a)
 
 Standard_Real NormalizeAngleDeg(Standard_Real angleDeg)
 {
-    angleDeg = fmod(angleDeg.getValue(), 360.);
+    angleDeg = fmod(getPrimal(angleDeg), 360.);
     if (angleDeg < 0.)
         angleDeg += 360.;
 
