@@ -1686,8 +1686,8 @@ TEST_F(TestConcatSurfaces, concatUDir)
     EXPECT_NEAR(0.0, getPrimal(v1), 1e-15);
     EXPECT_NEAR(1.0, getPrimal(v2), 1e-15);
 
-    EXPECT_NEAR(0.0, s1->Value(0.5, 0.5).Distance(getPrimal(result->Value(0.5, 0.5))), 1e-10);
-    EXPECT_NEAR(0.0, s2->Value(1.3, 0.3).Distance(getPrimal(result->Value(1.3, 0.3))), 1e-10);
+    EXPECT_NEAR(0.0, getPrimal(s1->Value(0.5, 0.5).Distance(result->Value(0.5, 0.5))), 1e-10);
+    EXPECT_NEAR(0.0, getPrimal(s2->Value(1.3, 0.3).Distance(result->Value(1.3, 0.3))), 1e-10);
 
     BRepTools::Write(BRepBuilderAPI_MakeFace(result, 1e-6).Face(), "TestData/concat_faces.brep");
 
@@ -1735,8 +1735,8 @@ TEST_F(TestConcatSurfaces, concatWithParams)
     EXPECT_NEAR(0.0, getPrimal(v1), 1e-15);
     EXPECT_NEAR(1.0, getPrimal(v2), 1e-15);
 
-    EXPECT_NEAR(0.0, s1->Value(0.5, 0.5).Distance(getPrimal(result->Value(1.0, 0.5))), 1e-10);
-    EXPECT_NEAR(0.0, s2->Value(1.3, 0.3).Distance(getPrimal(result->Value(2.6, 0.3))), 1e-10);
+    EXPECT_NEAR(0.0, getPrimal(s1->Value(0.5, 0.5).Distance(result->Value(1.0, 0.5))), 1e-10);
+    EXPECT_NEAR(0.0, getPrimal(s2->Value(1.3, 0.3).Distance(result->Value(2.6, 0.3))), 1e-10);
 }
 
 TEST_F(TestConcatSurfaces, concatWithParamsApprox)
@@ -1754,8 +1754,8 @@ TEST_F(TestConcatSurfaces, concatWithParamsApprox)
     EXPECT_NEAR(0.0, getPrimal(v1), 1e-15);
     EXPECT_NEAR(1.0, getPrimal(v2), 1e-15);
 
-    EXPECT_NEAR(0.0, s1->Value(0.5, 0.5).Distance(getPrimal(result->Value(1.0, 0.5))), 1e-10);
-    EXPECT_NEAR(0.0, s2->Value(1.3, 0.3).Distance(getPrimal(result->Value(2.6, 0.3))), 1e-10);
+    EXPECT_NEAR(0.0, getPrimal(s1->Value(0.5, 0.5).Distance(result->Value(1.0, 0.5))), 1e-10);
+    EXPECT_NEAR(0.0, getPrimal(s2->Value(1.3, 0.3).Distance(result->Value(2.6, 0.3))), 1e-10);
 }
 
 TEST_F(TestConcatSurfaces, concatToFewParams)

@@ -51,7 +51,7 @@ TEST_F(TestLinearProjection, OnFirstSegment)
     geoml::ProjectOnLinearSpline proj(curve, gp_Pnt(1, 0, 0));
     ASSERT_TRUE(proj.IsDone());
     ASSERT_NEAR(0.25, getPrimal(proj.Parameter()), 1e-10);
-    ASSERT_NEAR(0.0, gp_Pnt(1,0,0).Distance(getPrimal(proj.Point())), 1e-10);
+    ASSERT_NEAR(0.0, getPrimal(gp_Pnt(1,0,0).Distance(proj.Point())), 1e-10);
 }
 
 TEST_F(TestLinearProjection, OnSecondSegment)
@@ -59,7 +59,7 @@ TEST_F(TestLinearProjection, OnSecondSegment)
     geoml::ProjectOnLinearSpline proj(curve, gp_Pnt(2, 0.5, 0));
     ASSERT_TRUE(proj.IsDone());
     ASSERT_NEAR(0.625, getPrimal(proj.Parameter()), 1e-10);
-    ASSERT_NEAR(0.0, gp_Pnt(2,0.5,0).Distance(getPrimal(proj.Point())), 1e-10);
+    ASSERT_NEAR(0.0, getPrimal(gp_Pnt(2,0.5,0).Distance(proj.Point())), 1e-10);
 }
 
 TEST_F(TestLinearProjection, OnLastPoint)
@@ -67,7 +67,7 @@ TEST_F(TestLinearProjection, OnLastPoint)
     geoml::ProjectOnLinearSpline proj(curve, gp_Pnt(1, 1, 0));
     ASSERT_TRUE(proj.IsDone());
     ASSERT_NEAR(1.0, getPrimal(proj.Parameter()), 1e-10);
-    ASSERT_NEAR(0.0, gp_Pnt(1,1,0).Distance(getPrimal(proj.Point())), 1e-10);
+    ASSERT_NEAR(0.0, getPrimal(gp_Pnt(1,1,0).Distance(proj.Point())), 1e-10);
 }
 
 TEST_F(TestLinearProjection, InBetween)
@@ -75,7 +75,7 @@ TEST_F(TestLinearProjection, InBetween)
     geoml::ProjectOnLinearSpline proj(curve, gp_Pnt(1, 0.5, 0));
     ASSERT_TRUE(proj.IsDone());
     ASSERT_NEAR(0.25, getPrimal(proj.Parameter()), 1e-10);
-    ASSERT_NEAR(0.0, gp_Pnt(1,0,0).Distance(getPrimal(proj.Point())), 1e-10);
+    ASSERT_NEAR(0.0, getPrimal(gp_Pnt(1,0,0).Distance(proj.Point())), 1e-10);
 }
 
 TEST_F(TestLinearProjection, InBetween2)
@@ -83,7 +83,7 @@ TEST_F(TestLinearProjection, InBetween2)
     geoml::ProjectOnLinearSpline proj(curve, gp_Pnt(1, 0.6, 0));
     ASSERT_TRUE(proj.IsDone());
     ASSERT_NEAR(1.0, getPrimal(proj.Parameter()), 1e-10);
-    ASSERT_NEAR(0.0, gp_Pnt(1,1,0).Distance(getPrimal(proj.Point())), 1e-10);
+    ASSERT_NEAR(0.0, getPrimal(gp_Pnt(1,1,0).Distance(proj.Point())), 1e-10);
 }
 
 TEST_F(TestLinearProjection, OutSide)

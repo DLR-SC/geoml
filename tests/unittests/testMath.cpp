@@ -305,9 +305,9 @@ TEST(Math, DistancePointFromLine)
     geoml::Point x0(0., 0., 0.);
     geoml::Point dx(1., 1., 0.);
     
-    ASSERT_NEAR(0., geoml::distance_point_from_line(getPrimal(geoml::Point(0., 0., 0.), x0, dx)), 1e-10);
-    ASSERT_NEAR(0., geoml::distance_point_from_line(getPrimal(geoml::Point(3., 3., 0.), x0, dx)), 1e-10);
-    ASSERT_NEAR(sqrt(0.5), geoml::distance_point_from_line(getPrimal(geoml::Point(1., 0., 0.), x0, dx)), 1e-10);
+    ASSERT_NEAR(0., getPrimal(geoml::distance_point_from_line(geoml::Point(0., 0., 0.), x0, dx)), 1e-10);
+    ASSERT_NEAR(0., getPrimal(geoml::distance_point_from_line(geoml::Point(3., 3., 0.), x0, dx)), 1e-10);
+    ASSERT_NEAR(sqrt(0.5), getPrimal(geoml::distance_point_from_line(geoml::Point(1., 0., 0.), x0, dx)), 1e-10);
 }
 
 TEST(Math, Transformation_Multiply)
