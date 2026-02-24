@@ -5,3 +5,7 @@ The **Geo**metry **M**odeling **L**ibrary is a stripped down version of the [TiG
 
 It adds a new API on  top of the TiGL functions in the namespace `geoml`.
 
+One builds the algorithmically differentiated version with
+
+    /build cmake -DGEOML_USE_ADOLC
+    /build make
