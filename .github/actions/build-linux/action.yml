@@ -98,10 +98,10 @@ runs:
         pip install sphinx breathe sphinx-rtd-theme myst-parser
         sudo apt install doxygen
     - name: build doxygen
-      #shell: bash # added
+      shell: bash # added
       run: cd docs && doxygen
     - name: build sphinx
-      #shell: bash # added
+      shell: bash # added
       run: cd docs && sphinx-build -b html . _build/
     - name: create docs archive
       shell: bash
