@@ -33,7 +33,7 @@ jobs:
         uses: actions/checkout@v4
       - name: Install dependencies
         run: |
-          pip install sphinx breathe sphinx-rtd-theme
+          pip install sphinx breathe sphinx-rtd-theme m2r
           sudo apt install doxygen
       - name: build doxygen
         run: cd docs && doxygen

@@ -95,7 +95,7 @@ runs:
     - name: Install dependencies
       shell: bash # added
       run: |
-        pip install sphinx breathe sphinx-rtd-theme
+        pip install sphinx breathe sphinx-rtd-theme m2r
         sudo apt install doxygen
     - name: build doxygen
       shell: bash # added
