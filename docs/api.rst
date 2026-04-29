@@ -24,5 +24,5 @@ Surface Modeling
 
 Lorem ipsum
 
-.. doxygenfile:: geoml/surface/modeling.h
+.. doxygenfile:: geoml/surfaces/surfaces.h
 
