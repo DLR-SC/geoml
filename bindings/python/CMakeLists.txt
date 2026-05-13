@@ -1,6 +1,6 @@
 # To build this project, call pip install .
 
-cmake_minimum_required(VERSION 3.4)
+cmake_minimum_required(VERSION 3.5)
 project(geoml-python VERSION 0.1)
 
 set(CMAKE_INSTALL_RPATH $ORIGIN)

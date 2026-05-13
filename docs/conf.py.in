@@ -74,3 +74,9 @@ breathe_default_project = "geoml"
 
 #source_parsers = {".md": "M2RParser"}
 source_suffix = [".rst", ".md"]
+
+# Wrap long C++ signatures automatically
+cpp_maximum_signature_line_length = 60
+
+html_static_path = ['_static']
+html_css_files = ['custom.css']
