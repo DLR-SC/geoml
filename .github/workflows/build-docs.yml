@@ -61,15 +61,18 @@ jobs:
           retention-days: 5
 
       - name: Setup Pages
+        if: github.ref_name == 'main'
         uses: actions/configure-pages@v4
 
       - name: Upload to GitHub Pages
+        if: github.ref_name == 'main'
         uses: actions/upload-pages-artifact@v3
         with:
           path: build/docs/html/
 
   deploy:
     name: Deploy to GitHub Pages
+    if: github.ref_name == 'main'
     needs: build
     runs-on: ubuntu-latest
     environment:
