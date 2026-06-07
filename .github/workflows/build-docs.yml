@@ -1,0 +1,86 @@
+name: Build and Deploy Documentation
+
+on:
+  push:
+    branches:
+      - main
+      - master
+      - develop
+      - documentation_branch_agent
+    paths:
+      - 'docs/**'
+      - 'src/geoml/**'
+      - '.github/workflows/build-docs.yml'
+      - 'pyproject.toml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  build:
+    name: Build Documentation
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up pixi
+        uses: prefix-dev/setup-pixi@v0.8.1
+        with:
+          pixi-version: latest
+          cache: true
+          auth-token: ${{ secrets.PIXI_AUTH_TOKEN }}
+
+      - name: Install dependencies via pixi
+        run: pixi install
+
+      - name: Create build directory
+        run: mkdir -p build
+
+      - name: Configure CMake with Docs
+        run: |
+          cd build
+          pixi run cmake -DGEOML_BUILD_DOCS=ON ..
+
+      - name: Build Sphinx documentation
+        run: |
+          cd build
+          pixi run cmake --build . --target Sphinx -j 4
+
+      - name: Upload documentation artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: sphinx-docs
+          path: build/html/
+          retention-days: 5
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+
+      - name: Upload to GitHub Pages
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: build/html/
+
+  deploy:
+    name: Deploy to GitHub Pages
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

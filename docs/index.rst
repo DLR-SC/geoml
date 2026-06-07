@@ -22,4 +22,6 @@ Docs
    installation
    usage
    api
+   curves
+   surfaces
 

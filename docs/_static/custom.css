@@ -2,3 +2,14 @@ dl.cpp .sig {
     width: 100%;
     box-sizing: border-box;
 }
+
+/* Slightly narrower content for readability and styled example blocks */
+.wy-nav-content {
+    max-width: 1000px;
+}
+
+.highlight pre {
+    background: #f6f8fa;
+    padding: 0.8em;
+    border-radius: 6px;
+}
