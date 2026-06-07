@@ -34,12 +34,13 @@ The following dependencies are needed
 * A C++17 compatible compiler (GCC, Clang, MSVC)
 * OpenCASCADE 7.6 or higher
 
-Further dependencies can be found in the `pyproject.toml <add Url after it is in the main branch>`_ 
+Further dependencies can be found in the
+`pyproject.toml <https://github.com/DLR-SC/geoml/blob/main/pyproject.toml>`_.
 
 Building from Source
 --------------------
 
-* activate the conda environment ``geoml_env``(and install needed dependencies as mentioned above) and make sure a C++17 compatible compiler (GCC, Clang, MSVC) is provided
+* activate the conda environment ``geoml_env`` (and install needed dependencies as mentioned above) and make sure a C++17 compatible compiler (GCC, Clang, MSVC) is provided
 
 Clone the repository and build with CMake:
 

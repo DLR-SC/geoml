@@ -17,5 +17,11 @@ the `api-tests <https://github.com/DLR-SC/geoml/tree/main/tests/apitests/src>`_ 
 Python
 ------
 
-The usage of the Python bindings can be seen in 
-the `python-tests <https://github.com/DLR-SC/geoml/tree/main/tests/python>`_ .
+The Python bindings are exposed through ``geoml.pygeoml``. Most functions map
+directly to the C++ API, while ``geoml.occ_helpers.containers`` provides helper
+functions for converting Python lists to the vector-like container types used by
+the bindings.
+
+See :doc:`python_examples` for small runnable snippets. Additional usage of the
+Python bindings can be seen in the
+`python-tests <https://github.com/DLR-SC/geoml/tree/main/tests/python>`_.

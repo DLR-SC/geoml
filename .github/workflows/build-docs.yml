@@ -4,8 +4,6 @@ on:
   push:
     branches:
       - main
-      - master
-      - develop
       - documentation_branch_agent
     paths:
       - 'docs/**'
@@ -30,9 +28,7 @@ jobs:
     
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
+        uses: actions/checkout@v5
 
       - name: Set up pixi
         uses: prefix-dev/setup-pixi@v0.8.1
@@ -41,27 +37,29 @@ jobs:
           cache: true
           auth-token: ${{ secrets.PIXI_AUTH_TOKEN }}
 
-      - name: Install dependencies via pixi
+      - name: Install dependencies
         run: pixi install
 
-      - name: Create build directory
-        run: mkdir -p build
+      - name: Configure documentation build
+        run: >
+          pixi run cmake
+          -S .
+          -B build
+          -G Ninja
+          -DCMAKE_BUILD_TYPE=Release
+          -DGEOML_BUILD_DOCS=ON
+          -DGEOML_BUILD_PYTHON_BINDINGS=OFF
+          -DGEOML_BUILD_TESTS=OFF
+          -DGEOML_BUILD_EXAMPLES=OFF
 
-      - name: Configure CMake with Docs
-        run: |
-          cd build
-          pixi run cmake -DGEOML_BUILD_DOCS=ON ..
-
-      - name: Build Sphinx documentation
-        run: |
-          cd build
-          pixi run cmake --build . --target Sphinx -j 4
+      - name: Build documentation
+        run: pixi run cmake --build build --target Sphinx --parallel 4
 
       - name: Upload documentation artifact
         uses: actions/upload-artifact@v4
         with:
           name: sphinx-docs
-          path: build/html/
+          path: build/docs/html/
           retention-days: 5
 
       - name: Setup Pages
@@ -70,7 +68,7 @@ jobs:
       - name: Upload to GitHub Pages
         uses: actions/upload-pages-artifact@v3
         with:
-          path: build/html/
+          path: build/docs/html/
 
   deploy:
     name: Deploy to GitHub Pages

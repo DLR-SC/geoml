@@ -24,4 +24,6 @@ Docs
    api
    curves
    surfaces
+   python_examples
+   genindex
 

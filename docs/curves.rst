@@ -22,8 +22,20 @@ below.
    :language: cpp
    :caption: Interpolate points to a B-spline curve
 
+Blend curve example
+-------------------
+
+Blend curves connect two input edges with a requested geometric continuity at
+each end. The following example creates two interpolated curves, converts them
+to edges and builds a transition curve between them.
+
+.. literalinclude:: examples/blend_curve_example.cpp
+   :language: cpp
+   :caption: Create a blend curve between two edges
+
 More
 ----
 
 - **API reference:** :ref:`curves-api`
 - **Usage and examples:** :doc:`usage`
+- **Python examples:** :doc:`python_examples`
