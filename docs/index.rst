@@ -18,8 +18,8 @@ Docs
    :maxdepth: 2
    :caption: Contents:
 
+   overview
    installation
    usage
    api
 
-.. mdinclude:: ../README.md

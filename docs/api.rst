@@ -1,29 +1,27 @@
 .. _geoml-api:
 
-*************
+
 API Reference
-*************
+=============
 
-The parametric library API consists of the following parts:
+The geoml API consists of the following parts:
 
-* :ref:`surfacemodel-api`: the core API — everything required to build and compute graphs.
+* :ref:`curves-api`
+* :ref:`surfaces-api`
 
 All functions and types provided by the library reside in namespace ``geoml``.
 
-.. _basic-api:
+.. _curves-api:
 
-Basic API
-=========
+Curves 
+------
 
-.. doxygenfunction:: geoml::init
+.. doxygenfile:: geoml/curves/curves.h
+.. doxygenfile:: geoml/curves/BlendCurve.h
 
-.. doxygenclass:: geoml::Error
+.. _surfaces-api:
 
-.. _surfacemodel-api:
-
-Surface Modeling
-================
-
-Lorem ipsum
+Surfaces 
+--------
 
 .. doxygenfile:: geoml/surfaces/surfaces.h
