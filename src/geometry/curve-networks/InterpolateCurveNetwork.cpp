@@ -39,27 +39,10 @@ namespace geoml
 InterpolateCurveNetwork::InterpolateCurveNetwork(const std::vector<Handle (Geom_Curve)> &profiles,
                                                            const std::vector<Handle (Geom_Curve)> &guides,
                                                            double spatialTol)
-    : m_hasPerformed(false)
-    , m_spatialTol(spatialTol)
+    : InterpolateCurveNetwork(BSplineAlgorithms::toBSplines(profiles),
+                              BSplineAlgorithms::toBSplines(guides),
+                              spatialTol)
 {
-    if (profiles.size() < 2) {
-        throw Error("There must be at least two profiles for the curve network interpolation.", MATH_ERROR);
-    }
-
-    if (guides.size() < 2) {
-        throw Error("There must be at least two guides for the curve network interpolation.", MATH_ERROR);
-    }
-
-    m_profiles.reserve(profiles.size());
-    m_guides.reserve(guides.size());
-
-    for (const auto& profile : profiles) {
-        m_profiles.push_back(GeomConvert::CurveToBSplineCurve(profile));
-    }
-
-    for (const auto& guide : guides) {
-        m_guides.push_back(GeomConvert::CurveToBSplineCurve(guide));
-    }
 }
 
 InterpolateCurveNetwork::InterpolateCurveNetwork(const std::vector<Handle(Geom_BSplineCurve)>& profiles,
@@ -136,38 +119,13 @@ void InterpolateCurveNetwork::ComputeIntersections(math_Matrix& intersection_par
             }
                 // for closed curves
             else if (currentIntersections.size() == 2) {
-
-                // only the u-directional B-spline curves are closed
-                if (profiles[0]->IsClosed()) {
-
-                    if (spline_v_idx == 0) {
-                        intersection_params_u(spline_u_idx, spline_v_idx) = std::min(currentIntersections[0].first, currentIntersections[1].first);
-                    }
-                    else if (spline_v_idx == static_cast<int>(guides.size() - 1)) {
-                        intersection_params_u(spline_u_idx, spline_v_idx) = std::max(currentIntersections[0].first, currentIntersections[1].first);
-                    }
-
-                    // intersection_params_vector[0].second == intersection_params_vector[1].second
-                    intersection_params_v(spline_u_idx, spline_v_idx) = currentIntersections[0].second;
-                }
-
-                // only the v-directional B-spline curves are closed
-                if (guides[0]->IsClosed()) {
-
-                    if (spline_u_idx == 0) {
-                        intersection_params_v(spline_u_idx, spline_v_idx) = std::min(currentIntersections[0].second, currentIntersections[1].second);
-                    }
-                    else if (spline_u_idx == static_cast<int>(profiles.size() - 1)) {
-                        intersection_params_v(spline_u_idx, spline_v_idx) = std::max(currentIntersections[0].second, currentIntersections[1].second);
-                    }
-                    // intersection_params_vector[0].first == intersection_params_vector[1].first
-                    intersection_params_u(spline_u_idx, spline_v_idx) = currentIntersections[0].first;
-                }
-
-//                // TODO: both u-directional splines and v-directional splines are closed
-//               else if (intersection_params_vector.size() == 4) {
-
-//                }
+                // Closed curves produce the same intersection at both ends of
+                // their parameter range. Use the lower parameter here; the
+                // duplicated boundary curve is added after sorting.
+                intersection_params_u(spline_u_idx, spline_v_idx) =
+                    std::min(currentIntersections[0].first, currentIntersections[1].first);
+                intersection_params_v(spline_u_idx, spline_v_idx) =
+                    std::min(currentIntersections[0].second, currentIntersections[1].second);
             }
 
             else if (currentIntersections.size() > 2) {
