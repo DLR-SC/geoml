@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - main
-      - documentation_branch_agent
+      - documentation_extension
     paths:
       - 'docs/**'
       - 'src/geoml/**'
