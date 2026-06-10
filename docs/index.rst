@@ -22,8 +22,6 @@ Docs
    installation
    usage
    api
-   curves
-   surfaces
-   python_examples
+   examples
    genindex
 

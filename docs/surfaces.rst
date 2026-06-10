@@ -5,12 +5,6 @@ This page gives a short introduction to surface functionality and a few
 small examples. For the full API reference see :ref:`surfaces-api` in the
 API section.
 
-Overview
---------
-
-Geoml provides construction routines for B-spline surfaces, Gordon surfaces
-from curve networks and helpers to build faces from corner points.
-
 Quick example
 -------------
 

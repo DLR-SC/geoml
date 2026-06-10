@@ -3,9 +3,12 @@
 Python Examples
 ===============
 
-The Python bindings expose the C++ API through ``geoml.pygeoml``. Container
-helpers in ``geoml.occ_helpers.containers`` convert Python lists into the
-vector-like types expected by the bindings.
+The Python bindings expose the C++ API through ``geoml.pygeoml``.
+
+For more usage patterns, see the
+`Python tests <https://github.com/DLR-SC/geoml/tree/main/tests/python>`_;
+they can be used as additional application examples and as orientation for how
+geoml is used in practice.
 
 Curves and Shapes
 -----------------

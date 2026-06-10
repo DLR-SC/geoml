@@ -18,7 +18,7 @@
 # -- Project information -----------------------------------------------------
 
 project = 'geoml'
-copyright = '2023, German Aerospace Center'
+copyright = '2026, German Aerospace Center'
 author = 'Martin Siggel, DLR-SC'
 
 # The full version, including alpha/beta/rc tags
