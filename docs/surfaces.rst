@@ -26,9 +26,3 @@ given tolerance.
    :language: cpp
    :caption: Interpolate a surface through a curve network
 
-More
-----
-
-- **API reference:** :ref:`surfaces-api`
-- **Usage and examples:** :doc:`usage`
-- **Python examples:** :doc:`python_examples`

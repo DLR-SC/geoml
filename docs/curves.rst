@@ -27,9 +27,3 @@ to edges and builds a transition curve between them.
    :language: cpp
    :caption: Create a blend curve between two edges
 
-More
-----
-
-- **API reference:** :ref:`curves-api`
-- **Usage and examples:** :doc:`usage`
-- **Python examples:** :doc:`python_examples`
