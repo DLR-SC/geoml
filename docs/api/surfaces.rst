@@ -3,7 +3,7 @@
 Surfaces
 ========
 
-Surface functions create B-spline and NURBS surfaces, interpolate curve
+Surface functions are there to create B-spline surfaces, interpolate curve
 networks and convert simple point definitions into OpenCASCADE surfaces or
 faces.
 

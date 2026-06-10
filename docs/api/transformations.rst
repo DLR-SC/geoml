@@ -3,9 +3,6 @@
 Transformations
 ===============
 
-Transformation helpers translate geometry directly or apply reusable
-``Transform`` objects to points, vectors, shapes and surfaces.
-
 Class
 -----
 

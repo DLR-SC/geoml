@@ -3,9 +3,7 @@
 Curves
 ======
 
-Curve functions create and interpolate OpenCASCADE B-spline and NURBS curves.
-Blend helpers construct transition curves between edges with prescribed
-continuity.
+Curve functions are for the creation of B-spline curves. Blend curves allow to create geometric continuous transition between two given curves.
 
 Functions
 ---------

@@ -5,14 +5,18 @@ Usage
 
 Geoml can be used both via C++ and via Python.
 
+Overview
+--------
+
 It offers geometric functionalities for curves, surfaces and solids. Further it allows the formulation of 
 subshape selection criteria using history tracking, to formulate robust parametric models.
 
 C++
 ---
 
-The best way to learn about the usage of the library is to look how it is used in 
-the `api-tests <https://github.com/DLR-SC/geoml/tree/main/tests/apitests/src>`_ .
+See :doc:`cpp_examples` for small runnable snippets. Additional usage of the
+C++ API can be seen in the
+`api-tests <https://github.com/DLR-SC/geoml/tree/main/tests/apitests/src>`_.
 
 Python
 ------
