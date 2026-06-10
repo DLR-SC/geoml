@@ -37,8 +37,14 @@ For Python bindings you additionally need:
 * SWIG
 * setuptools
 
-For documentation you additionally need Doxygen, Sphinx, Breathe,
-``sphinx-rtd-theme``, ``m2r`` and ``docutils<0.21``.
+For documentation you additionally need:
+
+* Doxygen
+* Sphinx
+* Breathe
+* sphinx-rtd-theme
+* m2r
+* docutils < 0.21
 
 Clone the Repository
 --------------------
@@ -209,7 +215,6 @@ The test build contains:
 
 * ``geoml-unittests`` for unit tests
 * ``geoml-apitest`` for API tests
-* ``check_geoml`` to build and run the unit tests directly
 
 Build Documentation
 -------------------
@@ -241,10 +246,6 @@ Common CMake configurations are:
      - Optimized build for normal use.
    * - ``Debug``
      - Debug build with less optimization.
-   * - ``RelWithDebInfo``
-     - Optimized build with debug information.
-   * - ``MinSizeRel``
-     - Build optimized for smaller binaries.
 
 With Visual Studio, choose the configuration at build and install time:
 
