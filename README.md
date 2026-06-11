@@ -3,7 +3,7 @@ The **Geo**metry **M**odeling **L**ibrary, geoml, is intended to serve as the ce
 
 It extends OpenCASCADE Technology with advanced modelling functionalities such as Gordon surfaces or smooth blending and provides a framework for robust and persistant feature tracking and metadata annotation for parametric modelling.
 
-![Wing tip](images/wing tip.png)
+![Wing tip](./images/wing%20tip.png)
 
 Geoml is based on a stripped down version of the [TiGL library](https://github.com/DLR-SC/tigl), extracting TiGL's purely geometric capabilities.
 
