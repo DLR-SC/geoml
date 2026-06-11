@@ -54,8 +54,8 @@ Clone the Repository
    git clone https://github.com/DLR-SC/geoml.git
    cd geoml
 
-On Windows, use a terminal with the x64 compiler available, for
-example **x64 Native Tools Command Prompt for VS**.
+On Windows, use a terminal with the x64 compiler available, for example
+**x64 Native Tools Command Prompt for VS**.
 
 Build with Pixi
 ---------------
@@ -64,14 +64,14 @@ Pixi uses the dependencies from ``pyproject.toml``.
 
 Windows:
 
-.. code-block:: powershell
+.. code-block:: batch
 
    pixi install
-   pixi run cmake -S . -B build-release -G "Visual Studio 17 2022" -A x64 `
-     -DCMAKE_BUILD_TYPE=Release `
-     -DGEOML_BUILD_PYTHON_BINDINGS=OFF `
+   pixi run cmake -S . -B build-release -G Ninja ^
+     -DCMAKE_BUILD_TYPE=Release ^
+     -DGEOML_BUILD_PYTHON_BINDINGS=OFF ^
      -DGEOML_BUILD_TESTS=OFF
-   pixi run cmake --build build-release --config Release --parallel
+   pixi run cmake --build build-release --parallel
 
 Linux:
 
@@ -103,13 +103,13 @@ packages:
 
 Windows:
 
-.. code-block:: powershell
+.. code-block:: batch
 
-   cmake -S . -B build-release -G "Visual Studio 17 2022" -A x64 `
-     -DCMAKE_BUILD_TYPE=Release `
-     -DGEOML_BUILD_PYTHON_BINDINGS=OFF `
+   cmake -S . -B build-release -G Ninja ^
+     -DCMAKE_BUILD_TYPE=Release ^
+     -DGEOML_BUILD_PYTHON_BINDINGS=OFF ^
      -DGEOML_BUILD_TESTS=OFF
-   cmake --build build-release --config Release --parallel
+   cmake --build build-release --parallel
 
 Linux:
 
@@ -129,9 +129,9 @@ files to a clean install prefix.
 
 Windows:
 
-.. code-block:: powershell
+.. code-block:: batch
 
-   cmake --install build-release --config Release --prefix C:\data\code\geoml\install
+   cmake --install build-release --prefix C:\data\code\geoml\install
 
 Linux:
 
@@ -146,14 +146,14 @@ Enable Python bindings with ``GEOML_BUILD_PYTHON_BINDINGS=ON``.
 
 Windows with Pixi:
 
-.. code-block:: powershell
+.. code-block:: batch
 
-   pixi run cmake -S . -B build-python -G "Visual Studio 17 2022" -A x64 `
-     -DCMAKE_BUILD_TYPE=Release `
-     -DGEOML_BUILD_PYTHON_BINDINGS=ON `
+   pixi run cmake -S . -B build-python -G Ninja ^
+     -DCMAKE_BUILD_TYPE=Release ^
+     -DGEOML_BUILD_PYTHON_BINDINGS=ON ^
      -DGEOML_BUILD_TESTS=OFF
-   pixi run cmake --build build-python --config Release --parallel
-   pixi run cmake --install build-python --config Release --prefix .pixi\envs\default
+   pixi run cmake --build build-python --parallel
+   pixi run cmake --install build-python --prefix .pixi\envs\default
    pixi run python -c "from geoml import pygeoml; print('OK')"
 
 Linux with Pixi:
@@ -169,7 +169,21 @@ Linux with Pixi:
    pixi run python -c "from geoml import pygeoml; print('OK')"
 
 With Conda, use the same CMake options without ``pixi run`` and install into
-the active Conda environment:
+the active Conda environment.
+
+Windows:
+
+.. code-block:: batch
+
+   cmake -S . -B build-python -G Ninja ^
+     -DCMAKE_BUILD_TYPE=Release ^
+     -DGEOML_BUILD_PYTHON_BINDINGS=ON ^
+     -DGEOML_BUILD_TESTS=OFF
+   cmake --build build-python --parallel
+   cmake --install build-python --prefix %CONDA_PREFIX%
+   python -c "from geoml import pygeoml; print('OK')"
+
+Linux:
 
 .. code-block:: bash
 
@@ -181,10 +195,6 @@ the active Conda environment:
    cmake --install build-python --prefix "$CONDA_PREFIX"
    python -c "from geoml import pygeoml; print('OK')"
 
-On Windows PowerShell, use the Visual Studio generator and
-``--config Release`` as shown above, and use ``$env:CONDA_PREFIX`` instead of
-``$CONDA_PREFIX``.
-
 Build and Run Tests
 -------------------
 
@@ -192,13 +202,13 @@ Enable tests with ``GEOML_BUILD_TESTS=ON``.
 
 Windows:
 
-.. code-block:: powershell
+.. code-block:: batch
 
-   cmake -S . -B build-tests -G "Visual Studio 17 2022" -A x64 `
-     -DCMAKE_BUILD_TYPE=Release `
+   cmake -S . -B build-tests -G Ninja ^
+     -DCMAKE_BUILD_TYPE=Release ^
      -DGEOML_BUILD_TESTS=ON
-   cmake --build build-tests --config Release --parallel
-   ctest --test-dir build-tests -C Release --output-on-failure
+   cmake --build build-tests --parallel
+   ctest --test-dir build-tests --output-on-failure
 
 Linux:
 
@@ -246,14 +256,10 @@ Common CMake configurations are:
    * - ``Debug``
      - Debug build with less optimization.
 
-With Visual Studio, choose the configuration at build and install time:
+The commands above use ``Release`` as an example configuration. Use another
+configuration, such as ``Debug``, if that better matches your use case.
 
-.. code-block:: powershell
-
-   cmake --build build-release --config Release --parallel
-   cmake --install build-release --config Release
-
-With Ninja, choose it during configuration:
+With Ninja, choose the configuration during configuration:
 
 .. code-block:: bash
 
@@ -315,10 +321,11 @@ Troubleshooting
 ---------------
 
 If CMake cannot find OpenCASCADE, make sure the Conda or Pixi environment is
-active. On Windows, also make sure that the CMake generator uses x64:
+active. On Windows, also make sure that the x64 compiler is available before
+running CMake:
 
-.. code-block:: powershell
+.. code-block:: batch
 
-   cmake -S . -B build-release -G "Visual Studio 17 2022" -A x64
+   cmake -S . -B build-release -G Ninja
 
 If dependency paths look wrong, delete the build directory and configure again.
