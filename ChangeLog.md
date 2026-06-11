@@ -13,5 +13,7 @@ Initial geoml development version.
     * Extract C++ geometry functions from TiGL
     * Provide Python bindings for selected geoml functionality.
     * Add CMake support for building the library, tests, bindings and documentation.
-    * Add Sphinx/Doxygen documentation for the C++ API and usage examples.
+    * Add history tracking framework, allowing persistent tracking and meta data (tags) annotation
+    * Add blending curves
+    * Add geometric functionality, 2d-data type and conversion functions
 
