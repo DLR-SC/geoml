@@ -46,6 +46,51 @@ For documentation you additionally need:
 * m2r
 * docutils < 0.21
 
+Install Pixi or Conda
+---------------------
+
+Pixi can be installed from the official
+`Pixi installation page <https://pixi.prefix.dev/latest/#installation>`_.
+
+On Windows, download the Windows installer from that page, run it, restart the
+terminal and check the installation with:
+
+.. code-block:: batch
+
+   pixi --version
+
+On Linux, follow the official installation command:
+
+.. code-block:: bash
+
+   curl -fsSL https://pixi.sh/install.sh | sh
+
+After installation, restart the terminal and check:
+
+.. code-block:: bash
+
+   pixi --version
+
+For Conda, this documentation recommends Miniforge, because it provides Conda
+with the conda-forge ecosystem. Download it from the official
+`Miniforge releases page <https://github.com/conda-forge/miniforge/releases/latest>`_.
+The general Conda installation documentation is available in the
+`Conda install guide <https://docs.conda.io/projects/conda/en/latest/user-guide/install/index.html>`_.
+
+On Windows, download ``Miniforge3-Windows-x86_64.exe``, run the installer,
+open the Miniforge Prompt and check:
+
+.. code-block:: batch
+
+   conda --version
+
+On Linux, download the matching Miniforge shell installer from the release page,
+run it, restart the terminal and check:
+
+.. code-block:: bash
+
+   conda --version
+
 Clone the Repository
 --------------------
 
@@ -61,6 +106,8 @@ Build with Pixi
 ---------------
 
 Pixi uses the dependencies from ``pyproject.toml``.
+Run the following commands from the geoml repository root, i.e. the directory
+that contains ``CMakeLists.txt`` and ``pyproject.toml``.
 
 Windows:
 
@@ -87,7 +134,7 @@ Linux:
 Build with Conda
 ----------------
 
-Create and activate the Conda environment:
+From the geoml repository root, create and activate the Conda environment:
 
 .. code-block:: bash
 
@@ -100,6 +147,9 @@ packages:
 .. code-block:: bash
 
    conda install -c dlr-sc -c conda-forge pythonocc-core swig doxygen sphinx breathe sphinx-rtd-theme m2r "docutils<0.21"
+
+Run the following build commands from the geoml repository root, i.e. the
+directory that contains ``CMakeLists.txt``.
 
 Windows:
 
@@ -125,7 +175,9 @@ Install After Building
 ----------------------
 
 Building compiles geoml in the build directory. Installing copies the built
-files to a clean install prefix.
+files to a clean install prefix. Enter the install command in the geoml
+repository root, for example ``C:\data\code\geoml`` or ``~/geoml``. Do not
+enter it from inside ``build-release`` or another build directory.
 
 Windows:
 
@@ -142,7 +194,8 @@ Linux:
 Build Python Bindings
 ---------------------
 
-Enable Python bindings with ``GEOML_BUILD_PYTHON_BINDINGS=ON``.
+Enable Python bindings with ``GEOML_BUILD_PYTHON_BINDINGS=ON``. Run the
+configure, build and install commands from the geoml repository root.
 
 Windows with Pixi:
 
@@ -198,7 +251,8 @@ Linux:
 Build and Run Tests
 -------------------
 
-Enable tests with ``GEOML_BUILD_TESTS=ON``.
+Enable tests with ``GEOML_BUILD_TESTS=ON``. Run the following commands from the
+geoml repository root.
 
 Windows:
 
@@ -227,6 +281,8 @@ The test build contains:
 
 Build Documentation
 -------------------
+
+Run the following commands from the geoml repository root.
 
 .. code-block:: bash
 
