@@ -54,9 +54,8 @@ Clone the Repository
    git clone https://github.com/DLR-SC/geoml.git
    cd geoml
 
-On Windows, use a Visual Studio terminal with the x64 compiler available, for
-example **x64 Native Tools Command Prompt for VS** or **Developer PowerShell for
-Visual Studio**.
+On Windows, use a terminal with the x64 compiler available, for
+example **x64 Native Tools Command Prompt for VS**.
 
 Build with Pixi
 ---------------
