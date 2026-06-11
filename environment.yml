@@ -3,11 +3,20 @@ name: geoml-bld
 channels:
  - conda-forge
  - dlr-sc
+ - nodefaults
 dependencies:
+ - cmake
+ - ninja=1.10.2                  # needed for the Ninja-based build instructions
  - pip                           # just make sure that pip installs into this env, if used
  - setuptools                    # needed to infer the python site-packages path
  - dlr-sc::opencascade=7.6.2     # DLR-SC package with the C2-continuous Coons patch
  - qt=5.15.8
- - python                        # needed to build python bindings
- # other build dependencies
- - ninja=1.10.2                  # needed for the Ninja-based build instructions
+ - python=3.10                   # compatible with the available pythonocc-core builds
+ - dlr-sc::pythonocc-core
+ - swig
+ - doxygen
+ - sphinx
+ - breathe
+ - sphinx-rtd-theme
+ - m2r
+ - docutils<0.21

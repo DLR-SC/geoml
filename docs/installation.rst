@@ -32,7 +32,7 @@ For a C++ build you need:
 
 For Python bindings you additionally need:
 
-* Python 3.9 or newer
+* Python 3.10
 * PythonOCC
 * SWIG
 * setuptools
@@ -141,12 +141,8 @@ From the geoml repository root, create and activate the Conda environment:
    conda env create -f environment.yml
    conda activate geoml-bld
 
-If you want to build Python bindings or documentation, install the additional
-packages:
-
-.. code-block:: bash
-
-   conda install -c dlr-sc -c conda-forge pythonocc-core swig doxygen sphinx breathe sphinx-rtd-theme m2r "docutils<0.21"
+The Conda environment already includes the dependencies for the C++ build,
+Python bindings, tests and documentation.
 
 Run the following build commands from the geoml repository root, i.e. the
 directory that contains ``CMakeLists.txt``.
@@ -376,15 +372,20 @@ After installing the Python bindings into the active environment:
 Troubleshooting
 ---------------
 
-If ``conda env create -f environment.yml`` fails with a message such as
-``excluded by strict repo priority``, your Conda installation uses strict
-channel priority. Use flexible channel priority for this environment solve and
-create the environment again:
+If ``conda env create -f environment.yml`` fails after a partial or outdated
+environment was already created, remove the environment and recreate it from the
+current ``environment.yml``:
 
 .. code-block:: batch
 
-   conda config --set channel_priority flexible
+   conda deactivate
+   conda env remove -n geoml-bld
    conda env create -f environment.yml
+   conda activate geoml-bld
+
+The geoml environment pins Python to a version that is compatible with the
+available PythonOCC packages. Do not install ``pythonocc-core`` separately into
+an already-created environment with an unconstrained Python version.
 
 If CMake cannot find OpenCASCADE, make sure the Conda or Pixi environment is
 active. On Windows, also make sure that the x64 compiler is available before
