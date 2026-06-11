@@ -3,7 +3,7 @@
 ## Changes since last release
 
   * General changes:
-    * Add Sphinx/Doxygen documentation for the C++ API and usage examples (reference to issue#)
+    * Add Sphinx/Doxygen documentation for the C++ API and usage examples (#3)
 
 ## Version 0.1.0
 
