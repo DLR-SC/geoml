@@ -376,6 +376,16 @@ After installing the Python bindings into the active environment:
 Troubleshooting
 ---------------
 
+If ``conda env create -f environment.yml`` fails with a message such as
+``excluded by strict repo priority``, your Conda installation uses strict
+channel priority. Use flexible channel priority for this environment solve and
+create the environment again:
+
+.. code-block:: batch
+
+   conda config --set channel_priority flexible
+   conda env create -f environment.yml
+
 If CMake cannot find OpenCASCADE, make sure the Conda or Pixi environment is
 active. On Windows, also make sure that the x64 compiler is available before
 running CMake:
