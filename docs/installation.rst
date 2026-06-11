@@ -141,6 +141,12 @@ From the geoml repository root, create and activate the Conda environment:
    conda env create -f environment.yml
    conda activate geoml-bld
 
+If you want to use ninja as CMake generator, install it with:
+
+.. code-block:: bash
+
+   conda install ninja
+
 If you want to build Python bindings or documentation, install the additional
 packages:
 
