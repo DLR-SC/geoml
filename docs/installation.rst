@@ -360,20 +360,92 @@ CMake Options
 Use geoml from C++
 ------------------
 
-After installing geoml, another CMake project can use it with
-``find_package``:
+Use the same environment that contains the installed geoml package and its
+dependencies. For Conda, activate the environment first:
+
+.. code-block:: batch
+
+   conda activate geoml-bld
+
+For Pixi, run the CMake commands through ``pixi run`` from the geoml repository
+or point ``CMAKE_PREFIX_PATH`` to the Pixi environment where geoml was
+installed, for example ``C:\data\code\geoml\.pixi\envs\default``.
+
+Create a small project directory outside the geoml source tree, for example
+``geoml-cpp-example``:
+
+.. code-block:: text
+
+   geoml-cpp-example/
+     CMakeLists.txt
+     main.cpp
+
+Minimal ``CMakeLists.txt``:
 
 .. code-block:: cmake
 
+   cmake_minimum_required(VERSION 3.15)
+   project(geoml_cpp_example LANGUAGES CXX)
+
+   set(CMAKE_CXX_STANDARD 17)
+   set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
    find_package(geoml CONFIG REQUIRED)
+
    add_executable(example main.cpp)
    target_link_libraries(example PRIVATE geoml)
 
-Point CMake to the installation prefix if needed:
+Minimal ``main.cpp``:
+
+.. code-block:: cpp
+
+   #include <vector>
+
+   #include <Geom_BSplineCurve.hxx>
+   #include <gp_Pnt.hxx>
+
+   #include <geoml/curves/curves.h>
+
+   int main()
+   {
+       std::vector<gp_Pnt> points {
+           gp_Pnt(0.0, 0.0, 0.0),
+           gp_Pnt(1.0, 0.0, 0.0),
+           gp_Pnt(2.0, 0.0, 1.0)
+       };
+
+       Handle(Geom_BSplineCurve) curve =
+           geoml::interpolate_points_to_b_spline_curve(points);
+
+       return curve.IsNull() ? 1 : 0;
+   }
+
+Configure and build the example from the ``geoml-cpp-example`` directory.
+
+If geoml was installed into a Conda environment:
+
+.. code-block:: batch
+
+   conda activate geoml-bld
+   cmake -S . -B build -G Ninja -DCMAKE_PREFIX_PATH=%CONDA_PREFIX%
+   cmake --build build
+   build\example.exe
+
+If geoml was installed into ``C:\data\code\geoml\install``:
+
+.. code-block:: batch
+
+   cmake -S . -B build -G Ninja -DCMAKE_PREFIX_PATH=C:\data\code\geoml\install
+   cmake --build build
+   build\example.exe
+
+On Linux, use the same pattern with the install prefix:
 
 .. code-block:: bash
 
    cmake -S . -B build -DCMAKE_PREFIX_PATH=/path/to/geoml/install
+   cmake --build build
+   ./build/example
 
 Use geoml from Python
 ---------------------
