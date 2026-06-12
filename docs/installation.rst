@@ -390,9 +390,11 @@ Minimal ``CMakeLists.txt``:
    set(CMAKE_CXX_STANDARD 17)
    set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+   find_package(OpenCASCADE CONFIG REQUIRED)
    find_package(geoml CONFIG REQUIRED)
 
    add_executable(example main.cpp)
+   target_include_directories(example PRIVATE ${OpenCASCADE_INCLUDE_DIR})
    target_link_libraries(example PRIVATE geoml)
 
 Minimal ``main.cpp``:
@@ -420,6 +422,9 @@ Minimal ``main.cpp``:
        return curve.IsNull() ? 1 : 0;
    }
 
+OpenCASCADE headers usually use the ``.hxx`` extension. For example, include
+``Geom_BSplineCurve.hxx`` and not ``Geom_BSplineCurve.h``.
+
 Configure and build the example from the ``geoml-cpp-example`` directory.
 
 If geoml was installed into a Conda environment:
@@ -427,15 +432,23 @@ If geoml was installed into a Conda environment:
 .. code-block:: batch
 
    conda activate geoml-bld
-   cmake -S . -B build -G Ninja -DCMAKE_PREFIX_PATH=%CONDA_PREFIX%
+   cmake -S . -B build -G Ninja "-DCMAKE_PREFIX_PATH=%CONDA_PREFIX%;%CONDA_PREFIX%\Library"
    cmake --build build
+   build\example.exe
+
+If geoml was installed into the default Pixi environment:
+
+.. code-block:: batch
+
+   pixi run cmake -S . -B build -G Ninja "-DCMAKE_PREFIX_PATH=C:\data\code\geoml\.pixi\envs\default;C:\data\code\geoml\.pixi\envs\default\Library"
+   pixi run cmake --build build
    build\example.exe
 
 If geoml was installed into ``C:\data\code\geoml\install``:
 
 .. code-block:: batch
 
-   cmake -S . -B build -G Ninja -DCMAKE_PREFIX_PATH=C:\data\code\geoml\install
+   cmake -S . -B build -G Ninja "-DCMAKE_PREFIX_PATH=C:\data\code\geoml\install;%CONDA_PREFIX%\Library"
    cmake --build build
    build\example.exe
 
@@ -483,3 +496,7 @@ running CMake:
    cmake -S . -B build-release -G Ninja
 
 If dependency paths look wrong, delete the build directory and configure again.
+
+If compilation fails with an error such as ``C1083`` and
+``Geom_BSplineCurve.h`` cannot be opened, check the include name in
+``main.cpp``. The OpenCASCADE header is named ``Geom_BSplineCurve.hxx``.
