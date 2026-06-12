@@ -147,12 +147,18 @@ If you want to use ninja as CMake generator, install it with:
 
    conda install ninja
 
-If you want to build Python bindings or documentation, install the additional
-packages:
+If you want to build Python bindings, also install:
 
 .. code-block:: bash
 
-   conda install -c dlr-sc -c conda-forge pythonocc-core swig doxygen sphinx breathe sphinx-rtd-theme m2r "docutils<0.21"
+   conda install swig
+   .. conda install -c dlr-sc -c conda-forge pythonocc-core swig doxygen sphinx breathe sphinx-rtd-theme m2r "docutils<0.21"
+
+If you want to build the documentation, also install:
+
+.. code-block:: bash
+
+   conda install -c conda-forge doxygen sphinx breathe sphinx-rtd-theme m2r "docutils<0.21"
 
 Run the following build commands from the geoml repository root, i.e. the
 directory that contains ``CMakeLists.txt``.
