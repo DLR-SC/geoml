@@ -152,7 +152,6 @@ If you want to build Python bindings, also install:
 .. code-block:: bash
 
    conda install swig
-   .. conda install -c dlr-sc -c conda-forge pythonocc-core swig doxygen sphinx breathe sphinx-rtd-theme m2r "docutils<0.21"
 
 If you want to build the documentation, also install:
 
