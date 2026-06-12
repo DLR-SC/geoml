@@ -5,7 +5,7 @@ channels:
  - nodefaults
 dependencies:
  - cmake
- - ninja=1.10.2                  # needed for the Ninja-based build instructions
+#  - ninja=1.10.2                  # needed for the Ninja-based build instructions
  - pip                           # just make sure that pip installs into this env, if used
  - setuptools                    # needed to infer the python site-packages path
  - opencascade=7.6.2             # library for dealing with b-spline and nurbs geometries. dlr-sc version contains patch for C2-cont. Coons patches
