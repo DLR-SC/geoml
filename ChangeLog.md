@@ -1,0 +1,19 @@
+# Changelog
+
+## Changes since last release
+
+  * General changes:
+    * Add Sphinx/Doxygen documentation for the C++ API and usage examples (#3)
+
+## Version 0.1.0
+
+Initial geoml development version.
+
+  * General changes:
+    * Extract C++ geometry functions from TiGL
+    * Provide Python bindings for selected geoml functionality.
+    * Add CMake support for building the library, tests, bindings and documentation.
+    * Add history tracking framework, allowing persistent tracking and meta data (tags) annotation
+    * Add blending curves
+    * Add geometric functionality, 2d-data type and conversion functions
+
