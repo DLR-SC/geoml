@@ -20,24 +20,34 @@ There are three ways to obtain geoml:
    documentation is deployed through GitHub Pages; binary/source packages should
    be attached to GitHub Releases.
 
+Conda Package
+-------------
+TODO
+
+GitHub Release Package
+----------------------
+
+Building from Source
+--------------------
+
 Build Dependencies
 ------------------
 
-For a C++ build you need:
+As minimal requirement for a C++ build you need:
 
 * Git
 * CMake 3.15 or newer
 * a C++17 compiler
 * OpenCASCADE
 
-For Python bindings you additionally need:
+For Python bindings you additionally (to the minimal requirement) need:
 
 * Python 3.10
 * PythonOCC
 * SWIG
 * setuptools
 
-For documentation you additionally need:
+For documentation you additionally (to the minimal requirement) need:
 
 * Doxygen
 * Sphinx
