@@ -59,6 +59,8 @@ For documentation you additionally (to the minimal requirement) need:
 Install Pixi or Conda
 ---------------------
 
+We recommend using either Pixi or Conda.
+
 Pixi can be installed from the official
 `Pixi installation page <https://pixi.prefix.dev/latest/#installation>`_.
 
