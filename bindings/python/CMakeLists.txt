@@ -74,7 +74,7 @@ else()
     add_custom_command(
         OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/doc.i
         DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/doc/xml/index.xml
-        COMMAND ${PYTHON_EXECUTABLE}
+        COMMAND ${Python3_EXECUTABLE}
         ARGS ${PROJECT_SOURCE_DIR}/thirdparty/doxy2swig/doxy2swig.py ${CMAKE_CURRENT_BINARY_DIR}/doc/xml/index.xml ${CMAKE_CURRENT_BINARY_DIR}/doc.i
     )
 endif()
@@ -93,13 +93,14 @@ endif()
 include_directories(${PYTHON_INCLUDE_PATH})
 
 include_directories(${PythonOCC_INCLUDE_DIRS})
+include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
 set(LIBRARY_OUTPUT_PATH ${CMAKE_CURRENT_BINARY_DIR})
 
 include_directories($<TARGET_PROPERTY:geoml,INTERFACE_INCLUDE_DIRECTORIES>)
 
 set_source_files_properties(pygeoml.i PROPERTIES CPLUSPLUS ON)
-set(SWIG_MODULE_pygeoml_EXTRA_DEPS common.i doc.i)
+set(SWIG_MODULE_pygeoml_EXTRA_DEPS common.i ${CMAKE_CURRENT_BINARY_DIR}/doc.i)
 
 swig_add_library(pygeoml LANGUAGE python SOURCES pygeoml.i TYPE MODULE)
 swig_link_libraries(pygeoml geoml geoml_internal Python3::Module)
