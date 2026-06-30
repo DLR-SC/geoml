@@ -26,6 +26,7 @@ TODO
 
 GitHub Release Package
 ----------------------
+TODO (also change order and put this after the building from source section)
 
 Building from Source
 --------------------
