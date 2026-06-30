@@ -17,15 +17,15 @@ requires-python = ">=3.9"
 platforms = ["win-64", "linux-64", "osx-64"]
 channels = ["dlr-sc", "dlr-sc/label/tigl-dev", "conda-forge"] 
 
-channel-priority = "disabled" 
+channel-priority = "strict" 
 
 [tool.pixi.dependencies]
 cmake = "*"
 ninja = "*"
-python = ">=3.9"
+python = ">=3.11,<3.12"
 pip = "*"
 pytest = "*"
-pythonocc-core = "*"
+pythonocc-core = "==7.6.2"
 swig = "*"
 doxygen = "*"
 sphinx-rtd-theme = "*"
@@ -34,5 +34,5 @@ sphinx = "*"
 m2r = "*"
 docutils = "<0.21"
 #vtk = ">=9.6.1,<10"
-opencascade = "*" 
+opencascade = "==7.6.2" 
 

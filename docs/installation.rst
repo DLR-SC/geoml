@@ -34,7 +34,7 @@ Building from Source
 Build Dependencies
 ------------------
 
-As minimal requirement for a C++ build you need:
+Before giving a detailed step by step building/installation instructions, we mention that the minimal requirement for a C++ build you need:
 
 * Git
 * CMake 3.15 or newer
