@@ -10,6 +10,7 @@
 #include "geoml/data_structures/Array2d.h"
 
 #include <Geom_BSplineSurface.hxx>
+#include <Geom_BSplineCurve.hxx>
 #include <Geom_Curve.hxx>
 #include <gp_Vec.hxx>
 #include <gp_Pnt.hxx>
@@ -39,6 +40,16 @@ namespace geoml
 GEOML_API_EXPORT Handle(Geom_BSplineSurface)
 interpolate_curve_network(const std::vector<Handle(Geom_Curve)>& ucurves,
                           const std::vector<Handle(Geom_Curve)>& vcurves,
+                          double tolerance);
+
+/**
+ * @brief Interpolates the curve network by a B-spline surface
+ *
+ * Variant for already converted B-spline curves.
+ */
+GEOML_API_EXPORT Handle(Geom_BSplineSurface)
+interpolate_curve_network(const std::vector<Handle(Geom_BSplineCurve)>& ucurves,
+                          const std::vector<Handle(Geom_BSplineCurve)>& vcurves,
                           double tolerance);
 
 /**

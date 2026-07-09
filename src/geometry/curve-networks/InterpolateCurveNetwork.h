@@ -54,6 +54,16 @@ public:
                                              const std::vector<Handle(Geom_Curve)>& guides,
                                              double spatialTolerance);
 
+    /**
+     * @brief InterpolateCurveNetwork interpolated a curve network of already converted B-spline curves
+     * @param profiles The profiles to be interpolated
+     * @param guides   The guides curves to be interpolated
+     * @param spatialTolerance Maximum allowed distance between each guide and profile (in theory they must intersect)
+     */
+    GEOML_EXPORT InterpolateCurveNetwork(const std::vector<Handle(Geom_BSplineCurve)>& profiles,
+                                         const std::vector<Handle(Geom_BSplineCurve)>& guides,
+                                         double spatialTolerance);
+
     GEOML_EXPORT operator Handle(Geom_BSplineSurface) ();
     
     /// Returns the interpolation surface
@@ -91,6 +101,8 @@ private:
                                                    math_Matrix & intersection_params_u,
                                                    math_Matrix & intersection_params_v) const;
 
+    void EnsureC2();
+
     bool m_hasPerformed;
     double m_spatialTol;
     
@@ -104,6 +116,11 @@ private:
 /// Convenience function calling InterpolateCurveNetwork
 GEOML_EXPORT Handle(Geom_BSplineSurface) curveNetworkToSurface(const std::vector<Handle(Geom_Curve)>& profiles,
                                                               const std::vector<Handle(Geom_Curve)>& guides,
+                                                              double spatialTol = 3e-4);
+
+/// Convenience function calling InterpolateCurveNetwork
+GEOML_EXPORT Handle(Geom_BSplineSurface) curveNetworkToSurface(const std::vector<Handle(Geom_BSplineCurve)>& profiles,
+                                                              const std::vector<Handle(Geom_BSplineCurve)>& guides,
                                                               double spatialTol = 3e-4);
 
 } // namespace geoml

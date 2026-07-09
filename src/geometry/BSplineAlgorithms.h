@@ -279,6 +279,9 @@ public:
     /// Trims a bspline curve
     GEOML_EXPORT static Handle(Geom_BSplineCurve) trimCurve(const Handle(Geom_BSplineCurve)& curve, double umin, double umax);
 
+    /// Converts a curve array into a B-spline array
+    GEOML_EXPORT static std::vector<Handle(Geom_BSplineCurve)> toBSplines(const std::vector<Handle(Geom_Curve)>& curves);
+
     /// Concatenates a list of bspline curves
     GEOML_EXPORT static Handle(Geom_BSplineCurve) concatCurves(std::vector<Handle(Geom_BSplineCurve)> curves,
                                                               bool parByLength=true, double tolerance = 1e-6);
