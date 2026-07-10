@@ -64,4 +64,19 @@ Shape make_fillet (Shape const& solid , Shape const& edges, Standard_Real radius
     return operation.value();
 }
 
+TopoDS_Shape make_compound (const std::vector<TopoDS_Shape> & shapes)
+{
+    TopoDS_Compound compound;  
+    BRep_Builder builder;
+    builder.MakeCompound(compound);
+
+    for (auto shape: shapes)
+    {
+        builder.Add(compound, shape);
+    }
+
+    return compound;
+}
+
+
 } // namespace geoml
