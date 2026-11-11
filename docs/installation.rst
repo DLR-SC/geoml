@@ -31,22 +31,35 @@ TODO (also change order and put this after the building from source section)
 Building from Source
 --------------------
 
+This section describes how to build geoml from source with Pixi or Conda on
+Windows and Linux, and how to install it, build the Python bindings, run the
+tests and build the documentation.
+
 Build Dependencies
-------------------
+^^^^^^^^^^^^^^^^^^
 
 Before giving a detailed step by step building/installation instructions, we mention the minimal requirement for a C++ build:
 
 * Git
 * CMake 3.15 or newer
-* a C++17 compiler
-* OpenCASCADE
+* Ninja (used as CMake generator in all commands below)
+* a C++17 compiler: on Windows MSVC (Visual Studio or the Build Tools for
+  Visual Studio), on Linux GCC or Clang
+* OpenCASCADE 7.6.2
+
+The C++ compiler is not part of the Pixi or Conda environment and must be
+installed on the system. On Debian/Ubuntu, for example, install GCC with:
+
+.. code-block:: bash
+
+   sudo apt install build-essential
 
 For Python bindings you additionally (to the minimal requirement) need:
 
-* Python 3.10
-* PythonOCC
+* Python 3.11 (the Pixi environment pins ``>=3.11,<3.12``)
+* pythonocc-core 7.6.2 (must match the OpenCASCADE version)
 * SWIG
-* setuptools
+* setuptools (used by CMake to find the Python ``site-packages`` directory)
 
 For documentation you additionally (to the minimal requirement) need:
 
@@ -58,12 +71,12 @@ For documentation you additionally (to the minimal requirement) need:
 * docutils < 0.21
 
 Install Pixi or Conda
----------------------
+^^^^^^^^^^^^^^^^^^^^^
 
 We recommend using either Pixi or Conda.
 
 Pixi can be installed from the official
-`Pixi installation page <https://pixi.prefix.dev/latest/#installation>`_.
+`Pixi installation page <https://pixi.prefix.dev/latest/installation/>`_.
 
 On Windows, download the Windows installer from that page, run it, restart the
 terminal and check the installation with:
@@ -72,7 +85,7 @@ terminal and check the installation with:
 
    pixi --version
 
-On Linux, follow the official installation command (CHECK LATER):
+On Linux, use the official installation script:
 
 .. code-block:: bash
 
@@ -97,15 +110,22 @@ open the Miniforge Prompt and check:
 
    conda --version
 
-On Linux, download the matching Miniforge shell installer from the release page,
-run it, restart the terminal and check (CHECK LATER):
+On Linux, download and run the matching Miniforge installer:
+
+.. code-block:: bash
+
+   curl -L -O "https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-$(uname)-$(uname -m).sh"
+   bash Miniforge3-$(uname)-$(uname -m).sh
+
+Follow the installer prompts and allow it to initialize Conda for your shell.
+Then restart the terminal and check:
 
 .. code-block:: bash
 
    conda --version
 
 Clone the Repository
---------------------
+^^^^^^^^^^^^^^^^^^^^
 
 .. code-block:: bash
 
@@ -113,10 +133,11 @@ Clone the Repository
    cd geoml
 
 On Windows, use a terminal with the x64 compiler available, for example
-**x64 Native Tools Command Prompt for VS**.
+**x64 Native Tools Command Prompt for VS**. On Linux, a normal terminal is
+enough, as long as ``g++`` (or another C++17 compiler) is installed.
 
 Build with Pixi
----------------
+^^^^^^^^^^^^^^^
 
 Pixi uses the dependencies from ``pyproject.toml``.
 Run the following commands from the geoml repository root, i.e. the directory
@@ -145,7 +166,7 @@ Linux:
    pixi run cmake --build build-release --parallel
 
 Build with Conda
-----------------
+^^^^^^^^^^^^^^^^
 
 From the geoml repository root, create and activate the Conda environment:
 
@@ -154,17 +175,18 @@ From the geoml repository root, create and activate the Conda environment:
    conda env create -f environment.yml
    conda activate geoml-bld
 
-If you want to use ninja as CMake generator, install it with:
+All build commands in this documentation use Ninja as CMake generator. Ninja is
+not part of ``environment.yml``, so install it into the environment:
 
 .. code-block:: bash
 
-   conda install ninja
+   conda install -c conda-forge ninja
 
 If you want to build Python bindings, also install:
 
 .. code-block:: bash
 
-   conda install swig
+   conda install -c conda-forge swig
 
 If you want to build the documentation, also install:
 
@@ -185,7 +207,6 @@ Windows:
      -DGEOML_BUILD_TESTS=OFF
    cmake --build build-release --parallel
 
-
 Linux:
 
 .. code-block:: bash
@@ -197,27 +218,33 @@ Linux:
    cmake --build build-release --parallel
 
 Install After Building
-----------------------
+^^^^^^^^^^^^^^^^^^^^^^
 
 Building compiles geoml in the build directory. Installing copies the built
 files to a clean install prefix. Enter the install command in the geoml
 repository root, for example ``C:\data\code\geoml`` or ``~/geoml``. Do not
 enter it from inside ``build-release`` or another build directory.
 
-Windows:
+Windows with Pixi:
 
 .. code-block:: batch
 
-   cmake --install build-release --prefix C:\data\code\geoml\install
+   pixi run cmake --install build-release --prefix C:/data/code/geoml/install
 
-Linux:
+Linux with Pixi:
 
 .. code-block:: bash
 
-   cmake --install build-release --prefix "$PWD/install"
+   pixi run cmake --install build-release --prefix "$PWD/install"
+
+With Conda, run the same commands without ``pixi run`` in the activated
+environment.
+
+The install prefix contains the headers in ``include/geoml``, the library in
+``lib`` and the CMake package files in ``lib/cmake/geoml``.
 
 Build Python Bindings
----------------------
+^^^^^^^^^^^^^^^^^^^^^
 
 Enable Python bindings with ``GEOML_BUILD_PYTHON_BINDINGS=ON``. Run the
 configure, build and install commands from the geoml repository root.
@@ -231,7 +258,7 @@ Windows with Pixi:
      -DGEOML_BUILD_PYTHON_BINDINGS=ON ^
      -DGEOML_BUILD_TESTS=OFF
    pixi run cmake --build build-python --parallel
-   pixi run cmake --install build-python --prefix .pixi\envs\default
+   pixi run cmake --install build-python --prefix .pixi/envs/default
    pixi run python -c "from geoml import pygeoml; print('OK')"
 
 Linux with Pixi:
@@ -274,7 +301,7 @@ Linux:
    python -c "from geoml import pygeoml; print('OK')"
 
 Build and Run Tests
--------------------
+^^^^^^^^^^^^^^^^^^^
 
 Enable tests with ``GEOML_BUILD_TESTS=ON``. Run the following commands from the
 geoml repository root.
@@ -341,7 +368,7 @@ If you are already inside the build directory, you can omit ``--test-dir``:
    pixi run ctest --output-on-failure
 
 Run the Test Executables Directly
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 You can also run a test executable directly, for example to see the full
 GoogleTest output or to run only some of the tests with ``--gtest_filter``.
@@ -410,16 +437,33 @@ environment once. Then you can start the executables without ``./``:
 With Conda, run ``conda activate geoml-bld`` instead of ``pixi shell``.
 
 Build Documentation
--------------------
+^^^^^^^^^^^^^^^^^^^
 
-Run the following commands from the geoml repository root.
+Enable the documentation with ``GEOML_BUILD_DOCS=ON``. The documentation build
+configures the whole project, so it needs OpenCASCADE as well as Doxygen and
+Sphinx from the environment. Run the following commands from the geoml
+repository root.
+
+Windows with Pixi:
+
+.. code-block:: batch
+
+   pixi run cmake -S . -B build-docs -G Ninja ^
+     -DCMAKE_BUILD_TYPE=Release ^
+     -DGEOML_BUILD_DOCS=ON
+   pixi run cmake --build build-docs --target Sphinx --parallel
+
+Linux with Pixi:
 
 .. code-block:: bash
 
-   cmake -S . -B build-docs -G Ninja \
+   pixi run cmake -S . -B build-docs -G Ninja \
      -DCMAKE_BUILD_TYPE=Release \
      -DGEOML_BUILD_DOCS=ON
-   cmake --build build-docs --target Sphinx --parallel
+   pixi run cmake --build build-docs --target Sphinx --parallel
+
+With Conda, install the documentation tools first (see `Build with Conda`_) and
+run the same commands without ``pixi run`` in the activated environment.
 
 The generated HTML pages are written to:
 
@@ -428,7 +472,7 @@ The generated HTML pages are written to:
    build-docs/docs/html/index.html
 
 Build Configurations
---------------------
+^^^^^^^^^^^^^^^^^^^^
 
 Common CMake configurations are:
 
@@ -449,10 +493,15 @@ With Ninja, choose the configuration during configuration:
 
 .. code-block:: bash
 
-   cmake -S . -B build-release -G Ninja -DCMAKE_BUILD_TYPE=Release
+   pixi run cmake -S . -B build-debug -G Ninja -DCMAKE_BUILD_TYPE=Debug
+
+On Windows, a program that links against geoml must use the same configuration
+as geoml itself. A ``Debug`` program cannot link against a ``Release`` build of
+geoml and fails with linker errors such as ``LNK2038: mismatch detected for
+'RuntimeLibrary'``.
 
 CMake Options
--------------
+^^^^^^^^^^^^^
 
 .. list-table::
    :header-rows: 1
@@ -466,29 +515,26 @@ CMake Options
    * - ``GEOML_BUILD_TESTS``
      - Build unit and API tests.
      - ``OFF``
-   * - ``GEOML_BUILD_EXAMPLES``
-     - Build examples, if available.
-     - ``OFF``
    * - ``GEOML_BUILD_DOCS``
      - Build Doxygen/Sphinx documentation.
      - ``OFF``
    * - ``GEOML_INSTALL_INTERNAL_API``
-     - Install internal C++ headers and CMake package files.
+     - Additionally install the internal C++ headers and the
+       ``geoml_internal`` CMake package. The public headers and the ``geoml``
+       CMake package are always installed.
      - ``OFF``
+
+``GEOML_BUILD_EXAMPLES`` also exists, but the repository currently contains no
+``examples`` directory, so setting it to ``ON`` makes the CMake configuration
+fail. Leave it ``OFF``.
 
 Use geoml from C++
 ------------------
 
-Use the same environment that contains the installed geoml package and its
-dependencies. For Conda, activate the environment first:
-
-.. code-block:: batch
-
-   conda activate geoml-bld
-
-For Pixi, run the CMake commands through ``pixi run`` from the geoml repository
-or point ``CMAKE_PREFIX_PATH`` to the Pixi environment where geoml was
-installed, for example ``C:\data\code\geoml\.pixi\envs\default``.
+To use geoml in your own C++ project, geoml must first be installed (see
+`Install After Building`_ or `Build Python Bindings`_, which installs into the
+Pixi or Conda environment). Configure, build and run your project in the same
+environment that contains OpenCASCADE, because geoml links against it.
 
 Create a small project directory outside the geoml source tree, for example
 ``geoml-cpp-example``:
@@ -544,40 +590,80 @@ Minimal ``main.cpp``:
 OpenCASCADE headers usually use the ``.hxx`` extension. For example, include
 ``Geom_BSplineCurve.hxx`` and not ``Geom_BSplineCurve.h``.
 
-Configure and build the example from the ``geoml-cpp-example`` directory.
+Configure, build and run the example from the ``geoml-cpp-example`` directory.
+Use the same ``CMAKE_BUILD_TYPE`` as for geoml, ``Release`` in the commands
+below. On Windows, a mismatch fails with ``LNK2038`` linker errors (see
+`Build Configurations`_).
 
-If geoml was installed into a Conda environment:
+**With Pixi.** The example directory is outside the geoml repository, so
+``pixi run`` cannot find the geoml Pixi environment on its own. Pass the geoml
+``pyproject.toml`` with ``--manifest-path``. The examples below assume geoml is
+cloned to ``C:\data\code\geoml`` or ``~/geoml``. Use forward slashes in the paths
+after ``pixi run``, also on Windows.
+
+Windows, geoml installed into the Pixi environment:
+
+.. code-block:: batch
+
+   pixi run --manifest-path C:/data/code/geoml/pyproject.toml cmake -S . -B build -G Ninja ^
+     -DCMAKE_BUILD_TYPE=Release ^
+     "-DCMAKE_PREFIX_PATH=C:/data/code/geoml/.pixi/envs/default;C:/data/code/geoml/.pixi/envs/default/Library"
+   pixi run --manifest-path C:/data/code/geoml/pyproject.toml cmake --build build
+   pixi run --manifest-path C:/data/code/geoml/pyproject.toml ./build/example.exe
+
+Linux, geoml installed into the Pixi environment:
+
+.. code-block:: bash
+
+   pixi run --manifest-path ~/geoml/pyproject.toml cmake -S . -B build -G Ninja \
+     -DCMAKE_BUILD_TYPE=Release \
+     -DCMAKE_PREFIX_PATH="$HOME/geoml/.pixi/envs/default"
+   pixi run --manifest-path ~/geoml/pyproject.toml cmake --build build
+   pixi run --manifest-path ~/geoml/pyproject.toml ./build/example
+
+If geoml was installed into a separate prefix such as ``C:/data/code/geoml/install``
+or ``~/geoml/install``, add that prefix to ``CMAKE_PREFIX_PATH``, for example
+``"-DCMAKE_PREFIX_PATH=C:/data/code/geoml/install;C:/data/code/geoml/.pixi/envs/default/Library"``
+on Windows or ``-DCMAKE_PREFIX_PATH="$HOME/geoml/install;$HOME/geoml/.pixi/envs/default"``
+on Linux. OpenCASCADE is still taken from the Pixi environment.
+
+**With Conda.** Activate the environment first. Then ``CONDA_PREFIX`` points to
+it.
+
+Windows, geoml installed into the Conda environment:
 
 .. code-block:: batch
 
    conda activate geoml-bld
-   cmake -S . -B build -G Ninja "-DCMAKE_PREFIX_PATH=%CONDA_PREFIX%;%CONDA_PREFIX%\Library"
+   cmake -S . -B build -G Ninja ^
+     -DCMAKE_BUILD_TYPE=Release ^
+     "-DCMAKE_PREFIX_PATH=%CONDA_PREFIX%;%CONDA_PREFIX%\Library"
    cmake --build build
    build\example.exe
 
-If geoml was installed into the default Pixi environment:
+Windows, geoml installed into ``C:\data\code\geoml\install``:
 
 .. code-block:: batch
 
-   pixi run cmake -S . -B build -G Ninja "-DCMAKE_PREFIX_PATH=C:\data\code\geoml\.pixi\envs\default;C:\data\code\geoml\.pixi\envs\default\Library"
-   pixi run cmake --build build
-   build\example.exe
-
-If geoml was installed into ``C:\data\code\geoml\install``:
-
-.. code-block:: batch
-
-   cmake -S . -B build -G Ninja "-DCMAKE_PREFIX_PATH=C:\data\code\geoml\install;%CONDA_PREFIX%\Library"
+   conda activate geoml-bld
+   cmake -S . -B build -G Ninja ^
+     -DCMAKE_BUILD_TYPE=Release ^
+     "-DCMAKE_PREFIX_PATH=C:\data\code\geoml\install;%CONDA_PREFIX%\Library"
    cmake --build build
    build\example.exe
 
-On Linux, use the same pattern with the install prefix:
+Linux, geoml installed into the Conda environment or into ``~/geoml/install``:
 
 .. code-block:: bash
 
-   cmake -S . -B build -DCMAKE_PREFIX_PATH=/path/to/geoml/install
+   conda activate geoml-bld
+   cmake -S . -B build -G Ninja \
+     -DCMAKE_BUILD_TYPE=Release \
+     -DCMAKE_PREFIX_PATH="$HOME/geoml/install;$CONDA_PREFIX"
    cmake --build build
    ./build/example
+
+The example program returns exit code ``0`` if the curve was created.
 
 Use geoml from Python
 ---------------------
@@ -602,17 +688,31 @@ current ``environment.yml``:
    conda env create -f environment.yml
    conda activate geoml-bld
 
-The geoml environment pins Python to a version that is compatible with the
-available PythonOCC packages. Do not install ``pythonocc-core`` separately into
-an already-created environment with an unconstrained Python version.
+``environment.yml`` pins OpenCASCADE to 7.6.2, and the solver then picks a
+``pythonocc-core`` and a Python version that are compatible with it. The Pixi
+environment pins ``pythonocc-core`` 7.6.2 and Python 3.11 explicitly. Do not
+install or update ``pythonocc-core``, ``opencascade`` or ``python`` separately in
+an already-created environment, because this can pull in incompatible versions.
 
-If CMake cannot find OpenCASCADE, make sure the Conda or Pixi environment is
-active. On Windows, also make sure that the x64 compiler is available before
-running CMake:
+If CMake cannot find OpenCASCADE, make sure that you run CMake inside the
+environment: prefix the command with ``pixi run`` or activate the Conda
+environment first.
+
+If CMake cannot find a C++ compiler on Windows, start the build from an
+**x64 Native Tools Command Prompt for VS**. You can check that the compiler is
+available with:
 
 .. code-block:: batch
 
-   cmake -S . -B build-release -G Ninja
+   where cl
+
+On Linux, check that ``g++ --version`` works, otherwise install a compiler (see
+`Build Dependencies`_).
+
+If ``pixi run`` fails with ``could not find pixi.toml or pyproject.toml with
+tool.pixi``, the current directory is not inside the geoml repository. Either
+change into the repository or pass ``--manifest-path`` with the path to the geoml
+``pyproject.toml`` (see `Use geoml from C++`_).
 
 If dependency paths look wrong, delete the build directory and configure again.
 
