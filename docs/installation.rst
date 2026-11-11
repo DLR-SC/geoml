@@ -333,45 +333,81 @@ The test build contains two test executables:
 * ``geoml-unittests`` for unit tests, in ``build-tests/tests/unittests``
 * ``geoml-apitest`` for API tests, in ``build-tests/tests/apitests``
 
-You can also run a test executable directly, for example to run only some of
-the tests with a GoogleTest filter. Keep two things in mind:
-
-* The executables need the OpenCASCADE shared libraries at runtime. These
-  libraries are in the Pixi or Conda environment, so run the executables from
-  inside that environment.
-* Start each executable from its own build directory. The unit tests read input
-  files from ``TestData/`` relative to the current directory, so started from
-  anywhere else they fail with errors such as
-  ``BRepTools::Read(guides, "TestData/...", b)``. ctest changes to the right
-  directory automatically.
-
-Windows with Pixi:
+If you are already inside the build directory, you can omit ``--test-dir``:
 
 .. code-block:: batch
 
-   cd build-tests\tests\unittests
-   pixi run ./geoml-unittests.exe --gtest_filter=*Curve*
-   cd ..\apitests
+   cd build-tests
+   pixi run ctest --output-on-failure
+
+Run the Test Executables Directly
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+You can also run a test executable directly, for example to see the full
+GoogleTest output or to run only some of the tests with ``--gtest_filter``.
+Keep two things in mind:
+
+* **Run the executables inside the Pixi or Conda environment.** They need the
+  OpenCASCADE shared libraries at runtime, and these libraries are in the
+  environment. If you start ``geoml-apitest.exe`` from a plain terminal on
+  Windows, a system error dialog says that ``TKBool.dll``, ``TKFillet.dll``,
+  ``TKIGES.dll``, ``TKSTEP.dll`` or another ``TK*.dll`` was not found.
+* **Start each executable from its own build directory.** The tests read input
+  files from ``TestData/`` relative to the current directory. Started from
+  anywhere else, they fail with errors such as
+  ``BRepTools::Read(guides, "TestData/...", b)``. ctest changes to the right
+  directory automatically.
+
+To run the API tests, change into their build directory and start the executable
+through ``pixi run``:
+
+.. code-block:: batch
+
+   cd build-tests\tests\apitests
    pixi run ./geoml-apitest.exe
 
-Linux with Pixi:
+To run the unit tests afterwards, change into their build directory:
+
+.. code-block:: batch
+
+   cd ..\unittests
+   pixi run ./geoml-unittests.exe
+
+To run only some of the tests, add a GoogleTest filter, for example:
+
+.. code-block:: batch
+
+   pixi run ./geoml-unittests.exe --gtest_filter=*Curve*
+
+On Linux, use the same commands with forward slashes and without ``.exe``:
 
 .. code-block:: bash
 
-   cd build-tests/tests/unittests
-   pixi run ./geoml-unittests --gtest_filter=*Curve*
-   cd ../apitests
+   cd build-tests/tests/apitests
    pixi run ./geoml-apitest
+   cd ../unittests
+   pixi run ./geoml-unittests
 
 ``pixi run`` finds the geoml environment from these subdirectories as well.
 
-Use forward slashes in paths after ``pixi run``, also on Windows. Pixi runs the
-command in its own cross-platform shell, which can treat a backslash as an escape
-character. A command such as ``pixi run build-tests\tests\apitests\geoml-apitest.exe``
-can then fail with ``build-teststestsapitestsgeoml-apitest.exe: command not found``.
+Use ``./`` and forward slashes in paths after ``pixi run``, also on Windows. Pixi
+runs the command in its own cross-platform shell, which can treat a backslash as
+an escape character. A command such as
+``pixi run build-tests\tests\apitests\geoml-apitest.exe`` can then fail with
+``build-teststestsapitestsgeoml-apitest.exe: command not found``.
 
-Alternatively, start a shell with the environment activated once (``pixi shell``
-or ``conda activate geoml-bld``) and run the executables as usual from there.
+Instead of prefixing every command with ``pixi run``, you can activate the
+environment once. Then you can start the executables without ``./``:
+
+.. code-block:: batch
+
+   pixi shell
+   cd build-tests\tests\apitests
+   geoml-apitest.exe
+   cd ..\unittests
+   geoml-unittests.exe
+
+With Conda, run ``conda activate geoml-bld`` instead of ``pixi shell``.
 
 Build Documentation
 -------------------
