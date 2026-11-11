@@ -299,6 +299,12 @@ Linux with Pixi:
    pixi run cmake --build build-tests --parallel
    pixi run ctest --test-dir build-tests --output-on-failure
 
+``ctest --test-dir`` must point to the build directory in which the tests were
+configured with ``GEOML_BUILD_TESTS=ON``. If you enabled the tests in another
+build directory, for example ``build-release``, use that name instead of
+``build-tests``, here and in the commands below. Otherwise ctest fails with
+``Failed to change working directory ... No such file or directory``.
+
 With Conda, activate the environment (``conda activate geoml-bld``) and use the
 same commands without ``pixi run``.
 
@@ -328,23 +334,41 @@ The test build contains two test executables:
 * ``geoml-apitest`` for API tests, in ``build-tests/tests/apitests``
 
 You can also run a test executable directly, for example to run only some of
-the tests with a GoogleTest filter. The executables need the OpenCASCADE shared
-libraries at runtime. These libraries are in the Pixi or Conda environment, so
-run the executables from inside that environment.
+the tests with a GoogleTest filter. Keep two things in mind:
+
+* The executables need the OpenCASCADE shared libraries at runtime. These
+  libraries are in the Pixi or Conda environment, so run the executables from
+  inside that environment.
+* Start each executable from its own build directory. The unit tests read input
+  files from ``TestData/`` relative to the current directory, so started from
+  anywhere else they fail with errors such as
+  ``BRepTools::Read(guides, "TestData/...", b)``. ctest changes to the right
+  directory automatically.
 
 Windows with Pixi:
 
 .. code-block:: batch
 
-   pixi run build-tests\tests\apitests\geoml-apitest.exe
-   pixi run build-tests\tests\unittests\geoml-unittests.exe --gtest_filter=*Curve*
+   cd build-tests\tests\unittests
+   pixi run ./geoml-unittests.exe --gtest_filter=*Curve*
+   cd ..\apitests
+   pixi run ./geoml-apitest.exe
 
 Linux with Pixi:
 
 .. code-block:: bash
 
-   pixi run ./build-tests/tests/apitests/geoml-apitest
-   pixi run ./build-tests/tests/unittests/geoml-unittests --gtest_filter=*Curve*
+   cd build-tests/tests/unittests
+   pixi run ./geoml-unittests --gtest_filter=*Curve*
+   cd ../apitests
+   pixi run ./geoml-apitest
+
+``pixi run`` finds the geoml environment from these subdirectories as well.
+
+Use forward slashes in paths after ``pixi run``, also on Windows. Pixi runs the
+command in its own cross-platform shell, which can treat a backslash as an escape
+character. A command such as ``pixi run build-tests\tests\apitests\geoml-apitest.exe``
+can then fail with ``build-teststestsapitestsgeoml-apitest.exe: command not found``.
 
 Alternatively, start a shell with the environment activated once (``pixi shell``
 or ``conda activate geoml-bld``) and run the executables as usual from there.
