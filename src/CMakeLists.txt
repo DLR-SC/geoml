@@ -76,6 +76,7 @@ install(DIRECTORY geoml/
     COMPONENT cpp_bindings
     FILES_MATCHING
     PATTERN "*.h"
+    PATTERN "*.hpp"
 )
 
 install(FILES

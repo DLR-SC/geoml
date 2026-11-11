@@ -14,3 +14,4 @@ geoml is used in practice.
 
    curves
    surfaces
+   shapes
