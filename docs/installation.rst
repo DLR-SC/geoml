@@ -34,7 +34,7 @@ Building from Source
 Build Dependencies
 ------------------
 
-Before giving a detailed step by step building/installation instructions, we mention that the minimal requirement for a C++ build you need:
+Before giving a detailed step by step building/installation instructions, we mention the minimal requirement for a C++ build:
 
 * Git
 * CMake 3.15 or newer
@@ -72,7 +72,7 @@ terminal and check the installation with:
 
    pixi --version
 
-On Linux, follow the official installation command:
+On Linux, follow the official installation command (CHECK LATER):
 
 .. code-block:: bash
 
@@ -98,7 +98,7 @@ open the Miniforge Prompt and check:
    conda --version
 
 On Linux, download the matching Miniforge shell installer from the release page,
-run it, restart the terminal and check:
+run it, restart the terminal and check (CHECK LATER):
 
 .. code-block:: bash
 
@@ -279,7 +279,30 @@ Build and Run Tests
 Enable tests with ``GEOML_BUILD_TESTS=ON``. Run the following commands from the
 geoml repository root.
 
-Windows:
+Windows with Pixi:
+
+.. code-block:: batch
+
+   pixi run cmake -S . -B build-tests -G Ninja ^
+     -DCMAKE_BUILD_TYPE=Release ^
+     -DGEOML_BUILD_TESTS=ON
+   pixi run cmake --build build-tests --parallel
+   pixi run ctest --test-dir build-tests --output-on-failure
+
+Linux with Pixi:
+
+.. code-block:: bash
+
+   pixi run cmake -S . -B build-tests -G Ninja \
+     -DCMAKE_BUILD_TYPE=Release \
+     -DGEOML_BUILD_TESTS=ON
+   pixi run cmake --build build-tests --parallel
+   pixi run ctest --test-dir build-tests --output-on-failure
+
+With Conda, activate the environment (``conda activate geoml-bld``) and use the
+same commands without ``pixi run``.
+
+Windows with Conda:
 
 .. code-block:: batch
 
@@ -289,7 +312,7 @@ Windows:
    cmake --build build-tests --parallel
    ctest --test-dir build-tests --output-on-failure
 
-Linux:
+Linux with Conda:
 
 .. code-block:: bash
 
@@ -299,10 +322,32 @@ Linux:
    cmake --build build-tests --parallel
    ctest --test-dir build-tests --output-on-failure
 
-The test build contains:
+The test build contains two test executables:
 
-* ``geoml-unittests`` for unit tests
-* ``geoml-apitest`` for API tests
+* ``geoml-unittests`` for unit tests, in ``build-tests/tests/unittests``
+* ``geoml-apitest`` for API tests, in ``build-tests/tests/apitests``
+
+You can also run a test executable directly, for example to run only some of
+the tests with a GoogleTest filter. The executables need the OpenCASCADE shared
+libraries at runtime. These libraries are in the Pixi or Conda environment, so
+run the executables from inside that environment.
+
+Windows with Pixi:
+
+.. code-block:: batch
+
+   pixi run build-tests\tests\apitests\geoml-apitest.exe
+   pixi run build-tests\tests\unittests\geoml-unittests.exe --gtest_filter=*Curve*
+
+Linux with Pixi:
+
+.. code-block:: bash
+
+   pixi run ./build-tests/tests/apitests/geoml-apitest
+   pixi run ./build-tests/tests/unittests/geoml-unittests --gtest_filter=*Curve*
+
+Alternatively, start a shell with the environment activated once (``pixi shell``
+or ``conda activate geoml-bld``) and run the executables as usual from there.
 
 Build Documentation
 -------------------
@@ -510,6 +555,23 @@ running CMake:
    cmake -S . -B build-release -G Ninja
 
 If dependency paths look wrong, delete the build directory and configure again.
+
+If running a geoml executable on Windows (for example ``geoml-apitest.exe``)
+fails with a system error saying that ``TKBool.dll``, ``TKFillet.dll``,
+``TKIGES.dll``, ``TKSTEP.dll`` or another ``TK*.dll`` was not found, the
+OpenCASCADE libraries are not on ``PATH``. This happens when the executable is
+started from a terminal where the Pixi or Conda environment is not active. Run it
+through ``pixi run``, from a ``pixi shell``, or after ``conda activate
+geoml-bld``. For a single terminal session, you can also add the library
+directory to ``PATH`` manually:
+
+.. code-block:: batch
+
+   set PATH=C:\data\code\geoml\.pixi\envs\default\Library\bin;%PATH%
+
+On Linux, the equivalent error is ``error while loading shared libraries:
+libTKBool.so...``. Fix it in the same way, by running the executable inside the
+activated environment.
 
 If compilation fails with an error such as ``C1083`` and
 ``Geom_BSplineCurve.h`` cannot be opened, check the include name in
