@@ -12,7 +12,7 @@ Class
 Functions
 ---------
 
-.. doxygenfunction:: geoml::operator*
+.. doxygenfunction:: geoml::operator *
 
 .. doxygenfunction:: geoml::translate(TopoDS_Shape const&, gp_Vec const&, double)
 

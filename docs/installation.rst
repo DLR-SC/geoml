@@ -52,13 +52,14 @@ installed on the system. On Debian/Ubuntu, for example, install GCC with:
 
 .. code-block:: bash
 
+   sudo apt update
    sudo apt install build-essential
 
 For Python bindings you additionally (to the minimal requirement) need:
 
-* Python 3.11 (the Pixi environment pins ``>=3.11,<3.12``)
+* Python 3.11 (pinned in ``pyproject.toml`` and ``environment.yml``)
 * pythonocc-core 7.6.2 (must match the OpenCASCADE version)
-* SWIG
+* SWIG 4.0.2 (must match the SWIG version used to build pythonocc-core)
 * setuptools (used by CMake to find the Python ``site-packages`` directory)
 
 For documentation you additionally (to the minimal requirement) need:
@@ -182,17 +183,21 @@ not part of ``environment.yml``, so install it into the environment:
 
    conda install -c conda-forge ninja
 
-If you want to build Python bindings, also install:
-
-.. code-block:: bash
-
-   conda install -c conda-forge swig
+``environment.yml`` already contains SWIG 4.0.2 for the Python bindings. Do not
+install another SWIG version: the bindings must be generated with the same SWIG
+version as ``pythonocc-core``, otherwise passing OpenCASCADE objects such as
+``gp_Pnt`` from Python to geoml fails with ``TypeError: in method ...``.
 
 If you want to build the documentation, also install:
 
 .. code-block:: bash
 
-   conda install -c conda-forge doxygen sphinx breathe sphinx-rtd-theme m2r "docutils<0.21"
+   conda install -c dlr-sc -c conda-forge doxygen=1.8.15 sphinx breathe sphinx-rtd-theme m2r "docutils<0.21"
+
+Doxygen 1.8.15 is the version used by the Pixi environment and for the published
+documentation. Newer Doxygen versions name some C++ operators differently, so
+parts of the API reference are missing and Sphinx warns with
+``doxygenfunction: Cannot find function "geoml::operator &&"``.
 
 Run the following build commands from the geoml repository root, i.e. the
 directory that contains ``CMakeLists.txt``.
@@ -249,6 +254,10 @@ Build Python Bindings
 Enable Python bindings with ``GEOML_BUILD_PYTHON_BINDINGS=ON``. Run the
 configure, build and install commands from the geoml repository root.
 
+The bindings are built for the Python interpreter of the active Pixi or Conda
+environment (CMake finds it through ``CONDA_PREFIX``), so run CMake inside that
+environment. To use another interpreter, pass ``-DPython3_EXECUTABLE=<path>``.
+
 Windows with Pixi:
 
 .. code-block:: batch
@@ -276,7 +285,7 @@ Linux with Pixi:
 With Conda, use the same CMake options without ``pixi run`` and install into
 the active Conda environment.
 
-Windows:
+Windows with Conda:
 
 .. code-block:: batch
 
@@ -288,7 +297,7 @@ Windows:
    cmake --install build-python --prefix %CONDA_PREFIX%
    python -c "from geoml import pygeoml; print('OK')"
 
-Linux:
+Linux with Conda:
 
 .. code-block:: bash
 
@@ -299,6 +308,13 @@ Linux:
    cmake --build build-python --parallel
    cmake --install build-python --prefix "$CONDA_PREFIX"
    python -c "from geoml import pygeoml; print('OK')"
+
+To run the Python examples from this documentation, save an example to a file
+and run it inside the environment, for example with
+``pixi run python example.py`` or, with Conda, ``python example.py``. The Python
+tests can be run from the repository root with
+``pixi run python -m pytest tests/python`` or, with Conda,
+``python -m pytest tests/python``.
 
 Build and Run Tests
 ^^^^^^^^^^^^^^^^^^^
@@ -688,11 +704,13 @@ current ``environment.yml``:
    conda env create -f environment.yml
    conda activate geoml-bld
 
-``environment.yml`` pins OpenCASCADE to 7.6.2, and the solver then picks a
-``pythonocc-core`` and a Python version that are compatible with it. The Pixi
-environment pins ``pythonocc-core`` 7.6.2 and Python 3.11 explicitly. Do not
-install or update ``pythonocc-core``, ``opencascade`` or ``python`` separately in
-an already-created environment, because this can pull in incompatible versions.
+Both ``environment.yml`` and the Pixi environment pin OpenCASCADE 7.6.2,
+``pythonocc-core`` 7.6.2 and Python 3.11. ``pythonocc-core`` must match the
+OpenCASCADE version: a newer ``pythonocc-core`` from conda-forge pulls in a
+second OpenCASCADE (package ``occt``) with incompatible headers, and the geoml
+build fails with errors such as ``C2143: syntax error: missing ';' before '&'``.
+Do not install or update ``pythonocc-core``, ``opencascade``, ``occt`` or
+``python`` separately in an already-created environment.
 
 If CMake cannot find OpenCASCADE, make sure that you run CMake inside the
 environment: prefix the command with ``pixi run`` or activate the Conda

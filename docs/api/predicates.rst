@@ -9,7 +9,7 @@ intended for use with shape filtering, history queries and persistent tagging.
 Logical Composition
 -------------------
 
-.. doxygenfunction:: geoml::operator&&
+.. doxygenfunction:: geoml::operator &&
 
 .. doxygenfunction:: geoml::operator||
 

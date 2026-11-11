@@ -8,8 +8,9 @@ dependencies:
 #  - ninja=1.10.2                  # needed for the Ninja-based build instructions
  - pip                           # just make sure that pip installs into this env, if used
  - setuptools                    # needed to infer the python site-packages path
- - pythonocc-core
+ - pythonocc-core=7.6.2           # must match the OpenCASCADE version
  - opencascade=7.6.2  
  - pytest
+ - swig=4.0.2                    # must match the SWIG version of pythonocc-core
  - conda-forge::qt=5.15.8        # needed to build tiglviewer
- - python                        # needed to build python bindings
+ - python=3.11                   # needed to build python bindings
