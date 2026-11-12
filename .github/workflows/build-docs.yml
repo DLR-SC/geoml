@@ -59,18 +59,18 @@ jobs:
           retention-days: 5
 
       - name: Setup Pages
-        if: github.ref_name == 'main'
+        if: github.ref_name == 'main' || github.ref_name == 'documentation_extension'
         uses: actions/configure-pages@v4
 
       - name: Upload to GitHub Pages
-        if: github.ref_name == 'main'
+        if: github.ref_name == 'main' || github.ref_name == 'documentation_extension'
         uses: actions/upload-pages-artifact@v3
         with:
           path: build/docs/html/
 
   deploy:
     name: Deploy to GitHub Pages
-    if: github.ref_name == 'main'
+    if: github.ref_name == 'main' || github.ref_name == 'documentation_extension'
     needs: build
     runs-on: ubuntu-latest
     permissions:
