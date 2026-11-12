@@ -8,6 +8,25 @@ dl.cpp .sig {
     max-width: 1000px;
 }
 
+/* Keep the logo and the search box visible on every page: the theme scrolls
+   the navigation to the current page, which would otherwise move the logo
+   out of view */
+.wy-side-nav-search {
+    position: sticky;
+    top: 0;
+    z-index: 200;
+}
+
+/* The logo has a transparent background and dark blue shapes; show it on a
+   white card so that it is readable on the dark navigation header */
+.wy-side-nav-search .wy-dropdown > a img.logo,
+.wy-side-nav-search > a img.logo {
+    background: #ffffff;
+    padding: 10px 14px;
+    border-radius: 6px;
+    max-width: 85%;
+}
+
 .highlight pre {
     background: #f6f8fa;
     padding: 0.8em;
