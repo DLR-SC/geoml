@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="./docs/_static/geoml-logo.svg" alt="geoml" width="360">
+</p>
+
 ## geoml
 The **Geo**metry **M**odeling **L**ibrary, geoml, is intended to serve as the central geometry library for the German Aerospace Center (DLR) to bundle development efforts.
 
