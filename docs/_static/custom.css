@@ -17,7 +17,7 @@ dl.cpp .sig {
     z-index: 200;
 }
 
-/* The logo has a transparent background and dark blue shapes; show it on a
+/* The logo has a transparent background and black shapes; show it on a
    white card so that it is readable on the dark navigation header */
 .wy-side-nav-search .wy-dropdown > a img.logo,
 .wy-side-nav-search > a img.logo {
