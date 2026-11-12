@@ -7,9 +7,7 @@ Overview
    :alt: geoml
    :width: 360px
    :align: center
-
-geoml
------
+   :class: overview-logo
 
 The **Geometry Modeling Library**, geoml, is intended to serve as the central geometry library for the German Aerospace Center (DLR) to bundle development efforts.
 
