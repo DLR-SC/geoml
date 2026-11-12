@@ -3,12 +3,6 @@
 Overview
 ============
 
-.. image:: _static/geoml-logo-steelblue.png
-   :alt: geoml
-   :width: 360px
-   :align: center
-   :class: overview-logo
-
 The **Geometry Modeling Library**, geoml, is intended to serve as the central geometry library for the German Aerospace Center (DLR) to bundle development efforts.
 
 It extends OpenCASCADE Technology with advanced modelling functionalities such as Gordon surfaces or smooth blending and provides a framework for robust and persistant feature tracking and metadata annotation for parametric modelling.

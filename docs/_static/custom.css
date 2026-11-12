@@ -27,12 +27,6 @@ dl.cpp .sig {
     max-width: 85%;
 }
 
-/* Space between the logo on the Overview page and the text below it
-   (specific enough to override the theme's image and align-center margins) */
-.rst-content img.overview-logo.align-center {
-    margin-bottom: 2em;
-}
-
 .highlight pre {
     background: #f6f8fa;
     padding: 0.8em;
