@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="./docs/_static/geoml-logo.png" alt="geoml" width="360">
+  <img src="./docs/_static/geoml-logo-black.png" alt="geoml" width="360">
 </p>
 
 ## geoml

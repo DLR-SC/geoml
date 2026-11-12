@@ -3,6 +3,11 @@
 Overview
 ============
 
+.. image:: _static/geoml-logo-black.png
+   :alt: geoml
+   :width: 360px
+   :align: center
+
 geoml
 -----
 

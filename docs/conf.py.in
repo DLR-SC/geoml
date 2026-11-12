@@ -73,8 +73,8 @@ html_title = f'{project} {release} documentation'
 html_short_title = 'geoml'
 
 # Logo in the navigation sidebar and browser tab icon
-html_logo = '@PROJECT_SOURCE_DIR@/docs/_static/geoml-logo.png'
-html_favicon = '@PROJECT_SOURCE_DIR@/docs/_static/geoml-icon.png'
+html_logo = '@PROJECT_SOURCE_DIR@/docs/_static/geoml-logo-black.png'
+html_favicon = '@PROJECT_SOURCE_DIR@/docs/_static/geoml-icon-black.png'
 
 # Breathe Configuration
 breathe_projects = {"geoml": "@PROJECT_BINARY_DIR@/docs/doxygen/xml"}
