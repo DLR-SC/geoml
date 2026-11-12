@@ -3,7 +3,7 @@
 Overview
 ============
 
-.. image:: _static/geoml-logo-black.png
+.. image:: _static/geoml-logo-steelblue.png
    :alt: geoml
    :width: 360px
    :align: center
