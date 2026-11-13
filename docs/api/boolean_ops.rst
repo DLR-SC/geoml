@@ -4,7 +4,7 @@ Boolean Operations
 ==================
 
 Boolean operations combine or subtract ``geoml::Shape`` instances and preserve
-modeling history for robust downstream subshape selection.
+modelling history for robust downstream subshape selection.
 
 Functions
 ---------

@@ -1,4 +1,4 @@
-// Track subshapes through modeling operations with history predicates
+// Track subshapes through modelling operations with history predicates
 #include <cmath>
 #include <iostream>
 #include <string>
@@ -60,11 +60,11 @@ int main()
     Shape box = create_box(10., 10., 10.);
     Shape drill = Shape(translate(create_cylinder(2., 12.), gp_Vec(5., 5., -1.)));
 
-    // Pick the subshapes we want to follow through the modeling operations
+    // Pick the subshapes we want to follow through the modelling operations
     Shape top = box.select_subshapes(is_face_at_height(10.)).unique_element();
     Shape drill_wall = drill.select_subshapes(is_cylindrical_face).unique_element();
 
-    // Modeling step 1: drill the hole
+    // Modelling step 1: drill the hole
     Shape drilled = box - drill;
 
     // The top face got a hole, so it is a *modified* descendent of the box's top face
@@ -84,11 +84,11 @@ int main()
     expect_count("edges between hole and top face",
                  drilled.select_subshapes(is_edge && is_subshape_of(hole_wall) && is_subshape_of(drilled_top)), 1);
 
-    // Modeling step 2: cut away a corner of the box
+    // Modelling step 2: cut away a corner of the box
     Shape corner = Shape(translate(create_box(3., 3., 3.), gp_Vec(8., 8., 8.)));
     Shape result = drilled - corner;
 
-    // History predicates follow the history over several modeling steps
+    // History predicates follow the history over several modelling steps
     expect_count("faces descending from the original top face",
                  result.select_subshapes(is_face && is_descendent_of(top)), 1);
     expect_count("faces descending from the drill wall",

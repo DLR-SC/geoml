@@ -4,8 +4,8 @@ Naming and Choosing
 ===================
 
 The naming and choosing API wraps OpenCASCADE topology in ``geoml::Shape``. It
-tracks topological children, modeling history and metadata tags so generated
-shapes can be selected robustly after modeling operations.
+tracks topological children, modelling history and metadata tags so generated
+shapes can be selected robustly after modelling operations.
 
 Predicates and Tags
 -------------------

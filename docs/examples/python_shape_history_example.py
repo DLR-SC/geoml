@@ -38,11 +38,11 @@ drill = pygeoml.Shape(
     BRepPrimAPI_MakeCylinder(gp_Ax2(gp_Pnt(5.0, 5.0, -1.0), gp_Dir(0.0, 0.0, 1.0)), 2.0, 12.0).Shape()
 )
 
-# Pick the subshapes we want to follow through the modeling operations
+# Pick the subshapes we want to follow through the modelling operations
 top = select_faces(box, at_height(10.0)).unique_element()
 drill_wall = select_faces(drill, is_cylindrical).unique_element()
 
-# Modeling step 1: drill the hole
+# Modelling step 1: drill the hole
 drilled = box - drill
 
 # The top face got a hole: it is a *modified* descendent of the original top face
@@ -64,11 +64,11 @@ rim = drilled.select_subshapes(
 )
 assert rim.size() == 1
 
-# Modeling step 2: cut away a corner of the box
+# Modelling step 2: cut away a corner of the box
 corner = pygeoml.Shape(BRepPrimAPI_MakeBox(gp_Pnt(8.0, 8.0, 8.0), 3.0, 3.0, 3.0).Shape())
 result = drilled - corner
 
-# History predicates follow the history over several modeling steps
+# History predicates follow the history over several modelling steps
 assert result.select_subshapes(is_face & pygeoml.is_descendent_of(top)).size() == 1
 assert result.select_subshapes(is_face & pygeoml.is_descendent_of(drill_wall)).size() == 1
 assert result.select_subshapes(is_face & pygeoml.is_descendent_of_subshape_in(corner)).size() == 3

@@ -56,7 +56,7 @@ assert box.select_subshapes(has_tag("top")).size() == 1
 assert box.select_subshapes(has_tag("top") | has_tag("bottom")).size() == 2
 assert box.select_subshapes(has_tag("edge")).size() == 12
 
-# Meta tags belong to the subshapes of this shape. A modeling operation
+# Meta tags belong to the subshapes of this shape. A modelling operation
 # creates new subshapes, so the tags are not part of the result.
 drilled = box - make_drill()
 assert drilled.select_subshapes(has_tag("top")).size() == 0
@@ -70,7 +70,7 @@ drill = make_drill()
 part_top = select_faces(part, at_height(10.0)).unique_element()
 drill_wall = select_faces(drill, is_cylindrical).unique_element()
 
-# A tag track stores a tag, a criterion and the number of modeling steps it
+# A tag track stores a tag, a criterion and the number of modelling steps it
 # stays active. Its criterion is evaluated on the result of every operation
 # that has the shape as input, so it can use history predicates to find the
 # subshapes that originate from the tagged input subshapes.

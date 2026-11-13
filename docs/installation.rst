@@ -118,7 +118,7 @@ On Linux, download and run the matching Miniforge installer:
    curl -L -O "https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-$(uname)-$(uname -m).sh"
    bash Miniforge3-$(uname)-$(uname -m).sh
 
-Follow the installer prompts and allow it to initialize Conda for your shell.
+Follow the installer prompts and allow it to initialise Conda for your shell.
 Then restart the terminal and check:
 
 .. code-block:: bash
@@ -393,7 +393,7 @@ Keep two things in mind:
 * **Run the executables inside the Pixi or Conda environment.** They need the
   OpenCASCADE shared libraries at runtime, and these libraries are in the
   environment. If you start ``geoml-apitest.exe`` from a plain terminal on
-  Windows, a system error dialog says that ``TKBool.dll``, ``TKFillet.dll``,
+  Windows, a system error dialogue says that ``TKBool.dll``, ``TKFillet.dll``,
   ``TKIGES.dll``, ``TKSTEP.dll`` or another ``TK*.dll`` was not found.
 * **Start each executable from its own build directory.** The tests read input
   files from ``TestData/`` relative to the current directory. Started from
@@ -498,9 +498,9 @@ Common CMake configurations are:
    * - Configuration
      - Use
    * - ``Release``
-     - Optimized build for normal use.
+     - Optimised build for normal use.
    * - ``Debug``
-     - Debug build with less optimization.
+     - Debug build with less optimisation.
 
 The commands above use ``Release`` as an example configuration. Use another
 configuration, such as ``Debug``, if that better matches your use case.

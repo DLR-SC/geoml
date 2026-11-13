@@ -31,8 +31,8 @@ Curve Network Surface
    :language: python
    :caption: Interpolate a surface through a curve network
 
-Modeling Operations
--------------------
+Modelling Operations
+--------------------
 
 .. literalinclude:: examples/python_modeling_example.py
    :language: python
@@ -66,8 +66,8 @@ Selecting subshapes with predicates
    :language: python
    :caption: Select subshapes with predicates
 
-Tracking subshapes through modeling operations
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Tracking subshapes through modelling operations
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. literalinclude:: examples/python_shape_history_example.py
    :language: python

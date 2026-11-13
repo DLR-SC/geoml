@@ -12,7 +12,7 @@
 
 namespace
 {
-// A custom predicate: true for faces whose center of mass lies at height z.
+// A custom predicate: true for faces whose centre of mass lies at height z.
 // Any callable taking a geoml::Shape and returning a bool can be wrapped in a
 // geoml::ShapePredicate and then be combined with the built-in predicates.
 geoml::ShapePredicate is_face_at_height(double z)

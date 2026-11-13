@@ -3,7 +3,7 @@
 Primitives
 ==========
 
-Primitive modeling functions create history-aware ``geoml::Shape`` objects for
+Primitive modelling functions create history-aware ``geoml::Shape`` objects for
 common solids.
 
 Functions

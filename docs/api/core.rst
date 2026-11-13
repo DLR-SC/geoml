@@ -3,10 +3,10 @@
 Core
 ====
 
-Core headers define library initialization, error handling and shared enum
+Core headers define library initialisation, error handling and shared enum
 types used by the rest of the public API.
 
-Initialization
+Initialisation
 --------------
 
 .. doxygenfunction:: geoml::init

@@ -5,7 +5,7 @@ from OCC.Core.GProp import GProp_GProps
 
 
 def is_face_at_height(shape, z):
-    """Predicate for the faces of `shape` whose center of mass lies at height z.
+    """Predicate for the faces of `shape` whose centre of mass lies at height z.
 
     Python functions cannot be used as geoml predicates directly. Instead, look
     up the faces with pythonocc and build a predicate from them with is_same.

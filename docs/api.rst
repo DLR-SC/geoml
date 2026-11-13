@@ -3,12 +3,12 @@
 API Reference
 =============
 
-The geoml C++ API is organized around a small set of public headers in
+The geoml C++ API is organised around a small set of public headers in
 ``src/geoml``. The reference below mirrors that structure and documents the
 types and functions exposed in namespace ``geoml``.
 
 Most functions operate on OpenCASCADE geometry and topology types such as
-``gp_Pnt``, ``Geom_Curve``, ``Geom_Surface`` and ``TopoDS_Shape``. Modeling
+``gp_Pnt``, ``Geom_Curve``, ``Geom_Surface`` and ``TopoDS_Shape``. Modelling
 operations that need history-aware naming use :cpp:class:`geoml::Shape`.
 
 .. toctree::

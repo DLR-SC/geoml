@@ -1,4 +1,4 @@
-// Tag subshapes and keep tags alive through modeling operations with tag tracks
+// Tag subshapes and keep tags alive through modelling operations with tag tracks
 #include <cmath>
 #include <iostream>
 #include <string>
@@ -74,7 +74,7 @@ int main()
                  box.select_subshapes(has_tag("top") || has_tag("bottom")), 2);
     expect_count("edges tagged 'edge'", box.select_subshapes(has_tag("edge")), 12);
 
-    // Meta tags belong to the subshapes of this shape. A modeling operation
+    // Meta tags belong to the subshapes of this shape. A modelling operation
     // creates new subshapes, so the tags are not part of the result.
     Shape drilled = box - make_drill();
     expect_count("faces tagged 'top' after drilling", drilled.select_subshapes(has_tag("top")), 0);
@@ -88,7 +88,7 @@ int main()
     Shape top = part.select_subshapes(is_face_at_height(10.)).unique_element();
     Shape drill_wall = drill.select_subshapes(is_cylindrical_face).unique_element();
 
-    // A tag track stores a tag, a criterion and the number of modeling steps
+    // A tag track stores a tag, a criterion and the number of modelling steps
     // it stays active. Its criterion is evaluated on the result of every
     // operation that has the shape as input, so it can use history predicates
     // to find the subshapes that originate from the tagged input subshapes.

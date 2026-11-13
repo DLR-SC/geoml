@@ -4,11 +4,11 @@ Selecting, Tracking and Tagging Subshapes
 =========================================
 
 ``geoml::Shape`` wraps an OpenCASCADE ``TopoDS_Shape`` and additionally stores
-the modeling history and metadata tags of the shape and its subshapes. This
+the modelling history and metadata tags of the shape and its subshapes. This
 page shows how to
 
 * select subshapes with **predicates**,
-* follow subshapes through modeling operations with **history predicates**, and
+* follow subshapes through modelling operations with **history predicates**, and
 * name subshapes with **tags** and keep the names alive with **tag tracks**.
 
 For the full API see :ref:`naming-choosing-api` and :ref:`predicates-api`.
@@ -34,16 +34,16 @@ Any callable with the signature ``bool(geoml::Shape const&)`` can be wrapped in
 a ``geoml::ShapePredicate``, for example to select faces by geometric
 properties.
 
-**History.** Modeling operations such as ``boolean_subtract`` (``operator-``)
+**History.** Modelling operations such as ``boolean_subtract`` (``operator-``)
 and ``boolean_union`` (``operator+``) record for every subshape of the result
 which input subshapes it originates from, and whether it was modified. The
-history predicates use this information, also over several modeling steps.
+history predicates use this information, also over several modelling steps.
 
 **Meta tags** are strings attached to a subshape. They belong to the subshape
-object itself and are therefore not part of the result of a modeling operation.
+object itself and are therefore not part of the result of a modelling operation.
 
 **Tag tracks** make tags persistent: a ``geoml::TagTrack`` consists of a tag, a
-predicate and a number of modeling steps. Each modeling operation passes the
+predicate and a number of modelling steps. Each modelling operation passes the
 tag tracks of its inputs on to the result and tags all subshapes of the result
 that satisfy the predicate, until the number of steps is used up.
 
@@ -73,8 +73,8 @@ predicate and by their topological relations.
    :language: cpp
    :caption: Select subshapes with predicates
 
-Tracking subshapes through modeling operations
-----------------------------------------------
+Tracking subshapes through modelling operations
+-----------------------------------------------
 
 Drill a hole through a box and cut away a corner. History predicates find the
 faces of the result that originate from the top face of the box, from the wall
@@ -88,7 +88,7 @@ Tagging subshapes and tag tracks
 --------------------------------
 
 Meta tags name subshapes of a shape, but are not part of the result of a
-modeling operation. Tag tracks re-apply a tag after each of the next modeling
+modelling operation. Tag tracks re-apply a tag after each of the next modelling
 operations and are a simple way to give subshapes a persistent name.
 
 .. literalinclude:: examples/shape_tagging_example.cpp
