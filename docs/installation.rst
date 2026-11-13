@@ -9,16 +9,17 @@ There are three ways to obtain geoml:
 
    This package is planned, but still work in progress.
 
-2. **Build from source.**
-
-   This is the recommended path for developers and for users who need the
-   current repository state, Python bindings, tests, or documentation.
-
-3. **GitHub release package.**
+2. **GitHub release package.**
 
    This is planned as an automatically generated package from GitHub CI. The
    documentation is deployed through GitHub Pages; binary/source packages should
    be attached to GitHub Releases.
+
+3. **Build from source.**
+
+   This is the recommended path for developers and for users who need the
+   current repository state, Python bindings, tests, or documentation.
+
 
 Conda Package
 -------------
@@ -684,11 +685,68 @@ The example program returns exit code ``0`` if the curve was created.
 Use geoml from Python
 ---------------------
 
-After installing the Python bindings into the active environment:
+To use geoml from Python, the Python bindings must first be installed into the
+Pixi or Conda environment (see `Build Python Bindings`_). Run your scripts with
+the Python interpreter of that environment. It also contains
+``pythonocc-core``, which provides the OpenCASCADE classes such as ``gp_Pnt``.
+
+Create a small project directory outside the geoml source tree, for example
+``geoml-python-example``, with one file:
+
+.. code-block:: text
+
+   geoml-python-example/
+     example.py
+
+Minimal ``example.py``:
 
 .. code-block:: python
 
+   from OCC.Core.gp import gp_Pnt
+
    from geoml import pygeoml
+   from geoml.occ_helpers import containers
+
+   points = containers.point_vector([
+       gp_Pnt(0.0, 0.0, 0.0),
+       gp_Pnt(1.0, 0.0, 0.0),
+       gp_Pnt(2.0, 0.0, 1.0),
+   ])
+
+   curve = pygeoml.interpolate_points_to_b_spline_curve(points)
+
+   print("Created a B-spline curve with", curve.NbPoles(), "poles")
+
+geoml functions that take several points expect a geoml point container, not a
+Python list. ``containers.point_vector`` converts the list.
+
+Run the example from the ``geoml-python-example`` directory.
+
+**With Pixi.** As for C++, pass the geoml ``pyproject.toml`` with
+``--manifest-path``, because the example directory is outside the geoml
+repository.
+
+Windows:
+
+.. code-block:: batch
+
+   pixi run --manifest-path C:/data/code/geoml/pyproject.toml python example.py
+
+Linux:
+
+.. code-block:: bash
+
+   pixi run --manifest-path ~/geoml/pyproject.toml python example.py
+
+**With Conda.** Activate the environment first, on Windows and Linux:
+
+.. code-block:: bash
+
+   conda activate geoml-bld
+   python example.py
+
+The example prints ``Created a B-spline curve with 3 poles``. More Python
+examples are on the :doc:`python_examples` page.
 
 Troubleshooting
 ---------------
