@@ -17,6 +17,27 @@ dl.cpp .sig {
     z-index: 200;
 }
 
+/* The navigation header has the same cream white (#fcfcfc) as the content
+   area; separate the whole sidebar from the content with a vertical line in
+   the anthracite colour of the navigation menu */
+.wy-nav-side::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    width: 4px;
+    background: #343131;
+    z-index: 300;
+}
+
+/* On narrow screens the theme shows a top bar with a white menu icon and
+   title in the header colour; keep it anthracite so they stay readable
+   (the theme sets the colour as inline style, hence !important) */
+.wy-nav-top {
+    background: #343131 !important;
+}
+
 /* Logo size in the (white) navigation header */
 .wy-side-nav-search .wy-dropdown > a img.logo,
 .wy-side-nav-search > a img.logo {
