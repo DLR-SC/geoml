@@ -60,68 +60,69 @@ geoml::Shape make_corner_tool(double x, double y)
 
 int main()
 {
-    using namespace geoml;
-
     // ------------------------------------------------------------------
     // 1. Meta tags: attach names to subshapes and select them later
     // ------------------------------------------------------------------
-    Shape box = create_box(10., 10., 10.);
+    geoml::Shape box = geoml::create_box(10., 10., 10.);
 
     box.add_meta_tag_to_subshapes(is_face_at_height(10.), "top");
     box.add_meta_tag_to_subshapes(is_face_at_height(0.), "bottom");
     // the free function does the same as the member function
-    add_persistent_meta_tag_to_subshapes(box, is_edge, "edge");
+    geoml::add_persistent_meta_tag_to_subshapes(box, geoml::is_edge, "edge");
 
-    expect_count("faces tagged 'top'", box.select_subshapes(has_tag("top")), 1);
+    expect_count("faces tagged 'top'", box.select_subshapes(geoml::has_tag("top")), 1);
     expect_count("faces tagged 'top' or 'bottom'",
-                 box.select_subshapes(has_tag("top") || has_tag("bottom")), 2);
-    expect_count("edges tagged 'edge'", box.select_subshapes(has_tag("edge")), 12);
+                 box.select_subshapes(geoml::has_tag("top") || geoml::has_tag("bottom")), 2);
+    expect_count("edges tagged 'edge'", box.select_subshapes(geoml::has_tag("edge")), 12);
 
     // Meta tags belong to the subshapes of this shape. A modelling operation
     // creates new subshapes, so the tags are not part of the result.
-    Shape drilled = box - make_drill();
-    expect_count("faces tagged 'top' after drilling", drilled.select_subshapes(has_tag("top")), 0);
+    geoml::Shape drilled = box - make_drill();
+    expect_count("faces tagged 'top' after drilling",
+                 drilled.select_subshapes(geoml::has_tag("top")), 0);
 
     // ------------------------------------------------------------------
     // 2. Tag tracks: re-apply a tag after each of the next N operations
     // ------------------------------------------------------------------
-    Shape part = create_box(10., 10., 10.);
-    Shape drill = make_drill();
+    geoml::Shape part = geoml::create_box(10., 10., 10.);
+    geoml::Shape drill = make_drill();
 
-    Shape top = part.select_subshapes(is_face_at_height(10.)).unique_element();
-    Shape drill_wall = drill.select_subshapes(is_cylindrical_face).unique_element();
+    geoml::Shape top = part.select_subshapes(is_face_at_height(10.)).unique_element();
+    geoml::Shape drill_wall = drill.select_subshapes(is_cylindrical_face).unique_element();
 
     // A tag track stores a tag, a criterion and the number of modelling steps
     // it stays active. Its criterion is evaluated on the result of every
     // operation that has the shape as input, so it can use history predicates
     // to find the subshapes that originate from the tagged input subshapes.
-    part.add_tag_track(TagTrack("top", is_face && is_descendent_of(top), 2));
-    drill.add_tag_track(TagTrack("bore", is_face && is_descendent_of(drill_wall), 2));
+    part.add_tag_track(geoml::TagTrack("top", geoml::is_face && geoml::is_descendent_of(top), 2));
+    drill.add_tag_track(
+        geoml::TagTrack("bore", geoml::is_face && geoml::is_descendent_of(drill_wall), 2));
 
     // apply_tag_tracks() also tags the input shape itself
     part.apply_tag_tracks();
-    expect_count("part faces tagged 'top'", part.select_subshapes(has_tag("top")), 1);
+    expect_count("part faces tagged 'top'", part.select_subshapes(geoml::has_tag("top")), 1);
 
     // Step 1: the tag tracks of both inputs are passed on to the result
-    Shape step1 = part - drill;
-    expect_count("step 1: faces tagged 'top'", step1.select_subshapes(has_tag("top")), 1);
-    expect_count("step 1: faces tagged 'bore'", step1.select_subshapes(has_tag("bore")), 1);
+    geoml::Shape step1 = part - drill;
+    expect_count("step 1: faces tagged 'top'", step1.select_subshapes(geoml::has_tag("top")), 1);
+    expect_count("step 1: faces tagged 'bore'", step1.select_subshapes(geoml::has_tag("bore")), 1);
 
     // Step 2: the tags are still applied, although the top face is modified again
-    Shape step2 = step1 - make_corner_tool(8., 8.);
-    expect_count("step 2: faces tagged 'top'", step2.select_subshapes(has_tag("top")), 1);
-    expect_count("step 2: faces tagged 'bore'", step2.select_subshapes(has_tag("bore")), 1);
+    geoml::Shape step2 = step1 - make_corner_tool(8., 8.);
+    expect_count("step 2: faces tagged 'top'", step2.select_subshapes(geoml::has_tag("top")), 1);
+    expect_count("step 2: faces tagged 'bore'", step2.select_subshapes(geoml::has_tag("bore")), 1);
 
     // Step 3: the tag tracks were limited to two steps and have expired
-    Shape step3 = step2 - make_corner_tool(-1., -1.);
-    expect_count("step 3: faces tagged 'top'", step3.select_subshapes(has_tag("top")), 0);
+    geoml::Shape step3 = step2 - make_corner_tool(-1., -1.);
+    expect_count("step 3: faces tagged 'top'", step3.select_subshapes(geoml::has_tag("top")), 0);
 
     // Tags can be combined with all other predicates, e.g. the circular edge
     // where the bore meets the top face
-    Shape bore = step2.select_subshapes(has_tag("bore")).unique_element();
-    Shape top_face = step2.select_subshapes(has_tag("top")).unique_element();
+    geoml::Shape bore = step2.select_subshapes(geoml::has_tag("bore")).unique_element();
+    geoml::Shape top_face = step2.select_subshapes(geoml::has_tag("top")).unique_element();
     expect_count("edges between 'bore' and 'top' after step 2",
-                 step2.select_subshapes(is_edge && is_subshape_of(bore) && is_subshape_of(top_face)), 1);
+                 step2.select_subshapes(geoml::is_edge && geoml::is_subshape_of(bore) &&
+                                        geoml::is_subshape_of(top_face)), 1);
 
     std::cout << (failures == 0 ? "OK" : "FAILED") << std::endl;
     return failures == 0 ? 0 : 1;
