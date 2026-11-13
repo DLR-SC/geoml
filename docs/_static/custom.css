@@ -50,6 +50,12 @@ dl.cpp .sig {
     color: #b3b3b3;
 }
 
+/* No breadcrumb bar (home icon, page title, "View page source") above the
+   page content; the navigation sidebar already shows where the page is */
+div[role="navigation"][aria-label="Page navigation"] {
+    display: none;
+}
+
 .highlight pre {
     background: #f6f8fa;
     padding: 0.8em;
