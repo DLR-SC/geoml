@@ -1,7 +1,19 @@
-# geoml
+<p align="center">
+  <img src="./docs/_static/geoml-logo-on-white.png" alt="geoml" width="380">
+</p>
+
+The **Geo**metry **M**odelling **L**ibrary, geoml, is intended to serve as the central geometry library for the German Aerospace Center (DLR) to bundle development efforts.
+
+It extends OpenCASCADE Technology with advanced modelling functionalities such as Gordon surfaces or smooth blending and provides a framework for robust and persistent feature tracking and metadata annotation for parametric modelling.
+
+<p align="center">
+  <img src="./images/wing%20tip.png" alt="Wing tip" width="400">
+</p>
+
+Geoml is based on a stripped down version of the [TiGL library](https://github.com/DLR-SC/tigl), extracting TiGL's purely geometric capabilities.
 
 
-The **Geo**metry **M**odeling **L**ibrary is a stripped down version of the [TiGL library](https://github.com/DLR-SC/tigl), including only the geometry related functions and classes.
+## Licence
 
-It adds a new API on  top of the TiGL functions in the namespace `geoml`.
+This project is licensed under the Apache License 2.0.
 

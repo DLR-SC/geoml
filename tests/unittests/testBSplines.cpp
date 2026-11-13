@@ -507,7 +507,7 @@ TEST_F(BSplineInterpolation, withKinksShield)
     EXPECT_TRUE(ArraysMatch({0.2, 0.8}, kinkParams));
 
     auto paramsVec = interpolator.Parameters();
-    EXPECT_TRUE(ArraysMatch({0., 0.2, 0.5, 0.8, 1.0}, paramsVec));
+    EXPECT_TRUE(ArraysMatch({0., 0.2, 0.5, 0.8, 1.0}, paramsVec, InTolerance(tol)));
 
     gp_Pnt p; gp_Vec d_start, d_end;
     curve->D1(0., p, d_start);

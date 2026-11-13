@@ -27,6 +27,15 @@
 namespace geoml 
 {
 
+/**
+ * @brief Lightweight two-dimensional array stored in row-major order.
+ *
+ * Array2d provides bounds-checked access via at() and unchecked access via
+ * operator(). It is used by the geoml API for rectangular data such as point
+ * grids and weight grids.
+ *
+ * @tparam T Element type stored in the array.
+ */
 template<typename T>
 class Array2d
 {
@@ -34,36 +43,93 @@ public:
     // Remark: We will use the following mapping to map a 2d-index to the corresponding 1d-index in 
     // the flattened vector: (i,j) -> i * m + j
     // The inverse mapping is given by: k -> ( floor(k / m_rows), k - floor(k / m) * m ) (or a reformulation using division with remainder)
+    /**
+     * @brief Creates an array with the given number of rows and columns.
+     *
+     * Elements are value-initialized by the underlying std::vector.
+     *
+     * @param rows Number of rows.
+     * @param cols Number of columns.
+     */
     GEOML_API_EXPORT Array2d(int rows, int cols) : m_rows{rows}, m_cols{cols}, m_flat_data(m_rows * m_cols) {}
 
+    /**
+     * @brief Returns a mutable element reference with bounds checking.
+     *
+     * @param row Zero-based row index.
+     * @param col Zero-based column index.
+     * @return Mutable reference to the requested element.
+     */
     GEOML_API_EXPORT T& at(int row, int col) {
         return m_flat_data.at(row * m_cols + col);
     }
     
+    /**
+     * @brief Returns a const element reference with bounds checking.
+     *
+     * @param row Zero-based row index.
+     * @param col Zero-based column index.
+     * @return Const reference to the requested element.
+     */
     GEOML_API_EXPORT const T& at(int row, int col) const {
         return m_flat_data.at(row * m_cols + col);
     } 
     
+    /**
+     * @brief Returns a mutable element reference without bounds checking.
+     *
+     * @param row Zero-based row index.
+     * @param col Zero-based column index.
+     * @return Mutable reference to the requested element.
+     */
     GEOML_API_EXPORT T& operator()(int row, int col) {
         return m_flat_data[row * m_cols + col];
     }
 
+    /**
+     * @brief Returns a const element reference without bounds checking.
+     *
+     * @param row Zero-based row index.
+     * @param col Zero-based column index.
+     * @return Const reference to the requested element.
+     */
     GEOML_API_EXPORT const T& operator()(int row, int col) const {
         return m_flat_data[row * m_cols + col];
     }
        
+    /**
+     * @brief Sets one array element.
+     *
+     * This function performs bounds checking through std::vector::at().
+     *
+     * @param row Zero-based row index.
+     * @param col Zero-based column index.
+     * @param input New element value.
+     */
     GEOML_API_EXPORT void setValue(int row, int col, T input) {
         m_flat_data.at(row * m_cols + col) = input;
     }
 
+    /**
+     * @brief Returns the number of rows.
+     */
     GEOML_API_EXPORT int rowLength() const {
         return m_rows;
     }
 
+    /**
+     * @brief Returns the number of columns.
+     */
     GEOML_API_EXPORT int colLength() const {
         return m_cols;
     }
 
+    /**
+     * @brief Returns a copy of one row.
+     *
+     * @param index Zero-based row index.
+     * @return Vector containing all elements in the requested row.
+     */
     GEOML_API_EXPORT std::vector<T> getRow(int index){
         std::vector<T> row;
         row.reserve(rowLength());
@@ -74,6 +140,12 @@ public:
         return row;
     }
 
+    /**
+     * @brief Returns a copy of one column.
+     *
+     * @param index Zero-based column index.
+     * @return Vector containing all elements in the requested column.
+     */
     GEOML_API_EXPORT std::vector<T> getCol(int index){
         std::vector<T> col;
         col.reserve(colLength());

@@ -3,7 +3,6 @@
 #include "geometry/PointsToBSplineInterpolation.h"
 #include "common/CommonFunctions.h"
 
-
 namespace geoml{
 
 Handle(Geom_BSplineCurve) nurbs_curve(

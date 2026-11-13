@@ -48,7 +48,6 @@ jobs:
           geoml_enable_coverage: ${{ matrix.coverage || 'OFF' }}
           build-artifact: build-${{ matrix.os }}-${{ matrix.config }}-cov-${{ matrix.coverage || 'OFF' }}
 
-
   test-linux:
     needs: build-linux
     strategy:

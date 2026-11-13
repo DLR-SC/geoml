@@ -18,11 +18,12 @@
 # -- Project information -----------------------------------------------------
 
 project = 'geoml'
-copyright = '2023, German Aerospace Center'
+copyright = '2026, German Aerospace Center'
 author = 'Martin Siggel, DLR-SC'
 
 # The full version, including alpha/beta/rc tags
 release = "@PROJECT_VERSION@"
+version = release
 
 
 # -- General configuration ---------------------------------------------------
@@ -30,10 +31,13 @@ release = "@PROJECT_VERSION@"
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
-extensions = [ "breathe", "m2r" ]
+extensions = [ "breathe", "m2r", "sphinx.ext.autodoc", "sphinx.ext.napoleon", "sphinx.ext.mathjax" ]
+primary_domain = 'cpp'
+highlight_language = 'cpp'
+master_doc = 'index'
 
 # Add any paths that contain templates here, relative to this directory.
-templates_path = ['_templates']
+templates_path = []
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
@@ -49,14 +53,15 @@ exclude_patterns = []
 html_theme = 'sphinx_rtd_theme'
 
 html_theme_options = {
-    'logo_only': False,
-    'display_version': True,
-    'prev_next_buttons_location': 'bottom',
+    'logo_only': True,
+    'prev_next_buttons_location': None,  # no "Previous"/"Next" buttons
     'style_external_links': False,
     'vcs_pageview_mode': '',
-    'style_nav_header_background': '#58777b',
+    'style_nav_header_background': '#fcfcfc',  # same as the content area
     # Toc options
-    'collapse_navigation': True,
+    # include the full tree in the sidebar, so that every entry with sub-entries
+    # gets a "+" button to expand it
+    'collapse_navigation': False,
     'sticky_navigation': True,
     'navigation_depth': 4,
     'includehidden': True,
@@ -66,11 +71,32 @@ html_theme_options = {
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
-html_static_path = []
+html_title = f'{project} {release} documentation'
+html_short_title = 'geoml'
+
+# no "View page source" link (the breadcrumb bar is hidden in custom.css)
+html_show_sourcelink = False
+# no "Built with Sphinx using a theme provided by Read the Docs" in the footer
+html_show_sphinx = False
+
+# Logo in the navigation sidebar and browser tab icon
+html_logo = '@PROJECT_SOURCE_DIR@/docs/_static/geoml-logo.png'
+html_favicon = '@PROJECT_SOURCE_DIR@/docs/_static/geoml-icon.png'
 
 # Breathe Configuration
 breathe_projects = {"geoml": "@PROJECT_BINARY_DIR@/docs/doxygen/xml"}
 breathe_default_project = "geoml"
 
 #source_parsers = {".md": "M2RParser"}
-source_suffix = [".rst", ".md"]
+source_suffix = {
+    ".rst": "restructuredtext",
+    ".md": "markdown",
+}
+
+# Wrap long C++ signatures automatically
+cpp_maximum_signature_line_length = 60
+
+html_static_path = ['@PROJECT_SOURCE_DIR@/docs/_static']
+html_css_files = ['custom.css']
+# highlight the current section in the navigation sidebar while scrolling
+html_js_files = ['scrollspy.js']

@@ -1,0 +1,87 @@
+name: Build and Deploy Documentation
+
+on:
+  push:
+    branches:
+      - main
+      - documentation_extension
+    paths:
+      - 'docs/**'
+      - 'src/geoml/**'
+      - '.github/workflows/build-docs.yml'
+      - 'pyproject.toml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  build:
+    name: Build Documentation
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      - name: Set up pixi
+        uses: prefix-dev/setup-pixi@v0.9.6
+        with:
+          pixi-version: v0.70.1
+          manifest-path: pyproject.toml
+          cache: false
+          post-cleanup: false
+
+      - name: Configure documentation build
+        run: >
+          pixi run cmake
+          -S .
+          -B build
+          -G Ninja
+          -DCMAKE_BUILD_TYPE=Release
+          -DGEOML_BUILD_DOCS=ON
+          -DGEOML_BUILD_PYTHON_BINDINGS=OFF
+          -DGEOML_BUILD_TESTS=OFF
+          -DGEOML_BUILD_EXAMPLES=OFF
+
+      - name: Build documentation
+        run: pixi run cmake --build build --target Sphinx --parallel 4
+
+      - name: Upload documentation artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: sphinx-docs
+          path: build/docs/html/
+          retention-days: 5
+
+      - name: Setup Pages
+        if: github.ref_name == 'main' || github.ref_name == 'documentation_extension'
+        uses: actions/configure-pages@v4
+
+      - name: Upload to GitHub Pages
+        if: github.ref_name == 'main' || github.ref_name == 'documentation_extension'
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: build/docs/html/
+
+  deploy:
+    name: Deploy to GitHub Pages
+    if: github.ref_name == 'main' || github.ref_name == 'documentation_extension'
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

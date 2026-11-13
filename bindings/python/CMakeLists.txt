@@ -1,6 +1,6 @@
 # To build this project, call pip install .
 
-cmake_minimum_required(VERSION 3.4)
+cmake_minimum_required(VERSION 3.5)
 project(geoml-python VERSION 0.1)
 
 set(CMAKE_INSTALL_RPATH $ORIGIN)
@@ -17,6 +17,18 @@ set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 
 if (MSVC)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /bigobj")
+endif()
+
+# Prefer the Python interpreter of the active Conda/Pixi environment. Without
+# this hint, FindPython (with the policies of cmake_minimum_required 3.5) picks
+# the newest Python found anywhere on the system, e.g. a Python from the registry
+# or a CI tool cache, and the bindings are built for the wrong interpreter.
+if (DEFINED ENV{CONDA_PREFIX} AND NOT DEFINED Python3_EXECUTABLE)
+  if (WIN32)
+    set(Python3_EXECUTABLE "$ENV{CONDA_PREFIX}/python.exe")
+  else()
+    set(Python3_EXECUTABLE "$ENV{CONDA_PREFIX}/bin/python")
+  endif()
 endif()
 
 find_package(Python3 COMPONENTS Interpreter Development REQUIRED)
@@ -74,7 +86,7 @@ else()
     add_custom_command(
         OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/doc.i
         DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/doc/xml/index.xml
-        COMMAND ${PYTHON_EXECUTABLE}
+        COMMAND ${Python3_EXECUTABLE}
         ARGS ${PROJECT_SOURCE_DIR}/thirdparty/doxy2swig/doxy2swig.py ${CMAKE_CURRENT_BINARY_DIR}/doc/xml/index.xml ${CMAKE_CURRENT_BINARY_DIR}/doc.i
     )
 endif()
@@ -93,16 +105,29 @@ endif()
 include_directories(${PYTHON_INCLUDE_PATH})
 
 include_directories(${PythonOCC_INCLUDE_DIRS})
+include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
 set(LIBRARY_OUTPUT_PATH ${CMAKE_CURRENT_BINARY_DIR})
 
 include_directories($<TARGET_PROPERTY:geoml,INTERFACE_INCLUDE_DIRECTORIES>)
 
 set_source_files_properties(pygeoml.i PROPERTIES CPLUSPLUS ON)
-set(SWIG_MODULE_pygeoml_EXTRA_DEPS common.i doc.i)
+set(SWIG_MODULE_pygeoml_EXTRA_DEPS common.i ${CMAKE_CURRENT_BINARY_DIR}/doc.i)
 
 swig_add_library(pygeoml LANGUAGE python SOURCES pygeoml.i TYPE MODULE)
 swig_link_libraries(pygeoml geoml geoml_internal Python3::Module)
+
+# geoml is a static library that is linked into the shared Python module, so it
+# must be compiled as position independent code (required on Linux).
+set_target_properties(geoml PROPERTIES POSITION_INDEPENDENT_CODE ON)
+
+# Let the installed module find the OpenCASCADE libraries at runtime. CMake does
+# not add link directories inside the project tree to the install RPATH, which
+# excludes the Pixi environment in <geoml>/.pixi.
+if (NOT WIN32)
+  set_property(TARGET ${SWIG_MODULE_pygeoml_REAL_NAME} APPEND PROPERTY
+    INSTALL_RPATH "${OpenCASCADE_LIBRARY_DIR}")
+endif()
 
 install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/geoml
 DESTINATION ${PYTHON_SITE_PACKAGES}

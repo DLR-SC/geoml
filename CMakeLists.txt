@@ -41,8 +41,6 @@ endif()
 
 option(GEOML_INSTALL_INTERNAL_API "Install geoml's CPP bindings" OFF)
 
-OPTION(GEOML_NIGHTLY "Creates a nightly build of geoml (includes git sha into geoml version)" OFF)
-
 set(LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR})
 
 include(UseOpenCASCADE)
