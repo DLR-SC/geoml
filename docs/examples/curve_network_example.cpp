@@ -9,12 +9,6 @@
 #include "geoml/curves/curves.h"
 #include "geoml/surfaces/surfaces.h"
 
-// Interpolates a B-spline curve of degree 2 through the given points
-Handle(Geom_Curve) interpolate_curve(std::vector<gp_Pnt> const& points)
-{
-    return geoml::interpolate_points_to_b_spline_curve(points, 2);
-}
-
 int main()
 {
     gp_Pnt p00(0.0, 0.0, 0.0);
@@ -29,16 +23,17 @@ int main()
     gp_Pnt p21(0.0, 5.0, 3.0);
     gp_Pnt p22(1.0, 6.0, 3.0);
 
+    // B-spline curves of degree 2 through the points
     std::vector<Handle(Geom_Curve)> u_curves{
-        interpolate_curve({p00, p01, p02}),
-        interpolate_curve({p10, p11, p12}),
-        interpolate_curve({p20, p21, p22})
+        geoml::interpolate_points_to_b_spline_curve({p00, p01, p02}, 2),
+        geoml::interpolate_points_to_b_spline_curve({p10, p11, p12}, 2),
+        geoml::interpolate_points_to_b_spline_curve({p20, p21, p22}, 2)
     };
 
     std::vector<Handle(Geom_Curve)> v_curves{
-        interpolate_curve({p00, p10, p20}),
-        interpolate_curve({p01, p11, p21}),
-        interpolate_curve({p02, p12, p22})
+        geoml::interpolate_points_to_b_spline_curve({p00, p10, p20}, 2),
+        geoml::interpolate_points_to_b_spline_curve({p01, p11, p21}, 2),
+        geoml::interpolate_points_to_b_spline_curve({p02, p12, p22}, 2)
     };
 
     Handle(Geom_BSplineSurface) surface =

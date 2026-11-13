@@ -3,13 +3,6 @@ from geoml.occ_helpers import containers
 from OCC.Core.gp import gp_Pnt
 
 
-def curve_from_points(points):
-    return pygeoml.interpolate_points_to_b_spline_curve(
-        containers.point_vector(points),
-        2,
-    )
-
-
 start_points = [
     gp_Pnt(0.0, 0.0, 0.0),
     gp_Pnt(1.0, 0.0, 0.0),
@@ -21,8 +14,11 @@ end_points = [
     gp_Pnt(6.0, 4.0, 0.0),
 ]
 
-start_edge = pygeoml.CurveToEdge(curve_from_points(start_points))
-end_edge = pygeoml.CurveToEdge(curve_from_points(end_points))
+start_curve = pygeoml.interpolate_points_to_b_spline_curve(containers.point_vector(start_points), 2)
+end_curve = pygeoml.interpolate_points_to_b_spline_curve(containers.point_vector(end_points), 2)
+
+start_edge = pygeoml.CurveToEdge(start_curve)
+end_edge = pygeoml.CurveToEdge(end_curve)
 
 start_connection = pygeoml.BlendCurveConnection(
     start_edge,
