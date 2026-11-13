@@ -14,6 +14,9 @@ It extends OpenCASCADE Technology with advanced modelling functionalities such a
 
 Geoml is based on a stripped down version of the `TiGL library <https://github.com/DLR-SC/tigl>`_, extracting TiGL's purely geometric capabilities.
 
+The source code of geoml is available on GitHub:
+`github.com/DLR-SC/geoml <https://github.com/DLR-SC/geoml>`_.
+
 Licence
 -------
 
