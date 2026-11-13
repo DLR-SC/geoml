@@ -15,8 +15,7 @@
 #include "geoml/primitives/modeling.hpp"
 #include "geoml/transformations/transformations.h"
 
-namespace
-{
+// Selects the faces whose centre of mass lies at height z
 geoml::ShapePredicate is_face_at_height(double z)
 {
     return geoml::ShapePredicate([z](geoml::Shape const& s) {
@@ -29,12 +28,15 @@ geoml::ShapePredicate is_face_at_height(double z)
     });
 }
 
+// Selects the cylindrical faces
 geoml::ShapePredicate const is_cylindrical_face([](geoml::Shape const& s) {
     return s.is_type(TopAbs_FACE) &&
            BRepAdaptor_Surface(TopoDS::Face(s.shape())).GetType() == GeomAbs_Cylinder;
 });
 
+// Helpers that print a result and count the unexpected ones
 int failures = 0;
+
 void expect_count(std::string const& what, geoml::Shape const& selection, size_t expected)
 {
     std::cout << what << ": " << selection.size() << "\n";
@@ -43,6 +45,7 @@ void expect_count(std::string const& what, geoml::Shape const& selection, size_t
         ++failures;
     }
 }
+
 void expect_true(std::string const& what, bool value)
 {
     std::cout << what << ": " << std::boolalpha << value << "\n";
@@ -50,7 +53,6 @@ void expect_true(std::string const& what, bool value)
         ++failures;
     }
 }
-} // namespace
 
 int main()
 {

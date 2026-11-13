@@ -10,8 +10,6 @@
 #include "geoml/predicates/predicate_functions.h"
 #include "geoml/primitives/modeling.hpp"
 
-namespace
-{
 // A custom predicate: true for faces whose centre of mass lies at height z.
 // Any callable taking a geoml::Shape and returning a bool can be wrapped in a
 // geoml::ShapePredicate and then be combined with the built-in predicates.
@@ -27,7 +25,9 @@ geoml::ShapePredicate is_face_at_height(double z)
     });
 }
 
+// Helper that prints a result and counts the unexpected ones
 int failures = 0;
+
 void expect_count(std::string const& what, geoml::Shape const& selection, size_t expected)
 {
     std::cout << what << ": " << selection.size() << "\n";
@@ -36,7 +36,6 @@ void expect_count(std::string const& what, geoml::Shape const& selection, size_t
         ++failures;
     }
 }
-} // namespace
 
 int main()
 {

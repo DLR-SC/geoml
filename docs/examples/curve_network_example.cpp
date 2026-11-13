@@ -9,12 +9,10 @@
 #include "geoml/curves/curves.h"
 #include "geoml/surfaces/surfaces.h"
 
-namespace
-{
+// Interpolates a B-spline curve of degree 2 through the given points
 Handle(Geom_Curve) interpolate_curve(std::vector<gp_Pnt> const& points)
 {
     return geoml::interpolate_points_to_b_spline_curve(points, 2);
-}
 }
 
 int main()

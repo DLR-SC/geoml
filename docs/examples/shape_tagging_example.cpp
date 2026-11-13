@@ -15,8 +15,7 @@
 #include "geoml/primitives/modeling.hpp"
 #include "geoml/transformations/transformations.h"
 
-namespace
-{
+// Selects the faces whose centre of mass lies at height z
 geoml::ShapePredicate is_face_at_height(double z)
 {
     return geoml::ShapePredicate([z](geoml::Shape const& s) {
@@ -29,12 +28,15 @@ geoml::ShapePredicate is_face_at_height(double z)
     });
 }
 
+// Selects the cylindrical faces
 geoml::ShapePredicate const is_cylindrical_face([](geoml::Shape const& s) {
     return s.is_type(TopAbs_FACE) &&
            BRepAdaptor_Surface(TopoDS::Face(s.shape())).GetType() == GeomAbs_Cylinder;
 });
 
+// Helper that prints a result and counts the unexpected ones
 int failures = 0;
+
 void expect_count(std::string const& what, geoml::Shape const& selection, size_t expected)
 {
     std::cout << what << ": " << selection.size() << "\n";
@@ -44,16 +46,17 @@ void expect_count(std::string const& what, geoml::Shape const& selection, size_t
     }
 }
 
+// A cylinder that drills a hole through the box
 geoml::Shape make_drill()
 {
     return geoml::Shape(geoml::translate(geoml::create_cylinder(2., 12.), gp_Vec(5., 5., -1.)));
 }
 
+// A small box at (x, y, 8) that cuts away a top corner of the box
 geoml::Shape make_corner_tool(double x, double y)
 {
     return geoml::Shape(geoml::translate(geoml::create_box(3., 3., 3.), gp_Vec(x, y, 8.)));
 }
-} // namespace
 
 int main()
 {
