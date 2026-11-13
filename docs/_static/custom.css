@@ -17,13 +17,9 @@ dl.cpp .sig {
     z-index: 200;
 }
 
-/* The logo has a transparent background and dark blue shapes; show it on a
-   white card so that it is readable on the dark navigation header */
+/* Logo size in the (white) navigation header */
 .wy-side-nav-search .wy-dropdown > a img.logo,
 .wy-side-nav-search > a img.logo {
-    background: #ffffff;
-    padding: 10px 14px;
-    border-radius: 6px;
     max-width: 85%;
 }
 
