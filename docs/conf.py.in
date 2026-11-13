@@ -91,3 +91,5 @@ cpp_maximum_signature_line_length = 60
 
 html_static_path = ['@PROJECT_SOURCE_DIR@/docs/_static']
 html_css_files = ['custom.css']
+# highlight the current section in the navigation sidebar while scrolling
+html_js_files = ['scrollspy.js']
