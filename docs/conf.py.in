@@ -76,6 +76,8 @@ html_short_title = 'geoml'
 
 # no "View page source" link (the breadcrumb bar is hidden in custom.css)
 html_show_sourcelink = False
+# no "Built with Sphinx using a theme provided by Read the Docs" in the footer
+html_show_sphinx = False
 
 # Logo in the navigation sidebar and browser tab icon
 html_logo = '@PROJECT_SOURCE_DIR@/docs/_static/geoml-logo-steelblue.png'
