@@ -44,6 +44,12 @@ dl.cpp .sig {
     max-width: 85%;
 }
 
+/* The "+" buttons to expand menu entries are dark grey in the theme and
+   hardly visible on the anthracite top level of the menu */
+.wy-menu-vertical li.toctree-l1:not(.current) > a button.toctree-expand {
+    color: #b3b3b3;
+}
+
 .highlight pre {
     background: #f6f8fa;
     padding: 0.8em;

@@ -59,7 +59,9 @@ html_theme_options = {
     'vcs_pageview_mode': '',
     'style_nav_header_background': '#fcfcfc',  # same as the content area
     # Toc options
-    'collapse_navigation': True,
+    # include the full tree in the sidebar, so that every entry with sub-entries
+    # gets a "+" button to expand it
+    'collapse_navigation': False,
     'sticky_navigation': True,
     'navigation_depth': 4,
     'includehidden': True,
