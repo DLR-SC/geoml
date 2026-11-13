@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="./docs/_static/geoml-logo-steelblue-on-white.png" alt="geoml" width="380">
+  <img src="./docs/_static/geoml-logo-on-white.png" alt="geoml" width="380">
 </p>
 
 The **Geo**metry **M**odelling **L**ibrary, geoml, is intended to serve as the central geometry library for the German Aerospace Center (DLR) to bundle development efforts.
