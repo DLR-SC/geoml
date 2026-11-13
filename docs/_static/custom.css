@@ -56,6 +56,32 @@ div[role="navigation"][aria-label="Page navigation"] {
     display: none;
 }
 
+/* The white content column always fills the window height, and the footer
+   (line and copyright) sits at the bottom of the window on short pages.
+   The wrapper also contains the top bar shown on narrow screens, so the
+   column takes the remaining height instead of a fixed 100vh. */
+.wy-nav-content-wrap {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.wy-nav-content {
+    flex: 1 0 auto;
+    display: flex;
+    flex-direction: column;
+}
+
+.wy-nav-content > .rst-content {
+    flex: 1 0 auto;
+    display: flex;
+    flex-direction: column;
+}
+
+.wy-nav-content > .rst-content > div[role="main"] {
+    flex: 1 0 auto;
+}
+
 .highlight pre {
     background: #f6f8fa;
     padding: 0.8em;
