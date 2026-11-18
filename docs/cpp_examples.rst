@@ -112,7 +112,7 @@ several modelling steps.
 
 **Meta tags** are strings attached to a subshape.
 
-**Tag tracks** make tags persistent: a ``geoml::TagTrack`` consists of a tag, a
+**Tag tracks** make tags "historically" persistent: a ``geoml::TagTrack`` consists of a tag, a
 predicate and a number of modelling steps. Each modelling operation passes the
 tag tracks of its inputs on to the result and tags all subshapes of the result
 that satisfy the predicate, until the number of steps is used up.
