@@ -29,7 +29,7 @@ geoml::ShapePredicate is_face_at_height(double z)
 }
 
 // Selects the cylindrical faces
-geoml::ShapePredicate const is_cylindrical_face([](geoml::Shape const& s) {
+geoml::ShapePredicate const select_cylindrical_face([](geoml::Shape const& s) {
     return s.is_type(TopAbs_FACE) &&
            BRepAdaptor_Surface(TopoDS::Face(s.shape())).GetType() == GeomAbs_Cylinder;
 });
@@ -63,7 +63,7 @@ int main()
 
     // Pick the subshapes we want to follow through the modelling operations
     geoml::Shape top = box.select_subshapes(is_face_at_height(10.)).unique_element();
-    geoml::Shape drill_wall = drill.select_subshapes(is_cylindrical_face).unique_element();
+    geoml::Shape drill_wall = drill.select_subshapes(select_cylindrical_face).unique_element();
 
     // Modelling step 1: drill the hole
     geoml::Shape drilled = box - drill;
