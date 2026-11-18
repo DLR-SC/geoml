@@ -102,10 +102,13 @@ Any callable with the signature ``bool(geoml::Shape const&)`` can be wrapped in
 a ``geoml::ShapePredicate``, for example to select faces by geometric
 properties.
 
-**History.** Modelling operations such as ``boolean_subtract`` (``operator-``)
-and ``boolean_union`` (``operator+``) record for every subshape of the result
-which input subshapes it originates from, and whether it was modified. The
-history predicates use this information, also over several modelling steps.
+**History.** Currently, the modelling operations in
+:ref:`Boolean Operations <boolean-ops-api>` support history tracking. This
+will be extended gradually. These operations, such as ``boolean_subtract``
+(``operator-``) and ``boolean_union`` (``operator+``), record for every
+subshape of the result which input subshapes it originates from, and whether
+it was modified. The history predicates use this information, also over
+several modelling steps.
 
 **Meta tags** are strings attached to a subshape. They belong to the subshape
 object itself and are therefore not part of the result of a modelling operation.
