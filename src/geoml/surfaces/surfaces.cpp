@@ -39,6 +39,16 @@ Handle(Geom_BSplineSurface) interpolate_curve_network(const std::vector<Handle (
 }
 
 Handle(Geom_BSplineSurface)
+interpolate_curve_network(const std::vector<Handle(Geom_BSplineCurve)> &ucurves,
+                          const std::vector<Handle(Geom_BSplineCurve)> &vcurves,
+                          double tolerance)
+{
+    InterpolateCurveNetwork interpolator(ucurves, vcurves, tolerance);
+
+    return interpolator.Surface();
+}
+
+Handle(Geom_BSplineSurface)
 interpolate_curves(const std::vector<Handle (Geom_Curve)> &ucurves, unsigned int max_degree,
                           bool join_continuously)
 {
