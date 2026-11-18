@@ -110,8 +110,7 @@ subshape of the result which input subshapes it originates from, and whether
 it was modified. The history predicates use this information, also over
 several modelling steps.
 
-**Meta tags** are strings attached to a subshape. They belong to the subshape
-object itself and are therefore not part of the result of a modelling operation.
+**Meta tags** are strings attached to a subshape.
 
 **Tag tracks** make tags persistent: a ``geoml::TagTrack`` consists of a tag, a
 predicate and a number of modelling steps. Each modelling operation passes the
