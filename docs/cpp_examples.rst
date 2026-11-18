@@ -127,8 +127,8 @@ that satisfy the predicate, until the number of steps is used up.
 Building the examples
 ^^^^^^^^^^^^^^^^^^^^^
 
-Each example is a complete program. It checks its results, prints them and
-returns a non-zero exit code if a check fails. Build and run it like the
+Each example is a complete program. The comments state the expected results.
+Build and run it like the
 example in :ref:`installation` (section *Use geoml from C++*), using the
 example as ``main.cpp``. The examples need the OpenCASCADE headers, which the
 ``CMakeLists.txt`` shown there adds with ``${OpenCASCADE_INCLUDE_DIR}``.

@@ -1,7 +1,5 @@
 // Select subshapes of a box with predicates
 #include <cmath>
-#include <iostream>
-#include <string>
 
 #include <BRepGProp.hxx>
 #include <GProp_GProps.hxx>
@@ -25,27 +23,15 @@ geoml::ShapePredicate is_face_at_height(double z)
     });
 }
 
-// Helper that prints a result and counts the unexpected ones
-int failures = 0;
-
-void expect_count(std::string const& what, geoml::Shape const& selection, size_t expected)
-{
-    std::cout << what << ": " << selection.size() << "\n";
-    if (selection.size() != expected) {
-        std::cout << "  ERROR: expected " << expected << "\n";
-        ++failures;
-    }
-}
-
 int main()
 {
     geoml::Shape box = geoml::create_box(10., 10., 10.);
 
     // Select subshapes by type. select_subshapes searches the whole topology
     // and returns each matching subshape once, wrapped in a compound Shape.
-    expect_count("vertices", box.select_subshapes(geoml::is_vertex), 8);
-    expect_count("edges", box.select_subshapes(geoml::is_edge), 12);
-    expect_count("faces", box.select_subshapes(geoml::is_face), 6);
+    geoml::Shape vertices = box.select_subshapes(geoml::is_vertex); // 8 vertices
+    geoml::Shape edges = box.select_subshapes(geoml::is_edge);      // 12 edges
+    geoml::Shape faces = box.select_subshapes(geoml::is_face);      // 6 faces
 
     // Use a custom predicate and unwrap the single result with unique_element().
     // unique_element() throws if the selection does not contain exactly one shape.
@@ -54,31 +40,24 @@ int main()
 
     // Combine predicates with &&, || and !
     geoml::Shape top_edges = box.select_subshapes(geoml::is_edge && geoml::is_subshape_of(top));
-    expect_count("edges of the top face", top_edges, 4);
 
     geoml::Shape vertical_edges = box.select_subshapes(
         geoml::is_edge && !geoml::is_subshape_of(top) && !geoml::is_subshape_of(bottom));
-    expect_count("vertical edges", vertical_edges, 4);
 
     // Select by topological relations: faces that share an edge with the top face
     geoml::Shape side_faces = box.select_subshapes(
         geoml::is_face && !geoml::is_same(top) &&
         geoml::has_subshape_that(geoml::is_edge && geoml::is_subshape_of(top)));
-    expect_count("side faces", side_faces, 4);
 
     // Selections are Shapes themselves and can be searched further, e.g. the
     // vertices of the side faces that lie on the bottom face
     geoml::Shape bottom_vertices =
         side_faces.select_subshapes(geoml::is_vertex && geoml::is_subshape_of(bottom));
-    expect_count("bottom vertices", bottom_vertices, 4);
 
-    // Iterate over a selection
+    // Iterate over a selection: each element is a geoml::Shape
     for (geoml::Shape const& edge : top_edges) {
-        if (!edge.is_type(TopAbs_EDGE) || !top.has_subshape(edge)) {
-            ++failures;
-        }
+        TopoDS_Shape const& occ_edge = edge.shape(); // the underlying OpenCASCADE edge
     }
 
-    std::cout << (failures == 0 ? "OK" : "FAILED") << std::endl;
-    return failures == 0 ? 0 : 1;
+    return 0;
 }

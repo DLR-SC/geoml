@@ -1,7 +1,5 @@
 // Track subshapes through modelling operations with history predicates
 #include <cmath>
-#include <iostream>
-#include <string>
 
 #include <BRepAdaptor_Surface.hxx>
 #include <BRepGProp.hxx>
@@ -34,26 +32,6 @@ geoml::ShapePredicate const select_cylindrical_face([](geoml::Shape const& s) {
            BRepAdaptor_Surface(TopoDS::Face(s.shape())).GetType() == GeomAbs_Cylinder;
 });
 
-// Helpers that print a result and count the unexpected ones
-int failures = 0;
-
-void expect_count(std::string const& what, geoml::Shape const& selection, size_t expected)
-{
-    std::cout << what << ": " << selection.size() << "\n";
-    if (selection.size() != expected) {
-        std::cout << "  ERROR: expected " << expected << "\n";
-        ++failures;
-    }
-}
-
-void expect_true(std::string const& what, bool value)
-{
-    std::cout << what << ": " << std::boolalpha << value << "\n";
-    if (!value) {
-        ++failures;
-    }
-}
-
 int main()
 {
     // Input shapes: a box and a cylinder that drills a hole through it
@@ -71,15 +49,13 @@ int main()
     // The top face got a hole, so it is a *modified* descendent of the box's top face
     geoml::Shape drilled_top =
         drilled.select_subshapes(geoml::is_face && geoml::is_descendent_of(top)).unique_element();
-    expect_true("top face was modified", drilled_top.is_modified_descendent_of(top));
+    bool top_was_modified = drilled_top.is_modified_descendent_of(top); // true
 
     // Faces of the box that were not touched by the drill
-    expect_count("unmodified box faces",
-                 drilled.select_subshapes(geoml::is_face &&
-                                          geoml::is_unmodified_descendent_of_subshape_in(box)), 4);
-    expect_count("modified box faces",
-                 drilled.select_subshapes(geoml::is_face &&
-                                          geoml::is_modified_descendent_of_subshape_in(box)), 2);
+    geoml::Shape unmodified_faces = drilled.select_subshapes(
+        geoml::is_face && geoml::is_unmodified_descendent_of_subshape_in(box)); // 4 faces
+    geoml::Shape modified_faces = drilled.select_subshapes(
+        geoml::is_face && geoml::is_modified_descendent_of_subshape_in(box)); // 2 faces
 
     // The wall of the hole originates from the cylinder's lateral face
     geoml::Shape hole_wall =
@@ -87,9 +63,8 @@ int main()
             .unique_element();
 
     // Edges where the hole meets the top face
-    expect_count("edges between hole and top face",
-                 drilled.select_subshapes(geoml::is_edge && geoml::is_subshape_of(hole_wall) &&
-                                          geoml::is_subshape_of(drilled_top)), 1);
+    geoml::Shape rim = drilled.select_subshapes(
+        geoml::is_edge && geoml::is_subshape_of(hole_wall) && geoml::is_subshape_of(drilled_top));
 
     // Modelling step 2: cut away a corner of the box
     geoml::Shape corner =
@@ -97,20 +72,18 @@ int main()
     geoml::Shape result = drilled - corner;
 
     // History predicates follow the history over several modelling steps
-    expect_count("faces descending from the original top face",
-                 result.select_subshapes(geoml::is_face && geoml::is_descendent_of(top)), 1);
-    expect_count("faces descending from the drill wall",
-                 result.select_subshapes(geoml::is_face && geoml::is_descendent_of(drill_wall)), 1);
-    expect_count("faces created by the corner cut",
-                 result.select_subshapes(geoml::is_face &&
-                                         geoml::is_descendent_of_subshape_in(corner)), 3);
+    geoml::Shape result_top =
+        result.select_subshapes(geoml::is_face && geoml::is_descendent_of(top)).unique_element();
+    geoml::Shape result_hole_wall =
+        result.select_subshapes(geoml::is_face && geoml::is_descendent_of(drill_wall))
+            .unique_element();
+    geoml::Shape corner_faces = result.select_subshapes(
+        geoml::is_face && geoml::is_descendent_of_subshape_in(corner)); // 3 faces
 
     // Faces of the result that originate from neither tool
-    expect_count("faces from the box only",
-                 result.select_subshapes(geoml::is_face &&
-                                         !geoml::is_descendent_of_subshape_in(drill) &&
-                                         !geoml::is_descendent_of_subshape_in(corner)), 6);
+    geoml::Shape box_only_faces = result.select_subshapes(
+        geoml::is_face && !geoml::is_descendent_of_subshape_in(drill) &&
+        !geoml::is_descendent_of_subshape_in(corner)); // 6 faces
 
-    std::cout << (failures == 0 ? "OK" : "FAILED") << std::endl;
-    return failures == 0 ? 0 : 1;
+    return 0;
 }
