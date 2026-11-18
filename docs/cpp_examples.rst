@@ -27,6 +27,13 @@ below.
    :language: cpp
    :caption: Interpolate points to a B-spline curve
 
+.. figure:: _static/examples/curve_example.png
+   :alt: Result of curve example
+   :width: 500px
+   :align: center
+
+   The interpolated B-spline curve (blue) through the input points (orange).
+
 Blend curve example
 ^^^^^^^^^^^^^^^^^^^
 
@@ -37,6 +44,13 @@ to edges and builds a transition curve between them.
 .. literalinclude:: examples/blend_curve_example.cpp
    :language: cpp
    :caption: Create a blend curve between two edges
+
+.. figure:: _static/examples/blend_curve_example.png
+   :alt: Result of blend curve example
+   :width: 500px
+   :align: center
+
+   The blend curve (orange) connects the two input curves (blue) with G1 continuity.
 
 Surfaces
 --------
@@ -55,6 +69,13 @@ from a small control point grid. The full example source is included below.
    :language: cpp
    :caption: Create a simple NURBS surface
 
+.. figure:: _static/examples/surface_example.png
+   :alt: Result of surface example
+   :width: 500px
+   :align: center
+
+   The NURBS surface (blue) with its control points and control polygon (orange).
+
 Curve network example
 ^^^^^^^^^^^^^^^^^^^^^
 
@@ -65,6 +86,13 @@ given tolerance.
 .. literalinclude:: examples/curve_network_example.cpp
    :language: cpp
    :caption: Interpolate a surface through a curve network
+
+.. figure:: _static/examples/curve_network_example.png
+   :alt: Result of curve network example
+   :width: 500px
+   :align: center
+
+   The Gordon surface (blue) interpolates the curve network (orange).
 
 .. _shapes-examples:
 
@@ -143,6 +171,13 @@ predicate and by their topological relations.
    :language: cpp
    :caption: Select subshapes with predicates
 
+.. figure:: _static/examples/shape_selection_example.png
+   :alt: Result of shape selection example
+   :width: 500px
+   :align: center
+
+   The box with the selected edges of the top face and the vertices of the side faces on the bottom face (orange).
+
 Tracking subshapes through modelling operations
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -154,6 +189,13 @@ of the drill or from the corner tool.
    :language: cpp
    :caption: Track subshapes with history predicates
 
+.. figure:: _static/examples/shape_history_example.png
+   :alt: Result of shape history example
+   :width: 500px
+   :align: center
+
+   The result after both modelling steps: faces that descend from the drill or the corner tool (grey) and the edges of the face that descends from the original top face (orange).
+
 Tagging subshapes and tag tracks
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -164,3 +206,10 @@ operations and are a simple way to give subshapes a persistent name.
 .. literalinclude:: examples/shape_tagging_example.cpp
    :language: cpp
    :caption: Tag subshapes and use tag tracks
+
+.. figure:: _static/examples/shape_tagging_example.png
+   :alt: Result of shape tagging example
+   :width: 500px
+   :align: center
+
+   The result after step 2: the face tagged "bore" (grey) and the edges of the face tagged "top" (orange).
