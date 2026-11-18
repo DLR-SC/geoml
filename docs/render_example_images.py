@@ -1,8 +1,8 @@
 """Render the result geometry of the C++ examples to docs/_static/examples/.
 
 The colours follow the wing image on the overview page: blue for the main
-geometry, orange for highlighted edges, curves and points, light grey for
-secondary parts.
+geometry, orange for highlighted edges and for the control points of curves
+and surfaces, grey for secondary parts.
 
 Run with the Python of the pixi environment (needs geoml and pythonocc):
 
@@ -14,8 +14,10 @@ import runpy
 from OCC.Core.AIS import AIS_Shape
 from OCC.Core.Aspect import Aspect_POM_Fill, Aspect_TOL_SOLID
 from OCC.Core.BRep import BRep_Builder
+from OCC.Core.BRepAdaptor import BRepAdaptor_Curve, BRepAdaptor_Surface
 from OCC.Core.BRepBuilderAPI import BRepBuilderAPI_MakeEdge, BRepBuilderAPI_MakeFace
 from OCC.Core.BRepPrimAPI import BRepPrimAPI_MakeSphere
+from OCC.Core.GeomAbs import GeomAbs_BezierCurve
 from OCC.Core.Graphic3d import Graphic3d_MaterialAspect, Graphic3d_NOM_PLASTIC
 from OCC.Core.Prs3d import Prs3d_LineAspect
 from OCC.Core.Quantity import Quantity_Color, Quantity_TOC_sRGB
@@ -35,6 +37,7 @@ BLUE_EDGE = "#3375a3"   # edges of blue surfaces
 BLUE_CURVE = "#2c5979"  # curves
 ORANGE = "#ff7f00"      # highlighted edges, curves and points
 GREY = "#e6e6e6"        # secondary parts
+GREY_CURVE = "#a0a0a0"  # secondary curves
 BLACK = "#000000"       # edges of grey parts
 
 
@@ -67,10 +70,10 @@ class Scene:
         self.viewer.default_drawer.SetFaceBoundaryDraw(True)
         self.context = self.viewer.Context
 
-    def _show(self, ais):
+    def _show(self, ais, fine=True):
         drawer = ais.Attributes()
-        drawer.SetDeviationCoefficient(1e-4)
-        drawer.SetDeviationAngle(0.02)
+        drawer.SetDeviationCoefficient(1e-4 if fine else 1e-3)
+        drawer.SetDeviationAngle(0.02 if fine else 0.2)
         self.context.Display(ais, False)
         self.context.Deactivate(ais)
 
@@ -105,7 +108,7 @@ class Scene:
         ais.SetDisplayMode(1)
         ais.SetColor(colour(point_colour))
         ais.Attributes().SetFaceBoundaryDraw(False)
-        self._show(ais)
+        self._show(ais, fine=False)  # a fine mesh of many spheres takes very long
 
     def save(self, name, direction=(1.0, -1.0, 1.0), zoom=0.85):
         """Save the scene, seen from `direction` with z pointing up."""
@@ -124,6 +127,14 @@ def edge(curve):
     return BRepBuilderAPI_MakeEdge(curve).Edge()
 
 
+def face(surface):
+    return BRepBuilderAPI_MakeFace(surface, 1e-6).Face()
+
+
+def edge_between(p, q):
+    return BRepBuilderAPI_MakeEdge(p, q).Edge()
+
+
 def interpolate(points, degree=None):
     vec = containers.point_vector(points)
     if degree is None:
@@ -131,13 +142,46 @@ def interpolate(points, degree=None):
     return pygeoml.interpolate_points_to_b_spline_curve(vec, degree)
 
 
+def curve_poles(curve_edge):
+    """The control points of the B-spline or Bezier curve of an edge."""
+    adaptor = BRepAdaptor_Curve(curve_edge)
+    if adaptor.GetType() == GeomAbs_BezierCurve:
+        curve = adaptor.Bezier()
+    else:
+        curve = adaptor.BSpline()
+    return [curve.Pole(i) for i in range(1, curve.NbPoles() + 1)]
+
+
+def surface_poles(surface_face):
+    """The control points of the B-spline surface of a face as a grid."""
+    bspline = BRepAdaptor_Surface(surface_face).BSpline()
+    return [[bspline.Pole(i, j) for j in range(1, bspline.NbVPoles() + 1)]
+            for i in range(1, bspline.NbUPoles() + 1)]
+
+
+def control_polygon(scene, poles, radius):
+    """Show the control points and the control polygon of a curve."""
+    scene.edges([edge_between(p, q) for p, q in zip(poles, poles[1:])], ORANGE, 1.5)
+    scene.points(poles, radius)
+
+
+def control_net(scene, grid, radius):
+    """Show the control points and the control net of a surface."""
+    lines = [edge_between(p, q) for row in grid for p, q in zip(row, row[1:])]
+    lines += [edge_between(p, q) for r0, r1 in zip(grid, grid[1:]) for p, q in zip(r0, r1)]
+    scene.edges(lines, ORANGE, 1.5)
+    scene.points([p for row in grid for p in row], radius)
+
+
 # --- Curves and surfaces: the geometry of the C++ examples -----------------
+# Curves and surfaces are shown with their control points (orange).
 
 def render_curve():
     points = [gp_Pnt(0.0, 0.0, 0.0), gp_Pnt(1.0, 0.0, 0.0), gp_Pnt(2.0, 0.0, 1.0)]
+    curve = edge(interpolate(points))
     scene = Scene()
-    scene.edges([edge(interpolate(points))], BLUE_CURVE)
-    scene.points(points, 0.03)
+    scene.edges([curve], BLUE_CURVE)
+    control_polygon(scene, curve_poles(curve), 0.03)
     scene.save("curve_example.png", (0.0, -1.0, 0.0))
 
 
@@ -150,10 +194,12 @@ def render_blend_curve():
         pygeoml.BlendCurveConnection(start_edge, start_points[-1], pygeoml.GContinuity_G1),
         pygeoml.BlendCurveConnection(end_edge, end_points[0], pygeoml.GContinuity_G1),
     )
+    blend_edge = blend.blend_curve()
     scene = Scene()
-    scene.edges([start_edge, end_edge], BLUE_CURVE)
-    scene.edges([blend.blend_curve()], ORANGE)
-    scene.points(start_points + end_points, 0.08, BLUE_CURVE)
+    scene.edges([start_edge, end_edge], GREY_CURVE)
+    scene.edges([blend_edge], BLUE_CURVE)
+    for e in (start_edge, end_edge, blend_edge):
+        control_polygon(scene, curve_poles(e), 0.07)
     scene.save("blend_curve_example.png", (0.0, 0.0, 1.0))
 
 
@@ -179,20 +225,12 @@ def render_surface():
     v_mults.SetValue(1, 2)
     v_mults.SetValue(2, 2)
     # the same surface as geoml::nurbs_surface in the example (all weights are 1)
-    surface = Geom_BSplineSurface(poles, knots, knots, u_mults, v_mults, 2, 1)
-
-    control_polygon = [edge_between(grid[i][0], grid[i][1]) for i in range(3)]
-    control_polygon += [edge_between(grid[i][j], grid[i + 1][j]) for i in range(2) for j in range(2)]
+    surface = face(Geom_BSplineSurface(poles, knots, knots, u_mults, v_mults, 2, 1))
 
     scene = Scene()
-    scene.faces([BRepBuilderAPI_MakeFace(surface, 1e-6).Face()])
-    scene.edges(control_polygon, ORANGE, 1.5)
-    scene.points([p for row in grid for p in row], 0.03)
+    scene.faces([surface])
+    control_net(scene, surface_poles(surface), 0.03)
     scene.save("surface_example.png", (1.0, -0.6, 0.8))
-
-
-def edge_between(p, q):
-    return BRepBuilderAPI_MakeEdge(p, q).Edge()
 
 
 def render_curve_network():
@@ -201,12 +239,13 @@ def render_curve_network():
          [gp_Pnt(0.0, 4.0, 3.0), gp_Pnt(0.0, 5.0, 3.0), gp_Pnt(1.0, 6.0, 3.0)]]
     u_curves = [interpolate(p[i], 2) for i in range(3)]
     v_curves = [interpolate([p[0][j], p[1][j], p[2][j]], 2) for j in range(3)]
-    surface = pygeoml.interpolate_curve_network(
-        containers.geomcurve_vector(u_curves), containers.geomcurve_vector(v_curves), 1e-1)
+    surface = face(pygeoml.interpolate_curve_network(
+        containers.geomcurve_vector(u_curves), containers.geomcurve_vector(v_curves), 1e-1))
 
     scene = Scene()
-    scene.faces([BRepBuilderAPI_MakeFace(surface, 1e-6).Face()], edge_colour=None)
-    scene.edges([edge(c) for c in u_curves + v_curves], ORANGE, 3.0)
+    scene.faces([surface], edge_colour=None)
+    scene.edges([edge(c) for c in u_curves + v_curves], GREY, 3.0)
+    control_net(scene, surface_poles(surface), 0.05)
     scene.save("curve_network_example.png", (1.0, -0.4, 0.3))
 
 

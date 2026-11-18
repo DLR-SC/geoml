@@ -32,7 +32,7 @@ below.
    :width: 500px
    :align: center
 
-   The interpolated B-spline curve (blue) through the input points (orange).
+   The interpolated B-spline curve (blue) with its control points (orange).
 
 Blend curve example
 ^^^^^^^^^^^^^^^^^^^
@@ -50,7 +50,7 @@ to edges and builds a transition curve between them.
    :width: 500px
    :align: center
 
-   The blend curve (orange) connects the two input curves (blue) with G1 continuity.
+   The blend curve (blue) connects the two input curves (grey) with G1 continuity. The control points of all curves are shown in orange.
 
 Surfaces
 --------
@@ -74,7 +74,7 @@ from a small control point grid. The full example source is included below.
    :width: 500px
    :align: center
 
-   The NURBS surface (blue) with its control points and control polygon (orange).
+   The NURBS surface (blue) with its control points (orange).
 
 Curve network example
 ^^^^^^^^^^^^^^^^^^^^^
@@ -92,7 +92,7 @@ given tolerance.
    :width: 500px
    :align: center
 
-   The Gordon surface (blue) interpolates the curve network (orange).
+   The Gordon surface (blue) interpolates the curve network (grey). Its control points are shown in orange.
 
 .. _shapes-examples:
 
