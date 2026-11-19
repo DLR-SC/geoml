@@ -33,9 +33,3 @@ the bindings.
 See :doc:`python_examples` for small runnable snippets. Additional usage of the
 Python bindings can be seen in the
 `python-tests <https://github.com/DLR-SC/geoml/tree/main/tests/python>`_.
-
-.. toctree::
-   :maxdepth: 2
-   :hidden:
-
-   robust_referencing
