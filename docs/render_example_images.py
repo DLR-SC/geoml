@@ -416,27 +416,9 @@ def render_python_curve():
     scene.save("python_curve_example.png", (0.0, 0.0, 1.0))
 
 
-def render_python_modeling():
-    ex = run_example("python_modeling_example.py")
-    # The cut on the left, the union moved to the right. For the view
-    # direction d = (-1, -1, 1) with z up, "right" on the screen is (-d) x z = (1, -1, 0).
-    shift = gp_Vec(1.0, -1.0, 0.0).Normalized().Multiplied(20.0)
-    trsf = gp_Trsf()
-    trsf.SetTranslation(shift)
-    union = BRepBuilderAPI_Transform(ex["union_shape"].shape(), trsf, True).Shape()
-
-    scene = Scene(1600, 700)
-    scene.faces([ex["cut_shape"].shape()])
-    scene.faces([union])
-    scene.label("box - cylinder", gp_Pnt(5.0, 5.0, -9.0))
-    scene.label("box + cylinder", gp_Pnt(5.0, 5.0, -9.0).Translated(shift))
-    scene.save("python_modeling_example.png", (-1.0, -1.0, 1.0), zoom=1.3)
-
-
 if __name__ == "__main__":
     render_robust_referencing()
     render_python_curve()
-    render_python_modeling()
     render_curve()
     render_blend_curve()
     render_surface()

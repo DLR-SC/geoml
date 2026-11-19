@@ -52,20 +52,6 @@ Curve Network Surface
 
    Left: the curve network (blue) with the control points of its curves. Right: the resulting Gordon surface (blue) with its control points (orange).
 
-Modelling Operations
---------------------
-
-.. literalinclude:: examples/python_modeling_example.py
-   :language: python
-   :caption: Create and combine history-aware shapes
-
-.. figure:: _static/examples/python_modeling_example.png
-   :alt: Result of python modelling example
-   :width: 700px
-   :align: center
-
-   Left: the box with the cylinder subtracted. Right: the union of box and cylinder.
-
 Selecting, Tracking and Tagging Subshapes
 -----------------------------------------
 
