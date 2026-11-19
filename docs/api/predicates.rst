@@ -56,3 +56,31 @@ Topology and History Predicates
 .. doxygenfunction:: geoml::is_descendent_of
 
 .. doxygenfunction:: geoml::has_subshape_that
+
+Python
+------
+
+Available in Python as ``from geoml import pygeoml``.
+
+Python functions cannot be used as predicates. To select subshapes by
+geometric properties, find them with pythonocc and combine ``is_same``
+predicates, as shown in :ref:`python-examples`.
+
+.. list-table::
+   :header-rows: 1
+   :widths: 45 55
+
+   * - ``pygeoml``
+     - Description
+   * - ``p & q``, ``p | q``, ``~p``
+     - Logical and, or and not (``&&``, ``||`` and ``!`` in C++).
+   * - ``predicate(shape)``
+     - Evaluates a predicate for a shape and returns a ``bool``.
+   * - ``is_vertex``, ``is_edge``, ``is_face``, ``is_solid``, ``has_origin``
+     - Predicate constants.
+   * - ``has_tag(tag)``, ``is_type(shape_type)``, ``is_same(shape)``
+     - Return a ``ShapePredicate``.
+   * - ``has_subshape(shape)``, ``is_subshape_of(shape)``, ``has_subshape_that(predicate)``
+     - Return a ``ShapePredicate``.
+   * - ``is_descendent_of(shape, max_depth=...)``, ``is_modified_descendent_of``, ``is_unmodified_descendent_of`` and their ``..._subshape_in`` variants
+     - Return a ``ShapePredicate``. ``max_depth`` is optional.

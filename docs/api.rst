@@ -12,6 +12,10 @@ Most functions operate on OpenCASCADE geometry and topology types such as
 ``gp_Pnt``, ``Geom_Curve``, ``Geom_Surface`` and ``TopoDS_Shape``. Modelling
 operations that need history-aware naming use :cpp:class:`geoml::Shape`.
 
+Each reference page ends with a **Python** section that lists the
+corresponding functions and classes of the Python module ``geoml.pygeoml`` and
+the differences to C++.
+
 .. The list of reference pages is only shown in the navigation sidebar.
 
 .. toctree::

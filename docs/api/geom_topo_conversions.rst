@@ -14,3 +14,21 @@ Functions
 .. doxygenfunction:: geoml::CurveToEdge
 
 .. doxygenfunction:: geoml::EdgeToCurve
+
+Python
+------
+
+Available in Python as ``from geoml import pygeoml``.
+
+.. list-table::
+   :header-rows: 1
+   :widths: 45 55
+
+   * - ``pygeoml``
+     - Description
+   * - ``SurfaceToFace(surface, tolDegEd)``
+     - Returns a ``TopoDS_Face``.
+   * - ``CurveToEdge(curve)``
+     - Returns a ``TopoDS_Edge``.
+   * - ``EdgeToCurve(edge)``
+     - Returns a ``Geom_Curve``.
