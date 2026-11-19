@@ -11,18 +11,20 @@ Run with the Python of the pixi environment (needs geoml and pythonocc):
 import os
 import runpy
 
-from OCC.Core.AIS import AIS_Shape
-from OCC.Core.Aspect import Aspect_POM_Fill, Aspect_TOL_SOLID
+from OCC.Core.AIS import AIS_Shape, AIS_TextLabel
+from OCC.Core.Aspect import Aspect_POM_Fill, Aspect_TODT_SUBTITLE, Aspect_TOL_SOLID
 from OCC.Core.BRep import BRep_Builder
 from OCC.Core.BRepAdaptor import BRepAdaptor_Curve, BRepAdaptor_Surface
-from OCC.Core.BRepBuilderAPI import BRepBuilderAPI_MakeEdge, BRepBuilderAPI_MakeFace
+from OCC.Core.BRepBuilderAPI import BRepBuilderAPI_MakeEdge, BRepBuilderAPI_MakeFace, BRepBuilderAPI_Transform
 from OCC.Core.BRepPrimAPI import BRepPrimAPI_MakeSphere
 from OCC.Core.GeomAbs import GeomAbs_BezierCurve
-from OCC.Core.Graphic3d import Graphic3d_MaterialAspect, Graphic3d_NOM_PLASTIC
+from OCC.Core.Graphic3d import (Graphic3d_HTA_CENTER, Graphic3d_MaterialAspect, Graphic3d_NOM_PLASTIC,
+                                 Graphic3d_VTA_CENTER, Graphic3d_ZLayerId_Topmost)
+from OCC.Core.TCollection import TCollection_ExtendedString
 from OCC.Core.Prs3d import Prs3d_LineAspect
 from OCC.Core.Quantity import Quantity_Color, Quantity_TOC_sRGB
 from OCC.Core.TopoDS import TopoDS_Compound
-from OCC.Core.gp import gp_Pnt
+from OCC.Core.gp import gp_Pnt, gp_Trsf, gp_Vec
 from OCC.Display.OCCViewer import Viewer3d
 
 from geoml import pygeoml
@@ -109,6 +111,23 @@ class Scene:
         ais.SetColor(colour(point_colour))
         ais.Attributes().SetFaceBoundaryDraw(False)
         self._show(ais, fine=False)  # a fine mesh of many spheres takes very long
+
+    def label(self, text, point, height=30):
+        """Show `text` in a white box at `point`, always in front of the geometry."""
+        ais = AIS_TextLabel()
+        ais.SetText(TCollection_ExtendedString(text, True))
+        ais.SetPosition(point)
+        ais.SetHeight(height)
+        ais.SetColor(colour(BLACK))
+        ais.SetFont("Arial")
+        ais.SetHJustification(Graphic3d_HTA_CENTER)
+        ais.SetVJustification(Graphic3d_VTA_CENTER)
+        aspect = ais.Attributes().TextAspect().Aspect()
+        aspect.SetDisplayType(Aspect_TODT_SUBTITLE)
+        aspect.SetColorSubTitle(colour("#ffffff"))
+        ais.SetZLayer(Graphic3d_ZLayerId_Topmost)
+        self.context.Display(ais, False)
+        self.context.Deactivate(ais)
 
     def save(self, name, direction=(1.0, -1.0, 1.0), zoom=0.85):
         """Save the scene, seen from `direction` with z pointing up."""
@@ -198,8 +217,6 @@ def render_blend_curve():
     scene = Scene()
     scene.edges([start_edge, end_edge], GREY_CURVE)
     scene.edges([blend_edge], BLUE_CURVE)
-    for e in (start_edge, end_edge, blend_edge):
-        control_polygon(scene, curve_poles(e), 0.07)
     scene.save("blend_curve_example.png", (0.0, 0.0, 1.0))
 
 
@@ -242,11 +259,24 @@ def render_curve_network():
     surface = face(pygeoml.interpolate_curve_network(
         containers.geomcurve_vector(u_curves), containers.geomcurve_vector(v_curves), 1e-1))
 
-    scene = Scene()
-    scene.faces([surface], edge_colour=None)
-    scene.edges([edge(c) for c in u_curves + v_curves], GREY, 3.0)
-    control_net(scene, surface_poles(surface), 0.05)
-    scene.save("curve_network_example.png", (1.0, -0.4, 0.3))
+    # The curve network on the left, the Gordon surface moved to the right.
+    # For the view direction d = (1, -0.4, 0.3) with z up, "right" on the
+    # screen is the direction (-d) x z = (0.4, 1, 0).
+    view = (1.0, -0.4, 0.3)
+    shift = gp_Vec(0.4, 1.0, 0.0).Normalized().Multiplied(6.5)
+    trsf = gp_Trsf()
+    trsf.SetTranslation(shift)
+    moved_surface = BRepBuilderAPI_Transform(surface, trsf, True).Shape()
+    moved_poles = [[p.Translated(shift) for p in row] for row in surface_poles(surface)]
+
+    scene = Scene(1600, 650)
+    curves = [edge(c) for c in u_curves + v_curves]
+    scene.edges(curves, BLUE_CURVE, 3.0)
+    for c in curves:
+        control_polygon(scene, curve_poles(c), 0.07)
+    scene.faces([moved_surface], edge_colour=None)
+    control_net(scene, moved_poles, 0.07)
+    scene.save("curve_network_example.png", view, zoom=0.95)
 
 
 # --- Subshapes: the Python versions build the same geometry as C++ ---------
@@ -303,10 +333,45 @@ def render_tagging():
     scene.faces(occ_shapes(others))
     scene.faces(occ_shapes(bore), GREY, BLACK, 1.0)
     scene.edges(occ_shapes(top_edges))
+    scene.label('"top"', gp_Pnt(7.5, 2.0, 10.0))
+    scene.label('"bore"', gp_Pnt(5.0, 5.0, 10.0))
     scene.save("shape_tagging_example.png", (1.0, 0.7, 0.9))
 
 
+# --- Python examples with their own geometry --------------------------------
+# The other Python examples build the same geometry as the C++ examples and
+# use the same images.
+
+def render_python_curve():
+    ex = run_example("python_curve_example.py")
+    curve = ex["edge"]
+    scene = Scene()
+    scene.edges([curve], BLUE_CURVE)
+    control_polygon(scene, curve_poles(curve), 0.015)
+    scene.label('"guide-curve"', gp_Pnt(0.3, 0.55, 0.0))
+    scene.save("python_curve_example.png", (0.0, 0.0, 1.0))
+
+
+def render_python_modeling():
+    ex = run_example("python_modeling_example.py")
+    # The cut on the left, the union moved to the right. For the view
+    # direction d = (-1, -1, 1) with z up, "right" on the screen is (-d) x z = (1, -1, 0).
+    shift = gp_Vec(1.0, -1.0, 0.0).Normalized().Multiplied(20.0)
+    trsf = gp_Trsf()
+    trsf.SetTranslation(shift)
+    union = BRepBuilderAPI_Transform(ex["union_shape"].shape(), trsf, True).Shape()
+
+    scene = Scene(1600, 700)
+    scene.faces([ex["cut_shape"].shape()])
+    scene.faces([union])
+    scene.label("box - cylinder", gp_Pnt(5.0, 5.0, -9.0))
+    scene.label("box + cylinder", gp_Pnt(5.0, 5.0, -9.0).Translated(shift))
+    scene.save("python_modeling_example.png", (-1.0, -1.0, 1.0), zoom=1.3)
+
+
 if __name__ == "__main__":
+    render_python_curve()
+    render_python_modeling()
     render_curve()
     render_blend_curve()
     render_surface()

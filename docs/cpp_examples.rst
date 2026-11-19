@@ -50,7 +50,7 @@ to edges and builds a transition curve between them.
    :width: 500px
    :align: center
 
-   The blend curve (blue) connects the two input curves (grey) with G1 continuity. The control points of all curves are shown in orange.
+   The blend curve (blue) connects the two input curves (grey) with G1 continuity.
 
 Surfaces
 --------
@@ -89,10 +89,10 @@ given tolerance.
 
 .. figure:: _static/examples/curve_network_example.png
    :alt: Result of curve network example
-   :width: 500px
+   :width: 700px
    :align: center
 
-   The Gordon surface (blue) interpolates the curve network (grey). Its control points are shown in orange.
+   Left: the curve network (blue) with the control points of its curves. Right: the resulting Gordon surface (blue) with its control points (orange).
 
 .. _shapes-examples:
 
@@ -212,4 +212,4 @@ operations and are a simple way to give subshapes a persistent name.
    :width: 500px
    :align: center
 
-   The result after step 2: the face tagged "bore" (grey) and the edges of the face tagged "top" (orange).
+   The result after step 2 with its tags: the face tagged "bore" (grey) and the face tagged "top" with its edges (orange).

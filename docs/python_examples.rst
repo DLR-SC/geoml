@@ -17,12 +17,26 @@ Curves and Shapes
    :language: python
    :caption: Interpolate a curve and wrap it as a Shape
 
+.. figure:: _static/examples/python_curve_example.png
+   :alt: Result of python curve example
+   :width: 500px
+   :align: center
+
+   The interpolated B-spline curve (blue) with its control points (orange) and its meta tag.
+
 Blend Curve
 -----------
 
 .. literalinclude:: examples/python_blend_curve_example.py
    :language: python
    :caption: Create a blend curve between two edges
+
+.. figure:: _static/examples/blend_curve_example.png
+   :alt: Result of blend curve example
+   :width: 500px
+   :align: center
+
+   The blend curve (blue) connects the two input curves (grey) with G1 continuity.
 
 Curve Network Surface
 ---------------------
@@ -31,12 +45,26 @@ Curve Network Surface
    :language: python
    :caption: Interpolate a surface through a curve network
 
+.. figure:: _static/examples/curve_network_example.png
+   :alt: Result of curve network example
+   :width: 700px
+   :align: center
+
+   Left: the curve network (blue) with the control points of its curves. Right: the resulting Gordon surface (blue) with its control points (orange).
+
 Modelling Operations
 --------------------
 
 .. literalinclude:: examples/python_modeling_example.py
    :language: python
    :caption: Create and combine history-aware shapes
+
+.. figure:: _static/examples/python_modeling_example.png
+   :alt: Result of python modelling example
+   :width: 700px
+   :align: center
+
+   Left: the box with the cylinder subtracted. Right: the union of box and cylinder.
 
 Selecting, Tracking and Tagging Subshapes
 -----------------------------------------
@@ -66,6 +94,13 @@ Selecting subshapes with predicates
    :language: python
    :caption: Select subshapes with predicates
 
+.. figure:: _static/examples/shape_selection_example.png
+   :alt: Result of shape selection example
+   :width: 500px
+   :align: center
+
+   The box with the selected edges of the top face and the vertices of the side faces on the bottom face (orange).
+
 Tracking subshapes through modelling operations
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -73,9 +108,23 @@ Tracking subshapes through modelling operations
    :language: python
    :caption: Track subshapes with history predicates
 
+.. figure:: _static/examples/shape_history_example.png
+   :alt: Result of shape history example
+   :width: 500px
+   :align: center
+
+   The result after both modelling steps: faces that descend from the drill or the corner tool (grey) and the edges of the face that descends from the original top face (orange).
+
 Tagging subshapes and tag tracks
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. literalinclude:: examples/python_shape_tagging_example.py
    :language: python
    :caption: Tag subshapes and use tag tracks
+
+.. figure:: _static/examples/shape_tagging_example.png
+   :alt: Result of shape tagging example
+   :width: 500px
+   :align: center
+
+   The result after step 2 with its tags: the face tagged "bore" (grey) and the face tagged "top" with its edges (orange).
