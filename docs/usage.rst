@@ -11,6 +11,10 @@ Overview
 It offers geometric functionalities for curves, surfaces and solids. Further it allows the formulation of 
 subshape selection criteria using history tracking, to formulate robust parametric models.
 
+Parametric models need references to subshapes that stay valid when the
+parameters change. :doc:`robust_referencing` explains how geoml provides them
+with ``geoml::Shape``, history predicates, meta tags and tag tracks.
+
 C++
 ---
 
@@ -29,3 +33,9 @@ the bindings.
 See :doc:`python_examples` for small runnable snippets. Additional usage of the
 Python bindings can be seen in the
 `python-tests <https://github.com/DLR-SC/geoml/tree/main/tests/python>`_.
+
+.. toctree::
+   :maxdepth: 2
+   :hidden:
+
+   robust_referencing

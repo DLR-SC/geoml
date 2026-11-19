@@ -131,12 +131,13 @@ a ``geoml::ShapePredicate``, for example to select faces by geometric
 properties.
 
 **History.** Currently, the modelling operations in
-:ref:`Boolean Operations <boolean-ops-api>` support history tracking. This
-will be extended gradually. These operations, such as ``boolean_subtract``
-(``operator-``) and ``boolean_union`` (``operator+``), record for every
-subshape of the result which input subshapes it originates from, and whether
-it was modified. The history predicates use this information, also over
-several modelling steps.
+:ref:`Boolean Operations <boolean-ops-api>` (``boolean_subtract`` or
+``operator-`` and ``boolean_union`` or ``operator+``) and ``make_fillet`` in
+:ref:`Utilities <utilities-api>` support history tracking (see
+:ref:`robust-referencing`). This will be extended gradually. These operations
+record for every subshape of the result which input subshapes it originates
+from, and whether it was modified. The history predicates use this
+information, also over several modelling steps.
 
 **Meta tags** are strings attached to a subshape.
 

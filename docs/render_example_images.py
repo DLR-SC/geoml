@@ -338,6 +338,66 @@ def render_tagging():
     scene.save("shape_tagging_example.png", (1.0, 0.7, 0.9))
 
 
+def make_robust_referencing_part(hole_x, hole_radius, fillet_radius):
+    """The parametric model of robust_referencing_example.cpp."""
+    from OCC.Core.BRepPrimAPI import BRepPrimAPI_MakeCylinder
+    from OCC.Core.gp import gp_Ax2, gp_Dir
+    ex = run_example("python_shape_history_example.py")  # for its face helpers
+    select_faces, at_height, is_cylindrical = ex["select_faces"], ex["at_height"], ex["is_cylindrical"]
+    is_face, is_edge = pygeoml.is_face, pygeoml.is_edge
+
+    box = pygeoml.create_box(10.0, 10.0, 10.0)
+    axis = gp_Ax2(gp_Pnt(hole_x, 5.0, -1.0), gp_Dir(0.0, 0.0, 1.0))
+    drill = pygeoml.Shape(BRepPrimAPI_MakeCylinder(axis, hole_radius, 12.0).Shape())
+    top = select_faces(box, at_height(10.0)).unique_element()
+    drill_wall = select_faces(drill, is_cylindrical).unique_element()
+    box.add_tag_track(pygeoml.TagTrack("top", is_face & pygeoml.is_descendent_of(top), 2))
+    drill.add_tag_track(pygeoml.TagTrack("bore", is_face & pygeoml.is_descendent_of(drill_wall), 2))
+
+    drilled = box - drill
+    drilled_top = drilled.select_subshapes(is_face & pygeoml.is_descendent_of(top)).unique_element()
+    hole_wall = drilled.select_subshapes(is_face & pygeoml.is_descendent_of(drill_wall)).unique_element()
+    rim = drilled.select_subshapes(
+        is_edge & pygeoml.is_subshape_of(drilled_top) & pygeoml.is_subshape_of(hole_wall))
+
+    part = pygeoml.make_fillet(drilled, rim, fillet_radius)
+    part.add_meta_tag_to_subshapes(is_face & ~pygeoml.is_descendent_of_subshape_in(drilled), "fillet")
+    return part
+
+
+def render_robust_referencing():
+    has_tag = pygeoml.has_tag
+    view = (1.0, 0.7, 0.9)
+    # "right" on the screen for this view direction d with z up: (-d) x z = (-0.7, 1, 0)
+    shift = gp_Vec(-0.7, 1.0, 0.0).Normalized().Multiplied(17.0)
+    trsf = gp_Trsf()
+    trsf.SetTranslation(shift)
+
+    scene = Scene(1600, 700)
+    for hole_x, r, offset in ((5.0, 3.0, None), (4.0, 2.0, trsf)):
+        part = make_robust_referencing_part(hole_x, r, 1.0)
+
+        def place(shapes):
+            if offset is None:
+                return shapes
+            return [BRepBuilderAPI_Transform(s, offset, True).Shape() for s in shapes]
+
+        def at(p):
+            return p if offset is None else p.Translated(shift)
+
+        named = has_tag("bore") | has_tag("fillet")
+        top = part.select_subshapes(has_tag("top")).unique_element()
+        scene.faces(place(occ_shapes(part.select_subshapes(pygeoml.is_face & ~named))))
+        scene.faces(place(occ_shapes(part.select_subshapes(named))), GREY, BLACK, 1.0)
+        scene.edges(place(occ_shapes(part.select_subshapes(pygeoml.is_edge & pygeoml.is_subshape_of(top)))))
+        # the labels sit on the far side of the hole, which faces the viewer
+        far = gp_Vec(-0.82, -0.57, 0.0)
+        scene.label('"top"', at(gp_Pnt(9.0, 1.0, 10.0)))
+        scene.label('"fillet"', at(gp_Pnt(hole_x, 5.0, 9.8).Translated(far.Multiplied(r + 0.5))))
+        scene.label('"bore"', at(gp_Pnt(hole_x, 5.0, 7.0).Translated(far.Multiplied(r))))
+    scene.save("robust_referencing_example.png", view, zoom=1.2)
+
+
 # --- Python examples with their own geometry --------------------------------
 # The other Python examples build the same geometry as the C++ examples and
 # use the same images.
@@ -370,6 +430,7 @@ def render_python_modeling():
 
 
 if __name__ == "__main__":
+    render_robust_referencing()
     render_python_curve()
     render_python_modeling()
     render_curve()
