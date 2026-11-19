@@ -10,8 +10,18 @@ For more usage patterns, see the
 they can be used as additional application examples and as orientation for how
 geoml is used in practice.
 
-Curves and Shapes
------------------
+Curves
+------
+
+This section gives a short introduction to the curve functionality and a few
+small examples. For the full API reference see :ref:`curves-api` in the
+API section.
+
+Quick example
+^^^^^^^^^^^^^
+
+The following minimal example interpolates a small set of points with a
+B-spline curve, converts it to an edge, wraps it in a ``Shape`` and tags it.
 
 .. literalinclude:: examples/python_curve_example.py
    :language: python
@@ -24,8 +34,12 @@ Curves and Shapes
 
    The interpolated B-spline curve (blue) with its control points (orange) and its meta tag.
 
-Blend Curve
------------
+Blend curve example
+^^^^^^^^^^^^^^^^^^^
+
+Blend curves connect two input edges with a requested geometric continuity at
+each end. The following example creates two interpolated curves, converts them
+to edges and builds a transition curve between them.
 
 .. literalinclude:: examples/python_blend_curve_example.py
    :language: python
@@ -38,8 +52,36 @@ Blend Curve
 
    The blend curve (blue) connects the two input curves (grey) with G1 continuity. The labels show the meta tags of the curves.
 
-Curve Network Surface
----------------------
+Surfaces
+--------
+
+This section gives a short introduction to surface functionality and a few
+small examples. For the full API reference see :ref:`surfaces-api` in the
+API section.
+
+Quick example
+^^^^^^^^^^^^^
+
+The following minimal example shows how to create a simple NURBS surface
+from a small control point grid.
+
+.. literalinclude:: examples/python_surface_example.py
+   :language: python
+   :caption: Create a simple NURBS surface
+
+.. figure:: _static/examples/surface_example.png
+   :alt: Result of surface example
+   :width: 500px
+   :align: center
+
+   The NURBS surface (blue) with its control points (orange).
+
+Curve network example
+^^^^^^^^^^^^^^^^^^^^^
+
+``interpolate_curve_network`` creates a Gordon surface from two sets of
+crossing curves. Each ``u`` curve must intersect each ``v`` curve within the
+given tolerance.
 
 .. literalinclude:: examples/python_curve_network_example.py
    :language: python
@@ -56,11 +98,14 @@ Selecting, Tracking and Tagging Subshapes
 -----------------------------------------
 
 The following examples are the Python versions of the C++ examples in
-:ref:`shapes-examples`, which also explains the concepts of predicates,
-history, meta tags and tag tracks. Each example checks its results with
-``assert`` and prints ``OK``.
+:ref:`shapes-examples`.
 
-Compared to C++, note the following:
+Concepts
+^^^^^^^^
+
+The concepts of predicates, history, meta tags and tag tracks are explained in
+:ref:`shapes-examples` and :ref:`robust-referencing`. Compared to C++, note
+the following:
 
 * Predicates are combined with ``&`` (and), ``|`` (or) and ``~`` (not).
 * Python functions cannot be used as predicates. To select subshapes by
@@ -72,6 +117,13 @@ Compared to C++, note the following:
 * OpenCASCADE shapes created with pythonocc can be wrapped with
   ``pygeoml.Shape(topods_shape)``, and ``shape.shape()`` returns the wrapped
   OpenCASCADE shape.
+
+Running the examples
+^^^^^^^^^^^^^^^^^^^^
+
+Each example is a complete script. It checks its results with ``assert`` and
+prints ``OK``. Run it with the Python of an environment in which geoml is
+installed, see :ref:`installation`.
 
 Selecting subshapes with predicates
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
