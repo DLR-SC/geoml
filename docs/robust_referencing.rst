@@ -9,8 +9,7 @@ Why robust referencing matters
 A parametric model is a sequence of modelling operations whose inputs depend
 on parameters. Every time a parameter changes, the whole sequence is evaluated
 again. Many operations need references to subshapes of intermediate results:
-the edges to fillet, the face to attach the next feature to, the faces to
-apply a boundary condition to.
+the edges to fillet, the face to attach the next feature to.
 
 These references must point to the *right* subshape in every evaluation of
 the model: the subshape that the **modelling intention** asks for. The
@@ -20,16 +19,18 @@ for others; the modeller then defines **cases** and a selection for each case
 (see :ref:`selection-cases`).
 
 Referencing a subshape by its index, for example "the third face of the
-result", does not achieve this. The number and the order of the subshapes
-change with the parameters, and the order can even change between program runs
-with the same parameters. A model built on such references silently selects
-the wrong faces as soon as a parameter changes. This is known as the
+result", does not necessarily achieve this. The number and the order of the
+subshapes may change when the topology changes, for example after a Boolean
+operation, and the order can even change between program runs with the same
+parameters. A model built on such references silently selects the wrong faces
+as soon as the topology changes with a parameter change. This is known as the
 *topological naming problem*.
 
 geoml solves it by referencing subshapes by what they *are* rather than by
 where they are stored:
 
-* by their properties and topological relations, using **predicates**,
+* by their topological relations, using **topological predicates**,
+* by their geometric properties, using **geometric predicates**,
 * by their origin in earlier modelling steps, using **history predicates**,
 * by names, using **meta tags** and **tag tracks**.
 
@@ -166,28 +167,29 @@ In general, a selection criterion :math:`L` consists of **cases** and a
 
    L = \bigvee_{i \in C} \left( \mathit{Case}_i \wedge \mathit{Selection}_i \right)
 
-* :math:`\mathit{Case}_i` is a condition on the parameters of the model, e.g.
-  :math:`d < 3`. The cases must be *mutually exclusive and exhaustive*: for
-  every parameter constellation exactly one case applies. The cases split the
-  parameter space into equivalence classes, in each of which the modelling
+* :math:`\mathit{Case}_i` is a condition on the model. It can be formulated
+  with any predicate, for example with history predicates ("the edge
+  :math:`X` gets cut by the box :math:`B`") or directly with the parameters
+  (":math:`d < 3`"). The cases must be *mutually exclusive and exhaustive*:
+  for every parameter constellation exactly one case applies. The cases split
+  the parameter space into equivalence classes, in each of which the modelling
   intention asks for the same selection.
 * :math:`\mathit{Selection}_i` is the predicate that selects the subshapes
   the modelling intention asks for in case :math:`i`.
 
-Both are ``ShapePredicate`` objects, so :math:`L` can be written down in geoml
-literally. A case is a predicate that does not depend on the shape it is
-evaluated for, only on the parameters:
+Because exactly one case applies, :math:`L` is the selection of that case. In
+code, evaluate the cases as Booleans, check that exactly one of them applies
+and select with its selection predicate:
 
-.. code-block:: cpp
+.. code-block:: python
 
-   geoml::ShapePredicate case_1([d](geoml::Shape const&) { return d >= 3.; });
-   geoml::ShapePredicate case_2 = !case_1;
-
-   geoml::ShapePredicate L = (case_1 && selection_1) || (case_2 && selection_2);
+   cases = [(case_1, selection_1), (case_2, selection_2)]
+   assert sum(case for case, _ in cases) == 1  # mutually exclusive and exhaustive
+   L = next(selection for case, selection in cases if case)
 
 The cases should follow the **modelling intention**, not the topology of the
-result. Selections that reference subshapes by their properties, relations and
-history usually stay valid when the topology changes, so a new case is only
+result. Selections formulated with topological, geometric and history
+predicates usually stay valid when the topology changes, so a new case is only
 needed where the intention itself changes. Selecting by index or by other
 topology-dependent properties instead forces a new case for every change of
 the topology: the number of cases grows quickly with the number of parameters,
@@ -205,38 +207,37 @@ cutting a notch into it at position :math:`d`" needs only one case for all
 Example with two cases
 ^^^^^^^^^^^^^^^^^^^^^^
 
-A notch of width 2 is cut into the frontal upper edge :math:`X` of a box at
-position :math:`d`, which splits :math:`X` into a piece left and a piece right
-of the notch. The modelling intention is:
+A box :math:`B` of size 2, moved along the frontal upper edge :math:`X` of a
+box by the parameter :math:`d`, is subtracted from the box. Depending on
+:math:`d`, it cuts a notch into :math:`X` or misses the box. The modelling
+intention is:
 
-* Case 1, :math:`d \geq 3`: fillet both pieces of :math:`X`.
-* Case 2, :math:`d < 3`: the piece left of the notch is shorter than 3 and is
-  not filleted; fillet only the piece right of the notch.
+* Case 1, :math:`B` cuts :math:`X`: fillet the edges of the notch on the front
+  face.
+* Case 2, :math:`B` does not cut :math:`X`: fillet :math:`X`.
 
-The two cases are mutually exclusive and exhaustive. The selections use
-history predicates: the pieces of :math:`X` are the edges that descend from
-:math:`X`, and the piece right of the notch is the one that touches the face
-that descends from the right face of the box.
+The cases are formulated with a history predicate: :math:`B` cuts :math:`X` if
+the result contains a modified descendent of :math:`X`. They are mutually
+exclusive and exhaustive. The selections use topological and history
+predicates: the edges of the notch on the front face are the edges shared by
+the front face and the faces that descend from :math:`B`.
 
 .. literalinclude:: examples/selection_cases_example.cpp
    :language: cpp
    :caption: Selection cases in C++
-
-In Python, functions cannot be wrapped as predicates. A case is therefore
-expressed with the two constant predicates ``ALWAYS`` and ``NEVER``, chosen by
-the condition on the parameters:
 
 .. literalinclude:: examples/python_selection_cases_example.py
    :language: python
    :caption: Selection cases in Python
 
 .. figure:: _static/examples/selection_cases_example.png
-   :alt: The notched box for d = 2 and d = 5
+   :alt: The box for d = 4 and d = 12
    :width: 700px
    :align: center
 
-   Left: :math:`d = 2`, case 2, only the piece right of the notch is filleted.
-   Right: :math:`d = 5`, case 1, both pieces are filleted. The fillet faces
-   are shown in orange.
+   Left: :math:`d = 4`, case 1, :math:`B` cuts :math:`X` and the edges of the
+   notch on the front face are filleted. Right: :math:`d = 12`, case 2,
+   :math:`B` misses the box and :math:`X` is filleted. The fillet faces are
+   shown in orange.
 
 More examples are in :ref:`shapes-examples`.

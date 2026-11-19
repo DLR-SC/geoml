@@ -411,7 +411,7 @@ def render_selection_cases():
     trsf.SetTranslation(shift)
 
     scene = Scene(1600, 650)
-    for d, offset, text in ((2.0, None, "d = 2: case 2"), (5.0, trsf, "d = 5: case 1")):
+    for d, offset, text in ((4.0, None, "d = 4: case 1"), (12.0, trsf, "d = 12: case 2")):
         notched, edges, part = ex["make_part"](d)
 
         def place(shapes):

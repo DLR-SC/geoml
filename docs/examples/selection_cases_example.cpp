@@ -1,5 +1,8 @@
-// Selection cases: L = (case_1 && selection_1) || (case_2 && selection_2)
+// Selection cases: L = (Case_1 and Selection_1) or (Case_2 and Selection_2)
 #include <cmath>
+#include <stdexcept>
+#include <utility>
+#include <vector>
 
 #include <BRepGProp.hxx>
 #include <BRepPrimAPI_MakeBox.hxx>
@@ -26,44 +29,65 @@ geoml::ShapePredicate is_face_at(int axis, double value)
     });
 }
 
-// A box with a notch of width 2 at position d in its frontal upper edge X.
-// Modelling intention:
-//   case 1 (d >= 3): fillet both pieces of X
-//   case 2 (d <  3): fillet only the piece of X right of the notch
+// Returns the selection of the one case that applies
+geoml::ShapePredicate select_case(std::vector<std::pair<bool, geoml::ShapePredicate>> const& cases)
+{
+    int n_applying = 0;
+    for (auto const& c : cases) {
+        n_applying += c.first ? 1 : 0;
+    }
+    if (n_applying != 1) {
+        throw std::logic_error("the cases are not mutually exclusive and exhaustive");
+    }
+    for (auto const& c : cases) {
+        if (c.first) {
+            return c.second;
+        }
+    }
+    throw std::logic_error("unreachable");
+}
+
+// A box B, moved along the frontal upper edge X of a box by d, is subtracted
+// from the box. Modelling intention:
+//   case 1, B cuts X:         fillet the edges of the notch on the front face
+//   case 2, B does not cut X: fillet X
 geoml::Shape make_part(double d)
 {
     geoml::Shape box = geoml::create_box(10., 6., 4.);
     geoml::Shape front = box.select_subshapes(is_face_at(1, 0.)).unique_element();
     geoml::Shape top = box.select_subshapes(is_face_at(2, 4.)).unique_element();
-    geoml::Shape right = box.select_subshapes(is_face_at(0, 10.)).unique_element();
     geoml::Shape X = box.select_subshapes(
         geoml::is_edge && geoml::is_subshape_of(front) && geoml::is_subshape_of(top)).unique_element();
 
-    geoml::Shape tool = BRepPrimAPI_MakeBox(gp_Pnt(d, -1., 3.), 2., 2., 2.).Shape();
-    geoml::Shape notched = box - tool;
+    geoml::Shape B = BRepPrimAPI_MakeBox(gp_Pnt(d, -1., 3.), 2., 2., 2.).Shape();
+    geoml::Shape result = box - B;
 
-    // Selections: the pieces of X, and the piece of X that touches the right face
-    geoml::Shape right_now =
-        notched.select_subshapes(geoml::is_face && geoml::is_descendent_of(right)).unique_element();
-    geoml::ShapePredicate pieces_of_X = geoml::is_edge && geoml::is_descendent_of(X);
-    geoml::ShapePredicate right_piece_of_X =
-        pieces_of_X && geoml::has_subshape_that(geoml::is_vertex && geoml::is_subshape_of(right_now));
+    // Cases, formulated with a history predicate: B cuts X if the result
+    // contains a modified descendent of X
+    bool case_1 = !result.select_subshapes(geoml::is_modified_descendent_of(X)).is_empty();
+    bool case_2 = !case_1;
 
-    // Cases: conditions on the parameter only, mutually exclusive and exhaustive
-    geoml::ShapePredicate case_1([d](geoml::Shape const&) { return d >= 3.; });
-    geoml::ShapePredicate case_2 = !case_1;
+    // Selections: the edges shared by the front face and the faces from B,
+    // and the edge X
+    geoml::Shape front_now =
+        result.select_subshapes(geoml::is_face && geoml::is_descendent_of(front)).unique_element();
+    geoml::Shape faces_from_B =
+        result.select_subshapes(geoml::is_face && geoml::is_descendent_of_subshape_in(B));
+    geoml::ShapePredicate selection_1 =
+        geoml::is_edge && geoml::is_subshape_of(front_now) && geoml::is_subshape_of(faces_from_B);
+    geoml::ShapePredicate selection_2 = geoml::is_edge && geoml::is_descendent_of(X);
 
     // The selection criterion L
-    geoml::ShapePredicate L = (case_1 && pieces_of_X) || (case_2 && right_piece_of_X);
+    geoml::ShapePredicate L = select_case({{case_1, selection_1}, {case_2, selection_2}});
 
-    geoml::Shape edges = notched.select_subshapes(L);
-    return geoml::make_fillet(notched, edges, 0.5);
+    geoml::Shape edges = result.select_subshapes(L);
+    return geoml::make_fillet(result, edges, 0.3);
 }
 
 int main()
 {
-    geoml::Shape part_case_2 = make_part(2.); // one edge filleted
-    geoml::Shape part_case_1 = make_part(5.); // two edges filleted
+    geoml::Shape part_case_1 = make_part(4.);  // B cuts X: three edges of the notch filleted
+    geoml::Shape part_case_2 = make_part(12.); // B misses the box: X filleted
 
     return 0;
 }
