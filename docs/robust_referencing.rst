@@ -12,8 +12,14 @@ again. Many operations need references to subshapes of intermediate results:
 the edges to fillet, the face to attach the next feature to, the faces to
 apply a boundary condition to.
 
-These references must point to the *same* subshape in every evaluation of the
-model. Referencing a subshape by its index, for example "the third face of the
+These references must point to the *right* subshape in every evaluation of
+the model: the subshape that the **modelling intention** asks for. The
+modelling intention has to be defined explicitly by the modeller. For some
+parameter constellations the intention may ask for a different selection than
+for others; the modeller then defines **cases** and a selection for each case
+(see :ref:`selection-cases`).
+
+Referencing a subshape by its index, for example "the third face of the
 result", does not achieve this. The number and the order of the subshapes
 change with the parameters, and the order can even change between program runs
 with the same parameters. A model built on such references silently selects
@@ -144,5 +150,93 @@ they stay valid for all parameter values.
 
    Two variants of the model with different hole positions and radii. The tags select
    the same faces in both: "top" (orange edges), "bore" and "fillet" (grey).
+
+This model needs no case distinction: one selection follows the modelling
+intention for all parameter values.
+
+.. _selection-cases:
+
+Selection cases
+---------------
+
+In general, a selection criterion :math:`L` consists of **cases** and a
+**selection** for each case:
+
+.. math::
+
+   L = \bigvee_{i \in C} \left( \mathit{Case}_i \wedge \mathit{Selection}_i \right)
+
+* :math:`\mathit{Case}_i` is a condition on the parameters of the model, e.g.
+  :math:`d < 3`. The cases must be *mutually exclusive and exhaustive*: for
+  every parameter constellation exactly one case applies. The cases split the
+  parameter space into equivalence classes, in each of which the modelling
+  intention asks for the same selection.
+* :math:`\mathit{Selection}_i` is the predicate that selects the subshapes
+  the modelling intention asks for in case :math:`i`.
+
+Both are ``ShapePredicate`` objects, so :math:`L` can be written down in geoml
+literally. A case is a predicate that does not depend on the shape it is
+evaluated for, only on the parameters:
+
+.. code-block:: cpp
+
+   geoml::ShapePredicate case_1([d](geoml::Shape const&) { return d >= 3.; });
+   geoml::ShapePredicate case_2 = !case_1;
+
+   geoml::ShapePredicate L = (case_1 && selection_1) || (case_2 && selection_2);
+
+The cases should follow the **modelling intention**, not the topology of the
+result. Selections that reference subshapes by their properties, relations and
+history usually stay valid when the topology changes, so a new case is only
+needed where the intention itself changes. Selecting by index or by other
+topology-dependent properties instead forces a new case for every change of
+the topology: the number of cases grows quickly with the number of parameters,
+and the cases have to cover parameter ranges that are irrelevant for the
+intention.
+
+For example, "fillet what remains of the frontal upper edge :math:`X` after
+cutting a notch into it at position :math:`d`" needs only one case for all
+:math:`d`, with :math:`\mathit{Case}_1 = \mathit{true}`:
+
+.. math::
+
+   L = \mathit{is\_descendent\_of}(X)
+
+Example with two cases
+^^^^^^^^^^^^^^^^^^^^^^
+
+A notch of width 2 is cut into the frontal upper edge :math:`X` of a box at
+position :math:`d`, which splits :math:`X` into a piece left and a piece right
+of the notch. The modelling intention is:
+
+* Case 1, :math:`d \geq 3`: fillet both pieces of :math:`X`.
+* Case 2, :math:`d < 3`: the piece left of the notch is shorter than 3 and is
+  not filleted; fillet only the piece right of the notch.
+
+The two cases are mutually exclusive and exhaustive. The selections use
+history predicates: the pieces of :math:`X` are the edges that descend from
+:math:`X`, and the piece right of the notch is the one that touches the face
+that descends from the right face of the box.
+
+.. literalinclude:: examples/selection_cases_example.cpp
+   :language: cpp
+   :caption: Selection cases in C++
+
+In Python, functions cannot be wrapped as predicates. A case is therefore
+expressed with the two constant predicates ``ALWAYS`` and ``NEVER``, chosen by
+the condition on the parameters:
+
+.. literalinclude:: examples/python_selection_cases_example.py
+   :language: python
+   :caption: Selection cases in Python
+
+.. figure:: _static/examples/selection_cases_example.png
+   :alt: The notched box for d = 2 and d = 5
+   :width: 700px
+   :align: center
+
+   Left: :math:`d = 2`, case 2, only the piece right of the notch is filleted.
+   Right: :math:`d = 5`, case 1, both pieces are filleted. The fillet faces
+   are shown in orange.
 
 More examples are in :ref:`shapes-examples`.

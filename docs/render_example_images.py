@@ -402,6 +402,31 @@ def render_robust_referencing():
     scene.save("robust_referencing_example.png", view, zoom=1.2)
 
 
+def render_selection_cases():
+    ex = run_example("python_selection_cases_example.py")
+    view = (0.6, -1.0, 0.8)
+    # "right" on the screen for this view direction d with z up: (-d) x z = (1, 0.6, 0)
+    shift = gp_Vec(1.0, 0.6, 0.0).Normalized().Multiplied(14.0)
+    trsf = gp_Trsf()
+    trsf.SetTranslation(shift)
+
+    scene = Scene(1600, 650)
+    for d, offset, text in ((2.0, None, "d = 2: case 2"), (5.0, trsf, "d = 5: case 1")):
+        notched, edges, part = ex["make_part"](d)
+
+        def place(shapes):
+            if offset is None:
+                return shapes
+            return [BRepBuilderAPI_Transform(s, offset, True).Shape() for s in shapes]
+
+        new_faces = pygeoml.is_face & ~pygeoml.is_descendent_of_subshape_in(notched)
+        scene.faces(place(occ_shapes(part.select_subshapes(pygeoml.is_face & ~new_faces))))
+        scene.faces(place(occ_shapes(part.select_subshapes(new_faces))), ORANGE, BLACK, 1.0)
+        p = gp_Pnt(5.0, 0.0, -2.5)
+        scene.label(text, p if offset is None else p.Translated(shift))
+    scene.save("selection_cases_example.png", view, zoom=1.15)
+
+
 # --- Python examples with their own geometry --------------------------------
 # The other Python examples build the same geometry as the C++ examples and
 # use the same images.
@@ -418,6 +443,7 @@ def render_python_curve():
 
 if __name__ == "__main__":
     render_robust_referencing()
+    render_selection_cases()
     render_python_curve()
     render_curve()
     render_blend_curve()
