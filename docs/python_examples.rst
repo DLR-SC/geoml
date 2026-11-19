@@ -36,7 +36,7 @@ Blend Curve
    :width: 500px
    :align: center
 
-   The blend curve (blue) connects the two input curves (grey) with G1 continuity.
+   The blend curve (blue) connects the two input curves (grey) with G1 continuity. The labels show the meta tags of the curves.
 
 Curve Network Surface
 ---------------------

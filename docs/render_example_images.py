@@ -201,6 +201,7 @@ def render_curve():
     scene = Scene()
     scene.edges([curve], BLUE_CURVE)
     control_polygon(scene, curve_poles(curve), 0.03)
+    scene.label('"guide-curve"', gp_Pnt(0.6, 0.0, 0.6))
     scene.save("curve_example.png", (0.0, -1.0, 0.0))
 
 
@@ -217,6 +218,9 @@ def render_blend_curve():
     scene = Scene()
     scene.edges([start_edge, end_edge], GREY_CURVE)
     scene.edges([blend_edge], BLUE_CURVE)
+    scene.label('"start-curve"', gp_Pnt(1.0, -0.35, 0.0))
+    scene.label('"end-curve"', gp_Pnt(5.0, 4.35, 0.0))
+    scene.label('"blend-curve"', gp_Pnt(2.0, 2.3, 0.0))
     scene.save("blend_curve_example.png", (0.0, 0.0, 1.0))
 
 

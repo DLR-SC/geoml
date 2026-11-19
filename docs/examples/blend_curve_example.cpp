@@ -10,6 +10,7 @@
 #include "geoml/curves/BlendCurve.h"
 #include "geoml/curves/curves.h"
 #include "geoml/geom_topo_conversions/geom_topo_conversions.h"
+#include "geoml/naming_choosing/Shape.h"
 
 int main()
 {
@@ -42,6 +43,14 @@ int main()
     Handle(Geom_Curve) blended_curve = geoml::EdgeToCurve(blended_edge);
 
     // Use blended_curve->Value(parameter) to sample the transition curve.
+
+    // wrap the edges in geoml::Shapes and name them with meta tags
+    geoml::Shape start_shape(start_edge);
+    geoml::Shape end_shape(end_edge);
+    geoml::Shape blend_shape(blended_edge);
+    start_shape.add_meta_tag("start-curve");
+    end_shape.add_meta_tag("end-curve");
+    blend_shape.add_meta_tag("blend-curve");
 
     return 0;
 }

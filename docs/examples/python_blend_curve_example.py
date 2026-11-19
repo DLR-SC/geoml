@@ -34,3 +34,11 @@ end_connection = pygeoml.BlendCurveConnection(
 blend = pygeoml.BlendCurve(start_connection, end_connection)
 blend_edge = blend.blend_curve()
 blend_curve = pygeoml.EdgeToCurve(blend_edge)
+
+# wrap the edges in Shapes and name them with meta tags
+start_shape = pygeoml.Shape(start_edge)
+end_shape = pygeoml.Shape(end_edge)
+blend_shape = pygeoml.Shape(blend_edge)
+start_shape.add_meta_tag("start-curve")
+end_shape.add_meta_tag("end-curve")
+blend_shape.add_meta_tag("blend-curve")

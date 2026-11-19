@@ -32,7 +32,7 @@ below.
    :width: 500px
    :align: center
 
-   The interpolated B-spline curve (blue) with its control points (orange).
+   The interpolated B-spline curve (blue) with its control points (orange) and its meta tag.
 
 Blend curve example
 ^^^^^^^^^^^^^^^^^^^
@@ -50,7 +50,7 @@ to edges and builds a transition curve between them.
    :width: 500px
    :align: center
 
-   The blend curve (blue) connects the two input curves (grey) with G1 continuity.
+   The blend curve (blue) connects the two input curves (grey) with G1 continuity. The labels show the meta tags of the curves.
 
 Surfaces
 --------
