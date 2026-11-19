@@ -80,7 +80,7 @@ html_show_sourcelink = False
 html_show_sphinx = False
 
 # Logo in the navigation sidebar and browser tab icon
-html_logo = '@PROJECT_SOURCE_DIR@/docs/_static/geoml-logo.png'
+html_logo = '@PROJECT_SOURCE_DIR@/docs/_static/logo/geoml-logo.png'
 html_favicon = '@PROJECT_SOURCE_DIR@/docs/_static/logo/geoml-box-white.png'
 
 # Breathe Configuration
