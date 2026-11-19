@@ -222,6 +222,19 @@ exclusive and exhaustive. The selections use topological and history
 predicates: the edges of the notch on the front face are the edges shared by
 the front face and the faces that descend from :math:`B`.
 
+With the result :math:`R`, its front face :math:`F` (the face of :math:`R`
+that descends from the front face of the box) and the faces :math:`F_B` of
+:math:`R` that descend from :math:`B`, the selection criterion is
+
+.. math::
+
+   \begin{aligned}
+   L = \; & \Big( \underbrace{\exists\, s \in R : \mathit{is\_modified\_descendent\_of}(X)(s)}_{\mathit{Case}_1:\ B \text{ cuts } X}
+     \;\wedge\; \underbrace{\big( \mathit{is\_edge} \wedge \mathit{is\_subshape\_of}(F) \wedge \mathit{is\_subshape\_of}(F_B) \big)}_{\mathit{Selection}_1} \Big) \\
+   \vee \; & \Big( \underbrace{\nexists\, s \in R : \mathit{is\_modified\_descendent\_of}(X)(s)}_{\mathit{Case}_2:\ B \text{ does not cut } X}
+     \;\wedge\; \underbrace{\big( \mathit{is\_edge} \wedge \mathit{is\_descendent\_of}(X) \big)}_{\mathit{Selection}_2} \Big)
+   \end{aligned}
+
 .. literalinclude:: examples/selection_cases_example.cpp
    :language: cpp
    :caption: Selection cases in C++
