@@ -1,28 +1,35 @@
-.. `toctree`
-
 .. _geoml-api:
 
-*************
 API Reference
-*************
+=============
 
-The parametric library API consists of the following parts:
+The geoml C++ API is organised around a small set of public headers in
+``src/geoml``. The reference pages, listed in the navigation sidebar, mirror
+that structure and document the types and functions exposed in namespace
+``geoml``.
 
-* :ref:`geoml/surface/modeling.h <surfacemodel-api>`: the core API everything required tp build up compute graphs.
+Most functions operate on OpenCASCADE geometry and topology types such as
+``gp_Pnt``, ``Geom_Curve``, ``Geom_Surface`` and ``TopoDS_Shape``. Modelling
+operations that need history-aware naming use :cpp:class:`geoml::Shape`.
 
+Each reference page ends with a **Python** section that lists the
+corresponding functions and classes of the Python module ``geoml.pygeoml`` and
+the differences to C++.
 
-All functions and types provided by the library reside in namespace ``geoml``.
+.. The list of reference pages is only shown in the navigation sidebar.
 
-.. _basic-api:
-.. doxygenfunction:: geoml::init    
-.. doxygenclass:: geoml::Error
+.. toctree::
+   :maxdepth: 2
+   :hidden:
 
-.. _surfacemodel-api:
-
-Surface Modeling
-====
-
-Lorem ipsum
-
-.. doxygenfile:: geoml/surface/modeling.h
-
+   api/core
+   api/curves
+   api/surfaces
+   api/primitives
+   api/boolean_ops
+   api/transformations
+   api/naming_choosing
+   api/predicates
+   api/geom_topo_conversions
+   api/data_structures
+   api/utilities

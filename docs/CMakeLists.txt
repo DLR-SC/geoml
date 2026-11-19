@@ -38,7 +38,7 @@ if (GEOML_BUILD_DOCS)
                       DEPENDS Doxygen
                       COMMAND
                       ${SPHINX_EXECUTABLE} -b html -c ${CMAKE_CURRENT_BINARY_DIR}
-                      -Dbreathe_projects.parametric=${DOXYGEN_OUTPUT_DIR}/xml
+                      -Dbreathe_projects.geoml=${DOXYGEN_OUTPUT_DIR}/xml
                       ${SPHINX_SOURCE} ${SPHINX_BUILD}
                       WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
                       COMMENT "Generating documentation with Sphinx")

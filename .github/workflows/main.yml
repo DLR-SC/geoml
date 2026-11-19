@@ -6,6 +6,7 @@ on:
   push:
     branches:
       - 'main'
+      - 'documentation_gh_pages'
     tags:
       - v*
   workflow_dispatch:
@@ -18,3 +19,4 @@ jobs:
     with:
       api-tests: true
       win-package-artifact: 'win-package'
+#

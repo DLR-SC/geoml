@@ -28,7 +28,7 @@ namespace geoml
  * This uses the Gordon interpolation method.
  * The u curves and v curves must intersect each other within the tolerance.
  * 
- * __Note:__ The input curves are reparametrized to fullfill the compatibity criteria of the gordon method,
+ * __Note:__ The input curves are reparametrised to fulfil the compatibility criteria of the Gordon method,
  *       which might introduce a small error.
  * 
  * @param ucurves Multiple curves that will be interpolated in u direction by the final shape

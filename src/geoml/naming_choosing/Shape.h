@@ -48,7 +48,7 @@ private:
 /**
 * @brief A TagTrack stores
 *  - a tag name
-*  - the number of remaining modeling steps determining its lifetime in the modelling history 
+*  - the number of remaining modelling steps determining its lifetime in the modelling history 
 *  - a logical criterion (predicate)
 */
 struct TagTrack 
@@ -110,10 +110,10 @@ using ShapeContainer = std::unordered_set<Shape, ShapeHasher, ShapeIsSame>;
 
 /**
  * @brief The Shape class is a container for the direct topological children 
- * as well as the direct modeling parents of a geometric entity.
+ * as well as the direct modelling parents of a geometric entity.
  *
  * Internally, it wraps a TopoDS_Shape. It provides some interface
- * functions to explore the topological graph as well has the modeling
+ * functions to explore the topological graph as well as the modelling
  * history graph. The topological graph is determined through the topological
  * information encoded in the wrapped TopoDS_Shape. The historical graph
  * is determined by functors derived from the CRTP class template geoml::Operation.
@@ -138,7 +138,7 @@ public:
      * @brief constructs a Shape from an existing TopoDS_Shape
      *
      * It extracts the children from the TopoDS_Shape and 
-     * has no associated modeling history
+     * has no associated modelling history
      * 
      * @param theShape The OpenCascade shape
      */
@@ -215,7 +215,7 @@ public:
         // In the Shape constructor, new Shape instances are added as children
         // from the TopoDS_Shape instances stored in the compound. These do not 
         // yet have any historical data associated to them. To retain the historical
-        // modeling connections, we have to overwrite the children vector with the 
+        // modelling connections, we have to overwrite the children vector with the 
         // result shapes from the visitor.
         result.m_data->children = std::vector<Shape>(v.results.begin(), v.results.end());
 
@@ -478,7 +478,7 @@ public:
 
     /**
      * @brief returns true, if this shape is a historical descendent of 
-     * the other shape, i.e. a result of modeling operations and it hasn't
+     * the other shape, i.e. a result of modelling operations and it hasn't
      * been modified by any of the operations. The optional parameter max_depth
      * is the maximum depth to search in the history graph.
      * 
@@ -489,7 +489,7 @@ public:
     
     /**
      * @brief returns true, if this shape is a historical descendent of a subshape in
-     * the other shape, i.e. a result of modeling operations and it hasn't
+     * the other shape, i.e. a result of modelling operations and it hasn't
      * been modified by any of the operations. The optional parameter max_depth
      * is the maximum depth to search in the history graph.
      * 
@@ -500,7 +500,7 @@ public:
     
     /**
      * @brief returns true, if this shape is a historical descendent of 
-     * the other shape, i.e. a result of modeling operations and it has
+     * the other shape, i.e. a result of modelling operations and it has
      * been modified by any of the operations. The optional parameter max_depth
      * is the maximum depth to search in the history graph.
      * 
@@ -511,7 +511,7 @@ public:
     
     /**
      * @brief returns true, if this shape is a historical descendent of a subshape in
-     * the other shape, i.e. a result of modeling operations and it has
+     * the other shape, i.e. a result of modelling operations and it has
      * been modified by any of the operations. The optional parameter max_depth
      * is the maximum depth to search in the history graph.
      * 
@@ -522,7 +522,7 @@ public:
     
     /**
      * @brief returns true, if this shape is a historical descendent of a subshape in
-     * the other shape, i.e. a result of modeling operations. 
+     * the other shape, i.e. a result of modelling operations. 
      * The optional parameter max_depth is the maximum depth to search in the history graph.
      * 
      * @param other the other shape
@@ -533,7 +533,7 @@ public:
     
     /**
      * @brief returns true, if this shape is a historical descendent of 
-     * the other shape, i.e. a result of modeling operations. 
+     * the other shape, i.e. a result of modelling operations. 
      * The optional parameter max_depth is the maximum depth to search in the history graph.
      * 
      * @param other the other shape
@@ -543,7 +543,7 @@ public:
     
     /**
      * @brief returns true, if this shape is a historical ancestor of
-     * the other shape, i.e. the other shape results from this via modeling operations.
+     * the other shape, i.e. the other shape results from this via modelling operations.
      * * The optional parameter max_depth is the maximum depth to search in the history graph.
      * 
      * @param other the other shape

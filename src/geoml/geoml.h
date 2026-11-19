@@ -8,7 +8,7 @@ namespace geoml
 {
 
 /**
- * @brief Initializes the library
+ * @brief Initialises the library
  */
 GEOML_API_EXPORT void init();
 

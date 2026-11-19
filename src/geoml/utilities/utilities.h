@@ -1,7 +1,7 @@
 #pragma once
 
 /**
- * @brief geoml/utilities/utilities.h includes a collection of functions that are helpful for geometry modeling
+ * @brief geoml/utilities/utilities.h includes a collection of functions that are helpful for geometry modelling
  */
 
 #include <geoml/geoml.h>

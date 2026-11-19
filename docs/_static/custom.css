@@ -1,0 +1,89 @@
+dl.cpp .sig {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* Slightly narrower content for readability and styled example blocks */
+.wy-nav-content {
+    max-width: 1000px;
+}
+
+/* Keep the logo and the search box visible on every page: the theme scrolls
+   the navigation to the current page, which would otherwise move the logo
+   out of view */
+.wy-side-nav-search {
+    position: sticky;
+    top: 0;
+    z-index: 200;
+}
+
+/* The navigation header has the same cream white (#fcfcfc) as the content
+   area; separate the whole sidebar from the content with a vertical line in
+   the anthracite colour of the navigation menu */
+.wy-nav-side::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    width: 4px;
+    background: #343131;
+    z-index: 300;
+}
+
+/* On narrow screens the theme shows a top bar with a white menu icon and
+   title in the header colour; keep it anthracite so they stay readable
+   (the theme sets the colour as inline style, hence !important) */
+.wy-nav-top {
+    background: #343131 !important;
+}
+
+/* Logo size in the (white) navigation header */
+.wy-side-nav-search .wy-dropdown > a img.logo,
+.wy-side-nav-search > a img.logo {
+    max-width: 85%;
+}
+
+/* The "+" buttons to expand menu entries are dark grey in the theme and
+   hardly visible on the anthracite top level of the menu */
+.wy-menu-vertical li.toctree-l1:not(.current) > a button.toctree-expand {
+    color: #b3b3b3;
+}
+
+/* No breadcrumb bar (home icon, page title, "View page source") above the
+   page content; the navigation sidebar already shows where the page is */
+div[role="navigation"][aria-label="Page navigation"] {
+    display: none;
+}
+
+/* The white content column always fills the window height, and the footer
+   (line and copyright) sits at the bottom of the window on short pages.
+   The wrapper also contains the top bar shown on narrow screens, so the
+   column takes the remaining height instead of a fixed 100vh. */
+.wy-nav-content-wrap {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.wy-nav-content {
+    flex: 1 0 auto;
+    display: flex;
+    flex-direction: column;
+}
+
+.wy-nav-content > .rst-content {
+    flex: 1 0 auto;
+    display: flex;
+    flex-direction: column;
+}
+
+.wy-nav-content > .rst-content > div[role="main"] {
+    flex: 1 0 auto;
+}
+
+.highlight pre {
+    background: #f6f8fa;
+    padding: 0.8em;
+    border-radius: 6px;
+}
