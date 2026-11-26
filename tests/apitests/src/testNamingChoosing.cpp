@@ -731,24 +731,57 @@ TEST(ShapeHistory, tagging_evaluates_predicate_before_applying_tags)
         EXPECT_TRUE(e1.has_tag("review"));
         EXPECT_TRUE(e2.has_tag("review"));
     }
+}
 
-    // TagTrack application: Shape::apply_tag_tracks
-    {
-        Shape box = create_box(2.0, 2.0, 2.0);
-        box.add_tag_track(TagTrack("review_track", [&](Shape const&) { return !box.has_tag("review_track"); }, 1));
-        box.apply_tag_tracks();
+/**
+ * Verifies that Shape::apply_tag_tracks() evaluates all active tag tracks for
+ * each unique subshape before advancing to the next unique subshape, while
+ * applying every matching tag to all Shape::Data occurrences of that subshape.
+ */
+TEST(ShapeHistory, apply_tag_tracks_evaluates_tracks_per_subshape)
+{
+    using namespace geoml;
 
-        EXPECT_TRUE(box.has_tag("review_track"));
-        Shape tagged_edges = box.select_subshapes(is_edge && has_tag("review_track"));
-        ASSERT_EQ(tagged_edges.size(), 12u);
+    Shape box = create_box(2.0, 2.0, 2.0);
+    auto const is_ready_edge = is_edge && has_tag("ready");
+    auto const is_second_edge = is_edge && has_tag("second");
 
-        Shape sample_edge = tagged_edges[0];
-        Shape adjacent_faces = box.select_subshapes(is_face && has_subshape(sample_edge));
-        ASSERT_EQ(adjacent_faces.size(), 2u);
-        Shape e1 = adjacent_faces[0].select_subshapes(is_edge && is_same(sample_edge)).unique_element();
-        Shape e2 = adjacent_faces[1].select_subshapes(is_edge && is_same(sample_edge)).unique_element();
-        EXPECT_TRUE(e1.has_tag("review_track"));
-        EXPECT_TRUE(e2.has_tag("review_track"));
+    box.add_tag_track(TagTrack("ready", is_edge, 1));
+    box.add_tag_track(TagTrack("second", [&, root = box](Shape const& shape) {
+        return shape.is_type(TopAbs_EDGE) && root.select_subshapes(is_ready_edge).size() == 12u;
+    }, 1));
+    box.apply_tag_tracks();
+
+    Shape ready_edges = box.select_subshapes(is_ready_edge);
+    ASSERT_EQ(ready_edges.size(), 12u);
+
+    // Only the last unique edge visited sees all 12 edges tagged "ready".
+    Shape second_edges = box.select_subshapes(is_second_edge);
+    ASSERT_EQ(second_edges.size(), 1u);
+
+    // Both topological occurrences of the "second"-tagged edge carry both tags.
+    Shape second_edge = second_edges.unique_element();
+    Shape second_faces = box.select_subshapes(is_face && has_subshape(second_edge));
+    ASSERT_EQ(second_faces.size(), 2u);
+    Shape se1 = second_faces[0].select_subshapes(is_edge && is_same(second_edge)).unique_element();
+    Shape se2 = second_faces[1].select_subshapes(is_edge && is_same(second_edge)).unique_element();
+    EXPECT_TRUE(se1.has_tag("ready"));
+    EXPECT_TRUE(se2.has_tag("ready"));
+    EXPECT_TRUE(se1.has_tag("second"));
+    EXPECT_TRUE(se2.has_tag("second"));
+
+    // All other 11 edges carry "ready" on both occurrences and "second" on neither.
+    Shape other_edges = box.select_subshapes(is_edge && !has_tag("second"));
+    ASSERT_EQ(other_edges.size(), 11u);
+    for (auto const& other_edge : other_edges) {
+        Shape other_faces = box.select_subshapes(is_face && has_subshape(other_edge));
+        ASSERT_EQ(other_faces.size(), 2u);
+        Shape oe1 = other_faces[0].select_subshapes(is_edge && is_same(other_edge)).unique_element();
+        Shape oe2 = other_faces[1].select_subshapes(is_edge && is_same(other_edge)).unique_element();
+        EXPECT_TRUE(oe1.has_tag("ready"));
+        EXPECT_TRUE(oe2.has_tag("ready"));
+        EXPECT_FALSE(oe1.has_tag("second"));
+        EXPECT_FALSE(oe2.has_tag("second"));
     }
 }
 
