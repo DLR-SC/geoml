@@ -1,4 +1,6 @@
 #include <geoml/naming_choosing/Shape.h>
+#include <geoml/metadata/MetadataKey.h>
+#include <geoml/modeling/ModelingContext.h>
 #include <geoml/surfaces/surfaces.h>
 #include <geoml/data_structures/Array2d.h>
 #include <geoml/geom_topo_conversions/geom_topo_conversions.h>
@@ -7,6 +9,8 @@
 #include <geoml/predicates/predicate_functions.h>
 
 #include <gtest/gtest.h>
+
+#include <algorithm>
 
 #include <BRepBuilderAPI_MakeVertex.hxx>
 #include <BRep_Tool.hxx>
@@ -264,13 +268,8 @@ TEST_F(RectangularFace, DISABLED_example_rectangle_triangles)
 
     std::string tag_1 = "persistent name 1";
 
-    int remainingSteps_1 = 2;
-
-    // define tag_track_1
-    TagTrack tag_track_1(tag_1, criterion_1, remainingSteps_1);
-
     // get edges in cut_result carrying tag_1
-    auto cut_result_edges_tag_1 = cut_result.select_subshapes(has_tag(tag_track_1.m_tag));
+    auto cut_result_edges_tag_1 = cut_result.select_subshapes(has_tag(tag_1));
 
     EXPECT_EQ(cut_result_edges_tag_1.size(), 0);
 }
@@ -300,32 +299,28 @@ TEST_F(RectangularFace, test_tag_tracks_with_operations)
     std::string tag = "vertically persistent name";
     int remainingSteps = 2;
 
-    geoml::TagTrack tag_track(tag, criterion, remainingSteps);
-
-    face.add_tag_track(tag_track);
-
-    // apply the tag tracks of rectangular_srf to the Shape itself
-    face.apply_tag_tracks();
+    geoml::ModelingContext context;
+    context.add_tag_track(face, criterion, tag, geoml::TrackLifetime::steps(remainingSteps));
 
     // get edges in rectuangular_srf carrying tag "vertically persisten name"
-    auto rectangular_srf_tagged_edges = face.select_subshapes(geoml::has_tag(tag_track.m_tag));
+    auto rectangular_srf_tagged_edges = face.select_subshapes(geoml::has_tag(tag));
 
     EXPECT_EQ(face.select_subshapes(criterion).size(), 1);
     EXPECT_EQ(rectangular_srf_tagged_edges.size(), 1);
 
     // perform first modelling operation
-    geoml::Shape cut_result = face - triangular_srf;
+    geoml::Shape cut_result = boolean_subtract(face, triangular_srf, context);
 
     // get edges in cut_result carrying tag "vertically persisten name"
-    auto cut_result_tagged_edges = cut_result.select_subshapes(geoml::has_tag(tag_track.m_tag));
+    auto cut_result_tagged_edges = cut_result.select_subshapes(geoml::has_tag(tag));
 
     EXPECT_EQ(cut_result_tagged_edges .size(), 1);
 
     // perform second modelling operation
-    geoml::Shape cut_result_2 = cut_result - triangular_srf_2;
+    geoml::Shape cut_result_2 = boolean_subtract(cut_result, triangular_srf_2, context);
 
     // get edges in cut_result_2 carrying tag "vertically persisten name"
-    auto cut_result_2_tagged_edges = cut_result_2.select_subshapes(geoml::has_tag(tag_track.m_tag));
+    auto cut_result_2_tagged_edges = cut_result_2.select_subshapes(geoml::has_tag(tag));
 
     EXPECT_EQ(cut_result_2_tagged_edges.size(), 1);
 
@@ -632,12 +627,12 @@ TEST(ShapeHistory, shared_edge_multistep_history)
 
 /**
  * Verifies that tags applied via add_meta_tag_to_subshapes(),
- * add_persistent_meta_tag_to_subshapes(), and TagTrack propagation are
- * attached consistently to all occurrences of a shared edge.
+ * add_persistent_meta_tag_to_subshapes(), and ModelingContext tag tracks are
+ * attached consistently to all occurrences of a shared edge without duplicates.
  *
- * Checks both direct tagging on the original box and TagTrack application
- * across boolean_subtract(), selecting the shared edge through both adjacent
- * faces in each case.
+ * Checks both direct tagging on the original box and ModelingContext track
+ * propagation across boolean_subtract(), selecting the shared edge through
+ * both adjacent faces in each case.
  */
 TEST(ShapeHistory, shared_edge_tags_and_tag_tracks)
 {
@@ -666,14 +661,30 @@ TEST(ShapeHistory, shared_edge_tags_and_tag_tracks)
     Shape box_e1 = box_faces[0].select_subshapes(is_edge && is_same(orig_edge)).unique_element();
     Shape box_e2 = box_faces[1].select_subshapes(is_edge && is_same(orig_edge)).unique_element();
 
+    auto const tag_count = [](Shape const& s, std::string const& tag) {
+        auto const& tags = s.metadata().at(metadata::keys::tags());
+        return std::count(tags.begin(), tags.end(), tag);
+    };
+
     EXPECT_TRUE(box_e1.has_tag("member_tag"));
     EXPECT_TRUE(box_e2.has_tag("member_tag"));
     EXPECT_TRUE(box_e1.has_tag("free_tag"));
     EXPECT_TRUE(box_e2.has_tag("free_tag"));
+    EXPECT_EQ(tag_count(box_e1, "member_tag"), 1);
+    EXPECT_EQ(tag_count(box_e2, "member_tag"), 1);
+    EXPECT_EQ(tag_count(box_e1, "free_tag"), 1);
+    EXPECT_EQ(tag_count(box_e2, "free_tag"), 1);
 
-    // TagTrack applied during boolean_subtract.
-    box.add_tag_track(TagTrack("tracked_edge", is_edge && is_descendent_of(orig_edge), 2));
-    Shape result = boolean_subtract(box, cutter);
+    // ModelingContext tag track applied immediately and during boolean_subtract.
+    ModelingContext context;
+    context.add_tag_track(box, is_edge && is_descendent_of(orig_edge), "tracked_edge",
+                          TrackLifetime::steps(2));
+    EXPECT_TRUE(box_e1.has_tag("tracked_edge"));
+    EXPECT_TRUE(box_e2.has_tag("tracked_edge"));
+    EXPECT_EQ(tag_count(box_e1, "tracked_edge"), 1);
+    EXPECT_EQ(tag_count(box_e2, "tracked_edge"), 1);
+
+    Shape result = boolean_subtract(box, cutter, context);
 
     Shape expected_edge = result.select_subshapes(is_edge && is_modified_descendent_of(orig_edge)).unique_element();
     Shape result_faces = result.select_subshapes(is_face && has_subshape(expected_edge));
@@ -684,6 +695,10 @@ TEST(ShapeHistory, shared_edge_tags_and_tag_tracks)
 
     EXPECT_TRUE(res_e1.has_tag("tracked_edge"));
     EXPECT_TRUE(res_e2.has_tag("tracked_edge"));
+    EXPECT_EQ(tag_count(res_e1, "tracked_edge"), 1);
+    EXPECT_EQ(tag_count(res_e2, "tracked_edge"), 1);
+    EXPECT_TRUE(res_e1.is_modified_descendent_of(orig_edge));
+    EXPECT_TRUE(res_e2.is_modified_descendent_of(orig_edge));
 }
 
 /**
@@ -734,54 +749,54 @@ TEST(ShapeHistory, tagging_evaluates_predicate_before_applying_tags)
 }
 
 /**
- * Verifies that Shape::apply_tag_tracks() evaluates all active tag tracks for
- * each unique subshape before advancing to the next unique subshape, while
- * applying every matching tag to all Shape::Data occurrences of that subshape.
+ * Verifies that ModelingContext evaluates tag track predicates across all
+ * unique subshapes before mutating metadata (both on immediate registration
+ * and during modeling propagation), while attaching matching tags consistently
+ * to all topological occurrences of shared edges.
  */
-TEST(ShapeHistory, apply_tag_tracks_evaluates_tracks_per_subshape)
+TEST(ShapeHistory, modeling_context_evaluates_tracks_before_applying_to_shared_subshapes)
 {
     using namespace geoml;
 
     Shape box = create_box(2.0, 2.0, 2.0);
-    auto const is_ready_edge = is_edge && has_tag("ready");
-    auto const is_second_edge = is_edge && has_tag("second");
+    Shape cutter = create_box(1.0, 1.0, 1.0);
 
-    box.add_tag_track(TagTrack("ready", is_edge, 1));
-    box.add_tag_track(TagTrack("second", [&, root = box](Shape const& shape) {
-        return shape.is_type(TopAbs_EDGE) && root.select_subshapes(is_ready_edge).size() == 12u;
-    }, 1));
-    box.apply_tag_tracks();
+    ModelingContext context;
 
-    Shape ready_edges = box.select_subshapes(is_ready_edge);
-    ASSERT_EQ(ready_edges.size(), 12u);
+    // Immediate evaluation on registration must see pre-mutation state for the whole tree.
+    context.add_tag_track(box, [&](Shape const&) { return !box.has_tag("initial"); }, "initial",
+                          TrackLifetime::steps(1));
+    EXPECT_TRUE(box.has_tag("initial"));
+    Shape initial_edges = box.select_subshapes(is_edge && has_tag("initial"));
+    ASSERT_EQ(initial_edges.size(), 12u);
 
-    // Only the last unique edge visited sees all 12 edges tagged "ready".
-    Shape second_edges = box.select_subshapes(is_second_edge);
-    ASSERT_EQ(second_edges.size(), 1u);
+    // During propagation, all incoming tracks evaluate against the post-history-mapping
+    // result before any metadata updates are committed, so the second track observes
+    // !shape.has_tag("ready") on every edge of the result.
+    context.add_tag_track(box, is_edge, "ready", TrackLifetime::steps(1));
+    context.add_tag_track(box, [](Shape const& shape) {
+        return shape.is_type(TopAbs_EDGE) && !shape.has_tag("ready");
+    }, "second", TrackLifetime::steps(1));
 
-    // Both topological occurrences of the "second"-tagged edge carry both tags.
-    Shape second_edge = second_edges.unique_element();
-    Shape second_faces = box.select_subshapes(is_face && has_subshape(second_edge));
-    ASSERT_EQ(second_faces.size(), 2u);
-    Shape se1 = second_faces[0].select_subshapes(is_edge && is_same(second_edge)).unique_element();
-    Shape se2 = second_faces[1].select_subshapes(is_edge && is_same(second_edge)).unique_element();
-    EXPECT_TRUE(se1.has_tag("ready"));
-    EXPECT_TRUE(se2.has_tag("ready"));
-    EXPECT_TRUE(se1.has_tag("second"));
-    EXPECT_TRUE(se2.has_tag("second"));
+    // On immediate registration on box, "ready" was already applied before "second" was registered.
+    EXPECT_TRUE(box.select_subshapes(is_edge && has_tag("second")).is_empty());
 
-    // All other 11 edges carry "ready" on both occurrences and "second" on neither.
-    Shape other_edges = box.select_subshapes(is_edge && !has_tag("second"));
-    ASSERT_EQ(other_edges.size(), 11u);
-    for (auto const& other_edge : other_edges) {
-        Shape other_faces = box.select_subshapes(is_face && has_subshape(other_edge));
-        ASSERT_EQ(other_faces.size(), 2u);
-        Shape oe1 = other_faces[0].select_subshapes(is_edge && is_same(other_edge)).unique_element();
-        Shape oe2 = other_faces[1].select_subshapes(is_edge && is_same(other_edge)).unique_element();
-        EXPECT_TRUE(oe1.has_tag("ready"));
-        EXPECT_TRUE(oe2.has_tag("ready"));
-        EXPECT_FALSE(oe1.has_tag("second"));
-        EXPECT_FALSE(oe2.has_tag("second"));
+    Shape result = boolean_subtract(box, cutter, context);
+
+    Shape result_edges = result.select_subshapes(is_edge);
+    ASSERT_FALSE(result_edges.is_empty());
+    EXPECT_EQ(result.select_subshapes(is_edge && has_tag("ready")).size(), result_edges.size());
+    EXPECT_EQ(result.select_subshapes(is_edge && has_tag("second")).size(), result_edges.size());
+
+    for (auto const& edge : result_edges) {
+        Shape adjacent_faces = result.select_subshapes(is_face && has_subshape(edge));
+        ASSERT_EQ(adjacent_faces.size(), 2u);
+        Shape e1 = adjacent_faces[0].select_subshapes(is_edge && is_same(edge)).unique_element();
+        Shape e2 = adjacent_faces[1].select_subshapes(is_edge && is_same(edge)).unique_element();
+        EXPECT_TRUE(e1.has_tag("ready"));
+        EXPECT_TRUE(e2.has_tag("ready"));
+        EXPECT_TRUE(e1.has_tag("second"));
+        EXPECT_TRUE(e2.has_tag("second"));
     }
 }
 

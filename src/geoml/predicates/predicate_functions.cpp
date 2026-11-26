@@ -17,9 +17,14 @@ ShapePredicate operator!(ShapePredicate const& pred)
     return ShapePredicate([=](Shape const& s){ return !pred(s); });
 }
 
+ShapePredicate has_metadata_tag(std::string const& tag)
+{
+    return ShapePredicate([tag](Shape const& shape) { return shape.has_tag(tag); });
+}
+
 ShapePredicate has_tag(std::string const& tag)
 {
-    return ShapePredicate([=](Shape const& s){ return s.has_tag(tag); });
+    return has_metadata_tag(tag);
 }
 
 ShapePredicate is_type(TopAbs_ShapeEnum shape_type)
@@ -29,7 +34,7 @@ ShapePredicate is_type(TopAbs_ShapeEnum shape_type)
 
 ShapePredicate is_same(Shape const& other)
 {
-    return ShapePredicate([=](Shape const& s){ return s.is_same(other); });
+    return is_same(other.shape());
 }
 
 ShapePredicate is_same(TopoDS_Shape const& other)
@@ -74,7 +79,10 @@ ShapePredicate is_descendent_of_subshape_in(Shape const& other, int max_depth)
 
 ShapePredicate is_descendent_of(Shape const& other, int max_depth)
 {
-    return ShapePredicate([=](Shape const& s){ return s.is_descendent_of(other, max_depth); });
+    // A track stored on the source model must not keep that model alive through its predicate.
+    return ShapePredicate([topology = other.shape(), max_depth](Shape const& shape) {
+        return details::is_descendent_of(shape, topology, max_depth);
+    });
 }
 
 ShapePredicate has_subshape_that(ShapePredicate const& pred) 

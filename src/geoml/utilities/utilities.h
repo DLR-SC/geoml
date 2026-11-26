@@ -7,6 +7,7 @@
 #include <geoml/geoml.h>
 
 #include "geoml/data_structures/Array2d.h"
+#include "geoml/modeling/ModelingContext.h"
 #include "geoml/naming_choosing/Shape.h"
 
 #include <Geom_BSplineSurface.hxx>
@@ -53,5 +54,18 @@ extract_control_point_vector_in_V_direction (const Handle(Geom_BSplineSurface) &
  * @param radius The radius of the fillet    
  */
 GEOML_API_EXPORT Shape make_fillet (Shape const& solid , Shape const& edges, Standard_Real radius);
+
+/**
+ * @brief Add fillets to the edges of a solid with metadata tracking.
+ *
+ * @param solid The solid.
+ * @param edges The edges of the solid to fillet. If one direct subshape is not a TopoDS_EDGE, a geoml::Error exception of type GENERIC_ERROR is thrown.
+ * @param radius The radius of the fillet.
+ * @param context Modeling context owning active metadata tracks and policy scopes.
+ */
+GEOML_API_EXPORT Shape make_fillet(Shape const& solid,
+                                   Shape const& edges,
+                                   Standard_Real radius,
+                                   ModelingContext& context);
 
 } // namespace geoml

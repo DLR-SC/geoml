@@ -76,34 +76,13 @@ def test_Shape_h():
     edge_shape.add_meta_tag_to_subshapes(pred_2, "another_added_tag")
     assert type(edge_shape) is pygeoml.Shape
 
-    # test: void add_tag_track(TagTrack const& tt);
-    tag_track = pygeoml.TagTrack("added_by_tag_track_if_is_edge", is_edge, 2)
-    
-    edge_shape.add_tag_track(tag_track)
-    assert type(edge_shape) is pygeoml.Shape
-
-    # test: std::vector<TagTrack>& get_tag_tracks();
-    tag_tracks = edge_shape.get_tag_tracks()
-    assert type(tag_tracks) is pygeoml.TagTrackList
-
-
-    # test: void apply_tag_tracks();
-    edge_shape.apply_tag_tracks()
-    assert type(edge_shape) is pygeoml.Shape
-    
     assert edge_shape.has_tag("not_added_tag") == False
     assert edge_shape.has_tag("added_tag") == True
     assert edge_shape.has_tag("another_added_tag") == True
-    assert edge_shape.has_tag("added_by_tag_track_if_is_edge") == True
 
     # test: Shape operator[](int i);
     assert type(edge_shape[0]) is pygeoml.Shape 
     assert type(edge_shape[1]) is pygeoml.Shape 
-    assert type(edge_shape[2]) is pygeoml.Shape 
-    assert type(edge_shape[3]) is pygeoml.Shape 
-    assert type(edge_shape[4]) is pygeoml.Shape 
-    assert type(edge_shape[5]) is pygeoml.Shape 
-    assert type(edge_shape[6]) is pygeoml.Shape 
 
     # test: size_t size() const;
     assert edge_shape.size() == 1

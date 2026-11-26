@@ -5,6 +5,7 @@ add_executable(geoml-apitest
     src/testGeomTopoConversions.cpp
     src/testDataStructures.cpp
     src/testNamingChoosing.cpp
+    src/testMetadata.cpp
     src/testUtilities.cpp
     src/testTransformations.cpp
     src/main.cpp

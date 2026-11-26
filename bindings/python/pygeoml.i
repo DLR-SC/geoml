@@ -95,6 +95,13 @@
     $result = PyLong_FromLong((long)(*$1));
 }
 
+// Typed metadata, ModelingContext, and policy scopes are currently C++ APIs.
+%ignore geoml::Shape::metadata;
+%ignore geoml::boolean_subtract(Shape const&, Shape const&, ModelingContext&);
+%ignore geoml::boolean_union(Shape const&, Shape const&, ModelingContext&);
+%ignore geoml::make_fillet(Shape const&, Shape const&, Standard_Real, ModelingContext&);
+%ignore geoml::details::is_descendent_of;
+
 %include "geoml/data_structures/Array2d.h"
 %include "geoml/naming_choosing/Shape.h"
 %include "geoml/data_structures/conversions.h"
@@ -102,7 +109,6 @@
 %template(CurveList) std::vector<Handle(Geom_Curve)>;
 %template(CPointContainer) std::vector<gp_Pnt>;
 %template(ShapeList) std::vector<geoml::Shape>;
-%template(TagTrackList) std::vector<geoml::TagTrack>;
 %template(StandardRealList) std::vector<Standard_Real>;
 %template(IntList) std::vector<int>;
 %template(Array2dStandardReal) geoml::Array2d<Standard_Real>;
@@ -131,13 +137,6 @@
     }
     Shape __add__(Shape const& other) {
         return geoml::operator+(*$self, other);
-    }
-}
-%extend geoml::TagTrack {
-    TagTrack(std::string const& tag,
-             geoml::ShapePredicate const& criterion,
-             int remaining_steps) {
-        return new geoml::TagTrack(tag, criterion, remaining_steps);
     }
 }
 %extend geoml::ShapePredicate {

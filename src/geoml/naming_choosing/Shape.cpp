@@ -1,14 +1,35 @@
 #include "Shape.h"
+#include "topology/ShapeMetadata.h"
 
 
-#include <NCollection_IndexedDataMap.hxx>
 #include <TopExp_Explorer.hxx>
-#include <TopTools_ShapeMapHasher.hxx>
 
 #include <algorithm>
 #include <string>
+#include <unordered_map>
+#include <unordered_set>
+#include <utility>
 
 namespace geoml {
+
+Shape::Data::Data(TopoDS_Shape const& theShape,
+                  std::shared_ptr<TopoMetaMap> const& topo_meta_map)
+    : shape(theShape)
+    , topo_meta_map(topo_meta_map)
+{
+    auto found = topo_meta_map->metadata_by_topology.find(shape);
+    if (found == topo_meta_map->metadata_by_topology.end()) {
+        metadata = std::make_shared<metadata::Metadata>();
+        topo_meta_map->metadata_by_topology.emplace(shape, metadata);
+    }
+    else {
+        metadata = found->second;
+    }
+
+    for (TopoDS_Iterator it(shape); it.More(); it.Next()) {
+        children.emplace_back(Shape(it.Value(), topo_meta_map));
+    }
+}
 
 namespace details {
 
@@ -31,11 +52,16 @@ bool ShapeIsSame::operator()(Shape const& l, Shape const& r) const
 
 
 Shape::Shape(TopoDS_Shape const& theShape)
-    : m_data(std::make_shared<Data>(theShape))
+    : Shape(theShape, std::make_shared<TopoMetaMap>())
 {}
 
 Shape::Shape()
-    : m_data(std::make_shared<Data>(TopoDS_Shape()))
+    : Shape(TopoDS_Shape(), std::make_shared<TopoMetaMap>())
+{}
+
+Shape::Shape(TopoDS_Shape const& theShape,
+             std::shared_ptr<TopoMetaMap> const& topo_meta_map)
+    : m_data(std::make_shared<Data>(theShape, topo_meta_map))
 {}
 
 Shape::operator TopoDS_Shape() const {
@@ -196,12 +222,15 @@ bool Shape::is_descendent_of_subshape_in(Shape const& other, int max_depth) cons
 
 bool Shape::is_descendent_of(Shape const& other, int max_depth) const
 {
-    details::FindIfVisitor v(
-        [&](Shape const& shape){ return shape.is_same(other); },
-        max_depth
-        );
-    accept_history_visitor(v);
-    return v.found;
+    return details::is_descendent_of(*this, other.shape(), max_depth);
+}
+
+bool details::is_descendent_of(Shape const& shape, TopoDS_Shape const& other, int max_depth)
+{
+    FindIfVisitor visitor([&](Shape const& candidate) { return candidate.is_same(other); },
+                          max_depth);
+    shape.accept_history_visitor(visitor);
+    return visitor.found;
 }
 
 bool Shape::is_ancestor_of(Shape const& other, int max_depth) const
@@ -211,67 +240,75 @@ bool Shape::is_ancestor_of(Shape const& other, int max_depth) const
 
 bool Shape::has_tag(std::string const& tag) const
 {
-    return std::find_if(
-           m_data->persistent_meta_tags.begin(),
-           m_data->persistent_meta_tags.end(),
-           [&](auto const& s){ return s == tag; }
-           ) != m_data->persistent_meta_tags.end(); 
+    auto const& key = metadata::keys::tags();
+    auto const& data = metadata();
+    if (!data.contains(key)) {
+        return false;
+    }
+    auto const& tags = data.at(key);
+    return std::find(tags.begin(), tags.end(), tag) != tags.end();
 }
 
-std::vector<TagTrack>& Shape::get_tag_tracks()
+void Shape::add_meta_tag(std::string const& tag)
 {
-    return m_data->tag_tracks;
+    auto const& key = metadata::keys::tags();
+    auto tags = metadata().find(key).value_or(std::vector<std::string>{});
+    tags.push_back(tag);
+    metadata().set(key, std::move(tags));
 }
 
-const std::vector<TagTrack>& Shape::get_tag_tracks() const
+metadata::Metadata& Shape::metadata() noexcept
 {
-    return m_data->tag_tracks;
+    return *m_data->metadata;
 }
 
-void Shape::add_meta_tag(std::string const& tag) 
+metadata::Metadata const& Shape::metadata() const noexcept
 {
-    m_data->persistent_meta_tags.push_back(tag);
+    return *m_data->metadata;
 }
 
-void Shape::add_tag_track(TagTrack const& tt)
+void Shape::detach_from_inputs(std::vector<Shape> const& inputs)
 {
-    m_data->tag_tracks.push_back(tt);
-}
-
-void Shape::apply_tag_tracks()
-{
-    if (m_data->tag_tracks.empty()) {
+    // Selections may contain children from another model. Compare the actual
+    // storage domains, since identical OCCT topology can have independent stores.
+    std::unordered_set<TopoMetaMap const*> input_maps;
+    auto collect_maps = [&](auto&& self, Shape const& node) -> void {
+        input_maps.insert(node.m_data->topo_meta_map.get());
+        for (auto const& child : node) {
+            self(self, child);
+        }
+    };
+    for (auto const& input : inputs) {
+        collect_maps(collect_maps, input);
+    }
+    auto shares_input_storage = [&](Shape const& node) {
+        return input_maps.count(node.m_data->topo_meta_map.get()) != 0;
+    };
+    if (!has_subshape_that(shares_input_storage)) {
         return;
     }
 
-    // Group all Shape::Data occurrences by topological identity (IsSame) while
-    // preserving traversal order of unique subshapes. Each unique subshape then
-    // evaluates all active tag tracks before moving on to the next unique subshape,
-    // and matching tags are applied to every occurrence of that subshape.
-    NCollection_IndexedDataMap<TopoDS_Shape, std::vector<Shape>, TopTools_ShapeMapHasher> subshape_groups;
-    details::ForEachVisitor collect_visitor([&](Shape const& subshape) {
-        TopoDS_Shape const occt_shape = subshape.shape();
-        Standard_Integer const idx = subshape_groups.FindIndex(occt_shape);
-        if (idx != 0) {
-            subshape_groups.ChangeFromIndex(idx).push_back(subshape);
-        } else {
-            subshape_groups.Add(occt_shape, std::vector<Shape>{subshape});
+    // Copy wrapper data before history mapping. History parents and OCCT
+    // geometry stay shared. Every repeated subshape in a model gets one store.
+    std::unordered_map<TopoMetaMap const*, std::shared_ptr<TopoMetaMap>> copies;
+    auto detach = [&](auto&& self, Shape& node) -> void {
+        auto old = node.m_data;
+        auto& model = copies[old->topo_meta_map.get()];
+        if (!model) {
+            model = std::make_shared<TopoMetaMap>();
         }
-    });
-    accept_topology_visitor(collect_visitor);
-
-    for (Standard_Integer i = 1; i <= subshape_groups.Extent(); ++i) {
-        auto& instances = subshape_groups.ChangeFromIndex(i);
-        Shape const& representative = instances.front();
-        for (auto const& tag_track : m_data->tag_tracks) {
-            if (tag_track.m_remainingSteps > 0 && tag_track.m_criterion(representative)) {
-                for (auto& subshape : instances) {
-                    subshape.add_meta_tag(tag_track.m_tag);
-                }
-            }
+        auto [entry, inserted] = model->metadata_by_topology.try_emplace(old->shape);
+        if (inserted) {
+            entry->second = std::make_shared<metadata::Metadata>(*old->metadata);
         }
-    }
+        node.m_data = std::make_shared<Data>(*old);
+        node.m_data->topo_meta_map = model;
+        node.m_data->metadata = entry->second;
+        for (auto& child : node) {
+            self(self, child);
+        }
+    };
+    detach(detach, *this);
 }
-
 
 } // namespace geoml
