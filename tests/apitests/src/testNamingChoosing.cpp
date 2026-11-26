@@ -517,3 +517,309 @@ INSTANTIATE_TEST_SUITE_P(
         "alpha", "beta", "gamma", "delta", "a", "b", "c", "d", "inside", "outside"
     )
 );
+
+/**
+ * Verifies that a modified edge shared by two adjacent faces reports
+ * consistent history regardless of which parent face is used to select it.
+ *
+ * Subtracts a corner box [0,1]^3 from [0,2]^3 so that the three box edges
+ * meeting at the origin are shortened (modified). Selects one such resulting
+ * edge via both of its adjacent faces and checks that both handles satisfy
+ * is_same(), has_origin(), is_descendent_of(), and is_modified_descendent_of().
+ */
+TEST(ShapeHistory, shared_edge_history)
+{
+    using namespace geoml;
+
+    Shape box = create_box(2.0, 2.0, 2.0);
+    Shape cutter = create_box(1.0, 1.0, 1.0);
+    Shape result = boolean_subtract(box, cutter);
+
+    // Find an original box edge that was modified into a single resulting edge.
+    Shape orig_edge;
+    Shape expected_edge;
+    for (auto const& candidate : box.select_subshapes(is_edge)) {
+        auto descendents = result.select_subshapes(is_edge && is_modified_descendent_of(candidate));
+        if (descendents.size() == 1) {
+            orig_edge = candidate;
+            expected_edge = descendents.unique_element();
+            break;
+        }
+    }
+
+    ASSERT_FALSE(orig_edge.is_null());
+    ASSERT_FALSE(expected_edge.is_null());
+    ASSERT_FALSE(expected_edge.is_same(orig_edge));
+    ASSERT_TRUE(expected_edge.has_origin());
+    ASSERT_TRUE(expected_edge.is_descendent_of(orig_edge));
+
+    // Select the two adjacent faces sharing this resulting edge.
+    Shape adjacent_faces = result.select_subshapes(is_face && has_subshape(expected_edge));
+    ASSERT_EQ(adjacent_faces.size(), 2u);
+
+    Shape edge_from_face1 = adjacent_faces[0].select_subshapes(is_edge && is_same(expected_edge)).unique_element();
+    Shape edge_from_face2 = adjacent_faces[1].select_subshapes(is_edge && is_same(expected_edge)).unique_element();
+
+    ASSERT_TRUE(edge_from_face1.is_same(edge_from_face2));
+
+    // Both topological handles to the same edge must report the same history.
+    EXPECT_TRUE(edge_from_face1.has_origin());
+    EXPECT_TRUE(edge_from_face2.has_origin());
+    EXPECT_TRUE(edge_from_face1.is_descendent_of(orig_edge));
+    EXPECT_TRUE(edge_from_face2.is_descendent_of(orig_edge));
+    EXPECT_TRUE(edge_from_face1.is_modified_descendent_of(orig_edge));
+    EXPECT_TRUE(edge_from_face2.is_modified_descendent_of(orig_edge));
+}
+
+/**
+ * Verifies that multi-step history remains consistent across adjacent
+ * faces when a shared edge is modified in step 1 and left unmodified in step 2.
+ *
+ * Step 1 subtracts [0,1]^3 from [0,2]^3 (modifying the edges at the origin);
+ * step 2 subtracts [1.5,2.5]^3 at the opposite corner, leaving those edges
+ * unmodified. Checks that both face-selected handles retain their unmodified
+ * origin link into step 1 and trace back to the original box edge.
+ */
+TEST(ShapeHistory, shared_edge_multistep_history)
+{
+    using namespace geoml;
+
+    // Step 1: subtract [0,1]^3 from [0,2]^3 -> shortens the 3 edges meeting at (0,0,0).
+    Shape box = create_box(2.0, 2.0, 2.0);
+    Shape cutter1 = create_box(1.0, 1.0, 1.0);
+    Shape step1 = boolean_subtract(box, cutter1);
+
+    // Step 2: subtract [1.5,2.5]^3 at the opposite corner (2,2,2) -> leaves the
+    // edges modified in step 1 unmodified in step 2.
+    Shape cutter2(BRepPrimAPI_MakeBox(gp_Pnt(1.5, 1.5, 1.5), 1.0, 1.0, 1.0).Shape());
+    Shape step2 = boolean_subtract(step1, cutter2);
+
+    Shape orig_edge;
+    Shape step1_edge;
+    for (auto const& candidate : box.select_subshapes(is_edge)) {
+        auto descendents = step1.select_subshapes(is_edge && is_modified_descendent_of(candidate));
+        if (descendents.size() == 1) {
+            orig_edge = candidate;
+            step1_edge = descendents.unique_element();
+            break;
+        }
+    }
+
+    ASSERT_FALSE(orig_edge.is_null());
+    ASSERT_FALSE(step1_edge.is_null());
+
+    // Confirm this edge survived step 2 unmodified (still same OCCT edge as step1_edge).
+    Shape step2_edge = step2.select_subshapes(is_edge && is_same(step1_edge)).unique_element();
+    ASSERT_FALSE(step2_edge.is_same(orig_edge));
+
+    Shape adjacent_faces = step2.select_subshapes(is_face && has_subshape(step2_edge));
+    ASSERT_EQ(adjacent_faces.size(), 2u);
+
+    Shape edge_from_face1 = adjacent_faces[0].select_subshapes(is_edge && is_same(step2_edge)).unique_element();
+    Shape edge_from_face2 = adjacent_faces[1].select_subshapes(is_edge && is_same(step2_edge)).unique_element();
+
+    ASSERT_TRUE(edge_from_face1.is_same(edge_from_face2));
+
+    // Even though the edge was unmodified in step 2, both occurrences must keep
+    // their origin link into step 1 and therefore trace back to orig_edge.
+    EXPECT_TRUE(edge_from_face1.has_origin());
+    EXPECT_TRUE(edge_from_face2.has_origin());
+    EXPECT_TRUE(edge_from_face1.is_unmodified_descendent_of(step1_edge));
+    EXPECT_TRUE(edge_from_face2.is_unmodified_descendent_of(step1_edge));
+    EXPECT_TRUE(edge_from_face1.is_descendent_of(orig_edge));
+    EXPECT_TRUE(edge_from_face2.is_descendent_of(orig_edge));
+}
+
+/**
+ * Verifies that tags applied via add_meta_tag_to_subshapes(),
+ * add_persistent_meta_tag_to_subshapes(), and TagTrack propagation are
+ * attached consistently to all occurrences of a shared edge.
+ *
+ * Checks both direct tagging on the original box and TagTrack application
+ * across boolean_subtract(), selecting the shared edge through both adjacent
+ * faces in each case.
+ */
+TEST(ShapeHistory, shared_edge_tags_and_tag_tracks)
+{
+    using namespace geoml;
+
+    Shape box = create_box(2.0, 2.0, 2.0);
+    Shape cutter = create_box(1.0, 1.0, 1.0);
+
+    // Pick a box edge that will be modified by cutting [0,1]^3.
+    Shape probe = boolean_subtract(box, cutter);
+    Shape orig_edge;
+    for (auto const& candidate : box.select_subshapes(is_edge)) {
+        if (probe.select_subshapes(is_edge && is_modified_descendent_of(candidate)).size() == 1) {
+            orig_edge = candidate;
+            break;
+        }
+    }
+    ASSERT_FALSE(orig_edge.is_null());
+
+    // Direct tagging on box via member and free function.
+    box.add_meta_tag_to_subshapes(is_edge && is_same(orig_edge), "member_tag");
+    add_persistent_meta_tag_to_subshapes(box, is_edge && is_same(orig_edge), "free_tag");
+
+    Shape box_faces = box.select_subshapes(is_face && has_subshape(orig_edge));
+    ASSERT_EQ(box_faces.size(), 2u);
+    Shape box_e1 = box_faces[0].select_subshapes(is_edge && is_same(orig_edge)).unique_element();
+    Shape box_e2 = box_faces[1].select_subshapes(is_edge && is_same(orig_edge)).unique_element();
+
+    EXPECT_TRUE(box_e1.has_tag("member_tag"));
+    EXPECT_TRUE(box_e2.has_tag("member_tag"));
+    EXPECT_TRUE(box_e1.has_tag("free_tag"));
+    EXPECT_TRUE(box_e2.has_tag("free_tag"));
+
+    // TagTrack applied during boolean_subtract.
+    box.add_tag_track(TagTrack("tracked_edge", is_edge && is_descendent_of(orig_edge), 2));
+    Shape result = boolean_subtract(box, cutter);
+
+    Shape expected_edge = result.select_subshapes(is_edge && is_modified_descendent_of(orig_edge)).unique_element();
+    Shape result_faces = result.select_subshapes(is_face && has_subshape(expected_edge));
+    ASSERT_EQ(result_faces.size(), 2u);
+
+    Shape res_e1 = result_faces[0].select_subshapes(is_edge && is_same(expected_edge)).unique_element();
+    Shape res_e2 = result_faces[1].select_subshapes(is_edge && is_same(expected_edge)).unique_element();
+
+    EXPECT_TRUE(res_e1.has_tag("tracked_edge"));
+    EXPECT_TRUE(res_e2.has_tag("tracked_edge"));
+}
+
+/**
+ * Verifies that tagging subshapes evaluates the predicate across the entire
+ * topology tree before mutating any tags, so state-dependent predicates such
+ * as checking !root.has_tag(...) do not interfere with ongoing selection,
+ * while still tagging all occurrences of shared subshapes.
+ */
+TEST(ShapeHistory, tagging_evaluates_predicate_before_applying_tags)
+{
+    using namespace geoml;
+
+    // Member function: Shape::add_meta_tag_to_subshapes
+    {
+        Shape box = create_box(2.0, 2.0, 2.0);
+        box.add_meta_tag_to_subshapes([&](Shape const&) { return !box.has_tag("review"); }, "review");
+
+        EXPECT_TRUE(box.has_tag("review"));
+        Shape tagged_edges = box.select_subshapes(is_edge && has_tag("review"));
+        ASSERT_EQ(tagged_edges.size(), 12u);
+
+        Shape sample_edge = tagged_edges[0];
+        Shape adjacent_faces = box.select_subshapes(is_face && has_subshape(sample_edge));
+        ASSERT_EQ(adjacent_faces.size(), 2u);
+        Shape e1 = adjacent_faces[0].select_subshapes(is_edge && is_same(sample_edge)).unique_element();
+        Shape e2 = adjacent_faces[1].select_subshapes(is_edge && is_same(sample_edge)).unique_element();
+        EXPECT_TRUE(e1.has_tag("review"));
+        EXPECT_TRUE(e2.has_tag("review"));
+    }
+
+    // Free function: add_persistent_meta_tag_to_subshapes
+    {
+        Shape box = create_box(2.0, 2.0, 2.0);
+        add_persistent_meta_tag_to_subshapes(box, [&](Shape const&) { return !box.has_tag("review"); }, "review");
+
+        EXPECT_TRUE(box.has_tag("review"));
+        Shape tagged_edges = box.select_subshapes(is_edge && has_tag("review"));
+        ASSERT_EQ(tagged_edges.size(), 12u);
+
+        Shape sample_edge = tagged_edges[0];
+        Shape adjacent_faces = box.select_subshapes(is_face && has_subshape(sample_edge));
+        ASSERT_EQ(adjacent_faces.size(), 2u);
+        Shape e1 = adjacent_faces[0].select_subshapes(is_edge && is_same(sample_edge)).unique_element();
+        Shape e2 = adjacent_faces[1].select_subshapes(is_edge && is_same(sample_edge)).unique_element();
+        EXPECT_TRUE(e1.has_tag("review"));
+        EXPECT_TRUE(e2.has_tag("review"));
+    }
+}
+
+/**
+ * Verifies that Shape::apply_tag_tracks() evaluates all active tag tracks for
+ * each unique subshape before advancing to the next unique subshape, while
+ * applying every matching tag to all Shape::Data occurrences of that subshape.
+ */
+TEST(ShapeHistory, apply_tag_tracks_evaluates_tracks_per_subshape)
+{
+    using namespace geoml;
+
+    Shape box = create_box(2.0, 2.0, 2.0);
+    auto const is_ready_edge = is_edge && has_tag("ready");
+    auto const is_second_edge = is_edge && has_tag("second");
+
+    box.add_tag_track(TagTrack("ready", is_edge, 1));
+    box.add_tag_track(TagTrack("second", [&, root = box](Shape const& shape) {
+        return shape.is_type(TopAbs_EDGE) && root.select_subshapes(is_ready_edge).size() == 12u;
+    }, 1));
+    box.apply_tag_tracks();
+
+    Shape ready_edges = box.select_subshapes(is_ready_edge);
+    ASSERT_EQ(ready_edges.size(), 12u);
+
+    // Only the last unique edge visited sees all 12 edges tagged "ready".
+    Shape second_edges = box.select_subshapes(is_second_edge);
+    ASSERT_EQ(second_edges.size(), 1u);
+
+    // Both topological occurrences of the "second"-tagged edge carry both tags.
+    Shape second_edge = second_edges.unique_element();
+    Shape second_faces = box.select_subshapes(is_face && has_subshape(second_edge));
+    ASSERT_EQ(second_faces.size(), 2u);
+    Shape se1 = second_faces[0].select_subshapes(is_edge && is_same(second_edge)).unique_element();
+    Shape se2 = second_faces[1].select_subshapes(is_edge && is_same(second_edge)).unique_element();
+    EXPECT_TRUE(se1.has_tag("ready"));
+    EXPECT_TRUE(se2.has_tag("ready"));
+    EXPECT_TRUE(se1.has_tag("second"));
+    EXPECT_TRUE(se2.has_tag("second"));
+
+    // All other 11 edges carry "ready" on both occurrences and "second" on neither.
+    Shape other_edges = box.select_subshapes(is_edge && !has_tag("second"));
+    ASSERT_EQ(other_edges.size(), 11u);
+    for (auto const& other_edge : other_edges) {
+        Shape other_faces = box.select_subshapes(is_face && has_subshape(other_edge));
+        ASSERT_EQ(other_faces.size(), 2u);
+        Shape oe1 = other_faces[0].select_subshapes(is_edge && is_same(other_edge)).unique_element();
+        Shape oe2 = other_faces[1].select_subshapes(is_edge && is_same(other_edge)).unique_element();
+        EXPECT_TRUE(oe1.has_tag("ready"));
+        EXPECT_TRUE(oe2.has_tag("ready"));
+        EXPECT_FALSE(oe1.has_tag("second"));
+        EXPECT_FALSE(oe2.has_tag("second"));
+    }
+}
+
+/**
+ * Verifies that tagging entry points invoke predicates with a Shape const&,
+ * selecting the const-reference overload when a functor overloads on both
+ * Shape const& and Shape&.
+ */
+TEST(ShapeHistory, tagging_invokes_predicate_with_const_shape_ref)
+{
+    using namespace geoml;
+
+    struct ConstEdgePredicate
+    {
+        bool operator()(Shape const& s) const { return s.is_type(TopAbs_EDGE); }
+        bool operator()(Shape&) const { return false; }
+    };
+
+    Shape box = create_box(2.0, 2.0, 2.0);
+    ConstEdgePredicate const pred{};
+
+    box.add_meta_tag_to_subshapes(pred, "const_member");
+    add_persistent_meta_tag_to_subshapes(box, pred, "const_free");
+
+    Shape member_tagged = box.select_subshapes(has_tag("const_member"));
+    Shape free_tagged = box.select_subshapes(has_tag("const_free"));
+    ASSERT_EQ(member_tagged.size(), 12u);
+    ASSERT_EQ(free_tagged.size(), 12u);
+    EXPECT_EQ(box.select_subshapes(is_edge && has_tag("const_member")).size(), 12u);
+    EXPECT_EQ(box.select_subshapes(is_edge && has_tag("const_free")).size(), 12u);
+
+    Shape sample_edge = member_tagged[0];
+    Shape adjacent_faces = box.select_subshapes(is_face && has_subshape(sample_edge));
+    ASSERT_EQ(adjacent_faces.size(), 2u);
+    Shape e1 = adjacent_faces[0].select_subshapes(is_edge && is_same(sample_edge)).unique_element();
+    Shape e2 = adjacent_faces[1].select_subshapes(is_edge && is_same(sample_edge)).unique_element();
+    EXPECT_TRUE(e1.has_tag("const_member"));
+    EXPECT_TRUE(e2.has_tag("const_member"));
+    EXPECT_TRUE(e1.has_tag("const_free"));
+    EXPECT_TRUE(e2.has_tag("const_free"));
+}

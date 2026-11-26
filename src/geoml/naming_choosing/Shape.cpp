@@ -1,7 +1,9 @@
 #include "Shape.h"
 
 
+#include <NCollection_IndexedDataMap.hxx>
 #include <TopExp_Explorer.hxx>
+#include <TopTools_ShapeMapHasher.hxx>
 
 #include <algorithm>
 #include <string>
@@ -238,13 +240,34 @@ void Shape::add_tag_track(TagTrack const& tt)
 
 void Shape::apply_tag_tracks()
 {
-    for(auto &subshape : get_subshapes()) //TODO: A for each would be cool
-    {
-        for(auto const& tag_track : m_data->tag_tracks)
-        {
-            if(tag_track.m_remainingSteps > 0 && tag_track.m_criterion(subshape))
-            {
-                subshape.add_meta_tag(tag_track.m_tag);
+    if (m_data->tag_tracks.empty()) {
+        return;
+    }
+
+    // Group all Shape::Data occurrences by topological identity (IsSame) while
+    // preserving traversal order of unique subshapes. Each unique subshape then
+    // evaluates all active tag tracks before moving on to the next unique subshape,
+    // and matching tags are applied to every occurrence of that subshape.
+    NCollection_IndexedDataMap<TopoDS_Shape, std::vector<Shape>, TopTools_ShapeMapHasher> subshape_groups;
+    details::ForEachVisitor collect_visitor([&](Shape const& subshape) {
+        TopoDS_Shape const occt_shape = subshape.shape();
+        Standard_Integer const idx = subshape_groups.FindIndex(occt_shape);
+        if (idx != 0) {
+            subshape_groups.ChangeFromIndex(idx).push_back(subshape);
+        } else {
+            subshape_groups.Add(occt_shape, std::vector<Shape>{subshape});
+        }
+    });
+    accept_topology_visitor(collect_visitor);
+
+    for (Standard_Integer i = 1; i <= subshape_groups.Extent(); ++i) {
+        auto& instances = subshape_groups.ChangeFromIndex(i);
+        Shape const& representative = instances.front();
+        for (auto const& tag_track : m_data->tag_tracks) {
+            if (tag_track.m_remainingSteps > 0 && tag_track.m_criterion(representative)) {
+                for (auto& subshape : instances) {
+                    subshape.add_meta_tag(tag_track.m_tag);
+                }
             }
         }
     }
