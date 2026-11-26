@@ -1,4 +1,5 @@
 #include <geoml/naming_choosing/Shape.h>
+#include <geoml/metadata/MetadataKey.h>
 #include <geoml/modeling/ModelingContext.h>
 #include <geoml/surfaces/surfaces.h>
 #include <geoml/data_structures/Array2d.h>
@@ -8,6 +9,8 @@
 #include <geoml/predicates/predicate_functions.h>
 
 #include <gtest/gtest.h>
+
+#include <algorithm>
 
 #include <BRepBuilderAPI_MakeVertex.hxx>
 #include <BRep_Tool.hxx>
@@ -658,10 +661,19 @@ TEST(ShapeHistory, shared_edge_tags_and_tag_tracks)
     Shape box_e1 = box_faces[0].select_subshapes(is_edge && is_same(orig_edge)).unique_element();
     Shape box_e2 = box_faces[1].select_subshapes(is_edge && is_same(orig_edge)).unique_element();
 
+    auto const tag_count = [](Shape const& s, std::string const& tag) {
+        auto const& tags = s.metadata().at(metadata::keys::tags());
+        return std::count(tags.begin(), tags.end(), tag);
+    };
+
     EXPECT_TRUE(box_e1.has_tag("member_tag"));
     EXPECT_TRUE(box_e2.has_tag("member_tag"));
     EXPECT_TRUE(box_e1.has_tag("free_tag"));
     EXPECT_TRUE(box_e2.has_tag("free_tag"));
+    EXPECT_EQ(tag_count(box_e1, "member_tag"), 1);
+    EXPECT_EQ(tag_count(box_e2, "member_tag"), 1);
+    EXPECT_EQ(tag_count(box_e1, "free_tag"), 1);
+    EXPECT_EQ(tag_count(box_e2, "free_tag"), 1);
 
     // ModelingContext tag track applied immediately and during boolean_subtract.
     ModelingContext context;
@@ -669,6 +681,8 @@ TEST(ShapeHistory, shared_edge_tags_and_tag_tracks)
                           TrackLifetime::steps(2));
     EXPECT_TRUE(box_e1.has_tag("tracked_edge"));
     EXPECT_TRUE(box_e2.has_tag("tracked_edge"));
+    EXPECT_EQ(tag_count(box_e1, "tracked_edge"), 1);
+    EXPECT_EQ(tag_count(box_e2, "tracked_edge"), 1);
 
     Shape result = boolean_subtract(box, cutter, context);
 
@@ -681,6 +695,8 @@ TEST(ShapeHistory, shared_edge_tags_and_tag_tracks)
 
     EXPECT_TRUE(res_e1.has_tag("tracked_edge"));
     EXPECT_TRUE(res_e2.has_tag("tracked_edge"));
+    EXPECT_EQ(tag_count(res_e1, "tracked_edge"), 1);
+    EXPECT_EQ(tag_count(res_e2, "tracked_edge"), 1);
     EXPECT_TRUE(res_e1.is_modified_descendent_of(orig_edge));
     EXPECT_TRUE(res_e2.is_modified_descendent_of(orig_edge));
 }
