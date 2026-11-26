@@ -272,14 +272,7 @@ public:
      * @param input_tag The tag that shall be applied to all subshapes satisfying the predicate
      */
     template <typename Pred>
-    void add_meta_tag_to_subshapes(Pred&& f, std::string const& input_tag)
-    {    
-        Shape selection = this->select_subshapes(f);
-        for (auto& selected_shape : selection)
-        {
-            selected_shape.add_meta_tag(input_tag);
-        }
-    }
+    void add_meta_tag_to_subshapes(Pred&& f, std::string const& input_tag);
 
     /**
      * @brief adds a string metadata (i.e. tag) to this shape
@@ -702,6 +695,37 @@ private:
     int m_max_depth; /** the maximum depth */
 };
 
+/**
+ * @brief The ForEachVisitor class visits every Shape node in the topology or
+ * history graph without deduplicating by IsSame(), invoking a callback on each
+ * visited handle.
+ */
+template <typename Func>
+class ForEachVisitor
+{
+public:
+    explicit ForEachVisitor(Func f, int max_depth = std::numeric_limits<int>::max())
+        : m_f(std::move(f))
+        , m_max_depth(max_depth)
+    {}
+
+    bool visit(Shape const& shape, int depth) {
+        if (depth <= m_max_depth) {
+            Shape handle = shape;
+            m_f(handle);
+        }
+        return false;
+    }
+
+    int max_depth() const {
+        return m_max_depth;
+    }
+
+private:
+    Func m_f;
+    int m_max_depth;
+};
+
 } // namespace details
 
 /**
@@ -716,11 +740,18 @@ private:
 template <typename Pred>
 void add_persistent_meta_tag_to_subshapes(const Shape &input, Pred&& f, const std::string &tag)
 {
-    auto selection = input.select_subshapes(f);
-    for (auto& selected_shape : selection)
-    {
-        selected_shape.add_meta_tag(tag);
-    }
+    details::ForEachVisitor v([&](Shape& subshape) {
+        if (f(subshape)) {
+            subshape.add_meta_tag(tag);
+        }
+    });
+    input.accept_topology_visitor(v);
+}
+
+template <typename Pred>
+void Shape::add_meta_tag_to_subshapes(Pred&& f, std::string const& input_tag)
+{
+    add_persistent_meta_tag_to_subshapes(*this, std::forward<Pred>(f), input_tag);
 }
 
 } // namespace geoml

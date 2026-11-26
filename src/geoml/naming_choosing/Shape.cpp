@@ -238,16 +238,14 @@ void Shape::add_tag_track(TagTrack const& tt)
 
 void Shape::apply_tag_tracks()
 {
-    for(auto &subshape : get_subshapes()) //TODO: A for each would be cool
-    {
-        for(auto const& tag_track : m_data->tag_tracks)
-        {
-            if(tag_track.m_remainingSteps > 0 && tag_track.m_criterion(subshape))
-            {
+    details::ForEachVisitor v([&](Shape& subshape) {
+        for (auto const& tag_track : m_data->tag_tracks) {
+            if (tag_track.m_remainingSteps > 0 && tag_track.m_criterion(subshape)) {
                 subshape.add_meta_tag(tag_track.m_tag);
             }
         }
-    }
+    });
+    accept_topology_visitor(v);
 }
 
 
