@@ -711,8 +711,7 @@ public:
 
     bool visit(Shape const& shape, int depth) {
         if (depth <= m_max_depth) {
-            Shape handle = shape;
-            m_f(handle);
+            m_f(shape);
         }
         return false;
     }
@@ -740,12 +739,17 @@ private:
 template <typename Pred>
 void add_persistent_meta_tag_to_subshapes(const Shape &input, Pred&& f, const std::string &tag)
 {
-    details::ForEachVisitor v([&](Shape& subshape) {
+    std::vector<Shape> matches;
+    details::ForEachVisitor v([&](Shape const& subshape) {
         if (f(subshape)) {
-            subshape.add_meta_tag(tag);
+            matches.push_back(subshape);
         }
     });
     input.accept_topology_visitor(v);
+
+    for (auto& subshape : matches) {
+        subshape.add_meta_tag(tag);
+    }
 }
 
 template <typename Pred>

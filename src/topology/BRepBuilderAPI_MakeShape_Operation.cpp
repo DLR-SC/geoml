@@ -29,7 +29,7 @@ void BRepBuilderAPI_MakeShape_Operation::map_subshapes(Shape& result)
     // OCCT topological identity (IsSame), so every occurrence of a shared subshape
     // receives its origins.
     NCollection_DataMap<TopoDS_Shape, std::vector<Shape>, TopTools_ShapeMapHasher> result_subshapes;
-    details::ForEachVisitor collect_visitor([&](Shape& s) {
+    details::ForEachVisitor collect_visitor([&](Shape const& s) {
         TopoDS_Shape const occt_shape = s.shape();
         if (auto* instances = result_subshapes.ChangeSeek(occt_shape)) {
             instances->push_back(s);

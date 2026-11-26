@@ -685,3 +685,108 @@ TEST(ShapeHistory, shared_edge_tags_and_tag_tracks)
     EXPECT_TRUE(res_e1.has_tag("tracked_edge"));
     EXPECT_TRUE(res_e2.has_tag("tracked_edge"));
 }
+
+/**
+ * Verifies that tagging subshapes evaluates the predicate across the entire
+ * topology tree before mutating any tags, so state-dependent predicates such
+ * as checking !root.has_tag(...) do not interfere with ongoing selection,
+ * while still tagging all occurrences of shared subshapes.
+ */
+TEST(ShapeHistory, tagging_evaluates_predicate_before_applying_tags)
+{
+    using namespace geoml;
+
+    // Member function: Shape::add_meta_tag_to_subshapes
+    {
+        Shape box = create_box(2.0, 2.0, 2.0);
+        box.add_meta_tag_to_subshapes([&](Shape const&) { return !box.has_tag("review"); }, "review");
+
+        EXPECT_TRUE(box.has_tag("review"));
+        Shape tagged_edges = box.select_subshapes(is_edge && has_tag("review"));
+        ASSERT_EQ(tagged_edges.size(), 12u);
+
+        Shape sample_edge = tagged_edges[0];
+        Shape adjacent_faces = box.select_subshapes(is_face && has_subshape(sample_edge));
+        ASSERT_EQ(adjacent_faces.size(), 2u);
+        Shape e1 = adjacent_faces[0].select_subshapes(is_edge && is_same(sample_edge)).unique_element();
+        Shape e2 = adjacent_faces[1].select_subshapes(is_edge && is_same(sample_edge)).unique_element();
+        EXPECT_TRUE(e1.has_tag("review"));
+        EXPECT_TRUE(e2.has_tag("review"));
+    }
+
+    // Free function: add_persistent_meta_tag_to_subshapes
+    {
+        Shape box = create_box(2.0, 2.0, 2.0);
+        add_persistent_meta_tag_to_subshapes(box, [&](Shape const&) { return !box.has_tag("review"); }, "review");
+
+        EXPECT_TRUE(box.has_tag("review"));
+        Shape tagged_edges = box.select_subshapes(is_edge && has_tag("review"));
+        ASSERT_EQ(tagged_edges.size(), 12u);
+
+        Shape sample_edge = tagged_edges[0];
+        Shape adjacent_faces = box.select_subshapes(is_face && has_subshape(sample_edge));
+        ASSERT_EQ(adjacent_faces.size(), 2u);
+        Shape e1 = adjacent_faces[0].select_subshapes(is_edge && is_same(sample_edge)).unique_element();
+        Shape e2 = adjacent_faces[1].select_subshapes(is_edge && is_same(sample_edge)).unique_element();
+        EXPECT_TRUE(e1.has_tag("review"));
+        EXPECT_TRUE(e2.has_tag("review"));
+    }
+
+    // TagTrack application: Shape::apply_tag_tracks
+    {
+        Shape box = create_box(2.0, 2.0, 2.0);
+        box.add_tag_track(TagTrack("review_track", [&](Shape const&) { return !box.has_tag("review_track"); }, 1));
+        box.apply_tag_tracks();
+
+        EXPECT_TRUE(box.has_tag("review_track"));
+        Shape tagged_edges = box.select_subshapes(is_edge && has_tag("review_track"));
+        ASSERT_EQ(tagged_edges.size(), 12u);
+
+        Shape sample_edge = tagged_edges[0];
+        Shape adjacent_faces = box.select_subshapes(is_face && has_subshape(sample_edge));
+        ASSERT_EQ(adjacent_faces.size(), 2u);
+        Shape e1 = adjacent_faces[0].select_subshapes(is_edge && is_same(sample_edge)).unique_element();
+        Shape e2 = adjacent_faces[1].select_subshapes(is_edge && is_same(sample_edge)).unique_element();
+        EXPECT_TRUE(e1.has_tag("review_track"));
+        EXPECT_TRUE(e2.has_tag("review_track"));
+    }
+}
+
+/**
+ * Verifies that tagging entry points invoke predicates with a Shape const&,
+ * selecting the const-reference overload when a functor overloads on both
+ * Shape const& and Shape&.
+ */
+TEST(ShapeHistory, tagging_invokes_predicate_with_const_shape_ref)
+{
+    using namespace geoml;
+
+    struct ConstEdgePredicate
+    {
+        bool operator()(Shape const& s) const { return s.is_type(TopAbs_EDGE); }
+        bool operator()(Shape&) const { return false; }
+    };
+
+    Shape box = create_box(2.0, 2.0, 2.0);
+    ConstEdgePredicate const pred{};
+
+    box.add_meta_tag_to_subshapes(pred, "const_member");
+    add_persistent_meta_tag_to_subshapes(box, pred, "const_free");
+
+    Shape member_tagged = box.select_subshapes(has_tag("const_member"));
+    Shape free_tagged = box.select_subshapes(has_tag("const_free"));
+    ASSERT_EQ(member_tagged.size(), 12u);
+    ASSERT_EQ(free_tagged.size(), 12u);
+    EXPECT_EQ(box.select_subshapes(is_edge && has_tag("const_member")).size(), 12u);
+    EXPECT_EQ(box.select_subshapes(is_edge && has_tag("const_free")).size(), 12u);
+
+    Shape sample_edge = member_tagged[0];
+    Shape adjacent_faces = box.select_subshapes(is_face && has_subshape(sample_edge));
+    ASSERT_EQ(adjacent_faces.size(), 2u);
+    Shape e1 = adjacent_faces[0].select_subshapes(is_edge && is_same(sample_edge)).unique_element();
+    Shape e2 = adjacent_faces[1].select_subshapes(is_edge && is_same(sample_edge)).unique_element();
+    EXPECT_TRUE(e1.has_tag("const_member"));
+    EXPECT_TRUE(e2.has_tag("const_member"));
+    EXPECT_TRUE(e1.has_tag("const_free"));
+    EXPECT_TRUE(e2.has_tag("const_free"));
+}
