@@ -45,7 +45,9 @@ std::vector<gp_Pnt> extract_control_point_vector_in_V_direction (const Handle(Ge
 
 }
 
-Shape make_fillet (Shape const& solid , Shape const& edges, Standard_Real radius)
+namespace {
+
+Shape make_fillet_impl (Shape const& solid , Shape const& edges, Standard_Real radius, ModelingContext* context)
 {
     BRepFilletAPI_MakeFillet MF (solid);
  
@@ -61,7 +63,22 @@ Shape make_fillet (Shape const& solid , Shape const& edges, Standard_Real radius
         MF.Add(radius, temp_edge);  
     }
 
-    return operation.value();
+    return operation.value(context);
+}
+
+} // namespace
+
+Shape make_fillet (Shape const& solid , Shape const& edges, Standard_Real radius)
+{
+    return make_fillet_impl(solid, edges, radius, nullptr);
+}
+
+Shape make_fillet(Shape const& solid,
+                  Shape const& edges,
+                  Standard_Real radius,
+                  ModelingContext& context)
+{
+    return make_fillet_impl(solid, edges, radius, &context);
 }
 
 } // namespace geoml

@@ -1,6 +1,8 @@
 #pragma once
 
 #include "geoml/naming_choosing/Shape.h"
+#include "geoml/modeling/ModelingContext.h"
+
 #include <vector>
 
 namespace geoml {
@@ -27,13 +29,30 @@ public:
 
     virtual ~Operation() = default;
 
+    /**
+     * Execute the operation without metadata tracking.
+     * @return The modeled shape with subshape history applied.
+     */
     Shape value() {
-        Shape ret = static_cast<Derived&>(*this).perform();
-        static_cast<Derived&>(*this).map_subshapes(ret);
-        
-        merge_and_apply_tag_tracks(ret);
+        return execute(nullptr);
+    }
 
-        return ret;
+    /**
+     * Execute the operation and return its result with metadata tracks propagated from the inputs.
+     * @param context Modeling context owning active metadata tracks and policy scopes.
+     * @return The modeled shape with subshape history and metadata propagation applied.
+     */
+    Shape value(ModelingContext& context) {
+        return execute(&context);
+    }
+
+    /**
+     * Execute the operation with an optional context pointer.
+     * @param context Optional modeling context, or `nullptr` for untracked modeling.
+     * @return The modeled shape with subshape history and optional metadata propagation applied.
+     */
+    Shape value(ModelingContext* context) {
+        return execute(context);
     }
 
 protected:
@@ -46,34 +65,18 @@ protected:
 
 private:
 
-    void merge_and_apply_tag_tracks(Shape & result) const
-    {
-        // collect tag tracks of input Shapes and add them to the result Shape
-        for(auto const &shape : m_inputs)
-        {
-            for (auto const &input_tag_track : shape.get_tag_tracks())
-            {
-                result.add_tag_track(input_tag_track);
-            }
+    Shape execute(ModelingContext* context) {
+        Shape result = static_cast<Derived&>(*this).perform();
+        result.detach_from_inputs(m_inputs);
+        static_cast<Derived&>(*this).map_subshapes(result);
+
+        if (context) {
+            context->propagate_metadata_tracks(result, m_inputs);
         }
 
-        // apply tag tracks to the output
-        result.apply_tag_tracks();
-
-        // delete the "worn out" Tag tracks and reduce the remaining step number of the remaining tag tracks by one
-        auto& tag_tracks = result.get_tag_tracks();
-        for (auto it = tag_tracks.begin(); it != tag_tracks.end();)
-        {
-            if (it->m_remainingSteps <= 1)
-            {
-                it = tag_tracks.erase(it);
-            } else {
-                it->m_remainingSteps--;
-                ++it;
-            }    
-        }
-
+        return result;
     }
+
 };
 
 } // namespace geoml

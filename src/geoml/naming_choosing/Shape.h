@@ -2,11 +2,14 @@
 
 #include "geoml/geoml.h"
 #include "geoml/error.h"
+#include "geoml/metadata/Metadata.h"
 
+#include <cstdint>
 #include <limits>
 #include <stdexcept>
 #include <vector>
 #include <memory>
+#include <optional>
 #include <string>
 #include <functional>
 #include <unordered_set>
@@ -19,11 +22,13 @@
 
 namespace geoml {
 
-// forward declaration
+// forward declarations
 namespace internal {
+class MetadataTrackContext;
+}
+
 template <typename Derived>
 class Operation;
-}
 
 class Shape;
 
@@ -45,31 +50,9 @@ private:
     std::function<bool(Shape const&)> fun;
 };
 
-/**
-* @brief A TagTrack stores
-*  - a tag name
-*  - the number of remaining modeling steps determining its lifetime in the modelling history 
-*  - a logical criterion (predicate)
-*/
-struct TagTrack 
-{
-    template<typename Pred>
-    GEOML_API_EXPORT TagTrack(std::string const& t, Pred&& criterion, int remainingSteps) 
-        : m_tag(t), m_criterion(std::forward<Pred>(criterion)), m_remainingSteps(remainingSteps) {}
-
-    GEOML_API_EXPORT TagTrack(std::string const& t, ShapePredicate const& criterion, int remainingSteps) 
-        : m_tag(t), m_criterion(criterion), m_remainingSteps(remainingSteps) {}
-
-    // the default ctr is for using std::vector<TagTrack> for the SWIG bindings (see pygeoml.i)    
-    GEOML_API_EXPORT TagTrack()
-        : m_criterion([](Shape const& ){return true;}) {} 
-
-    ShapePredicate m_criterion;
-    std::string m_tag;
-    int m_remainingSteps;
-};
-
 namespace details {
+
+bool is_descendent_of(Shape const& shape, TopoDS_Shape const& other, int max_depth);
 
 template <typename Pred>
 class FindVisitor;
@@ -124,6 +107,7 @@ class Shape
 {
     template <typename Derived>
     friend class Operation;
+    friend class internal::MetadataTrackContext;
 
 public:
 
@@ -263,51 +247,12 @@ public:
      */
     GEOML_API_EXPORT Shape unique_element_or(Shape const& other) const;
 
-    /**
-     * @brief adds a tag to all subshapes (including the shape itself) that satisfy
-     * a given predicate
-     * 
-     * @tparam Pred a function mapping a const reference of a Shape to a Boolean
-     * @param f the predicate function
-     * @param input_tag The tag that shall be applied to all subshapes satisfying the predicate
-     */
+    /** Append a tag to this shape's metadata. */
+    GEOML_API_EXPORT void add_meta_tag(std::string const& tag);
+
+    /** Append a tag to the metadata of each matching shape, including this shape if it matches. */
     template <typename Pred>
-    void add_meta_tag_to_subshapes(Pred&& f, std::string const& input_tag);
-
-    /**
-     * @brief adds a string metadata (i.e. tag) to this shape
-     * 
-     * @param tag a string metadata tag
-     */
-    GEOML_API_EXPORT void add_meta_tag(std::string const& tag); // a meta_tag gets added to this shape (not to its subshapes)
-
-    /**
-     * @brief adds a TagTrack to this shape. A tagtrack is useful to 
-     * preserve metadata tags even after geometry modifications. See
-     * the documentation of TagTrack for more details.
-     * 
-     * @param tt 
-     */
-    GEOML_API_EXPORT void add_tag_track(TagTrack const& tt);
-
-    /**
-     * @brief returns all tag tracks associated with this shape
-     * 
-     * @return std::vector<TagTrack>&
-     */
-    GEOML_API_EXPORT std::vector<TagTrack>& get_tag_tracks();
-
-    /**
-     * @brief returns all tag tracks associated with this shape
-     * 
-     * @return std::vector<TagTrack> const&
-     */
-    GEOML_API_EXPORT const std::vector<TagTrack>& get_tag_tracks() const;
-
-    /**
-     * @brief applies the tag tracks associated to this shape.
-     */
-    GEOML_API_EXPORT void apply_tag_tracks();
+    void add_meta_tag_to_subshapes(Pred&& criterion, std::string const& tag);
 
     /**
      * @brief accept accepts a Visitor that explores the
@@ -544,12 +489,18 @@ public:
      */
     GEOML_API_EXPORT bool is_ancestor_of(Shape const& other, int max_depth=std::numeric_limits<int>::max()) const;
     
-    /**
-     * @brief returns true, if this shape has the given tag
-     * 
-     * @param tag a tag is a string metadata
-     */
+    /** Check whether this shape's metadata contains the given tag. */
     GEOML_API_EXPORT bool has_tag(std::string const& tag) const;
+
+    /**
+     * Return the typed metadata store attached to this shape. Copies and topology wrappers
+     * belonging to the same Shape graph share metadata for identical TopoDS subshapes;
+     * independently constructed roots keep separate topology-to-metadata maps.
+     * @return Mutable access to the store.
+     */
+    GEOML_API_EXPORT metadata::Metadata& metadata() noexcept;
+    /** @return Read-only access to the store. */
+    GEOML_API_EXPORT metadata::Metadata const& metadata() const noexcept;
 
     /**
      * @brief returns true if this shape has a subshape that 
@@ -569,28 +520,34 @@ public:
 
 private:
 
+    struct TopoMetaMap;
+
+    Shape(TopoDS_Shape const& theShape,
+          std::shared_ptr<TopoMetaMap> const& topo_meta_map);
+
     /**
      * @brief The data of a Shape is stored in a shared_ptr to make sure
      * it is a lightweight wrapper around shared memory
      */
     struct Data {
 
-        inline explicit Data(TopoDS_Shape const& theShape)
-        : shape(theShape)
-        {
-            for (TopoDS_Iterator it(shape); it.More(); it.Next()) {
-                    children.push_back(Shape(it.Value()));
-            }
-        }
+        Data(TopoDS_Shape const& theShape,
+             std::shared_ptr<TopoMetaMap> const& topo_meta_map);
 
         TopoDS_Shape shape; /** the wrapped TopoDS_Shape */
+        std::shared_ptr<TopoMetaMap> topo_meta_map;
+        std::shared_ptr<metadata::Metadata> metadata;
 
         std::vector<Shape> children; /** direct topology children */
         std::vector<Shape> origins;  /** direct history parents */
-
-        std::vector<std::string> persistent_meta_tags; /** all persistent metatags */
-        std::vector<TagTrack> tag_tracks; /** the associated tag tracks of a shape */
     };
+
+    std::shared_ptr<metadata::Metadata> const& metadata_storage() const noexcept
+    {
+        return m_data->metadata;
+    }
+
+    GEOML_API_EXPORT void detach_from_inputs(std::vector<Shape> const& inputs);
 
     std::shared_ptr<Data> m_data; /** The data associated with this shape */
 
@@ -727,35 +684,20 @@ private:
 
 } // namespace details
 
-/**
- * @brief This method adds a persistent meta tag to all subshapes of the input shape
- * satisfying the given predicate. Note that this includes the shape itself.
- * 
- * @tparam Pred the predicate function mapping a const reference to a Shape to a Boolean
- * @param input the input shape
- * @param f the predicate function
- * @param tag the tag to be added to all subshapes satisfying the given predicate
- */
+/** Append a tag to the metadata of each matching shape in `input`. */
 template <typename Pred>
-void add_persistent_meta_tag_to_subshapes(const Shape &input, Pred&& f, const std::string &tag)
+void add_persistent_meta_tag_to_subshapes(Shape const& input, Pred&& criterion,
+                                         std::string const& tag)
 {
-    std::vector<Shape> matches;
-    details::ForEachVisitor v([&](Shape const& subshape) {
-        if (f(subshape)) {
-            matches.push_back(subshape);
-        }
-    });
-    input.accept_topology_visitor(v);
-
-    for (auto& subshape : matches) {
-        subshape.add_meta_tag(tag);
+    for (auto& target : input.select_subshapes(std::forward<Pred>(criterion))) {
+        target.add_meta_tag(tag);
     }
 }
 
 template <typename Pred>
-void Shape::add_meta_tag_to_subshapes(Pred&& f, std::string const& input_tag)
+void Shape::add_meta_tag_to_subshapes(Pred&& criterion, std::string const& tag)
 {
-    add_persistent_meta_tag_to_subshapes(*this, std::forward<Pred>(f), input_tag);
+    add_persistent_meta_tag_to_subshapes(*this, std::forward<Pred>(criterion), tag);
 }
 
 } // namespace geoml

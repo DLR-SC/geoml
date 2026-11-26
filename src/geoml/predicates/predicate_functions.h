@@ -49,6 +49,13 @@ inline ShapePredicate const is_solid = ShapePredicate(&details::_is_solid);
 inline ShapePredicate const has_origin = ShapePredicate(&details::_has_origin);
 
 // some free functions returning shape predicates
+/**
+ * Create a predicate that matches shapes whose typed metadata `tags` entry contains `tag`.
+ * @param tag Tag value to search for.
+ * @return A predicate suitable for shape selection.
+ */
+GEOML_API_EXPORT ShapePredicate has_metadata_tag(std::string const& tag);
+/** Return a tag selection predicate. Equivalent to has_metadata_tag(). */
 GEOML_API_EXPORT ShapePredicate has_tag(std::string const& tag);
 GEOML_API_EXPORT ShapePredicate is_type(TopAbs_ShapeEnum shape_type);
 GEOML_API_EXPORT ShapePredicate is_same(Shape const& other);
